@@ -1,0 +1,10 @@
+{
+  "name": "tolgee",
+  "id": "1173632028117136380",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": [
+    "figma"
+  ],
+  "ui": "ui.html"
+}
