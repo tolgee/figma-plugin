@@ -1,16 +1,47 @@
 {
-  "name": "tolgee",
-  "version": "1.0.0",
-  "description": "Your Figma Plugin",
+  "name": "@tolgee/figma-plugin",
+  "version": "0.0.1",
+  "description": "Tolgee Figma Plugin",
   "main": "code.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "watch": "npm run build -- --watch"
+    "build": "build-figma-plugin --typecheck --minify",
+    "watch": "build-figma-plugin --typecheck --watch"
   },
-  "author": "",
-  "license": "",
+  "author": "Tolgee",
+  "license": "MIT",
   "devDependencies": {
+    "@create-figma-plugin/build": "^2.1.5",
+    "@create-figma-plugin/tsconfig": "^2.1.5",
     "@figma/plugin-typings": "^1.55.1",
     "typescript": "*"
+  },
+  "dependencies": {
+    "@create-figma-plugin/ui": "2.1.5",
+    "@create-figma-plugin/utilities": "2.1.5",
+    "preact": "^10"
+  },
+  "figma-plugin": {
+    "editorType": [
+      "figma"
+    ],
+    "menu": [
+      {
+        "name": "Setup Tolgee",
+        "main": "src/setup/main.ts",
+        "ui": "src/setup/ui.tsx"
+      },
+      {
+        "name": "Sync Figma -> Tolgee",
+        "main": "src/syncFigmaToTolgee/main.ts",
+        "ui": "src/syncFigmaToTolgee/ui.tsx"
+      },
+      {
+        "name": "Sync Tolgee -> Figma",
+        "main": "src/syncTolgeeToFigma/main.ts",
+        "ui": "src/syncTolgeeToFigma/ui.tsx"
+      }
+    ],
+    "id": "1",
+    "name": "Tolgee"
   }
 }

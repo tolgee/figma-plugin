@@ -1,10 +1,24 @@
 {
-  "name": "tolgee",
-  "id": "1173632028117136380",
   "api": "1.0.0",
-  "main": "code.js",
   "editorType": [
     "figma"
   ],
-  "ui": "ui.html"
+  "id": "1",
+  "name": "Tolgee",
+  "main": "build/main.js",
+  "ui": "build/ui.js",
+  "menu": [
+    {
+      "name": "Setup Tolgee",
+      "command": "src/setup/main.ts--default"
+    },
+    {
+      "name": "Sync Figma -> Tolgee",
+      "command": "src/syncFigmaToTolgee/main.ts--default"
+    },
+    {
+      "name": "Sync Tolgee -> Figma",
+      "command": "src/syncTolgeeToFigma/main.ts--default"
+    }
+  ]
 }
