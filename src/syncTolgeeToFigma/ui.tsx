@@ -22,7 +22,6 @@ import { sendTolgeeRequest, TOLGEE_PREFIX } from '../tolgee';
 import '!../styles.css';
 import { CloseHandler, Node, TolgeeConfig, TranslationsUpdateHandler } from '../types';
 
-
 function Plugin({ nodes, config }: {
   nodes: Array<Node>,
   config: TolgeeConfig
@@ -102,26 +101,27 @@ function Plugin({ nodes, config }: {
 
   return (
     <Container space="medium" >
-      <VerticalSpace space="large" />
-      <Banner icon={<IconInfo32 />}>Checked Items will be synced to Tolgee.</Banner>
-      <VerticalSpace space="medium" />
-      <Dropdown placeholder='Language' disabled={!languages.length} onChange={({ currentTarget: { value: lang } }) => setSelectedLanguage(lang)} options={languages} value={selectedLanguage} />
-      <VerticalSpace space="medium" />
-      <SelectableItem onChange={() => setSelectAll(!selectAll)} value={selectAll}>
-        Select All
-      </SelectableItem>
-      {editedNodes.length ? <Disclosure onClick={() => setOpenEdited(!openEdited)} open={openEdited} title="Edited Keys">
-        {editedNodes.map((node) => (
-          <SelectableItem style={{ height: "auto", padding: "var(--space-small) var(--space-small) var(--space-small) var(--space-medium);" }} key={node.id} onChange={() => toggleNode(node)} value={!!selectedNodes.includes(node)}>
-            <Stack space='extraSmall'>
-              <Container space='extraSmall'>{node.name?.slice(TOLGEE_PREFIX.length)}: {node.characters}</Container>
-              <Container space='extraSmall'>Tolgee: {tolgeeData?.[node.name.slice(TOLGEE_PREFIX.length)] ?? ""}</Container>
-            </Stack>
-          </SelectableItem>)
-        )}
-      </Disclosure> : <VerticalSpace space='extraSmall' />}
-      <VerticalSpace space="extraLarge" />
-      <Columns space="extraSmall" style={{ bottom: "12px", position: "absolute", left: "12px", right: "12px" }}>
+      <div style={{ height: "calc(100% - 48px)", overflow: "auto" }}>
+        <VerticalSpace space="large" />
+        <Banner icon={<IconInfo32 />}>Checked Items will be synced to Tolgee.</Banner>
+        <VerticalSpace space="medium" />
+        <Dropdown placeholder='Language' disabled={!languages.length} onChange={({ currentTarget: { value: lang } }) => setSelectedLanguage(lang)} options={languages} value={selectedLanguage} />
+        <VerticalSpace space="medium" />
+        <SelectableItem onChange={() => setSelectAll(!selectAll)} value={selectAll}>
+          Select All
+        </SelectableItem>
+        {editedNodes.length ? <Disclosure onClick={() => setOpenEdited(!openEdited)} open={openEdited} title="Edited Keys">
+          {editedNodes.map((node) => (
+            <SelectableItem style={{ height: "auto", padding: "var(--space-small) var(--space-small) var(--space-small) var(--space-medium);" }} key={node.id} onChange={() => toggleNode(node)} value={!!selectedNodes.includes(node)}>
+              <Stack space='extraSmall'>
+                <Container space='extraSmall'>{node.name?.slice(TOLGEE_PREFIX.length)}: {node.characters}</Container>
+                <Container space='extraSmall'>Tolgee: {tolgeeData?.[node.name.slice(TOLGEE_PREFIX.length)] ?? ""}</Container>
+              </Stack>
+            </SelectableItem>)
+          )}
+        </Disclosure> : <VerticalSpace space='extraSmall' />}
+      </div>
+      <Columns space="extraSmall" style={{ bottom: "12px", position: "fixed", zIndex: 1, left: "12px", right: "12px" }}>
         <Button disabled={selectedNodes.length === 0} fullWidth onClick={syncKeys}>
           Sync
         </Button>
