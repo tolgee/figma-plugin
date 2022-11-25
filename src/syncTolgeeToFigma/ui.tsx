@@ -103,7 +103,7 @@ function Plugin({ nodes, config }: {
     <Container space="medium" >
       <div style={{ height: "calc(100% - 48px)", overflow: "auto" }}>
         <VerticalSpace space="large" />
-        <Banner icon={<IconInfo32 />}>Checked Items will be synced to Tolgee.</Banner>
+        <Banner icon={<IconInfo32 />}>Checked Items will be synced to Figma.</Banner>
         <VerticalSpace space="medium" />
         <Dropdown placeholder='Language' disabled={!languages.length} onChange={({ currentTarget: { value: lang } }) => setSelectedLanguage(lang)} options={languages} value={selectedLanguage} />
         <VerticalSpace space="medium" />
