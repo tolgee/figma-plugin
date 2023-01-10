@@ -1,25 +1,27 @@
 (() => {
+  var __create = Object.create;
   var __defProp = Object.defineProperty;
   var __defProps = Object.defineProperties;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
   var __getOwnPropNames = Object.getOwnPropertyNames;
   var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+  var __getProtoOf = Object.getPrototypeOf;
   var __hasOwnProp = Object.prototype.hasOwnProperty;
   var __propIsEnum = Object.prototype.propertyIsEnumerable;
   var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a3, b3) => {
+  var __spreadValues = (a4, b3) => {
     for (var prop in b3 || (b3 = {}))
       if (__hasOwnProp.call(b3, prop))
-        __defNormalProp(a3, prop, b3[prop]);
+        __defNormalProp(a4, prop, b3[prop]);
     if (__getOwnPropSymbols)
       for (var prop of __getOwnPropSymbols(b3)) {
         if (__propIsEnum.call(b3, prop))
-          __defNormalProp(a3, prop, b3[prop]);
+          __defNormalProp(a4, prop, b3[prop]);
       }
-    return a3;
+    return a4;
   };
-  var __spreadProps = (a3, b3) => __defProps(a3, __getOwnPropDescs(b3));
+  var __spreadProps = (a4, b3) => __defProps(a4, __getOwnPropDescs(b3));
   var __objRest = (source, exclude) => {
     var target = {};
     for (var prop in source)
@@ -35,6 +37,9 @@
   var __esm = (fn, res) => function __init() {
     return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
   };
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
   var __export = (target, all) => {
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
@@ -47,6 +52,10 @@
     }
     return to;
   };
+  var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+    isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+    mod
+  ));
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
   // node_modules/preact/dist/preact.module.js
@@ -59,18 +68,18 @@
     var l3 = n2.parentNode;
     l3 && l3.removeChild(n2);
   }
-  function h(l3, u3, i3) {
-    var t3, o3, r3, f3 = {};
+  function h(l3, u3, i4) {
+    var t3, o3, r3, f4 = {};
     for (r3 in u3)
-      "key" == r3 ? t3 = u3[r3] : "ref" == r3 ? o3 = u3[r3] : f3[r3] = u3[r3];
-    if (arguments.length > 2 && (f3.children = arguments.length > 3 ? n.call(arguments, 2) : i3), "function" == typeof l3 && null != l3.defaultProps)
+      "key" == r3 ? t3 = u3[r3] : "ref" == r3 ? o3 = u3[r3] : f4[r3] = u3[r3];
+    if (arguments.length > 2 && (f4.children = arguments.length > 3 ? n.call(arguments, 2) : i4), "function" == typeof l3 && null != l3.defaultProps)
       for (r3 in l3.defaultProps)
-        void 0 === f3[r3] && (f3[r3] = l3.defaultProps[r3]);
-    return v(l3, f3, t3, o3, null);
+        void 0 === f4[r3] && (f4[r3] = l3.defaultProps[r3]);
+    return v(l3, f4, t3, o3, null);
   }
-  function v(n2, i3, t3, o3, r3) {
-    var f3 = { type: n2, props: i3, key: t3, ref: o3, __k: null, __: null, __b: 0, __e: null, __d: void 0, __c: null, __h: null, constructor: void 0, __v: null == r3 ? ++u : r3 };
-    return null == r3 && null != l.vnode && l.vnode(f3), f3;
+  function v(n2, i4, t3, o3, r3) {
+    var f4 = { type: n2, props: i4, key: t3, ref: o3, __k: null, __: null, __b: 0, __e: null, __d: void 0, __c: null, __h: null, constructor: void 0, __v: null == r3 ? ++u : r3 };
+    return null == r3 && null != l.vnode && l.vnode(f4), f4;
   }
   function p(n2) {
     return n2.children;
@@ -105,35 +114,35 @@
       n2 = t.sort(function(n3, l3) {
         return n3.__v.__b - l3.__v.__b;
       }), t = [], n2.some(function(n3) {
-        var l3, u3, i3, t3, o3, r3;
-        n3.__d && (o3 = (t3 = (l3 = n3).__v).__e, (r3 = l3.__P) && (u3 = [], (i3 = s({}, t3)).__v = t3.__v + 1, j(r3, t3, i3, l3.__n, void 0 !== r3.ownerSVGElement, null != t3.__h ? [o3] : null, u3, null == o3 ? _(t3) : o3, t3.__h), z(u3, t3), t3.__e != o3 && k(t3)));
+        var l3, u3, i4, t3, o3, r3;
+        n3.__d && (o3 = (t3 = (l3 = n3).__v).__e, (r3 = l3.__P) && (u3 = [], (i4 = s({}, t3)).__v = t3.__v + 1, j(r3, t3, i4, l3.__n, void 0 !== r3.ownerSVGElement, null != t3.__h ? [o3] : null, u3, null == o3 ? _(t3) : o3, t3.__h), z(u3, t3), t3.__e != o3 && k(t3)));
       });
   }
-  function w(n2, l3, u3, i3, t3, o3, r3, c3, s2, a3) {
-    var h3, y2, d3, k3, b3, g3, w3, x2 = i3 && i3.__k || e, C2 = x2.length;
-    for (u3.__k = [], h3 = 0; h3 < l3.length; h3++)
-      if (null != (k3 = u3.__k[h3] = null == (k3 = l3[h3]) || "boolean" == typeof k3 ? null : "string" == typeof k3 || "number" == typeof k3 || "bigint" == typeof k3 ? v(null, k3, null, null, k3) : Array.isArray(k3) ? v(p, { children: k3 }, null, null, null) : k3.__b > 0 ? v(k3.type, k3.props, k3.key, k3.ref ? k3.ref : null, k3.__v) : k3)) {
-        if (k3.__ = u3, k3.__b = u3.__b + 1, null === (d3 = x2[h3]) || d3 && k3.key == d3.key && k3.type === d3.type)
-          x2[h3] = void 0;
+  function w(n2, l3, u3, i4, t3, o3, r3, c3, s3, a4) {
+    var h4, y3, d4, k3, b3, g4, w4, x4 = i4 && i4.__k || e, C3 = x4.length;
+    for (u3.__k = [], h4 = 0; h4 < l3.length; h4++)
+      if (null != (k3 = u3.__k[h4] = null == (k3 = l3[h4]) || "boolean" == typeof k3 ? null : "string" == typeof k3 || "number" == typeof k3 || "bigint" == typeof k3 ? v(null, k3, null, null, k3) : Array.isArray(k3) ? v(p, { children: k3 }, null, null, null) : k3.__b > 0 ? v(k3.type, k3.props, k3.key, k3.ref ? k3.ref : null, k3.__v) : k3)) {
+        if (k3.__ = u3, k3.__b = u3.__b + 1, null === (d4 = x4[h4]) || d4 && k3.key == d4.key && k3.type === d4.type)
+          x4[h4] = void 0;
         else
-          for (y2 = 0; y2 < C2; y2++) {
-            if ((d3 = x2[y2]) && k3.key == d3.key && k3.type === d3.type) {
-              x2[y2] = void 0;
+          for (y3 = 0; y3 < C3; y3++) {
+            if ((d4 = x4[y3]) && k3.key == d4.key && k3.type === d4.type) {
+              x4[y3] = void 0;
               break;
             }
-            d3 = null;
+            d4 = null;
           }
-        j(n2, k3, d3 = d3 || f, t3, o3, r3, c3, s2, a3), b3 = k3.__e, (y2 = k3.ref) && d3.ref != y2 && (w3 || (w3 = []), d3.ref && w3.push(d3.ref, null, k3), w3.push(y2, k3.__c || b3, k3)), null != b3 ? (null == g3 && (g3 = b3), "function" == typeof k3.type && k3.__k === d3.__k ? k3.__d = s2 = m(k3, s2, n2) : s2 = A(n2, k3, d3, x2, b3, s2), "function" == typeof u3.type && (u3.__d = s2)) : s2 && d3.__e == s2 && s2.parentNode != n2 && (s2 = _(d3));
+        j(n2, k3, d4 = d4 || f, t3, o3, r3, c3, s3, a4), b3 = k3.__e, (y3 = k3.ref) && d4.ref != y3 && (w4 || (w4 = []), d4.ref && w4.push(d4.ref, null, k3), w4.push(y3, k3.__c || b3, k3)), null != b3 ? (null == g4 && (g4 = b3), "function" == typeof k3.type && k3.__k === d4.__k ? k3.__d = s3 = m(k3, s3, n2) : s3 = A(n2, k3, d4, x4, b3, s3), "function" == typeof u3.type && (u3.__d = s3)) : s3 && d4.__e == s3 && s3.parentNode != n2 && (s3 = _(d4));
       }
-    for (u3.__e = g3, h3 = C2; h3--; )
-      null != x2[h3] && N(x2[h3], x2[h3]);
-    if (w3)
-      for (h3 = 0; h3 < w3.length; h3++)
-        M(w3[h3], w3[++h3], w3[++h3]);
+    for (u3.__e = g4, h4 = C3; h4--; )
+      null != x4[h4] && N(x4[h4], x4[h4]);
+    if (w4)
+      for (h4 = 0; h4 < w4.length; h4++)
+        M(w4[h4], w4[++h4], w4[++h4]);
   }
   function m(n2, l3, u3) {
-    for (var i3, t3 = n2.__k, o3 = 0; t3 && o3 < t3.length; o3++)
-      (i3 = t3[o3]) && (i3.__ = n2, l3 = "function" == typeof i3.type ? m(i3, l3, u3) : A(u3, i3, i3, t3, i3.__e, l3));
+    for (var i4, t3 = n2.__k, o3 = 0; t3 && o3 < t3.length; o3++)
+      (i4 = t3[o3]) && (i4.__ = n2, l3 = "function" == typeof i4.type ? m(i4, l3, u3) : A(u3, i4, i4, t3, i4.__e, l3));
     return l3;
   }
   function x(n2, l3) {
@@ -141,8 +150,8 @@
       x(n3, l3);
     }) : l3.push(n2)), l3;
   }
-  function A(n2, l3, u3, i3, t3, o3) {
-    var r3, f3, e3;
+  function A(n2, l3, u3, i4, t3, o3) {
+    var r3, f4, e3;
     if (void 0 !== l3.__d)
       r3 = l3.__d, l3.__d = void 0;
     else if (null == u3 || t3 != o3 || null == t3.parentNode)
@@ -150,39 +159,39 @@
         if (null == o3 || o3.parentNode !== n2)
           n2.appendChild(t3), r3 = null;
         else {
-          for (f3 = o3, e3 = 0; (f3 = f3.nextSibling) && e3 < i3.length; e3 += 1)
-            if (f3 == t3)
+          for (f4 = o3, e3 = 0; (f4 = f4.nextSibling) && e3 < i4.length; e3 += 1)
+            if (f4 == t3)
               break n;
           n2.insertBefore(t3, o3), r3 = o3;
         }
     return void 0 !== r3 ? r3 : t3.nextSibling;
   }
-  function C(n2, l3, u3, i3, t3) {
+  function C(n2, l3, u3, i4, t3) {
     var o3;
     for (o3 in u3)
-      "children" === o3 || "key" === o3 || o3 in l3 || H(n2, o3, null, u3[o3], i3);
+      "children" === o3 || "key" === o3 || o3 in l3 || H(n2, o3, null, u3[o3], i4);
     for (o3 in l3)
-      t3 && "function" != typeof l3[o3] || "children" === o3 || "key" === o3 || "value" === o3 || "checked" === o3 || u3[o3] === l3[o3] || H(n2, o3, l3[o3], u3[o3], i3);
+      t3 && "function" != typeof l3[o3] || "children" === o3 || "key" === o3 || "value" === o3 || "checked" === o3 || u3[o3] === l3[o3] || H(n2, o3, l3[o3], u3[o3], i4);
   }
   function $(n2, l3, u3) {
     "-" === l3[0] ? n2.setProperty(l3, u3) : n2[l3] = null == u3 ? "" : "number" != typeof u3 || c.test(l3) ? u3 : u3 + "px";
   }
-  function H(n2, l3, u3, i3, t3) {
+  function H(n2, l3, u3, i4, t3) {
     var o3;
     n:
       if ("style" === l3)
         if ("string" == typeof u3)
           n2.style.cssText = u3;
         else {
-          if ("string" == typeof i3 && (n2.style.cssText = i3 = ""), i3)
-            for (l3 in i3)
+          if ("string" == typeof i4 && (n2.style.cssText = i4 = ""), i4)
+            for (l3 in i4)
               u3 && l3 in u3 || $(n2.style, l3, "");
           if (u3)
             for (l3 in u3)
-              i3 && u3[l3] === i3[l3] || $(n2.style, l3, u3[l3]);
+              i4 && u3[l3] === i4[l3] || $(n2.style, l3, u3[l3]);
         }
       else if ("o" === l3[0] && "n" === l3[1])
-        o3 = l3 !== (l3 = l3.replace(/Capture$/, "")), l3 = l3.toLowerCase() in n2 ? l3.toLowerCase().slice(2) : l3.slice(2), n2.l || (n2.l = {}), n2.l[l3 + o3] = u3, u3 ? i3 || n2.addEventListener(l3, o3 ? T : I, o3) : n2.removeEventListener(l3, o3 ? T : I, o3);
+        o3 = l3 !== (l3 = l3.replace(/Capture$/, "")), l3 = l3.toLowerCase() in n2 ? l3.toLowerCase().slice(2) : l3.slice(2), n2.l || (n2.l = {}), n2.l[l3 + o3] = u3, u3 ? i4 || n2.addEventListener(l3, o3 ? T : I, o3) : n2.removeEventListener(l3, o3 ? T : I, o3);
       else if ("dangerouslySetInnerHTML" !== l3) {
         if (t3)
           l3 = l3.replace(/xlink(H|:h)/, "h").replace(/sName$/, "s");
@@ -201,43 +210,43 @@
   function T(n2) {
     this.l[n2.type + true](l.event ? l.event(n2) : n2);
   }
-  function j(n2, u3, i3, t3, o3, r3, f3, e3, c3) {
-    var a3, h3, v3, y2, _3, k3, b3, g3, m3, x2, A2, C2, $2, H2, I2, T3 = u3.type;
+  function j(n2, u3, i4, t3, o3, r3, f4, e3, c3) {
+    var a4, h4, v4, y3, _3, k3, b3, g4, m3, x4, A3, C3, $2, H3, I3, T4 = u3.type;
     if (void 0 !== u3.constructor)
       return null;
-    null != i3.__h && (c3 = i3.__h, e3 = u3.__e = i3.__e, u3.__h = null, r3 = [e3]), (a3 = l.__b) && a3(u3);
+    null != i4.__h && (c3 = i4.__h, e3 = u3.__e = i4.__e, u3.__h = null, r3 = [e3]), (a4 = l.__b) && a4(u3);
     try {
       n:
-        if ("function" == typeof T3) {
-          if (g3 = u3.props, m3 = (a3 = T3.contextType) && t3[a3.__c], x2 = a3 ? m3 ? m3.props.value : a3.__ : t3, i3.__c ? b3 = (h3 = u3.__c = i3.__c).__ = h3.__E : ("prototype" in T3 && T3.prototype.render ? u3.__c = h3 = new T3(g3, x2) : (u3.__c = h3 = new d(g3, x2), h3.constructor = T3, h3.render = O), m3 && m3.sub(h3), h3.props = g3, h3.state || (h3.state = {}), h3.context = x2, h3.__n = t3, v3 = h3.__d = true, h3.__h = [], h3._sb = []), null == h3.__s && (h3.__s = h3.state), null != T3.getDerivedStateFromProps && (h3.__s == h3.state && (h3.__s = s({}, h3.__s)), s(h3.__s, T3.getDerivedStateFromProps(g3, h3.__s))), y2 = h3.props, _3 = h3.state, v3)
-            null == T3.getDerivedStateFromProps && null != h3.componentWillMount && h3.componentWillMount(), null != h3.componentDidMount && h3.__h.push(h3.componentDidMount);
+        if ("function" == typeof T4) {
+          if (g4 = u3.props, m3 = (a4 = T4.contextType) && t3[a4.__c], x4 = a4 ? m3 ? m3.props.value : a4.__ : t3, i4.__c ? b3 = (h4 = u3.__c = i4.__c).__ = h4.__E : ("prototype" in T4 && T4.prototype.render ? u3.__c = h4 = new T4(g4, x4) : (u3.__c = h4 = new d(g4, x4), h4.constructor = T4, h4.render = O), m3 && m3.sub(h4), h4.props = g4, h4.state || (h4.state = {}), h4.context = x4, h4.__n = t3, v4 = h4.__d = true, h4.__h = [], h4._sb = []), null == h4.__s && (h4.__s = h4.state), null != T4.getDerivedStateFromProps && (h4.__s == h4.state && (h4.__s = s({}, h4.__s)), s(h4.__s, T4.getDerivedStateFromProps(g4, h4.__s))), y3 = h4.props, _3 = h4.state, v4)
+            null == T4.getDerivedStateFromProps && null != h4.componentWillMount && h4.componentWillMount(), null != h4.componentDidMount && h4.__h.push(h4.componentDidMount);
           else {
-            if (null == T3.getDerivedStateFromProps && g3 !== y2 && null != h3.componentWillReceiveProps && h3.componentWillReceiveProps(g3, x2), !h3.__e && null != h3.shouldComponentUpdate && false === h3.shouldComponentUpdate(g3, h3.__s, x2) || u3.__v === i3.__v) {
-              for (h3.props = g3, h3.state = h3.__s, u3.__v !== i3.__v && (h3.__d = false), h3.__v = u3, u3.__e = i3.__e, u3.__k = i3.__k, u3.__k.forEach(function(n3) {
+            if (null == T4.getDerivedStateFromProps && g4 !== y3 && null != h4.componentWillReceiveProps && h4.componentWillReceiveProps(g4, x4), !h4.__e && null != h4.shouldComponentUpdate && false === h4.shouldComponentUpdate(g4, h4.__s, x4) || u3.__v === i4.__v) {
+              for (h4.props = g4, h4.state = h4.__s, u3.__v !== i4.__v && (h4.__d = false), h4.__v = u3, u3.__e = i4.__e, u3.__k = i4.__k, u3.__k.forEach(function(n3) {
                 n3 && (n3.__ = u3);
-              }), A2 = 0; A2 < h3._sb.length; A2++)
-                h3.__h.push(h3._sb[A2]);
-              h3._sb = [], h3.__h.length && f3.push(h3);
+              }), A3 = 0; A3 < h4._sb.length; A3++)
+                h4.__h.push(h4._sb[A3]);
+              h4._sb = [], h4.__h.length && f4.push(h4);
               break n;
             }
-            null != h3.componentWillUpdate && h3.componentWillUpdate(g3, h3.__s, x2), null != h3.componentDidUpdate && h3.__h.push(function() {
-              h3.componentDidUpdate(y2, _3, k3);
+            null != h4.componentWillUpdate && h4.componentWillUpdate(g4, h4.__s, x4), null != h4.componentDidUpdate && h4.__h.push(function() {
+              h4.componentDidUpdate(y3, _3, k3);
             });
           }
-          if (h3.context = x2, h3.props = g3, h3.__v = u3, h3.__P = n2, C2 = l.__r, $2 = 0, "prototype" in T3 && T3.prototype.render) {
-            for (h3.state = h3.__s, h3.__d = false, C2 && C2(u3), a3 = h3.render(h3.props, h3.state, h3.context), H2 = 0; H2 < h3._sb.length; H2++)
-              h3.__h.push(h3._sb[H2]);
-            h3._sb = [];
+          if (h4.context = x4, h4.props = g4, h4.__v = u3, h4.__P = n2, C3 = l.__r, $2 = 0, "prototype" in T4 && T4.prototype.render) {
+            for (h4.state = h4.__s, h4.__d = false, C3 && C3(u3), a4 = h4.render(h4.props, h4.state, h4.context), H3 = 0; H3 < h4._sb.length; H3++)
+              h4.__h.push(h4._sb[H3]);
+            h4._sb = [];
           } else
             do {
-              h3.__d = false, C2 && C2(u3), a3 = h3.render(h3.props, h3.state, h3.context), h3.state = h3.__s;
-            } while (h3.__d && ++$2 < 25);
-          h3.state = h3.__s, null != h3.getChildContext && (t3 = s(s({}, t3), h3.getChildContext())), v3 || null == h3.getSnapshotBeforeUpdate || (k3 = h3.getSnapshotBeforeUpdate(y2, _3)), I2 = null != a3 && a3.type === p && null == a3.key ? a3.props.children : a3, w(n2, Array.isArray(I2) ? I2 : [I2], u3, i3, t3, o3, r3, f3, e3, c3), h3.base = u3.__e, u3.__h = null, h3.__h.length && f3.push(h3), b3 && (h3.__E = h3.__ = null), h3.__e = false;
+              h4.__d = false, C3 && C3(u3), a4 = h4.render(h4.props, h4.state, h4.context), h4.state = h4.__s;
+            } while (h4.__d && ++$2 < 25);
+          h4.state = h4.__s, null != h4.getChildContext && (t3 = s(s({}, t3), h4.getChildContext())), v4 || null == h4.getSnapshotBeforeUpdate || (k3 = h4.getSnapshotBeforeUpdate(y3, _3)), I3 = null != a4 && a4.type === p && null == a4.key ? a4.props.children : a4, w(n2, Array.isArray(I3) ? I3 : [I3], u3, i4, t3, o3, r3, f4, e3, c3), h4.base = u3.__e, u3.__h = null, h4.__h.length && f4.push(h4), b3 && (h4.__E = h4.__ = null), h4.__e = false;
         } else
-          null == r3 && u3.__v === i3.__v ? (u3.__k = i3.__k, u3.__e = i3.__e) : u3.__e = L(i3.__e, u3, i3, t3, o3, r3, f3, c3);
-      (a3 = l.diffed) && a3(u3);
+          null == r3 && u3.__v === i4.__v ? (u3.__k = i4.__k, u3.__e = i4.__e) : u3.__e = L(i4.__e, u3, i4, t3, o3, r3, f4, c3);
+      (a4 = l.diffed) && a4(u3);
     } catch (n3) {
-      u3.__v = null, (c3 || null != r3) && (u3.__e = e3, u3.__h = !!c3, r3[r3.indexOf(e3)] = null), l.__e(n3, u3, i3);
+      u3.__v = null, (c3 || null != r3) && (u3.__e = e3, u3.__h = !!c3, r3[r3.indexOf(e3)] = null), l.__e(n3, u3, i4);
     }
   }
   function z(n2, u3) {
@@ -251,46 +260,46 @@
       }
     });
   }
-  function L(l3, u3, i3, t3, o3, r3, e3, c3) {
-    var s2, h3, v3, y2 = i3.props, p3 = u3.props, d3 = u3.type, k3 = 0;
-    if ("svg" === d3 && (o3 = true), null != r3) {
+  function L(l3, u3, i4, t3, o3, r3, e3, c3) {
+    var s3, h4, v4, y3 = i4.props, p4 = u3.props, d4 = u3.type, k3 = 0;
+    if ("svg" === d4 && (o3 = true), null != r3) {
       for (; k3 < r3.length; k3++)
-        if ((s2 = r3[k3]) && "setAttribute" in s2 == !!d3 && (d3 ? s2.localName === d3 : 3 === s2.nodeType)) {
-          l3 = s2, r3[k3] = null;
+        if ((s3 = r3[k3]) && "setAttribute" in s3 == !!d4 && (d4 ? s3.localName === d4 : 3 === s3.nodeType)) {
+          l3 = s3, r3[k3] = null;
           break;
         }
     }
     if (null == l3) {
-      if (null === d3)
-        return document.createTextNode(p3);
-      l3 = o3 ? document.createElementNS("http://www.w3.org/2000/svg", d3) : document.createElement(d3, p3.is && p3), r3 = null, c3 = false;
+      if (null === d4)
+        return document.createTextNode(p4);
+      l3 = o3 ? document.createElementNS("http://www.w3.org/2000/svg", d4) : document.createElement(d4, p4.is && p4), r3 = null, c3 = false;
     }
-    if (null === d3)
-      y2 === p3 || c3 && l3.data === p3 || (l3.data = p3);
+    if (null === d4)
+      y3 === p4 || c3 && l3.data === p4 || (l3.data = p4);
     else {
-      if (r3 = r3 && n.call(l3.childNodes), h3 = (y2 = i3.props || f).dangerouslySetInnerHTML, v3 = p3.dangerouslySetInnerHTML, !c3) {
+      if (r3 = r3 && n.call(l3.childNodes), h4 = (y3 = i4.props || f).dangerouslySetInnerHTML, v4 = p4.dangerouslySetInnerHTML, !c3) {
         if (null != r3)
-          for (y2 = {}, k3 = 0; k3 < l3.attributes.length; k3++)
-            y2[l3.attributes[k3].name] = l3.attributes[k3].value;
-        (v3 || h3) && (v3 && (h3 && v3.__html == h3.__html || v3.__html === l3.innerHTML) || (l3.innerHTML = v3 && v3.__html || ""));
+          for (y3 = {}, k3 = 0; k3 < l3.attributes.length; k3++)
+            y3[l3.attributes[k3].name] = l3.attributes[k3].value;
+        (v4 || h4) && (v4 && (h4 && v4.__html == h4.__html || v4.__html === l3.innerHTML) || (l3.innerHTML = v4 && v4.__html || ""));
       }
-      if (C(l3, p3, y2, o3, c3), v3)
+      if (C(l3, p4, y3, o3, c3), v4)
         u3.__k = [];
-      else if (k3 = u3.props.children, w(l3, Array.isArray(k3) ? k3 : [k3], u3, i3, t3, o3 && "foreignObject" !== d3, r3, e3, r3 ? r3[0] : i3.__k && _(i3, 0), c3), null != r3)
+      else if (k3 = u3.props.children, w(l3, Array.isArray(k3) ? k3 : [k3], u3, i4, t3, o3 && "foreignObject" !== d4, r3, e3, r3 ? r3[0] : i4.__k && _(i4, 0), c3), null != r3)
         for (k3 = r3.length; k3--; )
           null != r3[k3] && a(r3[k3]);
-      c3 || ("value" in p3 && void 0 !== (k3 = p3.value) && (k3 !== l3.value || "progress" === d3 && !k3 || "option" === d3 && k3 !== y2.value) && H(l3, "value", k3, y2.value, false), "checked" in p3 && void 0 !== (k3 = p3.checked) && k3 !== l3.checked && H(l3, "checked", k3, y2.checked, false));
+      c3 || ("value" in p4 && void 0 !== (k3 = p4.value) && (k3 !== l3.value || "progress" === d4 && !k3 || "option" === d4 && k3 !== y3.value) && H(l3, "value", k3, y3.value, false), "checked" in p4 && void 0 !== (k3 = p4.checked) && k3 !== l3.checked && H(l3, "checked", k3, y3.checked, false));
     }
     return l3;
   }
-  function M(n2, u3, i3) {
+  function M(n2, u3, i4) {
     try {
       "function" == typeof n2 ? n2(u3) : n2.current = u3;
     } catch (n3) {
-      l.__e(n3, i3);
+      l.__e(n3, i4);
     }
   }
-  function N(n2, u3, i3) {
+  function N(n2, u3, i4) {
     var t3, o3;
     if (l.unmount && l.unmount(n2), (t3 = n2.ref) && (t3.current && t3.current !== n2.__e || M(t3, null, u3)), null != (t3 = n2.__c)) {
       if (t3.componentWillUnmount)
@@ -303,15 +312,34 @@
     }
     if (t3 = n2.__k)
       for (o3 = 0; o3 < t3.length; o3++)
-        t3[o3] && N(t3[o3], u3, i3 || "function" != typeof n2.type);
-    i3 || null == n2.__e || a(n2.__e), n2.__ = n2.__e = n2.__d = void 0;
+        t3[o3] && N(t3[o3], u3, i4 || "function" != typeof n2.type);
+    i4 || null == n2.__e || a(n2.__e), n2.__ = n2.__e = n2.__d = void 0;
   }
   function O(n2, l3, u3) {
     return this.constructor(n2, u3);
   }
-  function P(u3, i3, t3) {
+  function P(u3, i4, t3) {
     var o3, r3, e3;
-    l.__ && l.__(u3, i3), r3 = (o3 = "function" == typeof t3) ? null : t3 && t3.__k || i3.__k, e3 = [], j(i3, u3 = (!o3 && t3 || i3).__k = h(p, null, [u3]), r3 || f, f, void 0 !== i3.ownerSVGElement, !o3 && t3 ? [t3] : r3 ? null : i3.firstChild ? n.call(i3.childNodes) : null, e3, !o3 && t3 ? t3 : r3 ? r3.__e : i3.firstChild, o3), z(e3, u3);
+    l.__ && l.__(u3, i4), r3 = (o3 = "function" == typeof t3) ? null : t3 && t3.__k || i4.__k, e3 = [], j(i4, u3 = (!o3 && t3 || i4).__k = h(p, null, [u3]), r3 || f, f, void 0 !== i4.ownerSVGElement, !o3 && t3 ? [t3] : r3 ? null : i4.firstChild ? n.call(i4.childNodes) : null, e3, !o3 && t3 ? t3 : r3 ? r3.__e : i4.firstChild, o3), z(e3, u3);
+  }
+  function B(n2, l3) {
+    var u3 = { __c: l3 = "__cC" + r++, __: n2, Consumer: function(n3, l4) {
+      return n3.children(l4);
+    }, Provider: function(n3) {
+      var u4, i4;
+      return this.getChildContext || (u4 = [], (i4 = {})[l3] = this, this.getChildContext = function() {
+        return i4;
+      }, this.shouldComponentUpdate = function(n4) {
+        this.props.value !== n4.value && u4.some(b);
+      }, this.sub = function(n4) {
+        u4.push(n4);
+        var l4 = n4.componentWillUnmount;
+        n4.componentWillUnmount = function() {
+          u4.splice(u4.indexOf(n4), 1), l4 && l4.call(n4);
+        };
+      }), n3.children;
+    } };
+    return u3.Provider.__ = u3.Consumer.contextType = u3;
   }
   var n, l, u, i, t, o, r, f, e, c;
   var init_preact_module = __esm({
@@ -319,11 +347,11 @@
       f = {};
       e = [];
       c = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;
-      n = e.slice, l = { __e: function(n2, l3, u3, i3) {
+      n = e.slice, l = { __e: function(n2, l3, u3, i4) {
         for (var t3, o3, r3; l3 = l3.__; )
           if ((t3 = l3.__c) && !t3.__)
             try {
-              if ((o3 = t3.constructor) && null != o3.getDerivedStateFromError && (t3.setState(o3.getDerivedStateFromError(n2)), r3 = t3.__d), null != t3.componentDidCatch && (t3.componentDidCatch(n2, i3 || {}), r3 = t3.__d), r3)
+              if ((o3 = t3.constructor) && null != o3.getDerivedStateFromError && (t3.setState(o3.getDerivedStateFromError(n2)), r3 = t3.__d), null != t3.componentDidCatch && (t3.componentDidCatch(n2, i4 || {}), r3 = t3.__d), r3)
                 return t3.__E = t3;
             } catch (l4) {
               n2 = l4;
@@ -351,13 +379,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/37fc7fa4-35c7-4b2c-a3e9-0e15f3ebf97c/banner.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/33a16b21-226c-4bff-8f6b-654b78005dbb/banner.js
   var banner_default;
   var init_banner = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/37fc7fa4-35c7-4b2c-a3e9-0e15f3ebf97c/banner.js"() {
-      if (document.getElementById("e15df48620") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/33a16b21-226c-4bff-8f6b-654b78005dbb/banner.js"() {
+      if (document.getElementById("3168a726a5") === null) {
         const element = document.createElement("style");
-        element.id = "e15df48620";
+        element.id = "3168a726a5";
         element.textContent = `._banner_1qlmg_1 {
   position: relative;
   display: flex;
@@ -423,20 +451,20 @@
   // node_modules/preact/hooks/dist/hooks.module.js
   function d2(t3, u3) {
     l.__h && l.__h(r2, t3, o2 || u3), o2 = 0;
-    var i3 = r2.__H || (r2.__H = { __: [], __h: [] });
-    return t3 >= i3.__.length && i3.__.push({ __V: c2 }), i3.__[t3];
+    var i4 = r2.__H || (r2.__H = { __: [], __h: [] });
+    return t3 >= i4.__.length && i4.__.push({ __V: c2 }), i4.__[t3];
   }
   function p2(n2) {
-    return o2 = 1, y(B, n2);
+    return o2 = 1, y(B2, n2);
   }
-  function y(n2, u3, i3) {
+  function y(n2, u3, i4) {
     var o3 = d2(t2++, 2);
-    if (o3.t = n2, !o3.__c && (o3.__ = [i3 ? i3(u3) : B(void 0, u3), function(n3) {
+    if (o3.t = n2, !o3.__c && (o3.__ = [i4 ? i4(u3) : B2(void 0, u3), function(n3) {
       var t3 = o3.__N ? o3.__N[0] : o3.__[0], r3 = o3.t(t3, n3);
       t3 !== r3 && (o3.__N = [r3, o3.__[1]], o3.__c.setState({}));
     }], o3.__c = r2, !r2.u)) {
       r2.u = true;
-      var f3 = r2.shouldComponentUpdate;
+      var f4 = r2.shouldComponentUpdate;
       r2.shouldComponentUpdate = function(n3, t3, r3) {
         if (!o3.__c.__H)
           return true;
@@ -446,21 +474,25 @@
         if (u4.every(function(n4) {
           return !n4.__N;
         }))
-          return !f3 || f3.call(this, n3, t3, r3);
-        var i4 = false;
+          return !f4 || f4.call(this, n3, t3, r3);
+        var i5 = false;
         return u4.forEach(function(n4) {
           if (n4.__N) {
             var t4 = n4.__[0];
-            n4.__ = n4.__N, n4.__N = void 0, t4 !== n4.__[0] && (i4 = true);
+            n4.__ = n4.__N, n4.__N = void 0, t4 !== n4.__[0] && (i5 = true);
           }
-        }), !(!i4 && o3.__c.props === n3) && (!f3 || f3.call(this, n3, t3, r3));
+        }), !(!i5 && o3.__c.props === n3) && (!f4 || f4.call(this, n3, t3, r3));
       };
     }
     return o3.__N || o3.__;
   }
-  function h2(u3, i3) {
+  function h2(u3, i4) {
     var o3 = d2(t2++, 3);
-    !l.__s && z2(o3.__H, i3) && (o3.__ = u3, o3.i = i3, r2.__H.__h.push(o3));
+    !l.__s && z2(o3.__H, i4) && (o3.__ = u3, o3.i = i4, r2.__H.__h.push(o3));
+  }
+  function s2(u3, i4) {
+    var o3 = d2(t2++, 4);
+    !l.__s && z2(o3.__H, i4) && (o3.__ = u3, o3.i = i4, r2.__h.push(o3));
   }
   function _2(n2) {
     return o2 = 5, F(function() {
@@ -475,6 +507,10 @@
     return o2 = 8, F(function() {
       return n2;
     }, t3);
+  }
+  function q(n2) {
+    var u3 = r2.context[n2.__c], i4 = d2(t2++, 9);
+    return i4.c = n2, u3 ? (null == i4.__ && (i4.__ = true, u3.sub(r2)), u3.props.value) : n2.__;
   }
   function b2() {
     for (var t3; t3 = f2.shift(); )
@@ -504,7 +540,7 @@
       return t4 !== n2[r3];
     });
   }
-  function B(n2, t3) {
+  function B2(n2, t3) {
     return "function" == typeof t3 ? t3(n2) : t3;
   }
   var t2, r2, u2, i2, o2, f2, c2, e2, a2, v2, l2, m2, g2;
@@ -523,10 +559,10 @@
         r2 = null, e2 && e2(n2);
       }, l.__r = function(n2) {
         a2 && a2(n2), t2 = 0;
-        var i3 = (r2 = n2.__c).__H;
-        i3 && (u2 === r2 ? (i3.__h = [], r2.__h = [], i3.__.forEach(function(n3) {
+        var i4 = (r2 = n2.__c).__H;
+        i4 && (u2 === r2 ? (i4.__h = [], r2.__h = [], i4.__.forEach(function(n3) {
           n3.__N && (n3.__ = n3.__N), n3.__V = c2, n3.__N = n3.i = void 0;
-        })) : (i3.__h.forEach(k2), i3.__h.forEach(w2), i3.__h = [])), u2 = r2;
+        })) : (i4.__h.forEach(k2), i4.__h.forEach(w2), i4.__h = [])), u2 = r2;
       }, l.diffed = function(t3) {
         v2 && v2(t3);
         var o3 = t3.__c;
@@ -560,13 +596,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/302d4222-6a41-4ad8-b244-d270ed9b4434/loading-indicator.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c766a58a-12f7-4763-93bd-1cab4216e3ee/loading-indicator.js
   var loading_indicator_default;
   var init_loading_indicator = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/302d4222-6a41-4ad8-b244-d270ed9b4434/loading-indicator.js"() {
-      if (document.getElementById("def901f777") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c766a58a-12f7-4763-93bd-1cab4216e3ee/loading-indicator.js"() {
+      if (document.getElementById("25a2c53e04") === null) {
         const element = document.createElement("style");
-        element.id = "def901f777";
+        element.id = "25a2c53e04";
         element.textContent = `._loadingIndicator_pl5c3_1 {
   position: relative;
   width: 16px;
@@ -614,13 +650,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/43383fa1-f364-4f89-98b1-7cd6875f3146/button.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a6b2554e-cf30-4885-84b0-cb357a514af3/button.js
   var button_default;
   var init_button = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/43383fa1-f364-4f89-98b1-7cd6875f3146/button.js"() {
-      if (document.getElementById("4c8fc861a9") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a6b2554e-cf30-4885-84b0-cb357a514af3/button.js"() {
+      if (document.getElementById("4698edce65") === null) {
         const element = document.createElement("style");
-        element.id = "4c8fc861a9";
+        element.id = "4698edce65";
         element.textContent = `._button_5fxgc_1 {
   position: relative;
   z-index: var(--z-index-1);
@@ -787,13 +823,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/1e3e8a2e-5d3f-4be1-8f6a-9101282b4e8f/icon.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/34504fd5-ee4e-4b8b-9981-97a6117394d2/icon.js
   var icon_default;
   var init_icon = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/1e3e8a2e-5d3f-4be1-8f6a-9101282b4e8f/icon.js"() {
-      if (document.getElementById("a5c5bae6a1") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/34504fd5-ee4e-4b8b-9981-97a6117394d2/icon.js"() {
+      if (document.getElementById("3b0a4baebe") === null) {
         const element = document.createElement("style");
-        element.id = "a5c5bae6a1";
+        element.id = "3b0a4baebe";
         element.textContent = `._icon_13804_1 {
   fill: currentColor;
 }
@@ -834,13 +870,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/47a177f3-d1a2-4fc1-b451-e7766dba2438/disclosure.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c123a488-430e-42a6-9328-4b37a4fcf497/disclosure.js
   var disclosure_default;
   var init_disclosure = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/47a177f3-d1a2-4fc1-b451-e7766dba2438/disclosure.js"() {
-      if (document.getElementById("b21e51d4ec") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c123a488-430e-42a6-9328-4b37a4fcf497/disclosure.js"() {
+      if (document.getElementById("c4ba35c0c8") === null) {
         const element = document.createElement("style");
-        element.id = "b21e51d4ec";
+        element.id = "c4ba35c0c8";
         element.textContent = `._label_ekvh7_1 {
   position: relative;
 }
@@ -915,13 +951,44 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/12075bb0-a824-4e9b-a398-ecf114be99d5/menu.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/bdedc512-223c-4a24-9a06-269ccf588505/divider.js
+  var divider_default;
+  var init_divider = __esm({
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/bdedc512-223c-4a24-9a06-269ccf588505/divider.js"() {
+      if (document.getElementById("947a88d8c0") === null) {
+        const element = document.createElement("style");
+        element.id = "947a88d8c0";
+        element.textContent = `._divider_m18ta_1 {
+  width: 100%;
+  height: 1px;
+  background-color: var(--figma-color-border);
+}
+
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9AY3JlYXRlLWZpZ21hLXBsdWdpbi91aS9saWIvY29tcG9uZW50cy9kaXZpZGVyL2RpdmlkZXIuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsV0FBVztFQUNYLFdBQVc7RUFDWCwyQ0FBMkM7QUFDN0MiLCJmaWxlIjoibm9kZV9tb2R1bGVzL0BjcmVhdGUtZmlnbWEtcGx1Z2luL3VpL2xpYi9jb21wb25lbnRzL2RpdmlkZXIvZGl2aWRlci5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuZGl2aWRlciB7XG4gIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDFweDtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItYm9yZGVyKTtcbn1cbiJdfQ== */`;
+        document.head.append(element);
+      }
+      divider_default = { "divider": "_divider_m18ta_1" };
+    }
+  });
+
+  // node_modules/@create-figma-plugin/ui/lib/components/divider/divider.js
+  function Divider(props) {
+    return h("hr", __spreadProps(__spreadValues({}, props), { class: divider_default.divider }));
+  }
+  var init_divider2 = __esm({
+    "node_modules/@create-figma-plugin/ui/lib/components/divider/divider.js"() {
+      init_preact_module();
+      init_divider();
+    }
+  });
+
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/961a6d91-fcbe-402d-bcc5-f45091117cb9/menu.js
   var menu_default;
   var init_menu = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/12075bb0-a824-4e9b-a398-ecf114be99d5/menu.js"() {
-      if (document.getElementById("6cceb85a65") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/961a6d91-fcbe-402d-bcc5-f45091117cb9/menu.js"() {
+      if (document.getElementById("c78045625c") === null) {
         const element = document.createElement("style");
-        element.id = "6cceb85a65";
+        element.id = "c78045625c";
         element.textContent = `._menu_1xkj6_1 {
   position: absolute;
   left: 0;
@@ -1153,13 +1220,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/3076d267-da17-458d-8d45-71a492cfc9cd/dropdown.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/deab1246-5236-4637-be3b-26bdcfae72e4/dropdown.js
   var dropdown_default;
   var init_dropdown = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/3076d267-da17-458d-8d45-71a492cfc9cd/dropdown.js"() {
-      if (document.getElementById("a6b285ae43") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/deab1246-5236-4637-be3b-26bdcfae72e4/dropdown.js"() {
+      if (document.getElementById("dffb4a029a") === null) {
         const element = document.createElement("style");
-        element.id = "a6b285ae43";
+        element.id = "dffb4a029a";
         element.textContent = `._dropdown_idjri_1 {
   position: relative;
   z-index: var(--z-index-1);
@@ -1537,13 +1604,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/6b227af3-01af-436c-9902-2702ba978a36/text.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/705501a9-4b83-4619-a6e8-d32676916d32/text.js
   var text_default;
   var init_text = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/6b227af3-01af-436c-9902-2702ba978a36/text.js"() {
-      if (document.getElementById("d1fff497ce") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/705501a9-4b83-4619-a6e8-d32676916d32/text.js"() {
+      if (document.getElementById("38f0619aa4") === null) {
         const element = document.createElement("style");
-        element.id = "d1fff497ce";
+        element.id = "38f0619aa4";
         element.textContent = `._text_mh6mm_1 {
   padding-top: 1px;
   color: var(--figma-color-text);
@@ -1596,177 +1663,15 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/f3e7ee4b-fade-4a05-a34a-fea57bb4f95a/stack.js
-  var stack_default;
-  var init_stack = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/f3e7ee4b-fade-4a05-a34a-fea57bb4f95a/stack.js"() {
-      if (document.getElementById("f86eab18a2") === null) {
-        const element = document.createElement("style");
-        element.id = "f86eab18a2";
-        element.textContent = `._extraSmall_dpsd3_1 > ._child_dpsd3_1:not(:first-child) {
-  margin-top: var(--space-extra-small);
-}
-._small_dpsd3_4 > ._child_dpsd3_1:not(:first-child) {
-  margin-top: var(--space-small);
-}
-._medium_dpsd3_7 > ._child_dpsd3_1:not(:first-child) {
-  margin-top: var(--space-medium);
-}
-._large_dpsd3_10 > ._child_dpsd3_1:not(:first-child) {
-  margin-top: var(--space-large);
-}
-._extraLarge_dpsd3_13 > ._child_dpsd3_1:not(:first-child) {
-  margin-top: var(--space-extra-large);
-}
-
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9AY3JlYXRlLWZpZ21hLXBsdWdpbi91aS9saWIvbGF5b3V0L3N0YWNrL3N0YWNrLmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLG9DQUFvQztBQUN0QztBQUNBO0VBQ0UsOEJBQThCO0FBQ2hDO0FBQ0E7RUFDRSwrQkFBK0I7QUFDakM7QUFDQTtFQUNFLDhCQUE4QjtBQUNoQztBQUNBO0VBQ0Usb0NBQW9DO0FBQ3RDIiwiZmlsZSI6Im5vZGVfbW9kdWxlcy9AY3JlYXRlLWZpZ21hLXBsdWdpbi91aS9saWIvbGF5b3V0L3N0YWNrL3N0YWNrLmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5leHRyYVNtYWxsID4gLmNoaWxkOm5vdCg6Zmlyc3QtY2hpbGQpIHtcbiAgbWFyZ2luLXRvcDogdmFyKC0tc3BhY2UtZXh0cmEtc21hbGwpO1xufVxuLnNtYWxsID4gLmNoaWxkOm5vdCg6Zmlyc3QtY2hpbGQpIHtcbiAgbWFyZ2luLXRvcDogdmFyKC0tc3BhY2Utc21hbGwpO1xufVxuLm1lZGl1bSA+IC5jaGlsZDpub3QoOmZpcnN0LWNoaWxkKSB7XG4gIG1hcmdpbi10b3A6IHZhcigtLXNwYWNlLW1lZGl1bSk7XG59XG4ubGFyZ2UgPiAuY2hpbGQ6bm90KDpmaXJzdC1jaGlsZCkge1xuICBtYXJnaW4tdG9wOiB2YXIoLS1zcGFjZS1sYXJnZSk7XG59XG4uZXh0cmFMYXJnZSA+IC5jaGlsZDpub3QoOmZpcnN0LWNoaWxkKSB7XG4gIG1hcmdpbi10b3A6IHZhcigtLXNwYWNlLWV4dHJhLWxhcmdlKTtcbn1cbiJdfQ== */`;
-        document.head.append(element);
-      }
-      stack_default = { "extraSmall": "_extraSmall_dpsd3_1", "child": "_child_dpsd3_1", "small": "_small_dpsd3_4", "medium": "_medium_dpsd3_7", "large": "_large_dpsd3_10", "extraLarge": "_extraLarge_dpsd3_13" };
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/layout/stack/stack.js
-  function Stack(_a) {
-    var _b = _a, { children, space } = _b, rest = __objRest(_b, ["children", "space"]);
-    return h("div", __spreadProps(__spreadValues({}, rest), { class: stack_default[space] }), x(children).map(function(element, index) {
-      return h("div", { key: index, class: stack_default.child }, element);
-    }));
-  }
-  var init_stack2 = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/layout/stack/stack.js"() {
-      init_preact_module();
-      init_stack();
-    }
-  });
-
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/c2cffe80-8122-42db-a002-6af425a85441/selectable-item.js
-  var selectable_item_default;
-  var init_selectable_item = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/c2cffe80-8122-42db-a002-6af425a85441/selectable-item.js"() {
-      if (document.getElementById("32269f541f") === null) {
-        const element = document.createElement("style");
-        element.id = "32269f541f";
-        element.textContent = `._selectableItem_rrb4p_1 {
-  position: relative;
-  z-index: var(--z-index-1);
-  display: flex;
-  height: 32px;
-  align-items: center;
-  padding: 0 var(--space-small) 0 var(--space-medium);
-}
-
-._indent_rrb4p_10 {
-  padding-left: 36px;
-}
-
-._input_rrb4p_14,
-._box_rrb4p_15 {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-
-._input_rrb4p_14 {
-  z-index: var(--z-index-1); /* stack \`.input\` on top of everything else */
-  display: block;
-}
-._disabled_rrb4p_27 ._input_rrb4p_14 {
-  cursor: not-allowed;
-}
-
-._selectableItem_rrb4p_1:not(._disabled_rrb4p_27) ._input_rrb4p_14:checked ~ ._box_rrb4p_15 {
-  background-color: var(--figma-color-bg-selected);
-}
-._disabled_rrb4p_27 ._input_rrb4p_14:checked ~ ._box_rrb4p_15 {
-  background-color: var(--figma-color-bg-disabled);
-}
-._selectableItem_rrb4p_1:not(._disabled_rrb4p_27) ._input_rrb4p_14:not(:checked):hover ~ ._box_rrb4p_15 {
-  background-color: var(--figma-color-bg-selected-secondary);
-}
-._selectableItem_rrb4p_1:not(._disabled_rrb4p_27) ._input_rrb4p_14:focus ~ ._box_rrb4p_15 {
-  border: 1px solid var(--figma-color-border-brand-strong);
-}
-
-._icon_rrb4p_44,
-._children_rrb4p_45 {
-  position: relative;
-}
-
-._children_rrb4p_45 {
-  overflow: hidden;
-  flex-grow: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-._bold_rrb4p_55 ._children_rrb4p_45 {
-  font-weight: var(--font-weight-bold);
-}
-._selectableItem_rrb4p_1:not(._disabled_rrb4p_27) ._input_rrb4p_14 ~ ._children_rrb4p_45 {
-  color: var(--figma-color-text);
-}
-._disabled_rrb4p_27 ._input_rrb4p_14:not(:checked) ~ ._children_rrb4p_45 {
-  color: var(--figma-color-text-disabled);
-}
-._disabled_rrb4p_27 ._input_rrb4p_14:checked ~ ._children_rrb4p_45 {
-  color: var(--figma-color-text-ondisabled);
-}
-
-._icon_rrb4p_44 {
-  height: 16px;
-  flex: 0 0 16px;
-  margin-left: var(--space-extra-small);
-  color: var(--figma-color-icon-brand);
-}
-._disabled_rrb4p_27 ._icon_rrb4p_44 {
-  color: var(--figma-color-icon-ondisabled);
-}
-
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9AY3JlYXRlLWZpZ21hLXBsdWdpbi91aS9saWIvY29tcG9uZW50cy9zZWxlY3RhYmxlLWl0ZW0vc2VsZWN0YWJsZS1pdGVtLmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLGtCQUFrQjtFQUNsQix5QkFBeUI7RUFDekIsYUFBYTtFQUNiLFlBQVk7RUFDWixtQkFBbUI7RUFDbkIsbURBQW1EO0FBQ3JEOztBQUVBO0VBQ0Usa0JBQWtCO0FBQ3BCOztBQUVBOztFQUVFLGtCQUFrQjtFQUNsQixNQUFNO0VBQ04sUUFBUTtFQUNSLFNBQVM7RUFDVCxPQUFPO0FBQ1Q7O0FBRUE7RUFDRSx5QkFBeUIsRUFBRSw2Q0FBNkM7RUFDeEUsY0FBYztBQUNoQjtBQUNBO0VBQ0UsbUJBQW1CO0FBQ3JCOztBQUVBO0VBQ0UsZ0RBQWdEO0FBQ2xEO0FBQ0E7RUFDRSxnREFBZ0Q7QUFDbEQ7QUFDQTtFQUNFLDBEQUEwRDtBQUM1RDtBQUNBO0VBQ0Usd0RBQXdEO0FBQzFEOztBQUVBOztFQUVFLGtCQUFrQjtBQUNwQjs7QUFFQTtFQUNFLGdCQUFnQjtFQUNoQixZQUFZO0VBQ1osdUJBQXVCO0VBQ3ZCLG1CQUFtQjtBQUNyQjtBQUNBO0VBQ0Usb0NBQW9DO0FBQ3RDO0FBQ0E7RUFDRSw4QkFBOEI7QUFDaEM7QUFDQTtFQUNFLHVDQUF1QztBQUN6QztBQUNBO0VBQ0UseUNBQXlDO0FBQzNDOztBQUVBO0VBQ0UsWUFBWTtFQUNaLGNBQWM7RUFDZCxxQ0FBcUM7RUFDckMsb0NBQW9DO0FBQ3RDO0FBQ0E7RUFDRSx5Q0FBeUM7QUFDM0MiLCJmaWxlIjoibm9kZV9tb2R1bGVzL0BjcmVhdGUtZmlnbWEtcGx1Z2luL3VpL2xpYi9jb21wb25lbnRzL3NlbGVjdGFibGUtaXRlbS9zZWxlY3RhYmxlLWl0ZW0uY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLnNlbGVjdGFibGVJdGVtIHtcbiAgcG9zaXRpb246IHJlbGF0aXZlO1xuICB6LWluZGV4OiB2YXIoLS16LWluZGV4LTEpO1xuICBkaXNwbGF5OiBmbGV4O1xuICBoZWlnaHQ6IDMycHg7XG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gIHBhZGRpbmc6IDAgdmFyKC0tc3BhY2Utc21hbGwpIDAgdmFyKC0tc3BhY2UtbWVkaXVtKTtcbn1cblxuLmluZGVudCB7XG4gIHBhZGRpbmctbGVmdDogMzZweDtcbn1cblxuLmlucHV0LFxuLmJveCB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgdG9wOiAwO1xuICByaWdodDogMDtcbiAgYm90dG9tOiAwO1xuICBsZWZ0OiAwO1xufVxuXG4uaW5wdXQge1xuICB6LWluZGV4OiB2YXIoLS16LWluZGV4LTEpOyAvKiBzdGFjayBgLmlucHV0YCBvbiB0b3Agb2YgZXZlcnl0aGluZyBlbHNlICovXG4gIGRpc3BsYXk6IGJsb2NrO1xufVxuLmRpc2FibGVkIC5pbnB1dCB7XG4gIGN1cnNvcjogbm90LWFsbG93ZWQ7XG59XG5cbi5zZWxlY3RhYmxlSXRlbTpub3QoLmRpc2FibGVkKSAuaW5wdXQ6Y2hlY2tlZCB+IC5ib3gge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1maWdtYS1jb2xvci1iZy1zZWxlY3RlZCk7XG59XG4uZGlzYWJsZWQgLmlucHV0OmNoZWNrZWQgfiAuYm94IHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItYmctZGlzYWJsZWQpO1xufVxuLnNlbGVjdGFibGVJdGVtOm5vdCguZGlzYWJsZWQpIC5pbnB1dDpub3QoOmNoZWNrZWQpOmhvdmVyIH4gLmJveCB7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLWJnLXNlbGVjdGVkLXNlY29uZGFyeSk7XG59XG4uc2VsZWN0YWJsZUl0ZW06bm90KC5kaXNhYmxlZCkgLmlucHV0OmZvY3VzIH4gLmJveCB7XG4gIGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWZpZ21hLWNvbG9yLWJvcmRlci1icmFuZC1zdHJvbmcpO1xufVxuXG4uaWNvbixcbi5jaGlsZHJlbiB7XG4gIHBvc2l0aW9uOiByZWxhdGl2ZTtcbn1cblxuLmNoaWxkcmVuIHtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgZmxleC1ncm93OiAxO1xuICB0ZXh0LW92ZXJmbG93OiBlbGxpcHNpcztcbiAgd2hpdGUtc3BhY2U6IG5vd3JhcDtcbn1cbi5ib2xkIC5jaGlsZHJlbiB7XG4gIGZvbnQtd2VpZ2h0OiB2YXIoLS1mb250LXdlaWdodC1ib2xkKTtcbn1cbi5zZWxlY3RhYmxlSXRlbTpub3QoLmRpc2FibGVkKSAuaW5wdXQgfiAuY2hpbGRyZW4ge1xuICBjb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItdGV4dCk7XG59XG4uZGlzYWJsZWQgLmlucHV0Om5vdCg6Y2hlY2tlZCkgfiAuY2hpbGRyZW4ge1xuICBjb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItdGV4dC1kaXNhYmxlZCk7XG59XG4uZGlzYWJsZWQgLmlucHV0OmNoZWNrZWQgfiAuY2hpbGRyZW4ge1xuICBjb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItdGV4dC1vbmRpc2FibGVkKTtcbn1cblxuLmljb24ge1xuICBoZWlnaHQ6IDE2cHg7XG4gIGZsZXg6IDAgMCAxNnB4O1xuICBtYXJnaW4tbGVmdDogdmFyKC0tc3BhY2UtZXh0cmEtc21hbGwpO1xuICBjb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItaWNvbi1icmFuZCk7XG59XG4uZGlzYWJsZWQgLmljb24ge1xuICBjb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItaWNvbi1vbmRpc2FibGVkKTtcbn1cbiJdfQ== */`;
-        document.head.append(element);
-      }
-      selectable_item_default = { "selectableItem": "_selectableItem_rrb4p_1", "indent": "_indent_rrb4p_10", "input": "_input_rrb4p_14", "box": "_box_rrb4p_15", "disabled": "_disabled_rrb4p_27", "icon": "_icon_rrb4p_44", "children": "_children_rrb4p_45", "bold": "_bold_rrb4p_55" };
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/components/selectable-item/selectable-item.js
-  function SelectableItem(_a) {
-    var _b = _a, { bold = false, children, disabled = false, indent = false, name, onChange = function() {
-    }, onValueChange = function() {
-    }, propagateEscapeKeyDown = true, value } = _b, rest = __objRest(_b, ["bold", "children", "disabled", "indent", "name", "onChange", "onValueChange", "propagateEscapeKeyDown", "value"]);
-    const handleChange = T2(function(event) {
-      onValueChange(!value, name);
-      onChange(event);
-    }, [name, onChange, onValueChange, value]);
-    const handleKeyDown = T2(function(event) {
-      if (event.key !== "Escape") {
-        return;
-      }
-      if (propagateEscapeKeyDown === false) {
-        event.stopPropagation();
-      }
-      event.currentTarget.blur();
-    }, [propagateEscapeKeyDown]);
-    return h("label", { class: createClassName([
-      selectable_item_default.selectableItem,
-      disabled === true ? selectable_item_default.disabled : null,
-      bold === true ? selectable_item_default.bold : null,
-      indent === true ? selectable_item_default.indent : null
-    ]) }, h("input", __spreadProps(__spreadValues({}, rest), { checked: value === true, class: selectable_item_default.input, disabled: disabled === true, name, onChange: handleChange, onKeyDown: disabled === true ? void 0 : handleKeyDown, tabIndex: disabled === true ? -1 : 0, type: "checkbox" })), h("div", { class: selectable_item_default.box }), h("div", { class: selectable_item_default.children }, children), value === true ? h("div", { class: selectable_item_default.icon }, h(IconMenuCheckmarkChecked16, null)) : null);
-  }
-  var init_selectable_item2 = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/components/selectable-item/selectable-item.js"() {
-      init_preact_module();
-      init_hooks_module();
-      init_icon_menu_checkmark_checked_16();
-      init_create_class_name();
-      init_selectable_item();
-    }
-  });
-
   // node_modules/@create-figma-plugin/utilities/lib/events.js
+  function on(name, handler) {
+    const id = `${currentId}`;
+    currentId += 1;
+    eventHandlers[id] = { handler, name };
+    return function() {
+      delete eventHandlers[id];
+    };
+  }
   function invokeEventHandler(name, args) {
     for (const id in eventHandlers) {
       if (eventHandlers[id].name === name) {
@@ -1774,10 +1679,11 @@
       }
     }
   }
-  var eventHandlers, emit;
+  var eventHandlers, currentId, emit;
   var init_events = __esm({
     "node_modules/@create-figma-plugin/utilities/lib/events.js"() {
       eventHandlers = {};
+      currentId = 0;
       emit = typeof window === "undefined" ? function(name, ...args) {
         figma.ui.postMessage([name, ...args]);
       } : function(name, ...args) {
@@ -1916,13 +1822,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/4bb04644-56fa-4b59-abb3-e37f8b2d6abb/textbox.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/eedb7415-cfb7-43dc-9026-6e2d42b2dbb7/textbox.js
   var textbox_default;
   var init_textbox = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/4bb04644-56fa-4b59-abb3-e37f8b2d6abb/textbox.js"() {
-      if (document.getElementById("c0955852c8") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/eedb7415-cfb7-43dc-9026-6e2d42b2dbb7/textbox.js"() {
+      if (document.getElementById("119378e3f7") === null) {
         const element = document.createElement("style");
-        element.id = "c0955852c8";
+        element.id = "119378e3f7";
         element.textContent = `._textbox_18q9w_1 {
   position: relative;
   z-index: var(--z-index-1);
@@ -2034,24 +1940,6 @@
     }
   });
 
-  // node_modules/@create-figma-plugin/ui/lib/icons/icon-32/icon-check-circle-filled-32.js
-  var IconCheckCircleFilled32;
-  var init_icon_check_circle_filled_32 = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/icons/icon-32/icon-check-circle-filled-32.js"() {
-      init_create_icon();
-      IconCheckCircleFilled32 = createIcon("M16 23.9999c4.4183 0 8-3.5817 8-8s-3.5817-8.00002-8-8.00002-8 3.58172-8 8.00002c0 4.4183 3.5817 8 8 8Zm-.0889-5.1346 4-4.4999-.8222-.7308-3.6125 4.0639-2.5875-2.5874-.7778.7778 3 2.9999.4125.4124.3875-.4359Z", { height: 32, width: 32 });
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/icons/icon-32/icon-info-32.js
-  var IconInfo32;
-  var init_icon_info_32 = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/icons/icon-32/icon-info-32.js"() {
-      init_create_icon();
-      IconInfo32 = createIcon("M9 16c0-3.866 3.134-7 7-7s7 3.134 7 7-3.134 7-7 7-7-3.134-7-7Zm7 8c-4.4183 0-8-3.5817-8-8s3.5817-8 8-8 8 3.5817 8 8-3.5817 8-8 8Zm-.5-4.5v-4h1v4h-1Zm1.25-6.4999c0 .4142-.3358.75-.75.75s-.75-.3358-.75-.75v-.0686c0-.4142.3358-.75.75-.75s.75.3358.75.75v.0686Z", { height: 32, width: 32 });
-    }
-  });
-
   // node_modules/@create-figma-plugin/ui/lib/icons/icon-32/icon-warning-32.js
   var IconWarning32;
   var init_icon_warning_32 = __esm({
@@ -2061,13 +1949,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/82a9f956-867d-4273-a627-dd87b7ab01be/muted.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/56279844-1398-4574-b578-950b84dd1a80/muted.js
   var muted_default;
   var init_muted = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/82a9f956-867d-4273-a627-dd87b7ab01be/muted.js"() {
-      if (document.getElementById("daf0d2ff9e") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/56279844-1398-4574-b578-950b84dd1a80/muted.js"() {
+      if (document.getElementById("7456fb9670") === null) {
         const element = document.createElement("style");
-        element.id = "daf0d2ff9e";
+        element.id = "7456fb9670";
         element.textContent = `._muted_139yx_1 {
   color: var(--figma-color-text-secondary);
 }
@@ -2091,13 +1979,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/c8a7f3a8-e9da-40aa-b08d-4bfbbeb84c90/columns.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2db2f47d-b5b8-446f-a7aa-01a8965cda2d/columns.js
   var columns_default;
   var init_columns = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/c8a7f3a8-e9da-40aa-b08d-4bfbbeb84c90/columns.js"() {
-      if (document.getElementById("86412d4ced") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2db2f47d-b5b8-446f-a7aa-01a8965cda2d/columns.js"() {
+      if (document.getElementById("aa124f3cd7") === null) {
         const element = document.createElement("style");
-        element.id = "86412d4ced";
+        element.id = "aa124f3cd7";
         element.textContent = `._columns_ybv3x_1 {
   display: flex;
 }
@@ -2161,13 +2049,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/701b4757-f094-4ba9-b1fe-e60eeeff75ff/container.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/38f0c1b7-780b-4f2a-9337-902f1558e4ae/container.js
   var container_default;
   var init_container = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/701b4757-f094-4ba9-b1fe-e60eeeff75ff/container.js"() {
-      if (document.getElementById("34aba3093a") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/38f0c1b7-780b-4f2a-9337-902f1558e4ae/container.js"() {
+      if (document.getElementById("66b2a54611") === null) {
         const element = document.createElement("style");
-        element.id = "34aba3093a";
+        element.id = "66b2a54611";
         element.textContent = `._extraSmall_1oe77_1 {
   padding: 0 var(--space-extra-small);
 }
@@ -2203,13 +2091,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/5d7ebfc4-2069-4eaa-94ad-a3e2704f84fa/middle-align.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c85ce29a-6e45-482a-bcd6-be82d632c555/middle-align.js
   var middle_align_default;
   var init_middle_align = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/5d7ebfc4-2069-4eaa-94ad-a3e2704f84fa/middle-align.js"() {
-      if (document.getElementById("ceafb0568e") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c85ce29a-6e45-482a-bcd6-be82d632c555/middle-align.js"() {
+      if (document.getElementById("28fbd9538f") === null) {
         const element = document.createElement("style");
-        element.id = "ceafb0568e";
+        element.id = "28fbd9538f";
         element.textContent = `._middleAlign_294f9_1 {
   display: flex;
   height: 100%;
@@ -2240,13 +2128,13 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/5f428c2f-8638-44df-a3e0-bc10ed7ab709/vertical-space.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/48d0b857-2fde-4c08-a93a-db101b66996b/vertical-space.js
   var vertical_space_default;
   var init_vertical_space = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/5f428c2f-8638-44df-a3e0-bc10ed7ab709/vertical-space.js"() {
-      if (document.getElementById("81e65717c1") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/48d0b857-2fde-4c08-a93a-db101b66996b/vertical-space.js"() {
+      if (document.getElementById("8d65b44de9") === null) {
         const element = document.createElement("style");
-        element.id = "81e65717c1";
+        element.id = "8d65b44de9";
         element.textContent = `._extraSmall_zc4n0_1 {
   height: var(--space-extra-small);
 }
@@ -2282,12 +2170,12 @@
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/3099d383-f493-4393-ae3d-5c94dfce83dd/base.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1396716b-8d43-46de-ae02-59eb95354a6e/base.js
   var init_base = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/3099d383-f493-4393-ae3d-5c94dfce83dd/base.js"() {
-      if (document.getElementById("10e2410c92") === null) {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1396716b-8d43-46de-ae02-59eb95354a6e/base.js"() {
+      if (document.getElementById("46215c86c3") === null) {
         const element = document.createElement("style");
-        element.id = "10e2410c92";
+        element.id = "46215c86c3";
         element.textContent = `@import url('https://fonts.googleapis.com/css?family=Inter:400,600&display=swap');
 
 :root {
@@ -2400,9 +2288,9 @@ svg {
   });
 
   // node_modules/@create-figma-plugin/ui/lib/utilities/render.js
-  function render(Plugin4) {
+  function render(Plugin2) {
     return function(rootNode2, props) {
-      P(h(Plugin4, __spreadValues({}, props)), rootNode2);
+      P(h(Plugin2, __spreadValues({}, props)), rootNode2);
     };
   }
   var init_render = __esm({
@@ -2418,21 +2306,879 @@ svg {
       init_banner2();
       init_button2();
       init_disclosure2();
+      init_divider2();
       init_dropdown2();
       init_loading_indicator2();
-      init_selectable_item2();
       init_text2();
       init_textbox2();
-      init_icon_check_circle_filled_32();
-      init_icon_info_32();
       init_icon_warning_32();
       init_muted2();
       init_columns2();
       init_container2();
       init_middle_align2();
-      init_stack2();
       init_vertical_space2();
       init_render();
+    }
+  });
+
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/93286b1e-fc58-444c-83f6-ed58f3b38e40/styles.js
+  var init_styles = __esm({
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/93286b1e-fc58-444c-83f6-ed58f3b38e40/styles.js"() {
+      if (document.getElementById("5260158beb") === null) {
+        const element = document.createElement("style");
+        element.id = "5260158beb";
+        element.textContent = `[class^="_selectableItem_"] {
+  height: auto;
+  padding: var(--space-medium) var(--space-small) var(--space-medium) var(--space-medium);
+  margin-bottom: var(--space-small);
+}
+
+[class^="_selectableItem_"]:not([class^="_disabled_"]) [class^="_input_"]:checked ~ [class^="_children_"]{
+  color: var(--figma-color-text-onbrand);
+}
+[class^="_selectableItem_"]:not([class^="_disabled_"]) [class^="_input_"]:checked ~ [class^="_box_"] {
+  background-color: rgb(130, 43, 85);
+}
+:root {
+  --figma-color-bg-brand: rgb(130, 43, 85);
+  --figma-color-bg-selected: rgb(130, 43, 85);
+  --figma-color-icon-brand: white;
+}`;
+        document.head.append(element);
+      }
+    }
+  });
+
+  // src/setup/pages/data.ts
+  var DEFAULT_SIZE, PAGES;
+  var init_data = __esm({
+    "src/setup/pages/data.ts"() {
+      "use strict";
+      DEFAULT_SIZE = { width: 300, height: 400 };
+      PAGES = {
+        index: DEFAULT_SIZE,
+        settings: { width: 300, height: 500 }
+      };
+    }
+  });
+
+  // node_modules/preact/compat/dist/compat.module.js
+  function g3(n2, t3) {
+    for (var e3 in t3)
+      n2[e3] = t3[e3];
+    return n2;
+  }
+  function C2(n2, t3) {
+    for (var e3 in n2)
+      if ("__source" !== e3 && !(e3 in t3))
+        return true;
+    for (var r3 in t3)
+      if ("__source" !== r3 && n2[r3] !== t3[r3])
+        return true;
+    return false;
+  }
+  function w3(n2) {
+    this.props = n2;
+  }
+  function L2(n2, t3, e3) {
+    return n2 && (n2.__c && n2.__c.__H && (n2.__c.__H.__.forEach(function(n3) {
+      "function" == typeof n3.__c && n3.__c();
+    }), n2.__c.__H = null), null != (n2 = g3({}, n2)).__c && (n2.__c.__P === e3 && (n2.__c.__P = t3), n2.__c = null), n2.__k = n2.__k && n2.__k.map(function(n3) {
+      return L2(n3, t3, e3);
+    })), n2;
+  }
+  function U(n2, t3, e3) {
+    return n2 && (n2.__v = null, n2.__k = n2.__k && n2.__k.map(function(n3) {
+      return U(n3, t3, e3);
+    }), n2.__c && n2.__c.__P === t3 && (n2.__e && e3.insertBefore(n2.__e, n2.__d), n2.__c.__e = true, n2.__c.__P = e3)), n2;
+  }
+  function D() {
+    this.__u = 0, this.t = null, this.__b = null;
+  }
+  function F2(n2) {
+    var t3 = n2.__.__c;
+    return t3 && t3.__a && t3.__a(n2);
+  }
+  function V2() {
+    this.u = null, this.o = null;
+  }
+  function J() {
+  }
+  function K() {
+    return this.cancelBubble;
+  }
+  function Q() {
+    return this.defaultPrevented;
+  }
+  var x3, N2, T3, I2, W, z3, B3, H2, Z, G, X, nn, tn, en, sn;
+  var init_compat_module = __esm({
+    "node_modules/preact/compat/dist/compat.module.js"() {
+      init_preact_module();
+      init_preact_module();
+      init_hooks_module();
+      init_hooks_module();
+      (w3.prototype = new d()).isPureReactComponent = true, w3.prototype.shouldComponentUpdate = function(n2, t3) {
+        return C2(this.props, n2) || C2(this.state, t3);
+      };
+      x3 = l.__b;
+      l.__b = function(n2) {
+        n2.type && n2.type.__f && n2.ref && (n2.props.ref = n2.ref, n2.ref = null), x3 && x3(n2);
+      };
+      N2 = "undefined" != typeof Symbol && Symbol.for && Symbol.for("react.forward_ref") || 3911;
+      T3 = l.__e;
+      l.__e = function(n2, t3, e3, r3) {
+        if (n2.then) {
+          for (var u3, o3 = t3; o3 = o3.__; )
+            if ((u3 = o3.__c) && u3.__c)
+              return null == t3.__e && (t3.__e = e3.__e, t3.__k = e3.__k), u3.__c(n2, t3);
+        }
+        T3(n2, t3, e3, r3);
+      };
+      I2 = l.unmount;
+      l.unmount = function(n2) {
+        var t3 = n2.__c;
+        t3 && t3.__R && t3.__R(), t3 && true === n2.__h && (n2.type = null), I2 && I2(n2);
+      }, (D.prototype = new d()).__c = function(n2, t3) {
+        var e3 = t3.__c, r3 = this;
+        null == r3.t && (r3.t = []), r3.t.push(e3);
+        var u3 = F2(r3.__v), o3 = false, i4 = function() {
+          o3 || (o3 = true, e3.__R = null, u3 ? u3(l3) : l3());
+        };
+        e3.__R = i4;
+        var l3 = function() {
+          if (!--r3.__u) {
+            if (r3.state.__a) {
+              var n3 = r3.state.__a;
+              r3.__v.__k[0] = U(n3, n3.__c.__P, n3.__c.__O);
+            }
+            var t4;
+            for (r3.setState({ __a: r3.__b = null }); t4 = r3.t.pop(); )
+              t4.forceUpdate();
+          }
+        }, c3 = true === t3.__h;
+        r3.__u++ || c3 || r3.setState({ __a: r3.__b = r3.__v.__k[0] }), n2.then(i4, i4);
+      }, D.prototype.componentWillUnmount = function() {
+        this.t = [];
+      }, D.prototype.render = function(n2, e3) {
+        if (this.__b) {
+          if (this.__v.__k) {
+            var r3 = document.createElement("div"), o3 = this.__v.__k[0].__c;
+            this.__v.__k[0] = L2(this.__b, r3, o3.__O = o3.__P);
+          }
+          this.__b = null;
+        }
+        var i4 = e3.__a && h(p, null, n2.fallback);
+        return i4 && (i4.__h = null), [h(p, null, e3.__a ? null : n2.children), i4];
+      };
+      W = function(n2, t3, e3) {
+        if (++e3[1] === e3[0] && n2.o.delete(t3), n2.props.revealOrder && ("t" !== n2.props.revealOrder[0] || !n2.o.size))
+          for (e3 = n2.u; e3; ) {
+            for (; e3.length > 3; )
+              e3.pop()();
+            if (e3[1] < e3[0])
+              break;
+            n2.u = e3 = e3[2];
+          }
+      };
+      (V2.prototype = new d()).__a = function(n2) {
+        var t3 = this, e3 = F2(t3.__v), r3 = t3.o.get(n2);
+        return r3[0]++, function(u3) {
+          var o3 = function() {
+            t3.props.revealOrder ? (r3.push(u3), W(t3, n2, r3)) : u3();
+          };
+          e3 ? e3(o3) : o3();
+        };
+      }, V2.prototype.render = function(n2) {
+        this.u = null, this.o = /* @__PURE__ */ new Map();
+        var t3 = x(n2.children);
+        n2.revealOrder && "b" === n2.revealOrder[0] && t3.reverse();
+        for (var e3 = t3.length; e3--; )
+          this.o.set(t3[e3], this.u = [1, 0, this.u]);
+        return n2.children;
+      }, V2.prototype.componentDidUpdate = V2.prototype.componentDidMount = function() {
+        var n2 = this;
+        this.o.forEach(function(t3, e3) {
+          W(n2, e3, t3);
+        });
+      };
+      z3 = "undefined" != typeof Symbol && Symbol.for && Symbol.for("react.element") || 60103;
+      B3 = /^(?:accent|alignment|arabic|baseline|cap|clip(?!PathU)|color|dominant|fill|flood|font|glyph(?!R)|horiz|image|letter|lighting|marker(?!H|W|U)|overline|paint|pointer|shape|stop|strikethrough|stroke|text(?!L)|transform|underline|unicode|units|v|vector|vert|word|writing|x(?!C))[A-Z]/;
+      H2 = "undefined" != typeof document;
+      Z = function(n2) {
+        return ("undefined" != typeof Symbol && "symbol" == typeof Symbol() ? /fil|che|rad/i : /fil|che|ra/i).test(n2);
+      };
+      d.prototype.isReactComponent = {}, ["componentWillMount", "componentWillReceiveProps", "componentWillUpdate"].forEach(function(t3) {
+        Object.defineProperty(d.prototype, t3, { configurable: true, get: function() {
+          return this["UNSAFE_" + t3];
+        }, set: function(n2) {
+          Object.defineProperty(this, t3, { configurable: true, writable: true, value: n2 });
+        } });
+      });
+      G = l.event;
+      l.event = function(n2) {
+        return G && (n2 = G(n2)), n2.persist = J, n2.isPropagationStopped = K, n2.isDefaultPrevented = Q, n2.nativeEvent = n2;
+      };
+      nn = { configurable: true, get: function() {
+        return this.class;
+      } };
+      tn = l.vnode;
+      l.vnode = function(n2) {
+        var t3 = n2.type, e3 = n2.props, u3 = e3;
+        if ("string" == typeof t3) {
+          var o3 = -1 === t3.indexOf("-");
+          for (var i4 in u3 = {}, e3) {
+            var l3 = e3[i4];
+            H2 && "children" === i4 && "noscript" === t3 || "value" === i4 && "defaultValue" in e3 && null == l3 || ("defaultValue" === i4 && "value" in e3 && null == e3.value ? i4 = "value" : "download" === i4 && true === l3 ? l3 = "" : /ondoubleclick/i.test(i4) ? i4 = "ondblclick" : /^onchange(textarea|input)/i.test(i4 + t3) && !Z(e3.type) ? i4 = "oninput" : /^onfocus$/i.test(i4) ? i4 = "onfocusin" : /^onblur$/i.test(i4) ? i4 = "onfocusout" : /^on(Ani|Tra|Tou|BeforeInp|Compo)/.test(i4) ? i4 = i4.toLowerCase() : o3 && B3.test(i4) ? i4 = i4.replace(/[A-Z0-9]/g, "-$&").toLowerCase() : null === l3 && (l3 = void 0), /^oninput$/i.test(i4) && (i4 = i4.toLowerCase(), u3[i4] && (i4 = "oninputCapture")), u3[i4] = l3);
+          }
+          "select" == t3 && u3.multiple && Array.isArray(u3.value) && (u3.value = x(e3.children).forEach(function(n3) {
+            n3.props.selected = -1 != u3.value.indexOf(n3.props.value);
+          })), "select" == t3 && null != u3.defaultValue && (u3.value = x(e3.children).forEach(function(n3) {
+            n3.props.selected = u3.multiple ? -1 != u3.defaultValue.indexOf(n3.props.value) : u3.defaultValue == n3.props.value;
+          })), n2.props = u3, e3.class != e3.className && (nn.enumerable = "className" in e3, null != e3.className && (u3.class = e3.className), Object.defineProperty(u3, "className", nn));
+        }
+        n2.$$typeof = z3, tn && tn(n2);
+      };
+      en = l.__r;
+      l.__r = function(n2) {
+        en && en(n2), X = n2.__c;
+      };
+      sn = function(n2, t3) {
+        return n2(t3);
+      };
+    }
+  });
+
+  // node_modules/scheduler/cjs/scheduler.development.js
+  var require_scheduler_development = __commonJS({
+    "node_modules/scheduler/cjs/scheduler.development.js"(exports) {
+      "use strict";
+      if (true) {
+        (function() {
+          "use strict";
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
+          }
+          var enableSchedulerDebugging = false;
+          var enableProfiling = false;
+          var frameYieldMs = 5;
+          function push(heap, node) {
+            var index = heap.length;
+            heap.push(node);
+            siftUp(heap, node, index);
+          }
+          function peek(heap) {
+            return heap.length === 0 ? null : heap[0];
+          }
+          function pop(heap) {
+            if (heap.length === 0) {
+              return null;
+            }
+            var first = heap[0];
+            var last = heap.pop();
+            if (last !== first) {
+              heap[0] = last;
+              siftDown(heap, last, 0);
+            }
+            return first;
+          }
+          function siftUp(heap, node, i4) {
+            var index = i4;
+            while (index > 0) {
+              var parentIndex = index - 1 >>> 1;
+              var parent = heap[parentIndex];
+              if (compare(parent, node) > 0) {
+                heap[parentIndex] = node;
+                heap[index] = parent;
+                index = parentIndex;
+              } else {
+                return;
+              }
+            }
+          }
+          function siftDown(heap, node, i4) {
+            var index = i4;
+            var length = heap.length;
+            var halfLength = length >>> 1;
+            while (index < halfLength) {
+              var leftIndex = (index + 1) * 2 - 1;
+              var left = heap[leftIndex];
+              var rightIndex = leftIndex + 1;
+              var right = heap[rightIndex];
+              if (compare(left, node) < 0) {
+                if (rightIndex < length && compare(right, left) < 0) {
+                  heap[index] = right;
+                  heap[rightIndex] = node;
+                  index = rightIndex;
+                } else {
+                  heap[index] = left;
+                  heap[leftIndex] = node;
+                  index = leftIndex;
+                }
+              } else if (rightIndex < length && compare(right, node) < 0) {
+                heap[index] = right;
+                heap[rightIndex] = node;
+                index = rightIndex;
+              } else {
+                return;
+              }
+            }
+          }
+          function compare(a4, b3) {
+            var diff = a4.sortIndex - b3.sortIndex;
+            return diff !== 0 ? diff : a4.id - b3.id;
+          }
+          var ImmediatePriority = 1;
+          var UserBlockingPriority = 2;
+          var NormalPriority = 3;
+          var LowPriority = 4;
+          var IdlePriority = 5;
+          function markTaskErrored(task, ms) {
+          }
+          var hasPerformanceNow = typeof performance === "object" && typeof performance.now === "function";
+          if (hasPerformanceNow) {
+            var localPerformance = performance;
+            exports.unstable_now = function() {
+              return localPerformance.now();
+            };
+          } else {
+            var localDate = Date;
+            var initialTime = localDate.now();
+            exports.unstable_now = function() {
+              return localDate.now() - initialTime;
+            };
+          }
+          var maxSigned31BitInt = 1073741823;
+          var IMMEDIATE_PRIORITY_TIMEOUT = -1;
+          var USER_BLOCKING_PRIORITY_TIMEOUT = 250;
+          var NORMAL_PRIORITY_TIMEOUT = 5e3;
+          var LOW_PRIORITY_TIMEOUT = 1e4;
+          var IDLE_PRIORITY_TIMEOUT = maxSigned31BitInt;
+          var taskQueue = [];
+          var timerQueue = [];
+          var taskIdCounter = 1;
+          var currentTask = null;
+          var currentPriorityLevel = NormalPriority;
+          var isPerformingWork = false;
+          var isHostCallbackScheduled = false;
+          var isHostTimeoutScheduled = false;
+          var localSetTimeout = typeof setTimeout === "function" ? setTimeout : null;
+          var localClearTimeout = typeof clearTimeout === "function" ? clearTimeout : null;
+          var localSetImmediate = typeof setImmediate !== "undefined" ? setImmediate : null;
+          var isInputPending = typeof navigator !== "undefined" && navigator.scheduling !== void 0 && navigator.scheduling.isInputPending !== void 0 ? navigator.scheduling.isInputPending.bind(navigator.scheduling) : null;
+          function advanceTimers(currentTime) {
+            var timer = peek(timerQueue);
+            while (timer !== null) {
+              if (timer.callback === null) {
+                pop(timerQueue);
+              } else if (timer.startTime <= currentTime) {
+                pop(timerQueue);
+                timer.sortIndex = timer.expirationTime;
+                push(taskQueue, timer);
+              } else {
+                return;
+              }
+              timer = peek(timerQueue);
+            }
+          }
+          function handleTimeout(currentTime) {
+            isHostTimeoutScheduled = false;
+            advanceTimers(currentTime);
+            if (!isHostCallbackScheduled) {
+              if (peek(taskQueue) !== null) {
+                isHostCallbackScheduled = true;
+                requestHostCallback(flushWork);
+              } else {
+                var firstTimer = peek(timerQueue);
+                if (firstTimer !== null) {
+                  requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
+                }
+              }
+            }
+          }
+          function flushWork(hasTimeRemaining, initialTime2) {
+            isHostCallbackScheduled = false;
+            if (isHostTimeoutScheduled) {
+              isHostTimeoutScheduled = false;
+              cancelHostTimeout();
+            }
+            isPerformingWork = true;
+            var previousPriorityLevel = currentPriorityLevel;
+            try {
+              if (enableProfiling) {
+                try {
+                  return workLoop(hasTimeRemaining, initialTime2);
+                } catch (error) {
+                  if (currentTask !== null) {
+                    var currentTime = exports.unstable_now();
+                    markTaskErrored(currentTask, currentTime);
+                    currentTask.isQueued = false;
+                  }
+                  throw error;
+                }
+              } else {
+                return workLoop(hasTimeRemaining, initialTime2);
+              }
+            } finally {
+              currentTask = null;
+              currentPriorityLevel = previousPriorityLevel;
+              isPerformingWork = false;
+            }
+          }
+          function workLoop(hasTimeRemaining, initialTime2) {
+            var currentTime = initialTime2;
+            advanceTimers(currentTime);
+            currentTask = peek(taskQueue);
+            while (currentTask !== null && !enableSchedulerDebugging) {
+              if (currentTask.expirationTime > currentTime && (!hasTimeRemaining || shouldYieldToHost())) {
+                break;
+              }
+              var callback = currentTask.callback;
+              if (typeof callback === "function") {
+                currentTask.callback = null;
+                currentPriorityLevel = currentTask.priorityLevel;
+                var didUserCallbackTimeout = currentTask.expirationTime <= currentTime;
+                var continuationCallback = callback(didUserCallbackTimeout);
+                currentTime = exports.unstable_now();
+                if (typeof continuationCallback === "function") {
+                  currentTask.callback = continuationCallback;
+                } else {
+                  if (currentTask === peek(taskQueue)) {
+                    pop(taskQueue);
+                  }
+                }
+                advanceTimers(currentTime);
+              } else {
+                pop(taskQueue);
+              }
+              currentTask = peek(taskQueue);
+            }
+            if (currentTask !== null) {
+              return true;
+            } else {
+              var firstTimer = peek(timerQueue);
+              if (firstTimer !== null) {
+                requestHostTimeout(handleTimeout, firstTimer.startTime - currentTime);
+              }
+              return false;
+            }
+          }
+          function unstable_runWithPriority(priorityLevel, eventHandler) {
+            switch (priorityLevel) {
+              case ImmediatePriority:
+              case UserBlockingPriority:
+              case NormalPriority:
+              case LowPriority:
+              case IdlePriority:
+                break;
+              default:
+                priorityLevel = NormalPriority;
+            }
+            var previousPriorityLevel = currentPriorityLevel;
+            currentPriorityLevel = priorityLevel;
+            try {
+              return eventHandler();
+            } finally {
+              currentPriorityLevel = previousPriorityLevel;
+            }
+          }
+          function unstable_next(eventHandler) {
+            var priorityLevel;
+            switch (currentPriorityLevel) {
+              case ImmediatePriority:
+              case UserBlockingPriority:
+              case NormalPriority:
+                priorityLevel = NormalPriority;
+                break;
+              default:
+                priorityLevel = currentPriorityLevel;
+                break;
+            }
+            var previousPriorityLevel = currentPriorityLevel;
+            currentPriorityLevel = priorityLevel;
+            try {
+              return eventHandler();
+            } finally {
+              currentPriorityLevel = previousPriorityLevel;
+            }
+          }
+          function unstable_wrapCallback(callback) {
+            var parentPriorityLevel = currentPriorityLevel;
+            return function() {
+              var previousPriorityLevel = currentPriorityLevel;
+              currentPriorityLevel = parentPriorityLevel;
+              try {
+                return callback.apply(this, arguments);
+              } finally {
+                currentPriorityLevel = previousPriorityLevel;
+              }
+            };
+          }
+          function unstable_scheduleCallback(priorityLevel, callback, options) {
+            var currentTime = exports.unstable_now();
+            var startTime2;
+            if (typeof options === "object" && options !== null) {
+              var delay = options.delay;
+              if (typeof delay === "number" && delay > 0) {
+                startTime2 = currentTime + delay;
+              } else {
+                startTime2 = currentTime;
+              }
+            } else {
+              startTime2 = currentTime;
+            }
+            var timeout;
+            switch (priorityLevel) {
+              case ImmediatePriority:
+                timeout = IMMEDIATE_PRIORITY_TIMEOUT;
+                break;
+              case UserBlockingPriority:
+                timeout = USER_BLOCKING_PRIORITY_TIMEOUT;
+                break;
+              case IdlePriority:
+                timeout = IDLE_PRIORITY_TIMEOUT;
+                break;
+              case LowPriority:
+                timeout = LOW_PRIORITY_TIMEOUT;
+                break;
+              case NormalPriority:
+              default:
+                timeout = NORMAL_PRIORITY_TIMEOUT;
+                break;
+            }
+            var expirationTime = startTime2 + timeout;
+            var newTask = {
+              id: taskIdCounter++,
+              callback,
+              priorityLevel,
+              startTime: startTime2,
+              expirationTime,
+              sortIndex: -1
+            };
+            if (startTime2 > currentTime) {
+              newTask.sortIndex = startTime2;
+              push(timerQueue, newTask);
+              if (peek(taskQueue) === null && newTask === peek(timerQueue)) {
+                if (isHostTimeoutScheduled) {
+                  cancelHostTimeout();
+                } else {
+                  isHostTimeoutScheduled = true;
+                }
+                requestHostTimeout(handleTimeout, startTime2 - currentTime);
+              }
+            } else {
+              newTask.sortIndex = expirationTime;
+              push(taskQueue, newTask);
+              if (!isHostCallbackScheduled && !isPerformingWork) {
+                isHostCallbackScheduled = true;
+                requestHostCallback(flushWork);
+              }
+            }
+            return newTask;
+          }
+          function unstable_pauseExecution() {
+          }
+          function unstable_continueExecution() {
+            if (!isHostCallbackScheduled && !isPerformingWork) {
+              isHostCallbackScheduled = true;
+              requestHostCallback(flushWork);
+            }
+          }
+          function unstable_getFirstCallbackNode() {
+            return peek(taskQueue);
+          }
+          function unstable_cancelCallback(task) {
+            task.callback = null;
+          }
+          function unstable_getCurrentPriorityLevel() {
+            return currentPriorityLevel;
+          }
+          var isMessageLoopRunning = false;
+          var scheduledHostCallback = null;
+          var taskTimeoutID = -1;
+          var frameInterval = frameYieldMs;
+          var startTime = -1;
+          function shouldYieldToHost() {
+            var timeElapsed = exports.unstable_now() - startTime;
+            if (timeElapsed < frameInterval) {
+              return false;
+            }
+            return true;
+          }
+          function requestPaint() {
+          }
+          function forceFrameRate(fps) {
+            if (fps < 0 || fps > 125) {
+              console["error"]("forceFrameRate takes a positive int between 0 and 125, forcing frame rates higher than 125 fps is not supported");
+              return;
+            }
+            if (fps > 0) {
+              frameInterval = Math.floor(1e3 / fps);
+            } else {
+              frameInterval = frameYieldMs;
+            }
+          }
+          var performWorkUntilDeadline = function() {
+            if (scheduledHostCallback !== null) {
+              var currentTime = exports.unstable_now();
+              startTime = currentTime;
+              var hasTimeRemaining = true;
+              var hasMoreWork = true;
+              try {
+                hasMoreWork = scheduledHostCallback(hasTimeRemaining, currentTime);
+              } finally {
+                if (hasMoreWork) {
+                  schedulePerformWorkUntilDeadline();
+                } else {
+                  isMessageLoopRunning = false;
+                  scheduledHostCallback = null;
+                }
+              }
+            } else {
+              isMessageLoopRunning = false;
+            }
+          };
+          var schedulePerformWorkUntilDeadline;
+          if (typeof localSetImmediate === "function") {
+            schedulePerformWorkUntilDeadline = function() {
+              localSetImmediate(performWorkUntilDeadline);
+            };
+          } else if (typeof MessageChannel !== "undefined") {
+            var channel = new MessageChannel();
+            var port = channel.port2;
+            channel.port1.onmessage = performWorkUntilDeadline;
+            schedulePerformWorkUntilDeadline = function() {
+              port.postMessage(null);
+            };
+          } else {
+            schedulePerformWorkUntilDeadline = function() {
+              localSetTimeout(performWorkUntilDeadline, 0);
+            };
+          }
+          function requestHostCallback(callback) {
+            scheduledHostCallback = callback;
+            if (!isMessageLoopRunning) {
+              isMessageLoopRunning = true;
+              schedulePerformWorkUntilDeadline();
+            }
+          }
+          function requestHostTimeout(callback, ms) {
+            taskTimeoutID = localSetTimeout(function() {
+              callback(exports.unstable_now());
+            }, ms);
+          }
+          function cancelHostTimeout() {
+            localClearTimeout(taskTimeoutID);
+            taskTimeoutID = -1;
+          }
+          var unstable_requestPaint = requestPaint;
+          var unstable_Profiling = null;
+          exports.unstable_IdlePriority = IdlePriority;
+          exports.unstable_ImmediatePriority = ImmediatePriority;
+          exports.unstable_LowPriority = LowPriority;
+          exports.unstable_NormalPriority = NormalPriority;
+          exports.unstable_Profiling = unstable_Profiling;
+          exports.unstable_UserBlockingPriority = UserBlockingPriority;
+          exports.unstable_cancelCallback = unstable_cancelCallback;
+          exports.unstable_continueExecution = unstable_continueExecution;
+          exports.unstable_forceFrameRate = forceFrameRate;
+          exports.unstable_getCurrentPriorityLevel = unstable_getCurrentPriorityLevel;
+          exports.unstable_getFirstCallbackNode = unstable_getFirstCallbackNode;
+          exports.unstable_next = unstable_next;
+          exports.unstable_pauseExecution = unstable_pauseExecution;
+          exports.unstable_requestPaint = unstable_requestPaint;
+          exports.unstable_runWithPriority = unstable_runWithPriority;
+          exports.unstable_scheduleCallback = unstable_scheduleCallback;
+          exports.unstable_shouldYield = shouldYieldToHost;
+          exports.unstable_wrapCallback = unstable_wrapCallback;
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
+          }
+        })();
+      }
+    }
+  });
+
+  // node_modules/scheduler/index.js
+  var require_scheduler = __commonJS({
+    "node_modules/scheduler/index.js"(exports, module) {
+      "use strict";
+      if (false) {
+        module.exports = null;
+      } else {
+        module.exports = require_scheduler_development();
+      }
+    }
+  });
+
+  // node_modules/use-context-selector/dist/index.modern.mjs
+  function E(r3) {
+    const t3 = B({ [d3]: { v: { current: r3 }, n: { current: -1 }, l: /* @__PURE__ */ new Set(), u: (e3) => e3() } });
+    var o3;
+    return t3[f3] = t3.Provider, t3.Provider = (o3 = t3.Provider, ({ value: e3, children: r4 }) => {
+      const t4 = _2(e3), c3 = _2(0), [i4, p4] = p2(null);
+      i4 && (i4(e3), p4(null));
+      const f4 = _2();
+      if (!f4.current) {
+        const e4 = /* @__PURE__ */ new Set(), r5 = (r6, t5) => {
+          sn(() => {
+            c3.current += 1;
+            const n2 = { n: c3.current };
+            null != t5 && t5.suspense && (n2.n *= -1, n2.p = new Promise((e5) => {
+              p4(() => (r7) => {
+                n2.v = r7, delete n2.p, e5(r7);
+              });
+            })), e4.forEach((e5) => e5(n2)), r6();
+          });
+        };
+        f4.current = { [d3]: { v: t4, n: c3, l: e4, u: r5 } };
+      }
+      return v3(() => {
+        t4.current = e3, c3.current += 1, a3(() => {
+          f4.current[d3].l.forEach((r5) => {
+            r5({ n: c3.current, v: e3 });
+          });
+        });
+      }, [e3]), h(o3, { value: f4.current }, r4);
+    }), delete t3.Consumer, t3;
+  }
+  function h3(e3, n2) {
+    const o3 = q(e3)[d3];
+    if ("object" == typeof process && true && !o3)
+      throw new Error("useContextSelector requires special context");
+    const { v: { current: c3 }, n: { current: u3 }, l: s3 } = o3, i4 = n2(c3), [p4, l3] = y((e4, r3) => {
+      if (!r3)
+        return [c3, i4];
+      if ("p" in r3)
+        throw r3.p;
+      if (r3.n === u3)
+        return Object.is(e4[1], i4) ? e4 : [c3, i4];
+      try {
+        if ("v" in r3) {
+          if (Object.is(e4[0], r3.v))
+            return e4;
+          const t3 = n2(r3.v);
+          return Object.is(e4[1], t3) ? e4 : [r3.v, t3];
+        }
+      } catch (e5) {
+      }
+      return [...e4];
+    }, [c3, i4]);
+    return Object.is(p4[1], i4) || l3(), v3(() => (s3.add(l3), () => {
+      s3.delete(l3);
+    }), [s3]), p4[1];
+  }
+  var import_scheduler, d3, f3, v3, a3;
+  var init_index_modern = __esm({
+    "node_modules/use-context-selector/dist/index.modern.mjs"() {
+      init_compat_module();
+      import_scheduler = __toESM(require_scheduler(), 1);
+      init_compat_module();
+      d3 = Symbol();
+      f3 = Symbol();
+      v3 = "undefined" == typeof window || /ServerSideRendering/.test(window.navigator && window.navigator.userAgent) ? h2 : s2;
+      a3 = import_scheduler.unstable_runWithPriority ? (e3) => (0, import_scheduler.unstable_runWithPriority)(import_scheduler.unstable_NormalPriority, e3) : (e3) => e3();
+    }
+  });
+
+  // src/setup/tools/createProvider.tsx
+  var createProvider;
+  var init_createProvider = __esm({
+    "src/setup/tools/createProvider.tsx"() {
+      "use strict";
+      init_preact_module();
+      init_hooks_module();
+      init_index_modern();
+      createProvider = (controller) => {
+        const StateContext = E(null);
+        const DispatchContext = B(null);
+        const Provider = (_a) => {
+          var _b = _a, {
+            children
+          } = _b, props = __objRest(_b, [
+            "children"
+          ]);
+          const [state, _actions] = controller(props);
+          const actionsRef = _2(_actions);
+          actionsRef.current = _actions;
+          const actions = F(() => {
+            const result = {};
+            Object.keys(actionsRef.current).map((key) => {
+              result[key] = (...args) => {
+                var _a2, _b2;
+                return (_b2 = (_a2 = actionsRef.current)[key]) == null ? void 0 : _b2.call(_a2, ...args);
+              };
+            });
+            return result;
+          }, [actionsRef]);
+          return /* @__PURE__ */ h(StateContext.Provider, {
+            value: state
+          }, /* @__PURE__ */ h(DispatchContext.Provider, {
+            value: actions
+          }, children));
+        };
+        const useActions = () => q(DispatchContext);
+        const useStateContext = function(selector) {
+          return h3(StateContext, selector);
+        };
+        return [Provider, useActions, useStateContext];
+      };
+    }
+  });
+
+  // src/setup/state/GlobalState.ts
+  var updateSize, GlobalState, useGlobalActions, useGlobalState;
+  var init_GlobalState = __esm({
+    "src/setup/state/GlobalState.ts"() {
+      "use strict";
+      init_lib();
+      init_hooks_module();
+      init_data();
+      init_createProvider();
+      updateSize = (size) => {
+        emit("RESIZE", size);
+      };
+      [GlobalState, useGlobalActions, useGlobalState] = createProvider(
+        ({ initialSelection, config }) => {
+          const [selection, setSelection] = p2(initialSelection);
+          const [route, setRoute] = p2("index");
+          h2(() => {
+            return on("SELECTION_CHANGE", (data2) => {
+              setSelection(data2);
+            });
+          }, []);
+          F(() => {
+            updateSize(PAGES[route]);
+          }, [route]);
+          const data = {
+            route,
+            selection,
+            config
+          };
+          const actions = {
+            setRoute
+          };
+          return [data, actions];
+        }
+      );
+    }
+  });
+
+  // src/setup/pages/Index.tsx
+  var Index;
+  var init_Index = __esm({
+    "src/setup/pages/Index.tsx"() {
+      "use strict";
+      init_lib2();
+      init_preact_module();
+      init_GlobalState();
+      Index = () => {
+        const selection = useGlobalState((c3) => c3.selection);
+        return /* @__PURE__ */ h(Container, {
+          space: "medium"
+        }, !(selection == null ? void 0 : selection.length) && /* @__PURE__ */ h(Text, null, "No nodes selected"), selection == null ? void 0 : selection.map((node) => /* @__PURE__ */ h(Text, {
+          key: node.id
+        }, node.id, ": ", node.name)));
+      };
     }
   });
 
@@ -2457,39 +3203,242 @@ svg {
       request.send(body);
     });
   }
-  var TOLGEE_PREFIX;
   var init_tolgee = __esm({
     "src/tolgee.ts"() {
       "use strict";
-      TOLGEE_PREFIX = "t:";
     }
   });
 
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/b586f40b-bf21-46e7-b81f-60c6c83e37c1/styles.js
-  var init_styles = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/b586f40b-bf21-46e7-b81f-60c6c83e37c1/styles.js"() {
-      if (document.getElementById("c9b648f838") === null) {
-        const element = document.createElement("style");
-        element.id = "c9b648f838";
-        element.textContent = `[class^="_selectableItem_"] {
-  height: auto;
-  padding: var(--space-medium) var(--space-small) var(--space-medium) var(--space-medium);
-  margin-bottom: var(--space-small);
-}
+  // src/setup/pages/Settings.tsx
+  var Settings;
+  var init_Settings = __esm({
+    "src/setup/pages/Settings.tsx"() {
+      "use strict";
+      init_hooks_module();
+      init_lib2();
+      init_preact_module();
+      init_lib();
+      init_tolgee();
+      init_GlobalState();
+      Settings = () => {
+        var _a, _b, _c;
+        const config = useGlobalState((c3) => c3.config);
+        const [isLoading, setIsLoading] = p2(false);
+        const [previousConfig, setPreviousConfig] = p2(config != null ? config : {});
+        const [tolgeeConfig, setTolgeeConfig] = p2(config != null ? config : {});
+        const [languages, setLanguages] = p2([]);
+        const [open, setOpen] = p2(
+          !config || !!config.apiKey && !!config.url
+        );
+        const { setRoute } = useGlobalActions();
+        const [error, setError] = p2();
+        h2(() => {
+          setError(void 0);
+        }, [tolgeeConfig]);
+        h2(() => {
+          if (config && config.apiKey && config.url) {
+            validateTolgeeCredentials();
+          }
+        }, [config]);
+        const validateTolgeeCredentials = async () => {
+          var _a2, _b2, _c2, _d;
+          setIsLoading(true);
+          try {
+            const res = await sendTolgeeRequest(
+              "v2/api-keys/current",
+              "GET",
+              tolgeeConfig
+            );
+            if (res && res.status === 200 && ((_b2 = (_a2 = res.data) == null ? void 0 : _a2.scopes) == null ? void 0 : _b2.includes("translations.view")) && ((_d = (_c2 = res.data) == null ? void 0 : _c2.scopes) == null ? void 0 : _d.includes("translations.view"))) {
+              getTolgeeLanguages();
+              setOpen(false);
+              setPreviousConfig(tolgeeConfig);
+            } else if (res && res.status === 200) {
+              setOpen(true);
+              setError(
+                "Missing token scopes. The token should have translations.view and translations.edit scopes."
+              );
+            } else {
+              setOpen(true);
+              setError("Wrong credentials");
+            }
+          } catch (_3) {
+            setError("Invalid values. Please check the entered values");
+          } finally {
+            setIsLoading(false);
+          }
+        };
+        const getTolgeeLanguages = async () => {
+          var _a2, _b2, _c2, _d;
+          try {
+            const res = await sendTolgeeRequest(
+              "v2/projects/languages",
+              "GET",
+              tolgeeConfig
+            );
+            if (res && res.status === 200 && ((_c2 = (_b2 = (_a2 = res.data) == null ? void 0 : _a2._embedded) == null ? void 0 : _b2.languages) == null ? void 0 : _c2.length)) {
+              setLanguages(
+                res.data._embedded.languages.map((e3) => ({
+                  value: e3.tag,
+                  text: e3.name
+                }))
+              );
+              setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), {
+                lang: (_d = tolgeeConfig.lang) != null ? _d : res.data._embedded.languages[0].tag
+              }));
+            } else {
+              setError("An error occurred while fetching the available languages.");
+            }
+          } catch (e3) {
+            setError("An error occurred while fetching the available languages.");
+          }
+        };
+        const handleSubmit = () => {
+          if (!tolgeeConfig.apiKey) {
+            setError("Missing API key");
+            return;
+          } else if (!tolgeeConfig.url) {
+            setError("Missing API url");
+            return;
+          }
+          if (tolgeeConfig.apiKey !== previousConfig.apiKey || tolgeeConfig.url !== previousConfig.url) {
+            validateTolgeeCredentials();
+            return;
+          }
+          if (tolgeeConfig.lang) {
+            emit("SETUP", tolgeeConfig);
+          }
+        };
+        const handleClose = T2(function() {
+          setRoute("index");
+        }, []);
+        if (isLoading) {
+          return /* @__PURE__ */ h(MiddleAlign, null, /* @__PURE__ */ h(LoadingIndicator, null));
+        }
+        return /* @__PURE__ */ h(Container, {
+          space: "medium"
+        }, /* @__PURE__ */ h(VerticalSpace, {
+          space: "large"
+        }), /* @__PURE__ */ h(Disclosure, {
+          onClick: () => setOpen(!open),
+          open,
+          title: "Tolgee Credentials"
+        }, /* @__PURE__ */ h(Text, null, /* @__PURE__ */ h(Muted, null, "Tolgee URL")), /* @__PURE__ */ h(VerticalSpace, {
+          space: "small"
+        }), /* @__PURE__ */ h(Textbox, {
+          onValueInput: (url) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { url })),
+          value: (_a = tolgeeConfig.url) != null ? _a : "",
+          variant: "border"
+        }), /* @__PURE__ */ h(VerticalSpace, {
+          space: "medium"
+        }), /* @__PURE__ */ h(Text, null, /* @__PURE__ */ h(Muted, null, "Tolgee API key")), /* @__PURE__ */ h(VerticalSpace, {
+          space: "small"
+        }), /* @__PURE__ */ h(Textbox, {
+          onValueInput: (apiKey) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { apiKey })),
+          value: (_b = tolgeeConfig.apiKey) != null ? _b : "",
+          variant: "border"
+        })), error ? /* @__PURE__ */ h(Banner, {
+          icon: /* @__PURE__ */ h(IconWarning32, null)
+        }, error) : /* @__PURE__ */ h("div", null), /* @__PURE__ */ h(VerticalSpace, {
+          space: "medium"
+        }), /* @__PURE__ */ h(Text, null, /* @__PURE__ */ h(Muted, null, "Language")), /* @__PURE__ */ h(VerticalSpace, {
+          space: "small"
+        }), /* @__PURE__ */ h(Dropdown, {
+          placeholder: "Language",
+          disabled: !languages.length,
+          onChange: ({ currentTarget: { value: lang } }) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { lang })),
+          options: languages,
+          value: languages.find((e3) => e3.value === tolgeeConfig.lang) ? (_c = tolgeeConfig.lang) != null ? _c : null : null
+        }), /* @__PURE__ */ h(VerticalSpace, {
+          space: "extraLarge"
+        }), /* @__PURE__ */ h(Columns, {
+          space: "extraSmall",
+          style: {
+            bottom: "12px",
+            position: "absolute",
+            left: "12px",
+            right: "12px"
+          }
+        }, /* @__PURE__ */ h(Button, {
+          fullWidth: true,
+          onClick: handleSubmit
+        }, languages.length ? "Save" : "Get languages"), /* @__PURE__ */ h(Button, {
+          fullWidth: true,
+          onClick: handleClose,
+          secondary: true
+        }, "Close")), /* @__PURE__ */ h(VerticalSpace, {
+          space: "small"
+        }));
+      };
+    }
+  });
 
-[class^="_selectableItem_"]:not([class^="_disabled_"]) [class^="_input_"]:checked ~ [class^="_children_"]{
-  color: var(--figma-color-text-onbrand);
-}
-[class^="_selectableItem_"]:not([class^="_disabled_"]) [class^="_input_"]:checked ~ [class^="_box_"] {
-  background-color: rgb(130, 43, 85);
-}
-:root {
-  --figma-color-bg-brand: rgb(130, 43, 85);
-  --figma-color-bg-selected: rgb(130, 43, 85);
-  --figma-color-icon-brand: white;
-}`;
-        document.head.append(element);
-      }
+  // src/setup/components/HeadingTab.tsx
+  var HeadingTab;
+  var init_HeadingTab = __esm({
+    "src/setup/components/HeadingTab.tsx"() {
+      "use strict";
+      init_preact_module();
+      HeadingTab = ({ name, route, currentRoute, onChange }) => {
+        return /* @__PURE__ */ h("div", {
+          style: { color: route === currentRoute ? "white" : "lightgrey" },
+          onClick: () => onChange(route)
+        }, name);
+      };
+    }
+  });
+
+  // src/setup/Router.tsx
+  var getRoute, Router;
+  var init_Router = __esm({
+    "src/setup/Router.tsx"() {
+      "use strict";
+      init_preact_module();
+      init_lib2();
+      init_Index();
+      init_Settings();
+      init_GlobalState();
+      init_HeadingTab();
+      getRoute = (route) => {
+        switch (route) {
+          case "index":
+            return /* @__PURE__ */ h(Index, null);
+          case "settings":
+            return /* @__PURE__ */ h(Settings, null);
+        }
+      };
+      Router = () => {
+        const route = useGlobalState((c3) => c3.route);
+        const { setRoute } = useGlobalActions();
+        const handleRouteChange = (route2) => {
+          setRoute(route2);
+        };
+        return /* @__PURE__ */ h(p, null, /* @__PURE__ */ h(Container, {
+          space: "medium"
+        }, /* @__PURE__ */ h("div", {
+          style: {
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "10px 0px"
+          }
+        }, /* @__PURE__ */ h(HeadingTab, {
+          name: "Home",
+          route: "index",
+          currentRoute: route,
+          onChange: handleRouteChange
+        }), /* @__PURE__ */ h("div", {
+          style: {
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "16px"
+          }
+        }, /* @__PURE__ */ h(HeadingTab, {
+          name: "Settings",
+          route: "settings",
+          currentRoute: route,
+          onChange: handleRouteChange
+        })))), /* @__PURE__ */ h(Divider, null), getRoute(route));
+      };
     }
   });
 
@@ -2498,542 +3447,28 @@ svg {
   __export(ui_exports, {
     default: () => ui_default
   });
-  function Plugin({ config }) {
-    var _a, _b, _c;
-    const [isLoading, setIsLoading] = p2(false);
-    const [previousConfig, setPreviousConfig] = p2(config != null ? config : {});
-    const [tolgeeConfig, setTolgeeConfig] = p2(config != null ? config : {});
-    const [languages, setLanguages] = p2([]);
-    const [open, setOpen] = p2(!config || !!config.apiKey && !!config.url);
-    const [error, setError] = p2();
-    h2(() => {
-      setError(void 0);
-    }, [tolgeeConfig]);
-    h2(() => {
-      if (config && config.apiKey && config.url) {
-        validateTolgeeCredentials();
-      }
-    }, [config]);
-    const validateTolgeeCredentials = async () => {
-      var _a2, _b2, _c2, _d;
-      setIsLoading(true);
-      try {
-        const res = await sendTolgeeRequest("v2/api-keys/current", "GET", tolgeeConfig);
-        if (res && res.status === 200 && ((_b2 = (_a2 = res.data) == null ? void 0 : _a2.scopes) == null ? void 0 : _b2.includes("translations.view")) && ((_d = (_c2 = res.data) == null ? void 0 : _c2.scopes) == null ? void 0 : _d.includes("translations.view"))) {
-          getTolgeeLanguages();
-          setOpen(false);
-          setPreviousConfig(tolgeeConfig);
-        } else if (res && res.status === 200) {
-          setOpen(true);
-          setError("Missing token scopes. The token should have translations.view and translations.edit scopes.");
-        } else {
-          setOpen(true);
-          setError("Wrong credentials");
-        }
-      } catch (_3) {
-        setError("Invalid values. Please check the entered values");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    const getTolgeeLanguages = async () => {
-      var _a2, _b2, _c2, _d;
-      try {
-        const res = await sendTolgeeRequest("v2/projects/languages", "GET", tolgeeConfig);
-        if (res && res.status === 200 && ((_c2 = (_b2 = (_a2 = res.data) == null ? void 0 : _a2._embedded) == null ? void 0 : _b2.languages) == null ? void 0 : _c2.length)) {
-          setLanguages(res.data._embedded.languages.map((e3) => ({ value: e3.tag, text: e3.name })));
-          setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { lang: (_d = tolgeeConfig.lang) != null ? _d : res.data._embedded.languages[0].tag }));
-        } else {
-          setError("An error occurred while fetching the available languages.");
-        }
-      } catch (e3) {
-        setError("An error occurred while fetching the available languages.");
-      }
-    };
-    const handleSubmit = () => {
-      if (!tolgeeConfig.apiKey) {
-        setError("Missing API key");
-        return;
-      } else if (!tolgeeConfig.url) {
-        setError("Missing API url");
-        return;
-      }
-      if (tolgeeConfig.apiKey !== previousConfig.apiKey || tolgeeConfig.url !== previousConfig.url) {
-        validateTolgeeCredentials();
-        return;
-      }
-      if (tolgeeConfig.lang) {
-        emit("SETUP", tolgeeConfig);
-      }
-    };
-    const handleClose = T2(function() {
-      emit("CLOSE");
-    }, []);
-    if (isLoading) {
-      return /* @__PURE__ */ h(MiddleAlign, null, /* @__PURE__ */ h(LoadingIndicator, null));
-    }
-    return /* @__PURE__ */ h(Container, {
-      space: "medium"
-    }, /* @__PURE__ */ h(VerticalSpace, {
-      space: "large"
-    }), /* @__PURE__ */ h(Disclosure, {
-      onClick: () => setOpen(!open),
-      open,
-      title: "Tolgee Credentials"
-    }, /* @__PURE__ */ h(Text, null, /* @__PURE__ */ h(Muted, null, "Tolgee URL")), /* @__PURE__ */ h(VerticalSpace, {
-      space: "small"
-    }), /* @__PURE__ */ h(Textbox, {
-      onValueInput: (url) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { url })),
-      value: (_a = tolgeeConfig.url) != null ? _a : "",
-      variant: "border"
-    }), /* @__PURE__ */ h(VerticalSpace, {
-      space: "medium"
-    }), /* @__PURE__ */ h(Text, null, /* @__PURE__ */ h(Muted, null, "Tolgee API key")), /* @__PURE__ */ h(VerticalSpace, {
-      space: "small"
-    }), /* @__PURE__ */ h(Textbox, {
-      onValueInput: (apiKey) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { apiKey })),
-      value: (_b = tolgeeConfig.apiKey) != null ? _b : "",
-      variant: "border"
-    })), error ? /* @__PURE__ */ h(Banner, {
-      icon: /* @__PURE__ */ h(IconWarning32, null)
-    }, error) : /* @__PURE__ */ h("div", null), /* @__PURE__ */ h(VerticalSpace, {
-      space: "medium"
-    }), /* @__PURE__ */ h(Text, null, /* @__PURE__ */ h(Muted, null, "Language")), /* @__PURE__ */ h(VerticalSpace, {
-      space: "small"
-    }), /* @__PURE__ */ h(Dropdown, {
-      placeholder: "Language",
-      disabled: !languages.length,
-      onChange: ({ currentTarget: { value: lang } }) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { lang })),
-      options: languages,
-      value: languages.find((e3) => e3.value === tolgeeConfig.lang) ? (_c = tolgeeConfig.lang) != null ? _c : null : null
-    }), /* @__PURE__ */ h(VerticalSpace, {
-      space: "extraLarge"
-    }), /* @__PURE__ */ h(Columns, {
-      space: "extraSmall",
-      style: { bottom: "12px", position: "absolute", left: "12px", right: "12px" }
-    }, /* @__PURE__ */ h(Button, {
-      fullWidth: true,
-      onClick: handleSubmit
-    }, languages.length ? "Save" : "Get languages"), /* @__PURE__ */ h(Button, {
-      fullWidth: true,
-      onClick: handleClose,
-      secondary: true
-    }, "Close")), /* @__PURE__ */ h(VerticalSpace, {
-      space: "small"
-    }));
+  function Plugin({ config, nodes }) {
+    return /* @__PURE__ */ h(GlobalState, {
+      initialSelection: nodes,
+      config
+    }, /* @__PURE__ */ h(Router, null));
   }
   var ui_default;
   var init_ui = __esm({
     "src/setup/ui.tsx"() {
       "use strict";
       init_lib2();
-      init_lib();
       init_preact_module();
-      init_hooks_module();
-      init_tolgee();
       init_styles();
+      init_GlobalState();
+      init_Router();
       ui_default = render(Plugin);
-    }
-  });
-
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/95aa8253-0e8d-4bb6-8aee-00df3afdee52/styles.js
-  var init_styles2 = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/95aa8253-0e8d-4bb6-8aee-00df3afdee52/styles.js"() {
-      if (document.getElementById("c9b648f838") === null) {
-        const element = document.createElement("style");
-        element.id = "c9b648f838";
-        element.textContent = `[class^="_selectableItem_"] {
-  height: auto;
-  padding: var(--space-medium) var(--space-small) var(--space-medium) var(--space-medium);
-  margin-bottom: var(--space-small);
-}
-
-[class^="_selectableItem_"]:not([class^="_disabled_"]) [class^="_input_"]:checked ~ [class^="_children_"]{
-  color: var(--figma-color-text-onbrand);
-}
-[class^="_selectableItem_"]:not([class^="_disabled_"]) [class^="_input_"]:checked ~ [class^="_box_"] {
-  background-color: rgb(130, 43, 85);
-}
-:root {
-  --figma-color-bg-brand: rgb(130, 43, 85);
-  --figma-color-bg-selected: rgb(130, 43, 85);
-  --figma-color-icon-brand: white;
-}`;
-        document.head.append(element);
-      }
-    }
-  });
-
-  // src/syncFigmaToTolgee/ui.tsx
-  var ui_exports2 = {};
-  __export(ui_exports2, {
-    default: () => ui_default2
-  });
-  function Plugin2({ nodes, conflictingNodes, config }) {
-    const [openDuplicates, setOpenDuplicates] = p2(true);
-    const [openNew, setOpenNew] = p2(true);
-    const [openEdited, setOpenEdited] = p2(true);
-    const [loading, setLoading] = p2(true);
-    const [selectAll, setSelectAll] = p2(true);
-    const [languages, setLanguages] = p2([{ value: config.lang }]);
-    const [selectedLanguage, setSelectedLanguage] = p2(config.lang);
-    const [tolgeeData, setTolgeeData] = p2(null);
-    const [duplicateNodes, setDuplicateNodes] = p2([]);
-    const [newNodes, setNewNodes] = p2([]);
-    const [editedNodes, setEditedNodes] = p2([]);
-    const [selectedNodes, setSelectedNodes] = p2([]);
-    h2(() => {
-      setLoading(true);
-      sendTolgeeRequest(`v2/projects/translations/${selectedLanguage}`, "GET", config).then((res) => {
-        const tolgeeData2 = res == null ? void 0 : res.data[selectedLanguage];
-        setTolgeeData(tolgeeData2);
-        setLoading(false);
-        if (tolgeeData2) {
-          setNewNodes(nodes.filter((node) => !Object.keys(tolgeeData2).includes(node.name.slice(TOLGEE_PREFIX.length)) && !conflictingNodes.find((n2) => n2.name === node.name)));
-          setDuplicateNodes(nodes.filter((node) => !!conflictingNodes.find((n2) => n2.name === node.name)));
-          setEditedNodes(nodes.filter((node) => Object.keys(tolgeeData2).includes(node.name.slice(TOLGEE_PREFIX.length)) && tolgeeData2[node.name.slice(TOLGEE_PREFIX.length)] !== node.characters && !conflictingNodes.find((n2) => n2.name === node.name)));
-        }
-      });
-    }, [selectedLanguage]);
-    h2(() => {
-      setLoading(true);
-      sendTolgeeRequest("v2/projects/languages", "GET", config).then((res) => {
-        var _a, _b, _c;
-        if (res && res.status === 200 && ((_c = (_b = (_a = res.data) == null ? void 0 : _a._embedded) == null ? void 0 : _b.languages) == null ? void 0 : _c.length)) {
-          setLoading(false);
-          setLanguages(res.data._embedded.languages.map((l3) => ({ value: l3.tag, text: l3.name })));
-        }
-      });
-    }, []);
-    h2(() => {
-      console.log(nodes);
-      if (selectAll) {
-        setSelectedNodes(nodes.filter((node) => !conflictingNodes.find((n2) => n2.name === node.name && n2.characters !== node.characters)));
-      } else {
-        setSelectedNodes([]);
-      }
-    }, [nodes, selectAll]);
-    const toggleNode = (node) => {
-      if (selectedNodes.includes(node)) {
-        setSelectedNodes(selectedNodes.filter((n2) => n2 !== node));
-      } else {
-        if (selectedNodes.find((n2) => n2.name === node.name)) {
-          setSelectedNodes([...selectedNodes.filter((n2) => n2.name !== node.name), node]);
-        } else {
-          setSelectedNodes([...selectedNodes, node]);
-        }
-      }
-    };
-    const syncKeys = () => {
-      setLoading(true);
-      const promises = [];
-      selectedNodes.forEach((node) => {
-        promises.push(sendTolgeeRequest("v2/projects/translations", "POST", config, JSON.stringify({ key: node.name.slice(TOLGEE_PREFIX.length), translations: { [config.lang]: node.characters }, languagesToReturn: [config.lang] })));
-      });
-      Promise.allSettled(promises).then((results) => {
-        const successfulResults = results.filter((r3) => r3.status === "fulfilled").map((res) => {
-          var _a;
-          return res.status === "fulfilled" && ((_a = res.value) == null ? void 0 : _a.data);
-        }).map((d3) => d3 ? { key: d3.keyName, value: d3.translations[config.lang].text } : null).filter((r3) => !!(r3 == null ? void 0 : r3.value));
-        const affectedDuplicatedNodes = [];
-        for (const result of successfulResults) {
-          setSelectedNodes([]);
-          affectedDuplicatedNodes.push(...duplicateNodes.filter((n2) => n2.name.slice(TOLGEE_PREFIX.length) === result.key).map((n2) => __spreadProps(__spreadValues({}, n2), { value: result.value })));
-          console.log("affectedDuplicatedNodes ", affectedDuplicatedNodes);
-        }
-        if (affectedDuplicatedNodes.length > 1) {
-          emit("UPDATE_NODES", affectedDuplicatedNodes);
-        } else {
-          emit("SYNC_COMPLETE");
-        }
-      });
-    };
-    const handleClose = T2(function() {
-      emit("CLOSE");
-    }, []);
-    if (loading) {
-      return /* @__PURE__ */ h(MiddleAlign, null, /* @__PURE__ */ h(LoadingIndicator, null));
-    }
-    if (newNodes.length === 0 && duplicateNodes.length === 0 && editedNodes.length === 0) {
-      return /* @__PURE__ */ h(MiddleAlign, null, /* @__PURE__ */ h(Columns, {
-        space: "extraSmall",
-        style: { display: "flex", alignItems: "center" }
-      }, /* @__PURE__ */ h(IconCheckCircleFilled32, {
-        color: "success"
-      }), "No new, edited or duplicate translations found."));
-    }
-    return /* @__PURE__ */ h(Container, {
-      space: "medium"
-    }, /* @__PURE__ */ h("div", {
-      style: { height: "calc(100% - 48px)", overflow: "auto" }
-    }, /* @__PURE__ */ h(VerticalSpace, {
-      space: "large"
-    }), /* @__PURE__ */ h(Banner, {
-      icon: /* @__PURE__ */ h(IconInfo32, null)
-    }, "Checked Items will be synced to Tolgee."), /* @__PURE__ */ h(VerticalSpace, {
-      space: "medium"
-    }), /* @__PURE__ */ h(SelectableItem, {
-      onChange: () => setSelectAll(!selectAll),
-      value: selectAll
-    }, "Select All"), /* @__PURE__ */ h(VerticalSpace, {
-      space: "medium"
-    }), duplicateNodes.length ? /* @__PURE__ */ h(Disclosure, {
-      onClick: () => setOpenDuplicates(!openDuplicates),
-      open: openDuplicates,
-      title: "Duplicate Keys"
-    }, duplicateNodes.map(
-      (node) => {
-        var _a;
-        return /* @__PURE__ */ h(SelectableItem, {
-          key: node.id,
-          onChange: () => toggleNode(node),
-          value: !!selectedNodes.includes(node)
-        }, (_a = node.name) == null ? void 0 : _a.slice(TOLGEE_PREFIX.length), ": ", node.characters);
-      }
-    )) : /* @__PURE__ */ h("div", null), newNodes.length ? /* @__PURE__ */ h(Disclosure, {
-      onClick: () => setOpenNew(!openNew),
-      open: openNew,
-      title: "New Keys"
-    }, newNodes.map(
-      (node) => {
-        var _a;
-        return /* @__PURE__ */ h(SelectableItem, {
-          key: node.id,
-          onChange: () => toggleNode(node),
-          value: !!selectedNodes.includes(node)
-        }, (_a = node.name) == null ? void 0 : _a.slice(TOLGEE_PREFIX.length), ": ", node.characters);
-      }
-    )) : /* @__PURE__ */ h("div", null), editedNodes.length ? /* @__PURE__ */ h(Disclosure, {
-      onClick: () => setOpenEdited(!openEdited),
-      open: openEdited,
-      title: "Edited Keys"
-    }, editedNodes.map(
-      (node) => {
-        var _a, _b;
-        return /* @__PURE__ */ h(SelectableItem, {
-          style: { height: "auto", padding: "var(--space-small) var(--space-small) var(--space-small) var(--space-medium);" },
-          key: node.id,
-          onChange: () => toggleNode(node),
-          value: !!selectedNodes.includes(node)
-        }, /* @__PURE__ */ h(Stack, {
-          space: "extraSmall"
-        }, /* @__PURE__ */ h(Container, {
-          space: "extraSmall"
-        }, (_a = node.name) == null ? void 0 : _a.slice(TOLGEE_PREFIX.length), ": ", node.characters), /* @__PURE__ */ h(Container, {
-          space: "extraSmall"
-        }, "Tolgee: ", (_b = tolgeeData == null ? void 0 : tolgeeData[node.name.slice(TOLGEE_PREFIX.length)]) != null ? _b : "")));
-      }
-    )) : /* @__PURE__ */ h(VerticalSpace, {
-      space: "extraSmall"
-    }), /* @__PURE__ */ h(VerticalSpace, {
-      space: "extraLarge"
-    })), /* @__PURE__ */ h(Columns, {
-      space: "extraSmall",
-      style: { bottom: "12px", position: "fixed", zIndex: 1, left: "12px", right: "12px" }
-    }, /* @__PURE__ */ h(Button, {
-      disabled: selectedNodes.length === 0,
-      fullWidth: true,
-      onClick: syncKeys
-    }, "Sync"), /* @__PURE__ */ h(Button, {
-      fullWidth: true,
-      onClick: handleClose,
-      secondary: true
-    }, "Close")));
-  }
-  var ui_default2;
-  var init_ui2 = __esm({
-    "src/syncFigmaToTolgee/ui.tsx"() {
-      "use strict";
-      init_lib2();
-      init_lib();
-      init_preact_module();
-      init_hooks_module();
-      init_tolgee();
-      init_styles2();
-      ui_default2 = render(Plugin2);
-    }
-  });
-
-  // ../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/0562db92-431f-4943-a801-450f86eff0e9/styles.js
-  var init_styles3 = __esm({
-    "../../../../private/var/folders/21/2wn5y4xd13x96h2n0jnrp1xc0000gn/T/0562db92-431f-4943-a801-450f86eff0e9/styles.js"() {
-      if (document.getElementById("c9b648f838") === null) {
-        const element = document.createElement("style");
-        element.id = "c9b648f838";
-        element.textContent = `[class^="_selectableItem_"] {
-  height: auto;
-  padding: var(--space-medium) var(--space-small) var(--space-medium) var(--space-medium);
-  margin-bottom: var(--space-small);
-}
-
-[class^="_selectableItem_"]:not([class^="_disabled_"]) [class^="_input_"]:checked ~ [class^="_children_"]{
-  color: var(--figma-color-text-onbrand);
-}
-[class^="_selectableItem_"]:not([class^="_disabled_"]) [class^="_input_"]:checked ~ [class^="_box_"] {
-  background-color: rgb(130, 43, 85);
-}
-:root {
-  --figma-color-bg-brand: rgb(130, 43, 85);
-  --figma-color-bg-selected: rgb(130, 43, 85);
-  --figma-color-icon-brand: white;
-}`;
-        document.head.append(element);
-      }
-    }
-  });
-
-  // src/syncTolgeeToFigma/ui.tsx
-  var ui_exports3 = {};
-  __export(ui_exports3, {
-    default: () => ui_default3
-  });
-  function Plugin3({ nodes, config }) {
-    const [openEdited, setOpenEdited] = p2(true);
-    const [loading, setLoading] = p2(true);
-    const [selectAll, setSelectAll] = p2(true);
-    const [languages, setLanguages] = p2([{ value: config.lang }]);
-    const [selectedLanguage, setSelectedLanguage] = p2(config.lang);
-    const [tolgeeData, setTolgeeData] = p2(null);
-    const [editedNodes, setEditedNodes] = p2([]);
-    const [selectedNodes, setSelectedNodes] = p2([]);
-    h2(() => {
-      setLoading(true);
-      sendTolgeeRequest(`v2/projects/translations/${selectedLanguage}`, "GET", config).then((res) => {
-        var _a;
-        const tolgeeData2 = (_a = res == null ? void 0 : res.data[selectedLanguage]) != null ? _a : {};
-        setTolgeeData(tolgeeData2);
-        setLoading(false);
-        setEditedNodes(nodes.filter((node) => Object.keys(tolgeeData2).includes(node.name.slice(TOLGEE_PREFIX.length)) && tolgeeData2[node.name.slice(TOLGEE_PREFIX.length)] !== node.characters));
-      });
-    }, [selectedLanguage]);
-    h2(() => {
-      setLoading(true);
-      sendTolgeeRequest("v2/projects/languages", "GET", config).then((res) => {
-        var _a, _b, _c;
-        if (res && res.status === 200 && ((_c = (_b = (_a = res.data) == null ? void 0 : _a._embedded) == null ? void 0 : _b.languages) == null ? void 0 : _c.length)) {
-          setLoading(false);
-          setLanguages(res.data._embedded.languages.map((l3) => ({ value: l3.tag, text: l3.name })));
-        }
-      });
-    }, []);
-    h2(() => {
-      if (selectAll) {
-        setSelectedNodes(editedNodes);
-      } else {
-        setSelectedNodes([]);
-      }
-    }, [editedNodes, selectAll]);
-    const toggleNode = (node) => {
-      if (selectedNodes.includes(node)) {
-        setSelectedNodes(selectedNodes.filter((n2) => n2 !== node));
-      } else {
-        if (selectedNodes.find((n2) => n2.name === node.name)) {
-          setSelectedNodes([...selectedNodes.filter((n2) => n2.name !== node.name), node]);
-        } else {
-          setSelectedNodes([...selectedNodes, node]);
-        }
-      }
-    };
-    const syncKeys = () => {
-      emit("UPDATE_NODES", selectedNodes.map((node) => {
-        var _a;
-        return __spreadProps(__spreadValues({}, node), { characters: (_a = tolgeeData == null ? void 0 : tolgeeData[node.name.slice(TOLGEE_PREFIX.length)]) != null ? _a : "SYNC FAILED" });
-      }));
-      setSelectedNodes([]);
-    };
-    const handleClose = T2(function() {
-      emit("CLOSE");
-    }, []);
-    if (loading) {
-      return /* @__PURE__ */ h(MiddleAlign, null, /* @__PURE__ */ h(LoadingIndicator, null));
-    }
-    if (editedNodes.length === 0) {
-      return /* @__PURE__ */ h(MiddleAlign, null, /* @__PURE__ */ h(Dropdown, {
-        placeholder: "Language",
-        disabled: !languages.length,
-        onChange: ({ currentTarget: { value: lang } }) => setSelectedLanguage(lang),
-        options: languages,
-        value: selectedLanguage
-      }), /* @__PURE__ */ h(Columns, {
-        space: "extraSmall",
-        style: { display: "flex", alignItems: "center" }
-      }, /* @__PURE__ */ h(IconCheckCircleFilled32, {
-        color: "success"
-      }), "No edited translations found."));
-    }
-    return /* @__PURE__ */ h(Container, {
-      space: "medium"
-    }, /* @__PURE__ */ h("div", {
-      style: { height: "calc(100% - 48px)", overflow: "auto" }
-    }, /* @__PURE__ */ h(VerticalSpace, {
-      space: "large"
-    }), /* @__PURE__ */ h(Banner, {
-      icon: /* @__PURE__ */ h(IconInfo32, null)
-    }, "Checked Items will be synced to Figma."), /* @__PURE__ */ h(VerticalSpace, {
-      space: "medium"
-    }), /* @__PURE__ */ h(Dropdown, {
-      placeholder: "Language",
-      disabled: !languages.length,
-      onChange: ({ currentTarget: { value: lang } }) => setSelectedLanguage(lang),
-      options: languages,
-      value: selectedLanguage
-    }), /* @__PURE__ */ h(VerticalSpace, {
-      space: "medium"
-    }), /* @__PURE__ */ h(SelectableItem, {
-      onChange: () => setSelectAll(!selectAll),
-      value: selectAll
-    }, "Select All"), editedNodes.length ? /* @__PURE__ */ h(Disclosure, {
-      onClick: () => setOpenEdited(!openEdited),
-      open: openEdited,
-      title: "Edited Keys"
-    }, editedNodes.map(
-      (node) => {
-        var _a, _b;
-        return /* @__PURE__ */ h(SelectableItem, {
-          style: { height: "auto", padding: "var(--space-small) var(--space-small) var(--space-small) var(--space-medium);" },
-          key: node.id,
-          onChange: () => toggleNode(node),
-          value: !!selectedNodes.includes(node)
-        }, /* @__PURE__ */ h(Stack, {
-          space: "extraSmall"
-        }, /* @__PURE__ */ h(Container, {
-          space: "extraSmall"
-        }, (_a = node.name) == null ? void 0 : _a.slice(TOLGEE_PREFIX.length), ": ", node.characters), /* @__PURE__ */ h(Container, {
-          space: "extraSmall"
-        }, "Tolgee: ", (_b = tolgeeData == null ? void 0 : tolgeeData[node.name.slice(TOLGEE_PREFIX.length)]) != null ? _b : "")));
-      }
-    )) : /* @__PURE__ */ h(VerticalSpace, {
-      space: "extraSmall"
-    })), /* @__PURE__ */ h(Columns, {
-      space: "extraSmall",
-      style: { bottom: "12px", position: "fixed", zIndex: 1, left: "12px", right: "12px" }
-    }, /* @__PURE__ */ h(Button, {
-      disabled: selectedNodes.length === 0,
-      fullWidth: true,
-      onClick: syncKeys
-    }, "Sync"), /* @__PURE__ */ h(Button, {
-      fullWidth: true,
-      onClick: handleClose,
-      secondary: true
-    }, "Close")));
-  }
-  var ui_default3;
-  var init_ui3 = __esm({
-    "src/syncTolgeeToFigma/ui.tsx"() {
-      "use strict";
-      init_lib2();
-      init_lib();
-      init_preact_module();
-      init_hooks_module();
-      init_tolgee();
-      init_styles3();
-      ui_default3 = render(Plugin3);
     }
   });
 
   // <stdin>
   var rootNode = document.getElementById("create-figma-plugin");
-  var modules = { "src/setup/main.ts--default": (init_ui(), __toCommonJS(ui_exports))["default"], "src/syncFigmaToTolgee/main.ts--default": (init_ui2(), __toCommonJS(ui_exports2))["default"], "src/syncTolgeeToFigma/main.ts--default": (init_ui3(), __toCommonJS(ui_exports3))["default"] };
+  var modules = { "src/setup/main.ts--default": (init_ui(), __toCommonJS(ui_exports))["default"] };
   var commandId = __FIGMA_COMMAND__ === "" ? "src/setup/main.ts--default" : __FIGMA_COMMAND__;
   if (typeof modules[commandId] === "undefined") {
     throw new Error(
@@ -3042,3 +3477,12 @@ svg {
   }
   modules[commandId](rootNode, __SHOW_UI_DATA__);
 })();
+/**
+ * @license React
+ * scheduler.development.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */

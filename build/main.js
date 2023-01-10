@@ -46,16 +46,6 @@
       delete eventHandlers[id];
     };
   }
-  function once(name, handler) {
-    let done = false;
-    return on(name, function(...args) {
-      if (done === true) {
-        return;
-      }
-      done = true;
-      handler(...args);
-    });
-  }
   function invokeEventHandler(name, args) {
     for (const id in eventHandlers) {
       if (eventHandlers[id].name === name) {
@@ -63,11 +53,18 @@
       }
     }
   }
-  var eventHandlers, currentId;
+  var eventHandlers, currentId, emit;
   var init_events = __esm({
     "node_modules/@create-figma-plugin/utilities/lib/events.js"() {
       eventHandlers = {};
       currentId = 0;
+      emit = typeof window === "undefined" ? function(name, ...args) {
+        figma.ui.postMessage([name, ...args]);
+      } : function(name, ...args) {
+        window.parent.postMessage({
+          pluginMessage: [name, ...args]
+        }, "*");
+      };
       if (typeof window === "undefined") {
         figma.ui.onmessage = function([name, ...args]) {
           invokeEventHandler(name, args);
@@ -156,12 +153,24 @@
   });
 
   // src/tolgee.ts
-  var TOLGEE_PREFIX, TOLGEE_PLUGIN_CONFIG_NAME;
+  var TOLGEE_PLUGIN_CONFIG_NAME;
   var init_tolgee = __esm({
     "src/tolgee.ts"() {
       "use strict";
-      TOLGEE_PREFIX = "t:";
       TOLGEE_PLUGIN_CONFIG_NAME = "tolgee_config";
+    }
+  });
+
+  // src/setup/pages/data.ts
+  var DEFAULT_SIZE, PAGES;
+  var init_data = __esm({
+    "src/setup/pages/data.ts"() {
+      "use strict";
+      DEFAULT_SIZE = { width: 300, height: 400 };
+      PAGES = {
+        index: DEFAULT_SIZE,
+        settings: { width: 300, height: 500 }
+      };
     }
   });
 
@@ -171,142 +180,77 @@
     default: () => main_default
   });
   async function main_default() {
-    once("SETUP", (config2) => {
-      figma.currentPage.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, JSON.stringify(config2));
+    figma.on("selectionchange", () => {
+      const nodes = findTextNodes();
+      emit("SELECTION_CHANGE", nodes);
+    });
+    on("SETUP", (config2) => {
+      figma.currentPage.setPluginData(
+        TOLGEE_PLUGIN_CONFIG_NAME,
+        JSON.stringify(config2)
+      );
       figma.notify("Tolgee credentials saved.");
+    });
+    on("RESIZE", (size) => {
+      figma.ui.resize(size.width, size.height);
+    });
+    on("SYNC_COMPLETE", () => {
+      figma.notify("Synchronization completed.");
       figma.closePlugin();
     });
-    once("CLOSE", function() {
-      figma.closePlugin();
+    on("UPDATE_NODES", async (nodes) => {
+      const textNodes = nodes.map((n) => figma.getNodeById(n.id));
+      await loadFontsAsync(textNodes);
+      nodes.forEach(async (n) => {
+        const node = textNodes.find((nod) => nod.id === n.id);
+        node.autoRename = false;
+        node.characters = n.characters;
+      });
     });
-    const nodes = figma.currentPage.children.filter((node) => node.type === "TEXT" && node.name.startsWith(TOLGEE_PREFIX)).map((node) => ({ name: node.name, characters: node.characters, id: node.id }));
     const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
-    const config = pluginData !== "" ? JSON.parse(figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME)) : null;
-    showUI({
-      height: 320,
-      width: 300,
-      title: "Tolgee Settings"
-    }, { config, nodes });
+    const config = pluginData !== "" ? JSON.parse(
+      figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME)
+    ) : null;
+    showUI(
+      {
+        title: "Tolgee",
+        width: PAGES.index.width,
+        height: PAGES.index.height
+      },
+      { config, nodes: findTextNodes() }
+    );
   }
+  var findTextNodes;
   var init_main = __esm({
     "src/setup/main.ts"() {
       "use strict";
       init_lib();
       init_tolgee();
-    }
-  });
-
-  // src/syncFigmaToTolgee/main.ts
-  var main_exports2 = {};
-  __export(main_exports2, {
-    default: () => main_default2
-  });
-  async function main_default2() {
-    once("SYNC_COMPLETE", () => {
-      figma.notify("Synchronization completed.");
-      figma.closePlugin();
-    });
-    once("CLOSE", function() {
-      figma.closePlugin();
-    });
-    on("UPDATE_NODES", async (nodes2) => {
-      const textNodes = nodes2.map((n) => figma.getNodeById(n.id));
-      await loadFontsAsync(textNodes);
-      nodes2.forEach(async (n) => {
-        const node = textNodes.find((nod) => nod.id === n.id);
-        node.autoRename = false;
-        node.characters = n.characters;
-      });
-    });
-    let nodes = [];
-    const conflictingNodes = [];
-    figma.currentPage.children.filter((node) => node.type === "TEXT" && node.name.startsWith(TOLGEE_PREFIX)).map((node) => ({ name: node.name, characters: node.characters, id: node.id })).forEach((node) => {
-      if (nodes.findIndex((n) => n.characters === node.characters && node.name === n.name) === -1) {
-        nodes.push(node);
-      }
-      const conflictingNode = nodes.find((n) => n.name === node.name && n.characters !== node.characters);
-      if (conflictingNode) {
-        conflictingNodes.push(conflictingNode);
-      }
-    });
-    nodes = nodes.sort((n1, n2) => {
-      if (conflictingNodes.includes(n1) && conflictingNodes.includes(n2) && n1.name === n2.name) {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
-    const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
-    const config = pluginData !== "" ? JSON.parse(figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME)) : null;
-    if (config && config.lang && config.apiKey && config.url) {
-      showUI({
-        height: 800,
-        width: 500,
-        title: "Sync Figma to Tolgee"
-      }, { config, nodes, conflictingNodes });
-    } else {
-      figma.notify('Please run "Setup Tolgee" first.');
-      figma.closePlugin();
-    }
-  }
-  var init_main2 = __esm({
-    "src/syncFigmaToTolgee/main.ts"() {
-      "use strict";
-      init_lib();
-      init_tolgee();
-    }
-  });
-
-  // src/syncTolgeeToFigma/main.ts
-  var main_exports3 = {};
-  __export(main_exports3, {
-    default: () => main_default3
-  });
-  async function main_default3() {
-    once("SYNC_COMPLETE", () => {
-      figma.notify("Synchronization completed.");
-      figma.closePlugin();
-    });
-    once("CLOSE", function() {
-      figma.closePlugin();
-    });
-    on("UPDATE_NODES", async (nodes2) => {
-      const textNodes = nodes2.map((n) => figma.getNodeById(n.id));
-      await loadFontsAsync(textNodes);
-      nodes2.forEach(async (n) => {
-        const node = textNodes.find((nod) => nod.id === n.id);
-        node.autoRename = false;
-        node.characters = n.characters;
-      });
-      figma.notify("Document translations updated");
-      figma.closePlugin();
-    });
-    const nodes = figma.currentPage.children.filter((node) => node.type === "TEXT" && node.name.startsWith(TOLGEE_PREFIX)).map((node) => ({ name: node.name, characters: node.characters, id: node.id }));
-    const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
-    const config = pluginData !== "" ? JSON.parse(figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME)) : null;
-    if (config && config.lang && config.apiKey && config.url) {
-      console.log("CONFIG FOUND: ", config);
-      showUI({
-        height: 800,
-        width: 500,
-        title: "Sync Tolgee to Figma"
-      }, { config, nodes });
-    } else {
-      console.log("NO CONFIG FOUND");
-      figma.notify('Please run "Setup Tolgee" first.');
-      figma.closePlugin();
-    }
-  }
-  var init_main3 = __esm({
-    "src/syncTolgeeToFigma/main.ts"() {
-      "use strict";
-      init_lib();
-      init_tolgee();
+      init_data();
+      findTextNodes = (nodes) => {
+        if (!nodes) {
+          return findTextNodes(figma.currentPage.selection || []);
+        }
+        let result = [];
+        for (const node of nodes) {
+          if (node.type === "TEXT") {
+            result.push({
+              id: node.id,
+              name: node.name,
+              characters: node.characters
+            });
+          }
+          if (node.children) {
+            result = result.concat(findTextNodes(node.children));
+          }
+        }
+        return result;
+      };
     }
   });
 
   // <stdin>
-  var modules = { "src/setup/main.ts--default": (init_main(), __toCommonJS(main_exports))["default"], "src/syncFigmaToTolgee/main.ts--default": (init_main2(), __toCommonJS(main_exports2))["default"], "src/syncTolgeeToFigma/main.ts--default": (init_main3(), __toCommonJS(main_exports3))["default"] };
-  var commandId = typeof figma.command === "undefined" || figma.command === "" ? "src/setup/main.ts--default" : figma.command;
+  var modules = { "src/setup/main.ts--default": (init_main(), __toCommonJS(main_exports))["default"] };
+  var commandId = true ? "src/setup/main.ts--default" : figma.command;
   modules[commandId]();
 })();
