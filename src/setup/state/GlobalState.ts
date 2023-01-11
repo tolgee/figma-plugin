@@ -1,6 +1,5 @@
 import { emit, on } from "@create-figma-plugin/utilities";
 import { useEffect, useMemo, useState } from "preact/hooks";
-import useSWR from "swr";
 
 import {
   ConfigChangeHandler,
@@ -8,26 +7,26 @@ import {
   ResizeHandler,
   SelectionChangeHandler,
   SetLanguageHandler,
+  SetupHandle,
   TolgeeConfig,
 } from "../../types";
 import { PAGES, Route } from "../views/data";
 import { createProvider } from "../tools/createProvider";
-
-type LanguageType = {
-  name: string;
-  tag: string;
-};
 
 type Props = {
   initialSelection: Array<Node>;
   initialConfig: Partial<TolgeeConfig> | null;
 };
 
+export const globalState = {
+  actions: undefined as unknown as ReturnType<typeof useGlobalActions>,
+};
+
 export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
   ({ initialSelection, initialConfig }: Props) => {
     const [selection, setSelection] = useState<Node[]>(initialSelection);
-    const [route, setRoute] = useState<Route>("index");
-    const [config, setConfig] = useState(initialConfig);
+    const [route, _setRoute] = useState<Route>("index");
+    const [config, _setConfig] = useState(initialConfig);
     const [globalError, setGlobalError] = useState<string | undefined>(
       undefined
     );
@@ -40,7 +39,7 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
 
     useEffect(() => {
       return on<ConfigChangeHandler>("CONFIG_CHANGE", (data) => {
-        setConfig(data);
+        _setConfig(data);
       });
     }, []);
 
@@ -48,8 +47,19 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
       emit<ResizeHandler>("RESIZE", PAGES[route]);
     }, [route]);
 
+    function setConfig(config: Partial<TolgeeConfig>) {
+      _setConfig(config);
+      emit<SetupHandle>("SETUP", config);
+    }
+
     function setLanguage(language: string) {
+      _setConfig({ ...config, lang: language });
       emit<SetLanguageHandler>("SET_LANGUAGE", language);
+    }
+
+    function setRoute(route: Route) {
+      setGlobalError(undefined);
+      _setRoute(route);
     }
 
     const data = {
@@ -61,9 +71,12 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
 
     const actions = {
       setRoute,
+      setConfig,
       setLanguage,
       setGlobalError,
     };
+
+    globalState.actions = actions;
 
     return [data, actions];
   }

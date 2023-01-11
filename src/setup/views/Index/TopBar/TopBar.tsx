@@ -1,10 +1,14 @@
 import { h } from "preact";
-import { LanguageType } from "../../../../apiTypes";
 import { HeadingTab } from "../../../components/HeadingTab/HeadingTab";
 import { useGlobalActions, useGlobalState } from "../../../state/GlobalState";
 import { Route } from "../../data";
 
 import styles from "./TopBar.css";
+
+type LanguageType = {
+  name: string;
+  tag: string;
+};
 
 type Props = {
   languages: LanguageType[] | undefined;

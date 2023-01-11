@@ -2,7 +2,6 @@ import {
   emit,
   loadFontsAsync,
   on,
-  once,
   showUI,
 } from "@create-figma-plugin/utilities";
 import { TOLGEE_PLUGIN_CONFIG_NAME } from "../tolgee";

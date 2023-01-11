@@ -6,20 +6,20 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 import { Fragment, h } from "preact";
-import useSWR from "swr";
 
-import { LanguageType } from "../../../apiTypes";
+import { useApiQuery } from "../../client/useQueryApi";
 import { useGlobalState } from "../../state/GlobalState";
 import { TopBar } from "./TopBar/TopBar";
 
 export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
 
-  const { data: languageData, isLoading } = useSWR("/v2/projects/languages");
+  const { data: languageData, isLoading } = useApiQuery({
+    url: "/v2/projects/languages",
+    method: "get",
+  });
 
-  const languages = languageData?._embedded?.languages as
-    | LanguageType[]
-    | undefined;
+  const languages = languageData?._embedded?.languages;
 
   if (isLoading) {
     return (

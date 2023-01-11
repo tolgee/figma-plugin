@@ -5,7 +5,8 @@
   "main": "code.js",
   "scripts": {
     "build": "build-figma-plugin --typecheck --minify",
-    "watch": "build-figma-plugin --typecheck --watch"
+    "watch": "build-figma-plugin --typecheck --watch",
+    "schema": "openapi-typescript http://localhost:8202/v3/api-docs/Accessible%20with%20API%20key --output ./src/setup/client/apiSchema.generated.ts"
   },
   "author": "Tolgee",
   "license": "MIT",
@@ -13,6 +14,7 @@
     "@create-figma-plugin/build": "^2.1.5",
     "@create-figma-plugin/tsconfig": "^2.1.5",
     "@figma/plugin-typings": "^1.55.1",
+    "openapi-typescript": "^6.1.0",
     "typescript": "*"
   },
   "dependencies": {
@@ -20,7 +22,6 @@
     "@create-figma-plugin/utilities": "2.1.5",
     "preact": "^10.11.3",
     "prettier": "^2.8.2",
-    "swr": "^2.0.0",
     "use-context-selector": "^1.4.1"
   },
   "figma-plugin": {

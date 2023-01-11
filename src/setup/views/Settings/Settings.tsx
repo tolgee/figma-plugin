@@ -12,20 +12,26 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 import { h } from "preact";
-import { emit } from "@create-figma-plugin/utilities";
-import { useSWRConfig } from "swr";
 
 import styles from "./Settings.css";
-import { SetupHandle } from "../../../types";
 import { useGlobalActions, useGlobalState } from "../../state/GlobalState";
+import { useApiMutation } from "../../client/useQueryApi";
 
 export const Settings = () => {
   const config = useGlobalState((c) => c.config) || {};
   const [tolgeeConfig, setTolgeeConfig] = useState(config ?? {});
-  const [isLoading, setIsLoading] = useState(false);
-  const { fetcher } = useSWRConfig();
+  const { mutateAsync, isLoading } = useApiMutation({
+    url: "/v2/api-keys/current",
+    method: "get",
+    clientOptions: {
+      config: {
+        apiKey: tolgeeConfig.apiKey,
+        apiUrl: tolgeeConfig.apiUrl,
+      },
+    },
+  });
 
-  const { setRoute } = useGlobalActions();
+  const { setRoute, setConfig } = useGlobalActions();
 
   const [error, setError] = useState<string | undefined>();
 
@@ -34,44 +40,30 @@ export const Settings = () => {
   }, [tolgeeConfig]);
 
   const validateTolgeeCredentials = async () => {
-    setIsLoading(true);
     try {
-      const res: any = await fetcher!("/v2/api-keys/current", {
-        headers: { "x-api-key": tolgeeConfig.apiKey },
-        baseUrl: tolgeeConfig.url,
-      });
-
+      const res: any = await mutateAsync("/v2/api-keys/current");
       if (res && res.scopes?.includes("translations.view")) {
         return true;
-      } else if (res) {
+      } else {
         throw new Error(
           "Missing token scopes. The token should have translations.view and translations.edit scopes."
         );
-      } else {
-        throw new Error("Wrong credentials");
       }
-    } catch (_) {
-      throw new Error("Invalid values. Please check the entered values");
-    } finally {
-      setIsLoading(false);
+    } catch (e: any) {
+      if (e === "Forbidden") {
+        throw new Error("Invalid API key");
+      }
+      throw e;
     }
   };
 
   const handleSubmit = async () => {
-    if (!tolgeeConfig.apiKey) {
-      setError("Missing API key");
-      return;
-    } else if (!tolgeeConfig.url) {
-      setError("Missing API url");
-      return;
-    }
-
     try {
       await validateTolgeeCredentials();
-      emit<SetupHandle>("SETUP", { ...tolgeeConfig });
+      setConfig(tolgeeConfig);
       setRoute("index");
     } catch (e: any) {
-      setError(e.message);
+      setError(e.message || e);
     }
   };
 
@@ -88,8 +80,8 @@ export const Settings = () => {
       </Text>
       <VerticalSpace space="small" />
       <Textbox
-        onValueInput={(url) => setTolgeeConfig({ ...tolgeeConfig, url })}
-        value={tolgeeConfig.url ?? ""}
+        onValueInput={(apiUrl) => setTolgeeConfig({ ...tolgeeConfig, apiUrl })}
+        value={tolgeeConfig.apiUrl ?? ""}
         variant="border"
       />
       <VerticalSpace space="medium" />

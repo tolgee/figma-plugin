@@ -47,7 +47,7 @@ export interface Node {
 }
 
 export interface TolgeeConfig extends Record<string, string> {
-  url: string;
+  apiUrl: string;
   apiKey: string;
   lang: string;
 }
