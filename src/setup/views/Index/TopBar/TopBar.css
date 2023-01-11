@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  margin: 0px -10px;
+}
+
+.languageContainer {
+  display: flex;
+  margin: 5px 0px;
+}
+
+.tabsContainerLeft {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}

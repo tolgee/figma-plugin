@@ -5,6 +5,16 @@ export interface SetupHandle extends EventHandler {
   handler: (config: Partial<TolgeeConfig>) => void;
 }
 
+export interface SetLanguageHandler extends EventHandler {
+  name: "SET_LANGUAGE";
+  handler: (language: string) => void;
+}
+
+export interface ConfigChangeHandler extends EventHandler {
+  name: "CONFIG_CHANGE";
+  handler: (config: Partial<TolgeeConfig>) => void;
+}
+
 export interface CloseHandler extends EventHandler {
   name: "CLOSE";
   handler: () => void;
@@ -18,6 +28,16 @@ export interface SyncCompleteHandler extends EventHandler {
 export interface TranslationsUpdateHandler extends EventHandler {
   name: "UPDATE_NODES";
   handler: (nodes: Node[]) => void;
+}
+
+export interface ResizeHandler extends EventHandler {
+  name: "RESIZE";
+  handler: (size: WindowSize) => void;
+}
+
+export interface SelectionChangeHandler extends EventHandler {
+  name: "SELECTION_CHANGE";
+  handler: (data: Node[]) => void;
 }
 
 export interface Node {
@@ -36,3 +56,8 @@ export interface FormattedNode {
   id: string;
   name: string;
 }
+
+export type WindowSize = {
+  width: number;
+  height: number;
+};

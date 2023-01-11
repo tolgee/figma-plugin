@@ -20,6 +20,7 @@
     "@create-figma-plugin/utilities": "2.1.5",
     "preact": "^10.11.3",
     "prettier": "^2.8.2",
+    "swr": "^2.0.0",
     "use-context-selector": "^1.4.1"
   },
   "figma-plugin": {

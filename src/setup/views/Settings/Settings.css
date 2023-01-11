@@ -1,0 +1,8 @@
+.controlsContainer {
+  display: flex;
+  bottom: 12px;
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  gap: 8px;
+}

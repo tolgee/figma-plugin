@@ -8,13 +8,17 @@ import {
 import { TOLGEE_PLUGIN_CONFIG_NAME } from "../tolgee";
 
 import {
+  ConfigChangeHandler,
   Node,
+  ResizeHandler,
+  SelectionChangeHandler,
+  SetLanguageHandler,
   SetupHandle,
   SyncCompleteHandler,
   TolgeeConfig,
   TranslationsUpdateHandler,
 } from "../types";
-import { PAGES } from "./pages/data";
+import { PAGES } from "./views/data";
 
 const findTextNodes = (nodes?: readonly SceneNode[]): Node[] => {
   if (!nodes) {
@@ -38,21 +42,41 @@ const findTextNodes = (nodes?: readonly SceneNode[]): Node[] => {
   return result;
 };
 
+const getPluginData = () => {
+  const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
+  return pluginData !== ""
+    ? (JSON.parse(
+        figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME)
+      ) as Partial<TolgeeConfig>)
+    : {};
+};
+
+const setPluginData = (data: Partial<TolgeeConfig>) => {
+  figma.currentPage.setPluginData(
+    TOLGEE_PLUGIN_CONFIG_NAME,
+    JSON.stringify(data)
+  );
+  emit<ConfigChangeHandler>("CONFIG_CHANGE", data);
+};
+
 export default async function () {
   figma.on("selectionchange", () => {
     const nodes = findTextNodes();
-    emit("SELECTION_CHANGE", nodes);
+    emit<SelectionChangeHandler>("SELECTION_CHANGE", nodes);
   });
 
   on<SetupHandle>("SETUP", (config) => {
-    figma.currentPage.setPluginData(
-      TOLGEE_PLUGIN_CONFIG_NAME,
-      JSON.stringify(config)
-    );
+    setPluginData(config);
     figma.notify("Tolgee credentials saved.");
   });
 
-  on("RESIZE", (size) => {
+  on<SetLanguageHandler>("SET_LANGUAGE", (lang: string) => {
+    const pluginData = getPluginData();
+    const data = { ...pluginData, lang };
+    setPluginData(data);
+  });
+
+  on<ResizeHandler>("RESIZE", (size) => {
     figma.ui.resize(size.width, size.height);
   });
 
@@ -70,13 +94,7 @@ export default async function () {
     });
   });
 
-  const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
-  const config =
-    pluginData !== ""
-      ? (JSON.parse(
-          figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME)
-        ) as Partial<TolgeeConfig>)
-      : null;
+  const config = getPluginData();
 
   showUI(
     {

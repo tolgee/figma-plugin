@@ -34,8 +34,8 @@
       }
     return target;
   };
-  var __esm = (fn, res) => function __init() {
-    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  var __esm = (fn2, res) => function __init() {
+    return fn2 && (res = (0, fn2[__getOwnPropNames(fn2)[0]])(fn2 = 0)), res;
   };
   var __commonJS = (cb, mod) => function __require() {
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
@@ -81,6 +81,9 @@
     var f4 = { type: n2, props: i4, key: t3, ref: o3, __k: null, __: null, __b: 0, __e: null, __d: void 0, __c: null, __h: null, constructor: void 0, __v: null == r3 ? ++u : r3 };
     return null == r3 && null != l.vnode && l.vnode(f4), f4;
   }
+  function y() {
+    return { current: null };
+  }
   function p(n2) {
     return n2.children;
   }
@@ -119,20 +122,20 @@
       });
   }
   function w(n2, l3, u3, i4, t3, o3, r3, c3, s3, a4) {
-    var h4, y3, d4, k3, b3, g4, w4, x4 = i4 && i4.__k || e, C3 = x4.length;
+    var h4, y3, d4, k4, b3, g4, w4, x4 = i4 && i4.__k || e, C3 = x4.length;
     for (u3.__k = [], h4 = 0; h4 < l3.length; h4++)
-      if (null != (k3 = u3.__k[h4] = null == (k3 = l3[h4]) || "boolean" == typeof k3 ? null : "string" == typeof k3 || "number" == typeof k3 || "bigint" == typeof k3 ? v(null, k3, null, null, k3) : Array.isArray(k3) ? v(p, { children: k3 }, null, null, null) : k3.__b > 0 ? v(k3.type, k3.props, k3.key, k3.ref ? k3.ref : null, k3.__v) : k3)) {
-        if (k3.__ = u3, k3.__b = u3.__b + 1, null === (d4 = x4[h4]) || d4 && k3.key == d4.key && k3.type === d4.type)
+      if (null != (k4 = u3.__k[h4] = null == (k4 = l3[h4]) || "boolean" == typeof k4 ? null : "string" == typeof k4 || "number" == typeof k4 || "bigint" == typeof k4 ? v(null, k4, null, null, k4) : Array.isArray(k4) ? v(p, { children: k4 }, null, null, null) : k4.__b > 0 ? v(k4.type, k4.props, k4.key, k4.ref ? k4.ref : null, k4.__v) : k4)) {
+        if (k4.__ = u3, k4.__b = u3.__b + 1, null === (d4 = x4[h4]) || d4 && k4.key == d4.key && k4.type === d4.type)
           x4[h4] = void 0;
         else
           for (y3 = 0; y3 < C3; y3++) {
-            if ((d4 = x4[y3]) && k3.key == d4.key && k3.type === d4.type) {
+            if ((d4 = x4[y3]) && k4.key == d4.key && k4.type === d4.type) {
               x4[y3] = void 0;
               break;
             }
             d4 = null;
           }
-        j(n2, k3, d4 = d4 || f, t3, o3, r3, c3, s3, a4), b3 = k3.__e, (y3 = k3.ref) && d4.ref != y3 && (w4 || (w4 = []), d4.ref && w4.push(d4.ref, null, k3), w4.push(y3, k3.__c || b3, k3)), null != b3 ? (null == g4 && (g4 = b3), "function" == typeof k3.type && k3.__k === d4.__k ? k3.__d = s3 = m(k3, s3, n2) : s3 = A(n2, k3, d4, x4, b3, s3), "function" == typeof u3.type && (u3.__d = s3)) : s3 && d4.__e == s3 && s3.parentNode != n2 && (s3 = _(d4));
+        j(n2, k4, d4 = d4 || f, t3, o3, r3, c3, s3, a4), b3 = k4.__e, (y3 = k4.ref) && d4.ref != y3 && (w4 || (w4 = []), d4.ref && w4.push(d4.ref, null, k4), w4.push(y3, k4.__c || b3, k4)), null != b3 ? (null == g4 && (g4 = b3), "function" == typeof k4.type && k4.__k === d4.__k ? k4.__d = s3 = m(k4, s3, n2) : s3 = A(n2, k4, d4, x4, b3, s3), "function" == typeof u3.type && (u3.__d = s3)) : s3 && d4.__e == s3 && s3.parentNode != n2 && (s3 = _(d4));
       }
     for (u3.__e = g4, h4 = C3; h4--; )
       null != x4[h4] && N(x4[h4], x4[h4]);
@@ -211,7 +214,7 @@
     this.l[n2.type + true](l.event ? l.event(n2) : n2);
   }
   function j(n2, u3, i4, t3, o3, r3, f4, e3, c3) {
-    var a4, h4, v4, y3, _3, k3, b3, g4, m3, x4, A3, C3, $2, H3, I3, T4 = u3.type;
+    var a4, h4, v4, y3, _3, k4, b3, g4, m3, x4, A4, C3, $3, H3, I3, T4 = u3.type;
     if (void 0 !== u3.constructor)
       return null;
     null != i4.__h && (c3 = i4.__h, e3 = u3.__e = i4.__e, u3.__h = null, r3 = [e3]), (a4 = l.__b) && a4(u3);
@@ -224,24 +227,24 @@
             if (null == T4.getDerivedStateFromProps && g4 !== y3 && null != h4.componentWillReceiveProps && h4.componentWillReceiveProps(g4, x4), !h4.__e && null != h4.shouldComponentUpdate && false === h4.shouldComponentUpdate(g4, h4.__s, x4) || u3.__v === i4.__v) {
               for (h4.props = g4, h4.state = h4.__s, u3.__v !== i4.__v && (h4.__d = false), h4.__v = u3, u3.__e = i4.__e, u3.__k = i4.__k, u3.__k.forEach(function(n3) {
                 n3 && (n3.__ = u3);
-              }), A3 = 0; A3 < h4._sb.length; A3++)
-                h4.__h.push(h4._sb[A3]);
+              }), A4 = 0; A4 < h4._sb.length; A4++)
+                h4.__h.push(h4._sb[A4]);
               h4._sb = [], h4.__h.length && f4.push(h4);
               break n;
             }
             null != h4.componentWillUpdate && h4.componentWillUpdate(g4, h4.__s, x4), null != h4.componentDidUpdate && h4.__h.push(function() {
-              h4.componentDidUpdate(y3, _3, k3);
+              h4.componentDidUpdate(y3, _3, k4);
             });
           }
-          if (h4.context = x4, h4.props = g4, h4.__v = u3, h4.__P = n2, C3 = l.__r, $2 = 0, "prototype" in T4 && T4.prototype.render) {
+          if (h4.context = x4, h4.props = g4, h4.__v = u3, h4.__P = n2, C3 = l.__r, $3 = 0, "prototype" in T4 && T4.prototype.render) {
             for (h4.state = h4.__s, h4.__d = false, C3 && C3(u3), a4 = h4.render(h4.props, h4.state, h4.context), H3 = 0; H3 < h4._sb.length; H3++)
               h4.__h.push(h4._sb[H3]);
             h4._sb = [];
           } else
             do {
               h4.__d = false, C3 && C3(u3), a4 = h4.render(h4.props, h4.state, h4.context), h4.state = h4.__s;
-            } while (h4.__d && ++$2 < 25);
-          h4.state = h4.__s, null != h4.getChildContext && (t3 = s(s({}, t3), h4.getChildContext())), v4 || null == h4.getSnapshotBeforeUpdate || (k3 = h4.getSnapshotBeforeUpdate(y3, _3)), I3 = null != a4 && a4.type === p && null == a4.key ? a4.props.children : a4, w(n2, Array.isArray(I3) ? I3 : [I3], u3, i4, t3, o3, r3, f4, e3, c3), h4.base = u3.__e, u3.__h = null, h4.__h.length && f4.push(h4), b3 && (h4.__E = h4.__ = null), h4.__e = false;
+            } while (h4.__d && ++$3 < 25);
+          h4.state = h4.__s, null != h4.getChildContext && (t3 = s(s({}, t3), h4.getChildContext())), v4 || null == h4.getSnapshotBeforeUpdate || (k4 = h4.getSnapshotBeforeUpdate(y3, _3)), I3 = null != a4 && a4.type === p && null == a4.key ? a4.props.children : a4, w(n2, Array.isArray(I3) ? I3 : [I3], u3, i4, t3, o3, r3, f4, e3, c3), h4.base = u3.__e, u3.__h = null, h4.__h.length && f4.push(h4), b3 && (h4.__E = h4.__ = null), h4.__e = false;
         } else
           null == r3 && u3.__v === i4.__v ? (u3.__k = i4.__k, u3.__e = i4.__e) : u3.__e = L(i4.__e, u3, i4, t3, o3, r3, f4, c3);
       (a4 = l.diffed) && a4(u3);
@@ -261,11 +264,11 @@
     });
   }
   function L(l3, u3, i4, t3, o3, r3, e3, c3) {
-    var s3, h4, v4, y3 = i4.props, p4 = u3.props, d4 = u3.type, k3 = 0;
+    var s3, h4, v4, y3 = i4.props, p4 = u3.props, d4 = u3.type, k4 = 0;
     if ("svg" === d4 && (o3 = true), null != r3) {
-      for (; k3 < r3.length; k3++)
-        if ((s3 = r3[k3]) && "setAttribute" in s3 == !!d4 && (d4 ? s3.localName === d4 : 3 === s3.nodeType)) {
-          l3 = s3, r3[k3] = null;
+      for (; k4 < r3.length; k4++)
+        if ((s3 = r3[k4]) && "setAttribute" in s3 == !!d4 && (d4 ? s3.localName === d4 : 3 === s3.nodeType)) {
+          l3 = s3, r3[k4] = null;
           break;
         }
     }
@@ -279,16 +282,16 @@
     else {
       if (r3 = r3 && n.call(l3.childNodes), h4 = (y3 = i4.props || f).dangerouslySetInnerHTML, v4 = p4.dangerouslySetInnerHTML, !c3) {
         if (null != r3)
-          for (y3 = {}, k3 = 0; k3 < l3.attributes.length; k3++)
-            y3[l3.attributes[k3].name] = l3.attributes[k3].value;
+          for (y3 = {}, k4 = 0; k4 < l3.attributes.length; k4++)
+            y3[l3.attributes[k4].name] = l3.attributes[k4].value;
         (v4 || h4) && (v4 && (h4 && v4.__html == h4.__html || v4.__html === l3.innerHTML) || (l3.innerHTML = v4 && v4.__html || ""));
       }
       if (C(l3, p4, y3, o3, c3), v4)
         u3.__k = [];
-      else if (k3 = u3.props.children, w(l3, Array.isArray(k3) ? k3 : [k3], u3, i4, t3, o3 && "foreignObject" !== d4, r3, e3, r3 ? r3[0] : i4.__k && _(i4, 0), c3), null != r3)
-        for (k3 = r3.length; k3--; )
-          null != r3[k3] && a(r3[k3]);
-      c3 || ("value" in p4 && void 0 !== (k3 = p4.value) && (k3 !== l3.value || "progress" === d4 && !k3 || "option" === d4 && k3 !== y3.value) && H(l3, "value", k3, y3.value, false), "checked" in p4 && void 0 !== (k3 = p4.checked) && k3 !== l3.checked && H(l3, "checked", k3, y3.checked, false));
+      else if (k4 = u3.props.children, w(l3, Array.isArray(k4) ? k4 : [k4], u3, i4, t3, o3 && "foreignObject" !== d4, r3, e3, r3 ? r3[0] : i4.__k && _(i4, 0), c3), null != r3)
+        for (k4 = r3.length; k4--; )
+          null != r3[k4] && a(r3[k4]);
+      c3 || ("value" in p4 && void 0 !== (k4 = p4.value) && (k4 !== l3.value || "progress" === d4 && !k4 || "option" === d4 && k4 !== y3.value) && H(l3, "value", k4, y3.value, false), "checked" in p4 && void 0 !== (k4 = p4.checked) && k4 !== l3.checked && H(l3, "checked", k4, y3.checked, false));
     }
     return l3;
   }
@@ -321,6 +324,15 @@
   function P(u3, i4, t3) {
     var o3, r3, e3;
     l.__ && l.__(u3, i4), r3 = (o3 = "function" == typeof t3) ? null : t3 && t3.__k || i4.__k, e3 = [], j(i4, u3 = (!o3 && t3 || i4).__k = h(p, null, [u3]), r3 || f, f, void 0 !== i4.ownerSVGElement, !o3 && t3 ? [t3] : r3 ? null : i4.firstChild ? n.call(i4.childNodes) : null, e3, !o3 && t3 ? t3 : r3 ? r3.__e : i4.firstChild, o3), z(e3, u3);
+  }
+  function S(n2, l3) {
+    P(n2, l3, S);
+  }
+  function q(l3, u3, i4) {
+    var t3, o3, r3, f4 = s({}, l3.props);
+    for (r3 in u3)
+      "key" == r3 ? t3 = u3[r3] : "ref" == r3 ? o3 = u3[r3] : f4[r3] = u3[r3];
+    return arguments.length > 2 && (f4.children = arguments.length > 3 ? n.call(arguments, 2) : i4), v(l3.type, f4, t3 || l3.key, o3 || l3.ref, null);
   }
   function B(n2, l3) {
     var u3 = { __c: l3 = "__cC" + r++, __: n2, Consumer: function(n3, l4) {
@@ -379,10 +391,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/33a16b21-226c-4bff-8f6b-654b78005dbb/banner.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f79bedb9-41a9-4262-9627-47bd97276ff2/banner.js
   var banner_default;
   var init_banner = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/33a16b21-226c-4bff-8f6b-654b78005dbb/banner.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f79bedb9-41a9-4262-9627-47bd97276ff2/banner.js"() {
       if (document.getElementById("3168a726a5") === null) {
         const element = document.createElement("style");
         element.id = "3168a726a5";
@@ -455,9 +467,9 @@
     return t3 >= i4.__.length && i4.__.push({ __V: c2 }), i4.__[t3];
   }
   function p2(n2) {
-    return o2 = 1, y(B2, n2);
+    return o2 = 1, y2(B2, n2);
   }
-  function y(n2, u3, i4) {
+  function y2(n2, u3, i4) {
     var o3 = d2(t2++, 2);
     if (o3.t = n2, !o3.__c && (o3.__ = [i4 ? i4(u3) : B2(void 0, u3), function(n3) {
       var t3 = o3.__N ? o3.__N[0] : o3.__[0], r3 = o3.t(t3, n3);
@@ -499,6 +511,15 @@
       return { current: n2 };
     }, []);
   }
+  function A2(n2, t3, r3) {
+    o2 = 6, s2(function() {
+      return "function" == typeof n2 ? (n2(t3()), function() {
+        return n2(null);
+      }) : n2 ? (n2.current = t3(), function() {
+        return n2.current = null;
+      }) : void 0;
+    }, null == r3 ? r3 : r3.concat(n2));
+  }
   function F(n2, r3) {
     var u3 = d2(t2++, 7);
     return z2(u3.__H, r3) ? (u3.__V = n2(), u3.i = r3, u3.__h = n2, u3.__V) : u3.__;
@@ -508,9 +529,30 @@
       return n2;
     }, t3);
   }
-  function q(n2) {
+  function q2(n2) {
     var u3 = r2.context[n2.__c], i4 = d2(t2++, 9);
     return i4.c = n2, u3 ? (null == i4.__ && (i4.__ = true, u3.sub(r2)), u3.props.value) : n2.__;
+  }
+  function x2(t3, r3) {
+    l.useDebugValue && l.useDebugValue(r3 ? r3(t3) : t3);
+  }
+  function P2(n2) {
+    var u3 = d2(t2++, 10), i4 = p2();
+    return u3.__ = n2, r2.componentDidCatch || (r2.componentDidCatch = function(n3, t3) {
+      u3.__ && u3.__(n3, t3), i4[1](n3);
+    }), [i4[0], function() {
+      i4[1](void 0);
+    }];
+  }
+  function V() {
+    var n2 = d2(t2++, 11);
+    if (!n2.__) {
+      for (var u3 = r2.__v; null !== u3 && !u3.__m && null !== u3.__; )
+        u3 = u3.__;
+      var i4 = u3.__m || (u3.__m = [0, 0]);
+      n2.__ = "P" + i4[0] + "-" + i4[1]++;
+    }
+    return n2.__;
   }
   function b2() {
     for (var t3; t3 = f2.shift(); )
@@ -596,10 +638,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c766a58a-12f7-4763-93bd-1cab4216e3ee/loading-indicator.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/6644b61f-45ce-4deb-99fe-625b14c8e0e0/loading-indicator.js
   var loading_indicator_default;
   var init_loading_indicator = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c766a58a-12f7-4763-93bd-1cab4216e3ee/loading-indicator.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/6644b61f-45ce-4deb-99fe-625b14c8e0e0/loading-indicator.js"() {
       if (document.getElementById("25a2c53e04") === null) {
         const element = document.createElement("style");
         element.id = "25a2c53e04";
@@ -650,10 +692,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a6b2554e-cf30-4885-84b0-cb357a514af3/button.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/44e119c5-aecc-4548-bbdb-2caf2188c20e/button.js
   var button_default;
   var init_button = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a6b2554e-cf30-4885-84b0-cb357a514af3/button.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/44e119c5-aecc-4548-bbdb-2caf2188c20e/button.js"() {
       if (document.getElementById("4698edce65") === null) {
         const element = document.createElement("style");
         element.id = "4698edce65";
@@ -823,10 +865,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/34504fd5-ee4e-4b8b-9981-97a6117394d2/icon.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/da78cd1b-1ea5-4996-8cfa-3cab4d0682a5/icon.js
   var icon_default;
   var init_icon = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/34504fd5-ee4e-4b8b-9981-97a6117394d2/icon.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/da78cd1b-1ea5-4996-8cfa-3cab4d0682a5/icon.js"() {
       if (document.getElementById("3b0a4baebe") === null) {
         const element = document.createElement("style");
         element.id = "3b0a4baebe";
@@ -858,219 +900,6 @@
     }
   });
 
-  // node_modules/@create-figma-plugin/ui/lib/icons/icon-16/icon-caret-right-16.js
-  var IconCaretRight16;
-  var init_icon_caret_right_16 = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/icons/icon-16/icon-caret-right-16.js"() {
-      init_create_icon();
-      IconCaretRight16 = createIcon("M12 8 8 5v6l4-3Z", {
-        height: 16,
-        width: 16
-      });
-    }
-  });
-
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c123a488-430e-42a6-9328-4b37a4fcf497/disclosure.js
-  var disclosure_default;
-  var init_disclosure = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c123a488-430e-42a6-9328-4b37a4fcf497/disclosure.js"() {
-      if (document.getElementById("c4ba35c0c8") === null) {
-        const element = document.createElement("style");
-        element.id = "c4ba35c0c8";
-        element.textContent = `._label_ekvh7_1 {
-  position: relative;
-}
-
-._input_ekvh7_5 {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-
-._title_ekvh7_13,
-._children_ekvh7_14 {
-  padding: var(--space-extra-small) var(--space-small) var(--space-extra-small)
-    var(--space-large);
-}
-
-._title_ekvh7_13 {
-  position: relative;
-  color: var(--figma-color-text);
-  font-weight: var(--font-weight-bold);
-}
-._title_ekvh7_13:hover,
-._input_ekvh7_5:focus ~ ._title_ekvh7_13 {
-  background-color: var(--figma-color-bg-hover);
-}
-
-._icon_ekvh7_29 {
-  position: absolute;
-  top: var(--space-extra-small);
-  left: 0;
-  color: var(--figma-color-icon);
-}
-._input_ekvh7_5:checked ~ ._title_ekvh7_13 ._icon_ekvh7_29 {
-  top: calc(var(--space-extra-small) - 2px);
-  left: 2px;
-  transform: rotate(90deg);
-}
-
-._children_ekvh7_14 {
-  color: var(--figma-color-text);
-}
-
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9AY3JlYXRlLWZpZ21hLXBsdWdpbi91aS9saWIvY29tcG9uZW50cy9kaXNjbG9zdXJlL2Rpc2Nsb3N1cmUuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0Usa0JBQWtCO0FBQ3BCOztBQUVBO0VBQ0Usa0JBQWtCO0VBQ2xCLE1BQU07RUFDTixRQUFRO0VBQ1IsU0FBUztFQUNULE9BQU87QUFDVDs7QUFFQTs7RUFFRTtzQkFDb0I7QUFDdEI7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsOEJBQThCO0VBQzlCLG9DQUFvQztBQUN0QztBQUNBOztFQUVFLDZDQUE2QztBQUMvQzs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQiw2QkFBNkI7RUFDN0IsT0FBTztFQUNQLDhCQUE4QjtBQUNoQztBQUNBO0VBQ0UseUNBQXlDO0VBQ3pDLFNBQVM7RUFDVCx3QkFBd0I7QUFDMUI7O0FBRUE7RUFDRSw4QkFBOEI7QUFDaEMiLCJmaWxlIjoibm9kZV9tb2R1bGVzL0BjcmVhdGUtZmlnbWEtcGx1Z2luL3VpL2xpYi9jb21wb25lbnRzL2Rpc2Nsb3N1cmUvZGlzY2xvc3VyZS5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIubGFiZWwge1xuICBwb3NpdGlvbjogcmVsYXRpdmU7XG59XG5cbi5pbnB1dCB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgdG9wOiAwO1xuICByaWdodDogMDtcbiAgYm90dG9tOiAwO1xuICBsZWZ0OiAwO1xufVxuXG4udGl0bGUsXG4uY2hpbGRyZW4ge1xuICBwYWRkaW5nOiB2YXIoLS1zcGFjZS1leHRyYS1zbWFsbCkgdmFyKC0tc3BhY2Utc21hbGwpIHZhcigtLXNwYWNlLWV4dHJhLXNtYWxsKVxuICAgIHZhcigtLXNwYWNlLWxhcmdlKTtcbn1cblxuLnRpdGxlIHtcbiAgcG9zaXRpb246IHJlbGF0aXZlO1xuICBjb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItdGV4dCk7XG4gIGZvbnQtd2VpZ2h0OiB2YXIoLS1mb250LXdlaWdodC1ib2xkKTtcbn1cbi50aXRsZTpob3Zlcixcbi5pbnB1dDpmb2N1cyB+IC50aXRsZSB7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLWJnLWhvdmVyKTtcbn1cblxuLmljb24ge1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIHRvcDogdmFyKC0tc3BhY2UtZXh0cmEtc21hbGwpO1xuICBsZWZ0OiAwO1xuICBjb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItaWNvbik7XG59XG4uaW5wdXQ6Y2hlY2tlZCB+IC50aXRsZSAuaWNvbiB7XG4gIHRvcDogY2FsYyh2YXIoLS1zcGFjZS1leHRyYS1zbWFsbCkgLSAycHgpO1xuICBsZWZ0OiAycHg7XG4gIHRyYW5zZm9ybTogcm90YXRlKDkwZGVnKTtcbn1cblxuLmNoaWxkcmVuIHtcbiAgY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLXRleHQpO1xufVxuIl19 */`;
-        document.head.append(element);
-      }
-      disclosure_default = { "label": "_label_ekvh7_1", "input": "_input_ekvh7_5", "title": "_title_ekvh7_13", "children": "_children_ekvh7_14", "icon": "_icon_ekvh7_29" };
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/components/disclosure/disclosure.js
-  function Disclosure(_a) {
-    var _b = _a, { children, onClick, open, propagateEscapeKeyDown = true, title } = _b, rest = __objRest(_b, ["children", "onClick", "open", "propagateEscapeKeyDown", "title"]);
-    const handleKeyDown = T2(function(event) {
-      if (event.key !== "Escape") {
-        return;
-      }
-      if (propagateEscapeKeyDown === false) {
-        event.stopPropagation();
-      }
-      event.currentTarget.blur();
-    }, [propagateEscapeKeyDown]);
-    return h(p, null, h("label", { class: disclosure_default.label }, h("input", __spreadProps(__spreadValues({}, rest), { checked: open === true, class: disclosure_default.input, onClick, onKeyDown: handleKeyDown, tabIndex: 0, type: "checkbox" })), h("div", { class: disclosure_default.title }, h("div", { class: disclosure_default.icon }, h(IconCaretRight16, null)), title)), open === true ? h("div", { class: disclosure_default.children }, children) : null);
-  }
-  var init_disclosure2 = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/components/disclosure/disclosure.js"() {
-      init_preact_module();
-      init_hooks_module();
-      init_icon_caret_right_16();
-      init_disclosure();
-    }
-  });
-
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/bdedc512-223c-4a24-9a06-269ccf588505/divider.js
-  var divider_default;
-  var init_divider = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/bdedc512-223c-4a24-9a06-269ccf588505/divider.js"() {
-      if (document.getElementById("947a88d8c0") === null) {
-        const element = document.createElement("style");
-        element.id = "947a88d8c0";
-        element.textContent = `._divider_m18ta_1 {
-  width: 100%;
-  height: 1px;
-  background-color: var(--figma-color-border);
-}
-
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9AY3JlYXRlLWZpZ21hLXBsdWdpbi91aS9saWIvY29tcG9uZW50cy9kaXZpZGVyL2RpdmlkZXIuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsV0FBVztFQUNYLFdBQVc7RUFDWCwyQ0FBMkM7QUFDN0MiLCJmaWxlIjoibm9kZV9tb2R1bGVzL0BjcmVhdGUtZmlnbWEtcGx1Z2luL3VpL2xpYi9jb21wb25lbnRzL2RpdmlkZXIvZGl2aWRlci5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuZGl2aWRlciB7XG4gIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDFweDtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItYm9yZGVyKTtcbn1cbiJdfQ== */`;
-        document.head.append(element);
-      }
-      divider_default = { "divider": "_divider_m18ta_1" };
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/components/divider/divider.js
-  function Divider(props) {
-    return h("hr", __spreadProps(__spreadValues({}, props), { class: divider_default.divider }));
-  }
-  var init_divider2 = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/components/divider/divider.js"() {
-      init_preact_module();
-      init_divider();
-    }
-  });
-
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/961a6d91-fcbe-402d-bcc5-f45091117cb9/menu.js
-  var menu_default;
-  var init_menu = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/961a6d91-fcbe-402d-bcc5-f45091117cb9/menu.js"() {
-      if (document.getElementById("c78045625c") === null) {
-        const element = document.createElement("style");
-        element.id = "c78045625c";
-        element.textContent = `._menu_1xkj6_1 {
-  position: absolute;
-  left: 0;
-  min-width: 100%;
-  padding: var(--space-extra-small) 0;
-  background-color: #1e1e1e; /* FIXME */
-  border-radius: var(--border-radius-2);
-  box-shadow: var(--box-shadow-menu);
-  color: rgba(255, 255, 255, 1); /* FIXME */
-  font-size: var(--font-size-12);
-  overflow-y: auto;
-}
-._menu_1xkj6_1::-webkit-scrollbar {
-  display: none;
-}
-
-._hidden_1xkj6_17 {
-  pointer-events: none;
-  visibility: hidden;
-}
-
-@media screen and (-webkit-min-device-pixel-ratio: 1.5),
-  screen and (min-resolution: 1.5dppx) {
-  ._menu_1xkj6_1 {
-    -webkit-font-smoothing: antialiased;
-  }
-}
-
-._optionHeader_1xkj6_29,
-._optionValue_1xkj6_30 {
-  overflow: hidden;
-  padding: 4px var(--space-medium) 4px 32px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-._optionHeader_1xkj6_29 {
-  color: rgba(255, 255, 255, 0.7); /* FIXME */
-  font-size: var(--font-size-12);
-}
-
-._optionValue_1xkj6_30 {
-  position: relative;
-}
-._optionValueSelected_1xkj6_45 {
-  background-color: var(--figma-color-bg-brand);
-}
-._optionValueDisabled_1xkj6_48 {
-  color: rgba(255, 255, 255, 0.4); /* FIXME */
-}
-
-._optionSeparator_1xkj6_52 {
-  width: 100%;
-  height: 1px;
-  margin: var(--space-extra-small) 0;
-  background-color: #444444; /* FIXME */
-}
-
-._input_1xkj6_59 {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-._checkIcon_1xkj6_70 {
-  position: absolute;
-  top: 5px;
-  left: var(--space-extra-small);
-}
-
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9AY3JlYXRlLWZpZ21hLXBsdWdpbi91aS9saWIvY3NzL21lbnUuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0Usa0JBQWtCO0VBQ2xCLE9BQU87RUFDUCxlQUFlO0VBQ2YsbUNBQW1DO0VBQ25DLHlCQUF5QixFQUFFLFVBQVU7RUFDckMscUNBQXFDO0VBQ3JDLGtDQUFrQztFQUNsQyw2QkFBNkIsRUFBRSxVQUFVO0VBQ3pDLDhCQUE4QjtFQUM5QixnQkFBZ0I7QUFDbEI7QUFDQTtFQUNFLGFBQWE7QUFDZjs7QUFFQTtFQUNFLG9CQUFvQjtFQUNwQixrQkFBa0I7QUFDcEI7O0FBRUE7O0VBRUU7SUFDRSxtQ0FBbUM7RUFDckM7QUFDRjs7QUFFQTs7RUFFRSxnQkFBZ0I7RUFDaEIseUNBQXlDO0VBQ3pDLHVCQUF1QjtFQUN2QixtQkFBbUI7QUFDckI7O0FBRUE7RUFDRSwrQkFBK0IsRUFBRSxVQUFVO0VBQzNDLDhCQUE4QjtBQUNoQzs7QUFFQTtFQUNFLGtCQUFrQjtBQUNwQjtBQUNBO0VBQ0UsNkNBQTZDO0FBQy9DO0FBQ0E7RUFDRSwrQkFBK0IsRUFBRSxVQUFVO0FBQzdDOztBQUVBO0VBQ0UsV0FBVztFQUNYLFdBQVc7RUFDWCxrQ0FBa0M7RUFDbEMseUJBQXlCLEVBQUUsVUFBVTtBQUN2Qzs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixNQUFNO0VBQ04sUUFBUTtFQUNSLFNBQVM7RUFDVCxPQUFPO0VBQ1AsY0FBYztFQUNkLFdBQVc7RUFDWCxZQUFZO0FBQ2Q7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsUUFBUTtFQUNSLDhCQUE4QjtBQUNoQyIsImZpbGUiOiJub2RlX21vZHVsZXMvQGNyZWF0ZS1maWdtYS1wbHVnaW4vdWkvbGliL2Nzcy9tZW51LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5tZW51IHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICBsZWZ0OiAwO1xuICBtaW4td2lkdGg6IDEwMCU7XG4gIHBhZGRpbmc6IHZhcigtLXNwYWNlLWV4dHJhLXNtYWxsKSAwO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjMWUxZTFlOyAvKiBGSVhNRSAqL1xuICBib3JkZXItcmFkaXVzOiB2YXIoLS1ib3JkZXItcmFkaXVzLTIpO1xuICBib3gtc2hhZG93OiB2YXIoLS1ib3gtc2hhZG93LW1lbnUpO1xuICBjb2xvcjogcmdiYSgyNTUsIDI1NSwgMjU1LCAxKTsgLyogRklYTUUgKi9cbiAgZm9udC1zaXplOiB2YXIoLS1mb250LXNpemUtMTIpO1xuICBvdmVyZmxvdy15OiBhdXRvO1xufVxuLm1lbnU6Oi13ZWJraXQtc2Nyb2xsYmFyIHtcbiAgZGlzcGxheTogbm9uZTtcbn1cblxuLmhpZGRlbiB7XG4gIHBvaW50ZXItZXZlbnRzOiBub25lO1xuICB2aXNpYmlsaXR5OiBoaWRkZW47XG59XG5cbkBtZWRpYSBzY3JlZW4gYW5kICgtd2Via2l0LW1pbi1kZXZpY2UtcGl4ZWwtcmF0aW86IDEuNSksXG4gIHNjcmVlbiBhbmQgKG1pbi1yZXNvbHV0aW9uOiAxLjVkcHB4KSB7XG4gIC5tZW51IHtcbiAgICAtd2Via2l0LWZvbnQtc21vb3RoaW5nOiBhbnRpYWxpYXNlZDtcbiAgfVxufVxuXG4ub3B0aW9uSGVhZGVyLFxuLm9wdGlvblZhbHVlIHtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgcGFkZGluZzogNHB4IHZhcigtLXNwYWNlLW1lZGl1bSkgNHB4IDMycHg7XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xuICB3aGl0ZS1zcGFjZTogbm93cmFwO1xufVxuXG4ub3B0aW9uSGVhZGVyIHtcbiAgY29sb3I6IHJnYmEoMjU1LCAyNTUsIDI1NSwgMC43KTsgLyogRklYTUUgKi9cbiAgZm9udC1zaXplOiB2YXIoLS1mb250LXNpemUtMTIpO1xufVxuXG4ub3B0aW9uVmFsdWUge1xuICBwb3NpdGlvbjogcmVsYXRpdmU7XG59XG4ub3B0aW9uVmFsdWVTZWxlY3RlZCB7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLWJnLWJyYW5kKTtcbn1cbi5vcHRpb25WYWx1ZURpc2FibGVkIHtcbiAgY29sb3I6IHJnYmEoMjU1LCAyNTUsIDI1NSwgMC40KTsgLyogRklYTUUgKi9cbn1cblxuLm9wdGlvblNlcGFyYXRvciB7XG4gIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDFweDtcbiAgbWFyZ2luOiB2YXIoLS1zcGFjZS1leHRyYS1zbWFsbCkgMDtcbiAgYmFja2dyb3VuZC1jb2xvcjogIzQ0NDQ0NDsgLyogRklYTUUgKi9cbn1cblxuLmlucHV0IHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICB0b3A6IDA7XG4gIHJpZ2h0OiAwO1xuICBib3R0b206IDA7XG4gIGxlZnQ6IDA7XG4gIGRpc3BsYXk6IGJsb2NrO1xuICB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiAxMDAlO1xufVxuXG4uY2hlY2tJY29uIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICB0b3A6IDVweDtcbiAgbGVmdDogdmFyKC0tc3BhY2UtZXh0cmEtc21hbGwpO1xufVxuIl19 */`;
-        document.head.append(element);
-      }
-      menu_default = { "menu": "_menu_1xkj6_1", "hidden": "_hidden_1xkj6_17", "optionHeader": "_optionHeader_1xkj6_29", "optionValue": "_optionValue_1xkj6_30", "optionValueSelected": "_optionValueSelected_1xkj6_45", "optionValueDisabled": "_optionValueDisabled_1xkj6_48", "optionSeparator": "_optionSeparator_1xkj6_52", "input": "_input_1xkj6_59", "checkIcon": "_checkIcon_1xkj6_70" };
-    }
-  });
-
   // node_modules/@create-figma-plugin/ui/lib/utilities/get-current-from-ref.js
   function getCurrentFromRef(ref) {
     if (ref.current === null) {
@@ -1083,531 +912,10 @@
     }
   });
 
-  // node_modules/@create-figma-plugin/ui/lib/hooks/use-mouse-down-outside.js
-  function useMouseDownOutside(options) {
-    const { ref, onMouseDownOutside } = options;
-    h2(function() {
-      function handleBlur() {
-        onMouseDownOutside();
-      }
-      function handleMouseDown(event) {
-        const element = getCurrentFromRef(ref);
-        if (element === event.target || element.contains(event.target)) {
-          return;
-        }
-        onMouseDownOutside();
-      }
-      window.addEventListener("blur", handleBlur);
-      window.addEventListener("mousedown", handleMouseDown);
-      return function() {
-        window.removeEventListener("blur", handleBlur);
-        window.removeEventListener("mousedown", handleMouseDown);
-      };
-    }, [ref, onMouseDownOutside]);
-  }
-  var init_use_mouse_down_outside = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/hooks/use-mouse-down-outside.js"() {
-      init_hooks_module();
-      init_get_current_from_ref();
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/hooks/use-scrollable-menu.js
-  function useScrollableMenu(options) {
-    const { itemIdDataAttributeName, menuElementRef, selectedId, setSelectedId } = options;
-    const getItemElements = T2(function() {
-      return Array.from(getCurrentFromRef(menuElementRef).querySelectorAll(`[${itemIdDataAttributeName}]`)).filter(function(element) {
-        return element.hasAttribute("disabled") === false;
-      });
-    }, [itemIdDataAttributeName, menuElementRef]);
-    const findIndexByItemId = T2(function(id) {
-      if (id === null) {
-        return -1;
-      }
-      const index = getItemElements().findIndex(function(element) {
-        return element.getAttribute(itemIdDataAttributeName) === id;
-      });
-      if (index === -1) {
-        throw new Error("Invariant violation");
-      }
-      return index;
-    }, [getItemElements, itemIdDataAttributeName]);
-    const updateScrollPosition = T2(function(id) {
-      const itemElements = getItemElements();
-      const index = findIndexByItemId(id);
-      const selectedElement = itemElements[index];
-      const menuElement = getCurrentFromRef(menuElementRef);
-      const scrollTop = menuElement.scrollTop;
-      const offsetTop = computeRelativeOffsetTop(selectedElement, menuElement);
-      if (offsetTop < scrollTop) {
-        menuElement.scrollTop = offsetTop;
-        return;
-      }
-      const offsetBottom = offsetTop + selectedElement.offsetHeight;
-      if (offsetBottom > menuElement.scrollTop + menuElement.offsetHeight) {
-        menuElement.scrollTop = offsetBottom - menuElement.offsetHeight;
-      }
-    }, [findIndexByItemId, getItemElements, menuElementRef]);
-    const handleScrollableMenuKeyDown = T2(function(event) {
-      const key = event.key;
-      if (key === "ArrowDown" || key === "ArrowUp") {
-        const itemElements = getItemElements();
-        const index = findIndexByItemId(selectedId);
-        let newIndex;
-        if (key === "ArrowDown") {
-          newIndex = index === -1 || index === itemElements.length - 1 ? 0 : index + 1;
-        } else {
-          newIndex = index === -1 || index === 0 ? itemElements.length - 1 : index - 1;
-        }
-        const selectedElement = itemElements[newIndex];
-        const newSelectedId = selectedElement.getAttribute(itemIdDataAttributeName);
-        setSelectedId(newSelectedId);
-        updateScrollPosition(newSelectedId);
-      }
-    }, [
-      getItemElements,
-      findIndexByItemId,
-      itemIdDataAttributeName,
-      setSelectedId,
-      selectedId,
-      updateScrollPosition
-    ]);
-    const handleScrollableMenuItemMouseMove = T2(function(event) {
-      const id = event.currentTarget.getAttribute(itemIdDataAttributeName);
-      if (id !== selectedId) {
-        setSelectedId(id);
-      }
-    }, [itemIdDataAttributeName, selectedId, setSelectedId]);
-    return {
-      handleScrollableMenuItemMouseMove,
-      handleScrollableMenuKeyDown
-    };
-  }
-  function computeRelativeOffsetTop(targetElement, parentElement) {
-    let element = targetElement;
-    let offsetTop = 0;
-    while (element !== parentElement) {
-      offsetTop += element.offsetTop;
-      if (element.parentElement === null) {
-        throw new Error("`element.parentElement` is `null`");
-      }
-      element = element.parentElement;
-    }
-    return offsetTop;
-  }
-  var init_use_scrollable_menu = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/hooks/use-scrollable-menu.js"() {
-      init_hooks_module();
-      init_get_current_from_ref();
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/icons/icon-8/icon-control-chevron-down-8.js
-  var IconControlChevronDown8;
-  var init_icon_control_chevron_down_8 = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/icons/icon-8/icon-control-chevron-down-8.js"() {
-      init_create_icon();
-      IconControlChevronDown8 = createIcon("m3.64641 6.35352-3-3 .70711-.70711 2.64644 2.64645 2.64645-2.64645.70711.70711-3 3-.35356.35355-.35355-.35355Z", { height: 8, width: 8 });
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/icons/icon-16/icon-menu-checkmark-checked-16.js
-  var IconMenuCheckmarkChecked16;
-  var init_icon_menu_checkmark_checked_16 = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/icons/icon-16/icon-menu-checkmark-checked-16.js"() {
-      init_create_icon();
-      IconMenuCheckmarkChecked16 = createIcon("M13.2069 5.20724 7.70688 10.7072l-.70711.7072-.70711-.7072-3-2.99996 1.41422-1.41421 2.29289 2.29289 4.79293-4.79289 1.4142 1.41421Z", { height: 16, width: 16 });
-    }
-  });
-
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/deab1246-5236-4637-be3b-26bdcfae72e4/dropdown.js
-  var dropdown_default;
-  var init_dropdown = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/deab1246-5236-4637-be3b-26bdcfae72e4/dropdown.js"() {
-      if (document.getElementById("dffb4a029a") === null) {
-        const element = document.createElement("style");
-        element.id = "dffb4a029a";
-        element.textContent = `._dropdown_idjri_1 {
-  position: relative;
-  z-index: var(--z-index-1);
-  display: flex;
-  width: 100%;
-  min-width: 0; /* See https://css-tricks.com/flexbox-truncated-text/ */
-  height: 28px;
-  align-items: center;
-  padding-left: var(--space-extra-small);
-  color: var(--figma-color-text);
-}
-._dropdown_idjri_1:not(._disabled_idjri_12):focus-within {
-  z-index: var(--z-index-2); /* stack \`.dropdown\` over its sibling elements */
-  outline: 0;
-}
-
-._disabled_idjri_12 {
-  cursor: not-allowed;
-}
-
-._icon_idjri_21 {
-  position: absolute;
-  top: 14px;
-  left: 16px;
-  color: var(--figma-color-icon-secondary);
-  text-align: center;
-  transform: translate(-50%, -50%);
-}
-._disabled_idjri_12 ._icon_idjri_21 {
-  color: var(--figma-color-icon-disabled);
-}
-
-._empty_idjri_33 {
-  flex-grow: 1;
-}
-
-._value_idjri_37 {
-  overflow: hidden;
-  margin-right: 6px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-._dropdown_idjri_1:not(._disabled_idjri_12):hover ._value_idjri_37,
-._dropdown_idjri_1:not(._disabled_idjri_12):focus ._value_idjri_37,
-._dropdown_idjri_1:not(._disabled_idjri_12):focus-within ._value_idjri_37 {
-  flex-grow: 1;
-}
-._disabled_idjri_12 ._value_idjri_37 {
-  color: var(--figma-color-text-disabled);
-}
-._hasIcon_idjri_51 ._value_idjri_37 {
-  padding-left: var(--space-extra-large);
-}
-
-._placeholder_idjri_55 {
-  color: var(--figma-color-text-tertiary);
-}
-
-._chevronIcon_idjri_59 {
-  margin-right: var(--space-extra-small);
-  color: var(--figma-color-icon-secondary);
-}
-._dropdown_idjri_1:not(._disabled_idjri_12):hover ._chevronIcon_idjri_59 {
-  color: var(--figma-color-icon);
-}
-._disabled_idjri_12 ._chevronIcon_idjri_59 {
-  color: var(--figma-color-icon-disabled);
-}
-
-._border_idjri_70 {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  border: 1px solid transparent;
-  border-radius: var(--border-radius-2);
-}
-._hasBorder_idjri_79 ._border_idjri_70,
-._dropdown_idjri_1:not(._disabled_idjri_12):hover ._border_idjri_70 {
-  border-color: var(--figma-color-border);
-}
-
-._underline_idjri_84 {
-  position: absolute;
-  right: var(--space-extra-small);
-  bottom: 0;
-  left: var(--space-extra-small);
-  height: 1px;
-  background-color: var(--figma-color-border);
-}
-._dropdown_idjri_1:not(._disabled_idjri_12):hover ._underline_idjri_84,
-._dropdown_idjri_1:not(._disabled_idjri_12):focus ._underline_idjri_84 {
-  background-color: transparent;
-}
-
-._menu_idjri_97 {
-  max-width: 0;
-  max-height: 0;
-}
-
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9AY3JlYXRlLWZpZ21hLXBsdWdpbi91aS9saWIvY29tcG9uZW50cy9kcm9wZG93bi9kcm9wZG93bi5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxrQkFBa0I7RUFDbEIseUJBQXlCO0VBQ3pCLGFBQWE7RUFDYixXQUFXO0VBQ1gsWUFBWSxFQUFFLHVEQUF1RDtFQUNyRSxZQUFZO0VBQ1osbUJBQW1CO0VBQ25CLHNDQUFzQztFQUN0Qyw4QkFBOEI7QUFDaEM7QUFDQTtFQUNFLHlCQUF5QixFQUFFLGdEQUFnRDtFQUMzRSxVQUFVO0FBQ1o7O0FBRUE7RUFDRSxtQkFBbUI7QUFDckI7O0FBRUE7RUFDRSxrQkFBa0I7RUFDbEIsU0FBUztFQUNULFVBQVU7RUFDVix3Q0FBd0M7RUFDeEMsa0JBQWtCO0VBQ2xCLGdDQUFnQztBQUNsQztBQUNBO0VBQ0UsdUNBQXVDO0FBQ3pDOztBQUVBO0VBQ0UsWUFBWTtBQUNkOztBQUVBO0VBQ0UsZ0JBQWdCO0VBQ2hCLGlCQUFpQjtFQUNqQix1QkFBdUI7RUFDdkIsbUJBQW1CO0FBQ3JCO0FBQ0E7OztFQUdFLFlBQVk7QUFDZDtBQUNBO0VBQ0UsdUNBQXVDO0FBQ3pDO0FBQ0E7RUFDRSxzQ0FBc0M7QUFDeEM7O0FBRUE7RUFDRSx1Q0FBdUM7QUFDekM7O0FBRUE7RUFDRSxzQ0FBc0M7RUFDdEMsd0NBQXdDO0FBQzFDO0FBQ0E7RUFDRSw4QkFBOEI7QUFDaEM7QUFDQTtFQUNFLHVDQUF1QztBQUN6Qzs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixNQUFNO0VBQ04sUUFBUTtFQUNSLFNBQVM7RUFDVCxPQUFPO0VBQ1AsNkJBQTZCO0VBQzdCLHFDQUFxQztBQUN2QztBQUNBOztFQUVFLHVDQUF1QztBQUN6Qzs7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQiwrQkFBK0I7RUFDL0IsU0FBUztFQUNULDhCQUE4QjtFQUM5QixXQUFXO0VBQ1gsMkNBQTJDO0FBQzdDO0FBQ0E7O0VBRUUsNkJBQTZCO0FBQy9COztBQUVBO0VBQ0UsWUFBWTtFQUNaLGFBQWE7QUFDZiIsImZpbGUiOiJub2RlX21vZHVsZXMvQGNyZWF0ZS1maWdtYS1wbHVnaW4vdWkvbGliL2NvbXBvbmVudHMvZHJvcGRvd24vZHJvcGRvd24uY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmRyb3Bkb3duIHtcbiAgcG9zaXRpb246IHJlbGF0aXZlO1xuICB6LWluZGV4OiB2YXIoLS16LWluZGV4LTEpO1xuICBkaXNwbGF5OiBmbGV4O1xuICB3aWR0aDogMTAwJTtcbiAgbWluLXdpZHRoOiAwOyAvKiBTZWUgaHR0cHM6Ly9jc3MtdHJpY2tzLmNvbS9mbGV4Ym94LXRydW5jYXRlZC10ZXh0LyAqL1xuICBoZWlnaHQ6IDI4cHg7XG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gIHBhZGRpbmctbGVmdDogdmFyKC0tc3BhY2UtZXh0cmEtc21hbGwpO1xuICBjb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItdGV4dCk7XG59XG4uZHJvcGRvd246bm90KC5kaXNhYmxlZCk6Zm9jdXMtd2l0aGluIHtcbiAgei1pbmRleDogdmFyKC0tei1pbmRleC0yKTsgLyogc3RhY2sgYC5kcm9wZG93bmAgb3ZlciBpdHMgc2libGluZyBlbGVtZW50cyAqL1xuICBvdXRsaW5lOiAwO1xufVxuXG4uZGlzYWJsZWQge1xuICBjdXJzb3I6IG5vdC1hbGxvd2VkO1xufVxuXG4uaWNvbiB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgdG9wOiAxNHB4O1xuICBsZWZ0OiAxNnB4O1xuICBjb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItaWNvbi1zZWNvbmRhcnkpO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIHRyYW5zZm9ybTogdHJhbnNsYXRlKC01MCUsIC01MCUpO1xufVxuLmRpc2FibGVkIC5pY29uIHtcbiAgY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLWljb24tZGlzYWJsZWQpO1xufVxuXG4uZW1wdHkge1xuICBmbGV4LWdyb3c6IDE7XG59XG5cbi52YWx1ZSB7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIG1hcmdpbi1yaWdodDogNnB4O1xuICB0ZXh0LW92ZXJmbG93OiBlbGxpcHNpcztcbiAgd2hpdGUtc3BhY2U6IG5vd3JhcDtcbn1cbi5kcm9wZG93bjpub3QoLmRpc2FibGVkKTpob3ZlciAudmFsdWUsXG4uZHJvcGRvd246bm90KC5kaXNhYmxlZCk6Zm9jdXMgLnZhbHVlLFxuLmRyb3Bkb3duOm5vdCguZGlzYWJsZWQpOmZvY3VzLXdpdGhpbiAudmFsdWUge1xuICBmbGV4LWdyb3c6IDE7XG59XG4uZGlzYWJsZWQgLnZhbHVlIHtcbiAgY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLXRleHQtZGlzYWJsZWQpO1xufVxuLmhhc0ljb24gLnZhbHVlIHtcbiAgcGFkZGluZy1sZWZ0OiB2YXIoLS1zcGFjZS1leHRyYS1sYXJnZSk7XG59XG5cbi5wbGFjZWhvbGRlciB7XG4gIGNvbG9yOiB2YXIoLS1maWdtYS1jb2xvci10ZXh0LXRlcnRpYXJ5KTtcbn1cblxuLmNoZXZyb25JY29uIHtcbiAgbWFyZ2luLXJpZ2h0OiB2YXIoLS1zcGFjZS1leHRyYS1zbWFsbCk7XG4gIGNvbG9yOiB2YXIoLS1maWdtYS1jb2xvci1pY29uLXNlY29uZGFyeSk7XG59XG4uZHJvcGRvd246bm90KC5kaXNhYmxlZCk6aG92ZXIgLmNoZXZyb25JY29uIHtcbiAgY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLWljb24pO1xufVxuLmRpc2FibGVkIC5jaGV2cm9uSWNvbiB7XG4gIGNvbG9yOiB2YXIoLS1maWdtYS1jb2xvci1pY29uLWRpc2FibGVkKTtcbn1cblxuLmJvcmRlciB7XG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgdG9wOiAwO1xuICByaWdodDogMDtcbiAgYm90dG9tOiAwO1xuICBsZWZ0OiAwO1xuICBib3JkZXI6IDFweCBzb2xpZCB0cmFuc3BhcmVudDtcbiAgYm9yZGVyLXJhZGl1czogdmFyKC0tYm9yZGVyLXJhZGl1cy0yKTtcbn1cbi5oYXNCb3JkZXIgLmJvcmRlcixcbi5kcm9wZG93bjpub3QoLmRpc2FibGVkKTpob3ZlciAuYm9yZGVyIHtcbiAgYm9yZGVyLWNvbG9yOiB2YXIoLS1maWdtYS1jb2xvci1ib3JkZXIpO1xufVxuXG4udW5kZXJsaW5lIHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICByaWdodDogdmFyKC0tc3BhY2UtZXh0cmEtc21hbGwpO1xuICBib3R0b206IDA7XG4gIGxlZnQ6IHZhcigtLXNwYWNlLWV4dHJhLXNtYWxsKTtcbiAgaGVpZ2h0OiAxcHg7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLWJvcmRlcik7XG59XG4uZHJvcGRvd246bm90KC5kaXNhYmxlZCk6aG92ZXIgLnVuZGVybGluZSxcbi5kcm9wZG93bjpub3QoLmRpc2FibGVkKTpmb2N1cyAudW5kZXJsaW5lIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdHJhbnNwYXJlbnQ7XG59XG5cbi5tZW51IHtcbiAgbWF4LXdpZHRoOiAwO1xuICBtYXgtaGVpZ2h0OiAwO1xufVxuIl19 */`;
-        document.head.append(element);
-      }
-      dropdown_default = { "dropdown": "_dropdown_idjri_1", "disabled": "_disabled_idjri_12", "icon": "_icon_idjri_21", "empty": "_empty_idjri_33", "value": "_value_idjri_37", "hasIcon": "_hasIcon_idjri_51", "placeholder": "_placeholder_idjri_55", "chevronIcon": "_chevronIcon_idjri_59", "border": "_border_idjri_70", "hasBorder": "_hasBorder_idjri_79", "underline": "_underline_idjri_84", "menu": "_menu_idjri_97" };
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/components/dropdown/private/constants.js
-  var INVALID_ID, ITEM_ID_DATA_ATTRIBUTE_NAME, VIEWPORT_MARGIN;
-  var init_constants = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/components/dropdown/private/constants.js"() {
-      INVALID_ID = null;
-      ITEM_ID_DATA_ATTRIBUTE_NAME = "data-dropdown-item-id";
-      VIEWPORT_MARGIN = 16;
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/components/dropdown/private/update-menu-element-layout.js
-  function updateMenuElementLayout(rootElement, menuElement, selectedId) {
-    const menuElementMaxWidth = window.innerWidth - 2 * VIEWPORT_MARGIN;
-    const menuElementMaxHeight = window.innerHeight - 2 * VIEWPORT_MARGIN;
-    menuElement.style.maxWidth = `${menuElementMaxWidth}px`;
-    menuElement.style.maxHeight = `${menuElementMaxHeight}px`;
-    const selectedLabelElement = getSelectedLabelElement(menuElement, selectedId);
-    const rootElementBoundingClientRect = rootElement.getBoundingClientRect();
-    const isScrollable = menuElement.offsetHeight === menuElementMaxHeight;
-    const left = computeMenuElementLeft({
-      menuWidth: menuElement.offsetWidth,
-      rootLeft: rootElementBoundingClientRect.left
-    });
-    const top = computeMenuElementTop({
-      isScrollable,
-      menuHeight: menuElement.offsetHeight,
-      rootHeight: rootElement.offsetHeight,
-      rootTop: rootElementBoundingClientRect.top,
-      selectedTop: selectedLabelElement === null ? null : selectedLabelElement.offsetTop
-    });
-    menuElement.style.left = `${left}px`;
-    menuElement.style.top = `${top}px`;
-    if (selectedLabelElement !== null && isScrollable === true) {
-      menuElement.scrollTop = computeMenuElementScrollTop({
-        menuHeight: menuElement.offsetHeight,
-        menuScrollHeight: menuElement.scrollHeight,
-        menuTop: menuElement.getBoundingClientRect().top,
-        rootHeight: rootElement.offsetHeight,
-        rootTop: rootElementBoundingClientRect.top,
-        selectedHeight: selectedLabelElement.offsetHeight,
-        selectedTop: selectedLabelElement.offsetTop
-      });
-    }
-  }
-  function getSelectedLabelElement(menuElement, selectedId) {
-    if (selectedId === INVALID_ID) {
-      return null;
-    }
-    const selectedInputElement = menuElement.querySelector(`[${ITEM_ID_DATA_ATTRIBUTE_NAME}='${selectedId}']`);
-    if (selectedInputElement === null) {
-      throw new Error("Invariant violation");
-    }
-    const selectedLabelElement = selectedInputElement.parentElement;
-    if (selectedLabelElement === null) {
-      throw new Error("Invariant violation");
-    }
-    return selectedLabelElement;
-  }
-  function computeMenuElementLeft(options) {
-    const { rootLeft, menuWidth } = options;
-    if (rootLeft <= VIEWPORT_MARGIN) {
-      return negate(rootLeft) + VIEWPORT_MARGIN;
-    }
-    const left = negate(rootLeft + menuWidth - (window.innerWidth - VIEWPORT_MARGIN));
-    return Math.min(left, 0);
-  }
-  function computeMenuElementTop(options) {
-    const viewportHeight = window.innerHeight;
-    const { isScrollable, menuHeight, rootHeight, rootTop, selectedTop } = options;
-    if (rootTop <= VIEWPORT_MARGIN) {
-      return negate(rootTop) + VIEWPORT_MARGIN;
-    }
-    if (rootTop + rootHeight >= viewportHeight - VIEWPORT_MARGIN) {
-      return negate(rootTop - (viewportHeight - VIEWPORT_MARGIN - menuHeight));
-    }
-    const minimumTop = negate(rootTop - VIEWPORT_MARGIN);
-    const maximumTop = viewportHeight - VIEWPORT_MARGIN - menuHeight - rootTop;
-    if (selectedTop === null || isScrollable === true) {
-      const top = Math.min(negate((menuHeight - rootHeight) / 2), 0);
-      return restrictToRange(top, minimumTop, maximumTop);
-    }
-    return restrictToRange(negate(selectedTop), minimumTop, maximumTop);
-  }
-  function computeMenuElementScrollTop(options) {
-    const viewportHeight = window.innerHeight;
-    const { menuHeight, menuScrollHeight, menuTop, rootHeight, rootTop, selectedTop, selectedHeight } = options;
-    const minimumScrollTop = 0;
-    const maximumScrollTop = menuScrollHeight - menuHeight;
-    if (rootTop <= menuTop) {
-      return restrictToRange(selectedTop, minimumScrollTop, maximumScrollTop);
-    }
-    if (rootTop + rootHeight >= viewportHeight - VIEWPORT_MARGIN) {
-      return restrictToRange(selectedTop + selectedHeight - menuHeight, minimumScrollTop, maximumScrollTop);
-    }
-    return restrictToRange(selectedTop - rootTop + menuTop, minimumScrollTop, maximumScrollTop);
-  }
-  function negate(number) {
-    return -1 * number;
-  }
-  function restrictToRange(number, minimum, maximum) {
-    return Math.min(Math.max(number, minimum), maximum);
-  }
-  var init_update_menu_element_layout = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/components/dropdown/private/update-menu-element-layout.js"() {
-      init_constants();
-    }
-  });
-
-  // node_modules/@create-figma-plugin/ui/lib/components/dropdown/dropdown.js
-  function Dropdown(_a) {
-    var _b = _a, { disabled = false, icon, name, options, onChange = function() {
-    }, onValueChange = function() {
-    }, placeholder, value, variant } = _b, rest = __objRest(_b, ["disabled", "icon", "name", "options", "onChange", "onValueChange", "placeholder", "value", "variant"]);
-    if (typeof icon === "string" && icon.length !== 1) {
-      throw new Error(`String \`icon\` must be a single character: ${icon}`);
-    }
-    const rootElementRef = _2(null);
-    const menuElementRef = _2(null);
-    const [isMenuVisible, setIsMenuVisible] = p2(false);
-    const index = findOptionIndexByValue(options, value);
-    if (value !== null && index === -1) {
-      throw new Error(`Invalid \`value\`: ${value}`);
-    }
-    const [selectedId, setSelectedId] = p2(index === -1 ? INVALID_ID : `${index}`);
-    const children = typeof options[index] === "undefined" ? "" : getDropdownOptionValue(options[index]);
-    const { handleScrollableMenuKeyDown, handleScrollableMenuItemMouseMove } = useScrollableMenu({
-      itemIdDataAttributeName: ITEM_ID_DATA_ATTRIBUTE_NAME,
-      menuElementRef,
-      selectedId,
-      setSelectedId
-    });
-    const triggerBlur = T2(function() {
-      setIsMenuVisible(false);
-      setSelectedId(INVALID_ID);
-      getCurrentFromRef(rootElementRef).blur();
-    }, []);
-    const triggerUpdateMenuElementLayout = T2(function(selectedId2) {
-      const rootElement = getCurrentFromRef(rootElementRef);
-      const menuElement = getCurrentFromRef(menuElementRef);
-      updateMenuElementLayout(rootElement, menuElement, selectedId2);
-    }, []);
-    const handleRootFocus = T2(function() {
-      setIsMenuVisible(true);
-      if (value === null) {
-        triggerUpdateMenuElementLayout(selectedId);
-        return;
-      }
-      const index2 = findOptionIndexByValue(options, value);
-      if (index2 === -1) {
-        throw new Error(`Invalid \`value\`: ${value}`);
-      }
-      const newSelectedId = `${index2}`;
-      setSelectedId(newSelectedId);
-      triggerUpdateMenuElementLayout(newSelectedId);
-    }, [options, selectedId, triggerUpdateMenuElementLayout, value]);
-    const handleRootKeyDown = T2(function(event) {
-      if (event.key === "Escape" || event.key === "Tab") {
-        triggerBlur();
-        return;
-      }
-      if (event.key === "Enter") {
-        if (selectedId !== INVALID_ID) {
-          const selectedElement = getCurrentFromRef(menuElementRef).querySelector(`[${ITEM_ID_DATA_ATTRIBUTE_NAME}='${selectedId}']`);
-          if (selectedElement === null) {
-            throw new Error("Invariant violation");
-          }
-          selectedElement.checked = true;
-          const changeEvent = document.createEvent("Event");
-          changeEvent.initEvent("change", true, true);
-          selectedElement.dispatchEvent(changeEvent);
-        }
-        triggerBlur();
-        return;
-      }
-      handleScrollableMenuKeyDown(event);
-    }, [handleScrollableMenuKeyDown, selectedId, triggerBlur]);
-    const handleRootMouseDown = T2(function(event) {
-      if (isMenuVisible === false) {
-        return;
-      }
-      event.preventDefault();
-      triggerBlur();
-    }, [isMenuVisible, triggerBlur]);
-    const handleMenuMouseDown = T2(function(event) {
-      event.stopPropagation();
-    }, []);
-    const handleOptionChange = T2(function(event) {
-      const id = event.currentTarget.getAttribute(ITEM_ID_DATA_ATTRIBUTE_NAME);
-      const optionValue = options[parseInt(id, 10)];
-      const newValue = optionValue.value;
-      onValueChange(newValue, name);
-      onChange(event);
-      triggerBlur();
-    }, [name, onChange, onValueChange, options, triggerBlur]);
-    const handleMouseDownOutside = T2(function() {
-      if (isMenuVisible === false) {
-        return;
-      }
-      triggerBlur();
-    }, [isMenuVisible, triggerBlur]);
-    useMouseDownOutside({
-      onMouseDownOutside: handleMouseDownOutside,
-      ref: rootElementRef
-    });
-    return h("div", __spreadProps(__spreadValues({}, rest), { ref: rootElementRef, class: createClassName([
-      dropdown_default.dropdown,
-      typeof variant === "undefined" ? null : variant === "border" ? dropdown_default.hasBorder : null,
-      typeof icon === "undefined" ? null : dropdown_default.hasIcon,
-      disabled === true ? dropdown_default.disabled : null
-    ]), onFocus: handleRootFocus, onKeyDown: disabled === true ? void 0 : handleRootKeyDown, onMouseDown: handleRootMouseDown, tabIndex: disabled === true ? -1 : 0 }), typeof icon === "undefined" ? null : h("div", { class: dropdown_default.icon }, icon), value === null ? typeof placeholder === "undefined" ? h("div", { class: dropdown_default.empty }) : h("div", { class: createClassName([
-      dropdown_default.value,
-      dropdown_default.placeholder
-    ]) }, placeholder) : h("div", { class: dropdown_default.value }, children), h("div", { class: dropdown_default.chevronIcon }, h(IconControlChevronDown8, null)), variant === "underline" ? h("div", { class: dropdown_default.underline }) : null, h("div", { class: dropdown_default.border }), h("div", { ref: menuElementRef, class: createClassName([
-      menu_default.menu,
-      dropdown_default.menu,
-      disabled === true || isMenuVisible === false ? menu_default.hidden : null
-    ]), onMouseDown: handleMenuMouseDown }, options.map(function(option, index2) {
-      if ("separator" in option) {
-        return h("hr", { key: index2, class: menu_default.optionSeparator });
-      }
-      if ("header" in option) {
-        return h("h1", { key: index2, class: menu_default.optionHeader }, option.header);
-      }
-      return h("label", { key: index2, class: createClassName([
-        menu_default.optionValue,
-        option.disabled === true ? menu_default.optionValueDisabled : null,
-        option.disabled !== true && `${index2}` === selectedId ? menu_default.optionValueSelected : null
-      ]) }, h("input", __spreadValues({ checked: value === option.value, class: menu_default.input, disabled: option.disabled === true, name, onChange: value === option.value ? void 0 : handleOptionChange, onClick: value === option.value ? triggerBlur : void 0, onMouseMove: handleScrollableMenuItemMouseMove, tabIndex: -1, type: "radio", value: `${option.value}` }, { [ITEM_ID_DATA_ATTRIBUTE_NAME]: `${index2}` })), option.value === value ? h("div", { class: menu_default.checkIcon }, h(IconMenuCheckmarkChecked16, null)) : null, typeof option.text === "undefined" ? option.value : option.text);
-    })));
-  }
-  function getDropdownOptionValue(option) {
-    if ("text" in option) {
-      return option.text;
-    }
-    if ("value" in option) {
-      return option.value;
-    }
-    throw new Error("Invariant violation");
-  }
-  function findOptionIndexByValue(options, value) {
-    if (value === null) {
-      return -1;
-    }
-    let index = 0;
-    for (const option of options) {
-      if ("value" in option && option.value === value) {
-        return index;
-      }
-      index += 1;
-    }
-    return -1;
-  }
-  var init_dropdown2 = __esm({
-    "node_modules/@create-figma-plugin/ui/lib/components/dropdown/dropdown.js"() {
-      init_preact_module();
-      init_hooks_module();
-      init_menu();
-      init_use_mouse_down_outside();
-      init_use_scrollable_menu();
-      init_icon_control_chevron_down_8();
-      init_icon_menu_checkmark_checked_16();
-      init_create_class_name();
-      init_get_current_from_ref();
-      init_dropdown();
-      init_constants();
-      init_update_menu_element_layout();
-    }
-  });
-
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/705501a9-4b83-4619-a6e8-d32676916d32/text.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/81225f74-0375-450d-af90-ce10a1e325d6/text.js
   var text_default;
   var init_text = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/705501a9-4b83-4619-a6e8-d32676916d32/text.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/81225f74-0375-450d-af90-ce10a1e325d6/text.js"() {
       if (document.getElementById("38f0619aa4") === null) {
         const element = document.createElement("style");
         element.id = "38f0619aa4";
@@ -1822,10 +1130,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/eedb7415-cfb7-43dc-9026-6e2d42b2dbb7/textbox.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/23e86d48-2762-4351-b4be-faa2bb561bbf/textbox.js
   var textbox_default;
   var init_textbox = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/eedb7415-cfb7-43dc-9026-6e2d42b2dbb7/textbox.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/23e86d48-2762-4351-b4be-faa2bb561bbf/textbox.js"() {
       if (document.getElementById("119378e3f7") === null) {
         const element = document.createElement("style");
         element.id = "119378e3f7";
@@ -1949,10 +1257,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/56279844-1398-4574-b578-950b84dd1a80/muted.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4ffaf53d-1320-4edc-82c4-aa41e8cdc94a/muted.js
   var muted_default;
   var init_muted = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/56279844-1398-4574-b578-950b84dd1a80/muted.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4ffaf53d-1320-4edc-82c4-aa41e8cdc94a/muted.js"() {
       if (document.getElementById("7456fb9670") === null) {
         const element = document.createElement("style");
         element.id = "7456fb9670";
@@ -1979,10 +1287,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2db2f47d-b5b8-446f-a7aa-01a8965cda2d/columns.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1e7ecfa5-bf46-4d11-8d46-093c65c13db1/columns.js
   var columns_default;
   var init_columns = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2db2f47d-b5b8-446f-a7aa-01a8965cda2d/columns.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1e7ecfa5-bf46-4d11-8d46-093c65c13db1/columns.js"() {
       if (document.getElementById("aa124f3cd7") === null) {
         const element = document.createElement("style");
         element.id = "aa124f3cd7";
@@ -2049,10 +1357,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/38f0c1b7-780b-4f2a-9337-902f1558e4ae/container.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/cb5405e9-4c68-403f-b559-fee4d468bf20/container.js
   var container_default;
   var init_container = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/38f0c1b7-780b-4f2a-9337-902f1558e4ae/container.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/cb5405e9-4c68-403f-b559-fee4d468bf20/container.js"() {
       if (document.getElementById("66b2a54611") === null) {
         const element = document.createElement("style");
         element.id = "66b2a54611";
@@ -2091,10 +1399,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c85ce29a-6e45-482a-bcd6-be82d632c555/middle-align.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/620487d0-08d9-475b-8826-7f378178905f/middle-align.js
   var middle_align_default;
   var init_middle_align = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c85ce29a-6e45-482a-bcd6-be82d632c555/middle-align.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/620487d0-08d9-475b-8826-7f378178905f/middle-align.js"() {
       if (document.getElementById("28fbd9538f") === null) {
         const element = document.createElement("style");
         element.id = "28fbd9538f";
@@ -2128,10 +1436,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/48d0b857-2fde-4c08-a93a-db101b66996b/vertical-space.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f682631c-60e6-4412-ad1b-d5a40c5d12c0/vertical-space.js
   var vertical_space_default;
   var init_vertical_space = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/48d0b857-2fde-4c08-a93a-db101b66996b/vertical-space.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f682631c-60e6-4412-ad1b-d5a40c5d12c0/vertical-space.js"() {
       if (document.getElementById("8d65b44de9") === null) {
         const element = document.createElement("style");
         element.id = "8d65b44de9";
@@ -2170,9 +1478,9 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1396716b-8d43-46de-ae02-59eb95354a6e/base.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/88f81156-cf6b-4995-9839-1736d4034e98/base.js
   var init_base = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1396716b-8d43-46de-ae02-59eb95354a6e/base.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/88f81156-cf6b-4995-9839-1736d4034e98/base.js"() {
       if (document.getElementById("46215c86c3") === null) {
         const element = document.createElement("style");
         element.id = "46215c86c3";
@@ -2305,9 +1613,6 @@ svg {
     "node_modules/@create-figma-plugin/ui/lib/index.js"() {
       init_banner2();
       init_button2();
-      init_disclosure2();
-      init_divider2();
-      init_dropdown2();
       init_loading_indicator2();
       init_text2();
       init_textbox2();
@@ -2321,9 +1626,9 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/93286b1e-fc58-444c-83f6-ed58f3b38e40/styles.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/5dafe3b3-9ffe-4a80-a152-464e94f885ae/styles.js
   var init_styles = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/93286b1e-fc58-444c-83f6-ed58f3b38e40/styles.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/5dafe3b3-9ffe-4a80-a152-464e94f885ae/styles.js"() {
       if (document.getElementById("5260158beb") === null) {
         const element = document.createElement("style");
         element.id = "5260158beb";
@@ -2349,10 +1654,10 @@ svg {
     }
   });
 
-  // src/setup/pages/data.ts
+  // src/setup/views/data.ts
   var DEFAULT_SIZE, PAGES;
   var init_data = __esm({
-    "src/setup/pages/data.ts"() {
+    "src/setup/views/data.ts"() {
       "use strict";
       DEFAULT_SIZE = { width: 300, height: 400 };
       PAGES = {
@@ -2363,6 +1668,52 @@ svg {
   });
 
   // node_modules/preact/compat/dist/compat.module.js
+  var compat_module_exports = {};
+  __export(compat_module_exports, {
+    Children: () => O2,
+    Component: () => d,
+    Fragment: () => p,
+    PureComponent: () => w3,
+    StrictMode: () => vn,
+    Suspense: () => D,
+    SuspenseList: () => V2,
+    __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: () => rn,
+    cloneElement: () => cn,
+    createContext: () => B,
+    createElement: () => h,
+    createFactory: () => on2,
+    createPortal: () => j3,
+    createRef: () => y,
+    default: () => bn,
+    findDOMNode: () => an,
+    flushSync: () => hn,
+    forwardRef: () => k3,
+    hydrate: () => q3,
+    isValidElement: () => ln,
+    lazy: () => M2,
+    memo: () => R,
+    render: () => Y,
+    startTransition: () => dn,
+    unmountComponentAtNode: () => fn,
+    unstable_batchedUpdates: () => sn,
+    useCallback: () => T2,
+    useContext: () => q2,
+    useDebugValue: () => x2,
+    useDeferredValue: () => pn,
+    useEffect: () => h2,
+    useErrorBoundary: () => P2,
+    useId: () => V,
+    useImperativeHandle: () => A2,
+    useInsertionEffect: () => yn,
+    useLayoutEffect: () => s2,
+    useMemo: () => F,
+    useReducer: () => y2,
+    useRef: () => _2,
+    useState: () => p2,
+    useSyncExternalStore: () => _n,
+    useTransition: () => mn,
+    version: () => un
+  });
   function g3(n2, t3) {
     for (var e3 in t3)
       n2[e3] = t3[e3];
@@ -2377,8 +1728,28 @@ svg {
         return true;
     return false;
   }
+  function E(n2, t3) {
+    return n2 === t3 && (0 !== n2 || 1 / n2 == 1 / t3) || n2 != n2 && t3 != t3;
+  }
   function w3(n2) {
     this.props = n2;
+  }
+  function R(n2, e3) {
+    function r3(n3) {
+      var t3 = this.props.ref, r4 = t3 == n3.ref;
+      return !r4 && t3 && (t3.call ? t3(null) : t3.current = null), e3 ? !e3(this.props, n3) || !r4 : C2(this.props, n3);
+    }
+    function u3(e4) {
+      return this.shouldComponentUpdate = r3, h(n2, e4);
+    }
+    return u3.displayName = "Memo(" + (n2.displayName || n2.name) + ")", u3.prototype.isReactComponent = true, u3.__f = true, u3;
+  }
+  function k3(n2) {
+    function t3(t4) {
+      var e3 = g3({}, t4);
+      return delete e3.ref, n2(e3, t4.ref || null);
+    }
+    return t3.$$typeof = N2, t3.render = t3, t3.prototype.isReactComponent = t3.__f = true, t3.displayName = "ForwardRef(" + (n2.displayName || n2.name) + ")", t3;
   }
   function L2(n2, t3, e3) {
     return n2 && (n2.__c && n2.__c.__H && (n2.__c.__H.__.forEach(function(n3) {
@@ -2399,8 +1770,50 @@ svg {
     var t3 = n2.__.__c;
     return t3 && t3.__a && t3.__a(n2);
   }
+  function M2(n2) {
+    var e3, r3, u3;
+    function o3(o4) {
+      if (e3 || (e3 = n2()).then(function(n3) {
+        r3 = n3.default || n3;
+      }, function(n3) {
+        u3 = n3;
+      }), u3)
+        throw u3;
+      if (!r3)
+        throw e3;
+      return h(r3, o4);
+    }
+    return o3.displayName = "Lazy", o3.__f = true, o3;
+  }
   function V2() {
     this.u = null, this.o = null;
+  }
+  function P3(n2) {
+    return this.getChildContext = function() {
+      return n2.context;
+    }, n2.children;
+  }
+  function $2(n2) {
+    var e3 = this, r3 = n2.i;
+    e3.componentWillUnmount = function() {
+      P(null, e3.l), e3.l = null, e3.i = null;
+    }, e3.i && e3.i !== r3 && e3.componentWillUnmount(), n2.__v ? (e3.l || (e3.i = r3, e3.l = { nodeType: 1, parentNode: r3, childNodes: [], appendChild: function(n3) {
+      this.childNodes.push(n3), e3.i.appendChild(n3);
+    }, insertBefore: function(n3, t3) {
+      this.childNodes.push(n3), e3.i.appendChild(n3);
+    }, removeChild: function(n3) {
+      this.childNodes.splice(this.childNodes.indexOf(n3) >>> 1, 1), e3.i.removeChild(n3);
+    } }), P(h(P3, { context: e3.context }, n2.__v), e3.l)) : e3.l && e3.componentWillUnmount();
+  }
+  function j3(n2, e3) {
+    var r3 = h($2, { __v: n2, i: e3 });
+    return r3.containerInfo = e3, r3;
+  }
+  function Y(n2, t3, e3) {
+    return null == t3.__k && (t3.textContent = ""), P(n2, t3), "function" == typeof e3 && e3(), n2 ? n2.__c : null;
+  }
+  function q3(n2, t3, e3) {
+    return S(n2, t3), "function" == typeof e3 && e3(), n2 ? n2.__c : null;
   }
   function J() {
   }
@@ -2410,7 +1823,41 @@ svg {
   function Q() {
     return this.defaultPrevented;
   }
-  var x3, N2, T3, I2, W, z3, B3, H2, Z, G, X, nn, tn, en, sn;
+  function on2(n2) {
+    return h.bind(null, n2);
+  }
+  function ln(n2) {
+    return !!n2 && n2.$$typeof === z3;
+  }
+  function cn(n2) {
+    return ln(n2) ? q.apply(null, arguments) : n2;
+  }
+  function fn(n2) {
+    return !!n2.__k && (P(null, n2), true);
+  }
+  function an(n2) {
+    return n2 && (n2.base || 1 === n2.nodeType && n2) || null;
+  }
+  function dn(n2) {
+    n2();
+  }
+  function pn(n2) {
+    return n2;
+  }
+  function mn() {
+    return [false, dn];
+  }
+  function _n(n2, t3) {
+    var e3 = t3(), r3 = p2({ h: { __: e3, v: t3 } }), u3 = r3[0].h, o3 = r3[1];
+    return s2(function() {
+      u3.__ = e3, u3.v = t3, E(u3.__, t3()) || o3({ h: u3 });
+    }, [n2, e3, t3]), h2(function() {
+      return E(u3.__, u3.v()) || o3({ h: u3 }), n2(function() {
+        E(u3.__, u3.v()) || o3({ h: u3 });
+      });
+    }, [n2]), e3;
+  }
+  var x3, N2, A3, O2, T3, I2, W, z3, B3, H2, Z, G, X, nn, tn, en, rn, un, sn, hn, vn, yn, bn;
   var init_compat_module = __esm({
     "node_modules/preact/compat/dist/compat.module.js"() {
       init_preact_module();
@@ -2425,6 +1872,17 @@ svg {
         n2.type && n2.type.__f && n2.ref && (n2.props.ref = n2.ref, n2.ref = null), x3 && x3(n2);
       };
       N2 = "undefined" != typeof Symbol && Symbol.for && Symbol.for("react.forward_ref") || 3911;
+      A3 = function(n2, t3) {
+        return null == n2 ? null : x(x(n2).map(t3));
+      };
+      O2 = { map: A3, forEach: A3, count: function(n2) {
+        return n2 ? x(n2).length : 0;
+      }, only: function(n2) {
+        var t3 = x(n2);
+        if (1 !== t3.length)
+          throw "Children.only";
+        return t3[0];
+      }, toArray: x };
       T3 = l.__e;
       l.__e = function(n2, t3, e3, r3) {
         if (n2.then) {
@@ -2542,9 +2000,19 @@ svg {
       l.__r = function(n2) {
         en && en(n2), X = n2.__c;
       };
+      rn = { ReactCurrentDispatcher: { current: { readContext: function(n2) {
+        return X.__n[n2.__c].props.value;
+      } } } };
+      un = "17.0.2";
       sn = function(n2, t3) {
         return n2(t3);
       };
+      hn = function(n2, t3) {
+        return n2(t3);
+      };
+      vn = p;
+      yn = s2;
+      bn = { useState: p2, useId: V, useReducer: y2, useEffect: h2, useLayoutEffect: s2, useInsertionEffect: yn, useTransition: mn, useDeferredValue: pn, useSyncExternalStore: _n, startTransition: dn, useRef: _2, useImperativeHandle: A2, useMemo: F, useCallback: T2, useContext: q2, useDebugValue: x2, version: "17.0.2", Children: O2, render: Y, hydrate: q3, unmountComponentAtNode: fn, createPortal: j3, createElement: h, createContext: B, createFactory: on2, cloneElement: cn, createRef: y, Fragment: p, isValidElement: ln, findDOMNode: an, Component: d, PureComponent: w3, memo: R, forwardRef: k3, flushSync: hn, unstable_batchedUpdates: sn, StrictMode: vn, Suspense: D, SuspenseList: V2, lazy: M2, __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: rn };
     }
   });
 
@@ -2586,7 +2054,7 @@ svg {
             while (index > 0) {
               var parentIndex = index - 1 >>> 1;
               var parent = heap[parentIndex];
-              if (compare(parent, node) > 0) {
+              if (compare2(parent, node) > 0) {
                 heap[parentIndex] = node;
                 heap[index] = parent;
                 index = parentIndex;
@@ -2604,8 +2072,8 @@ svg {
               var left = heap[leftIndex];
               var rightIndex = leftIndex + 1;
               var right = heap[rightIndex];
-              if (compare(left, node) < 0) {
-                if (rightIndex < length && compare(right, left) < 0) {
+              if (compare2(left, node) < 0) {
+                if (rightIndex < length && compare2(right, left) < 0) {
                   heap[index] = right;
                   heap[rightIndex] = node;
                   index = rightIndex;
@@ -2614,7 +2082,7 @@ svg {
                   heap[leftIndex] = node;
                   index = leftIndex;
                 }
-              } else if (rightIndex < length && compare(right, node) < 0) {
+              } else if (rightIndex < length && compare2(right, node) < 0) {
                 heap[index] = right;
                 heap[rightIndex] = node;
                 index = rightIndex;
@@ -2623,7 +2091,7 @@ svg {
               }
             }
           }
-          function compare(a4, b3) {
+          function compare2(a4, b3) {
             var diff = a4.sortIndex - b3.sortIndex;
             return diff !== 0 ? diff : a4.id - b3.id;
           }
@@ -3011,7 +2479,7 @@ svg {
   });
 
   // node_modules/use-context-selector/dist/index.modern.mjs
-  function E(r3) {
+  function E2(r3) {
     const t3 = B({ [d3]: { v: { current: r3 }, n: { current: -1 }, l: /* @__PURE__ */ new Set(), u: (e3) => e3() } });
     var o3;
     return t3[f3] = t3.Provider, t3.Provider = (o3 = t3.Provider, ({ value: e3, children: r4 }) => {
@@ -3042,10 +2510,10 @@ svg {
     }), delete t3.Consumer, t3;
   }
   function h3(e3, n2) {
-    const o3 = q(e3)[d3];
+    const o3 = q2(e3)[d3];
     if ("object" == typeof process && true && !o3)
       throw new Error("useContextSelector requires special context");
-    const { v: { current: c3 }, n: { current: u3 }, l: s3 } = o3, i4 = n2(c3), [p4, l3] = y((e4, r3) => {
+    const { v: { current: c3 }, n: { current: u3 }, l: s3 } = o3, i4 = n2(c3), [p4, l3] = y2((e4, r3) => {
       if (!r3)
         return [c3, i4];
       if ("p" in r3)
@@ -3089,7 +2557,7 @@ svg {
       init_hooks_module();
       init_index_modern();
       createProvider = (controller) => {
-        const StateContext = E(null);
+        const StateContext = E2(null);
         const DispatchContext = B(null);
         const Provider = (_a) => {
           var _b = _a, {
@@ -3116,7 +2584,7 @@ svg {
             value: actions
           }, children));
         };
-        const useActions = () => q(DispatchContext);
+        const useActions = () => q2(DispatchContext);
         const useStateContext = function(selector) {
           return h3(StateContext, selector);
         };
@@ -3126,7 +2594,7 @@ svg {
   });
 
   // src/setup/state/GlobalState.ts
-  var updateSize, GlobalState, useGlobalActions, useGlobalState;
+  var GlobalState, useGlobalActions, useGlobalState;
   var init_GlobalState = __esm({
     "src/setup/state/GlobalState.ts"() {
       "use strict";
@@ -3134,28 +2602,40 @@ svg {
       init_hooks_module();
       init_data();
       init_createProvider();
-      updateSize = (size) => {
-        emit("RESIZE", size);
-      };
       [GlobalState, useGlobalActions, useGlobalState] = createProvider(
-        ({ initialSelection, config }) => {
+        ({ initialSelection, initialConfig }) => {
           const [selection, setSelection] = p2(initialSelection);
           const [route, setRoute] = p2("index");
+          const [config, setConfig] = p2(initialConfig);
+          const [globalError, setGlobalError] = p2(
+            void 0
+          );
           h2(() => {
             return on("SELECTION_CHANGE", (data2) => {
               setSelection(data2);
             });
           }, []);
+          h2(() => {
+            return on("CONFIG_CHANGE", (data2) => {
+              setConfig(data2);
+            });
+          }, []);
           F(() => {
-            updateSize(PAGES[route]);
+            emit("RESIZE", PAGES[route]);
           }, [route]);
+          function setLanguage(language) {
+            emit("SET_LANGUAGE", language);
+          }
           const data = {
             route,
             selection,
-            config
+            config,
+            globalError
           };
           const actions = {
-            setRoute
+            setRoute,
+            setLanguage,
+            setGlobalError
           };
           return [data, actions];
         }
@@ -3163,137 +2643,1165 @@ svg {
     }
   });
 
-  // src/setup/pages/Index.tsx
+  // node_modules/use-sync-external-store/cjs/use-sync-external-store-shim.development.js
+  var require_use_sync_external_store_shim_development = __commonJS({
+    "node_modules/use-sync-external-store/cjs/use-sync-external-store-shim.development.js"(exports) {
+      "use strict";
+      if (true) {
+        (function() {
+          "use strict";
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
+          }
+          var React = (init_compat_module(), __toCommonJS(compat_module_exports));
+          var ReactSharedInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+          function error(format) {
+            {
+              {
+                for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                  args[_key2 - 1] = arguments[_key2];
+                }
+                printWarning("error", format, args);
+              }
+            }
+          }
+          function printWarning(level, format, args) {
+            {
+              var ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
+              var stack = ReactDebugCurrentFrame.getStackAddendum();
+              if (stack !== "") {
+                format += "%s";
+                args = args.concat([stack]);
+              }
+              var argsWithFormat = args.map(function(item) {
+                return String(item);
+              });
+              argsWithFormat.unshift("Warning: " + format);
+              Function.prototype.apply.call(console[level], console, argsWithFormat);
+            }
+          }
+          function is(x4, y3) {
+            return x4 === y3 && (x4 !== 0 || 1 / x4 === 1 / y3) || x4 !== x4 && y3 !== y3;
+          }
+          var objectIs = typeof Object.is === "function" ? Object.is : is;
+          var useState = React.useState, useEffect = React.useEffect, useLayoutEffect = React.useLayoutEffect, useDebugValue = React.useDebugValue;
+          var didWarnOld18Alpha = false;
+          var didWarnUncachedGetSnapshot = false;
+          function useSyncExternalStore2(subscribe, getSnapshot, getServerSnapshot) {
+            {
+              if (!didWarnOld18Alpha) {
+                if (React.startTransition !== void 0) {
+                  didWarnOld18Alpha = true;
+                  error("You are using an outdated, pre-release alpha of React 18 that does not support useSyncExternalStore. The use-sync-external-store shim will not work correctly. Upgrade to a newer pre-release.");
+                }
+              }
+            }
+            var value = getSnapshot();
+            {
+              if (!didWarnUncachedGetSnapshot) {
+                var cachedValue = getSnapshot();
+                if (!objectIs(value, cachedValue)) {
+                  error("The result of getSnapshot should be cached to avoid an infinite loop");
+                  didWarnUncachedGetSnapshot = true;
+                }
+              }
+            }
+            var _useState = useState({
+              inst: {
+                value,
+                getSnapshot
+              }
+            }), inst = _useState[0].inst, forceUpdate = _useState[1];
+            useLayoutEffect(function() {
+              inst.value = value;
+              inst.getSnapshot = getSnapshot;
+              if (checkIfSnapshotChanged(inst)) {
+                forceUpdate({
+                  inst
+                });
+              }
+            }, [subscribe, value, getSnapshot]);
+            useEffect(function() {
+              if (checkIfSnapshotChanged(inst)) {
+                forceUpdate({
+                  inst
+                });
+              }
+              var handleStoreChange = function() {
+                if (checkIfSnapshotChanged(inst)) {
+                  forceUpdate({
+                    inst
+                  });
+                }
+              };
+              return subscribe(handleStoreChange);
+            }, [subscribe]);
+            useDebugValue(value);
+            return value;
+          }
+          function checkIfSnapshotChanged(inst) {
+            var latestGetSnapshot = inst.getSnapshot;
+            var prevValue = inst.value;
+            try {
+              var nextValue = latestGetSnapshot();
+              return !objectIs(prevValue, nextValue);
+            } catch (error2) {
+              return true;
+            }
+          }
+          function useSyncExternalStore$1(subscribe, getSnapshot, getServerSnapshot) {
+            return getSnapshot();
+          }
+          var canUseDOM = !!(typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined");
+          var isServerEnvironment = !canUseDOM;
+          var shim = isServerEnvironment ? useSyncExternalStore$1 : useSyncExternalStore2;
+          var useSyncExternalStore$2 = React.useSyncExternalStore !== void 0 ? React.useSyncExternalStore : shim;
+          exports.useSyncExternalStore = useSyncExternalStore$2;
+          if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function") {
+            __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(new Error());
+          }
+        })();
+      }
+    }
+  });
+
+  // node_modules/use-sync-external-store/shim/index.js
+  var require_shim = __commonJS({
+    "node_modules/use-sync-external-store/shim/index.js"(exports, module) {
+      "use strict";
+      if (false) {
+        module.exports = null;
+      } else {
+        module.exports = require_use_sync_external_store_shim_development();
+      }
+    }
+  });
+
+  // node_modules/swr/_internal/dist/index.mjs
+  async function internalMutate(...args) {
+    const [cache2, _key, _data, _opts] = args;
+    const options = mergeObjects({
+      populateCache: true,
+      throwOnError: true
+    }, typeof _opts === "boolean" ? {
+      revalidate: _opts
+    } : _opts || {});
+    let populateCache = options.populateCache;
+    const rollbackOnErrorOption = options.rollbackOnError;
+    let optimisticData = options.optimisticData;
+    const revalidate = options.revalidate !== false;
+    const rollbackOnError = (error) => {
+      return typeof rollbackOnErrorOption === "function" ? rollbackOnErrorOption(error) : rollbackOnErrorOption !== false;
+    };
+    const throwOnError = options.throwOnError;
+    if (isFunction(_key)) {
+      const keyFilter = _key;
+      const matchedKeys = [];
+      const it = cache2.keys();
+      for (let keyIt = it.next(); !keyIt.done; keyIt = it.next()) {
+        const key = keyIt.value;
+        if (!key.startsWith("$inf$") && keyFilter(cache2.get(key)._k)) {
+          matchedKeys.push(key);
+        }
+      }
+      return Promise.all(matchedKeys.map(mutateByKey));
+    }
+    return mutateByKey(_key);
+    async function mutateByKey(_k) {
+      const [key] = serialize(_k);
+      if (!key)
+        return;
+      const [get, set] = createCacheHelper(cache2, key);
+      const [EVENT_REVALIDATORS, MUTATION, FETCH] = SWRGlobalState.get(cache2);
+      const revalidators = EVENT_REVALIDATORS[key];
+      const startRevalidate = () => {
+        if (revalidate) {
+          delete FETCH[key];
+          if (revalidators && revalidators[0]) {
+            return revalidators[0](MUTATE_EVENT).then(() => get().data);
+          }
+        }
+        return get().data;
+      };
+      if (args.length < 3) {
+        return startRevalidate();
+      }
+      let data = _data;
+      let error;
+      const beforeMutationTs = getTimestamp();
+      MUTATION[key] = [
+        beforeMutationTs,
+        0
+      ];
+      const hasOptimisticData = !isUndefined(optimisticData);
+      const state = get();
+      const displayedData = state.data;
+      const currentData = state._c;
+      const committedData = isUndefined(currentData) ? displayedData : currentData;
+      if (hasOptimisticData) {
+        optimisticData = isFunction(optimisticData) ? optimisticData(committedData) : optimisticData;
+        set({
+          data: optimisticData,
+          _c: committedData
+        });
+      }
+      if (isFunction(data)) {
+        try {
+          data = data(committedData);
+        } catch (err) {
+          error = err;
+        }
+      }
+      if (data && isFunction(data.then)) {
+        data = await data.catch((err) => {
+          error = err;
+        });
+        if (beforeMutationTs !== MUTATION[key][0]) {
+          if (error)
+            throw error;
+          return data;
+        } else if (error && hasOptimisticData && rollbackOnError(error)) {
+          populateCache = true;
+          data = committedData;
+          set({
+            data,
+            _c: UNDEFINED
+          });
+        }
+      }
+      if (populateCache) {
+        if (!error) {
+          if (isFunction(populateCache)) {
+            data = populateCache(data, committedData);
+          }
+          set({
+            data,
+            _c: UNDEFINED
+          });
+        }
+      }
+      MUTATION[key][1] = getTimestamp();
+      const res = await startRevalidate();
+      set({
+        _c: UNDEFINED
+      });
+      if (error) {
+        if (throwOnError)
+          throw error;
+        return;
+      }
+      return populateCache ? res : data;
+    }
+  }
+  var SWRGlobalState, EMPTY_CACHE, noop, UNDEFINED, OBJECT, isUndefined, isFunction, mergeObjects, STR_UNDEFINED, isWindowDefined, isDocumentDefined, hasRequestAnimationFrame, createCacheHelper, table, counter, stableHash, online, isOnline, onWindowEvent, offWindowEvent, isVisible, initFocus, initReconnect, preset, defaultConfigOptions, IS_REACT_LEGACY, IS_SERVER, rAF, useIsomorphicLayoutEffect, navigatorConnection, slowConnection, serialize, __timestamp, getTimestamp, FOCUS_EVENT, RECONNECT_EVENT, MUTATE_EVENT, constants, revalidateAllKeys, initCache, onErrorRetry, compare, cache, mutate, defaultConfig, mergeConfigs, SWRConfigContext, SWRConfig, enableDevtools, use, setupDevTools, normalize, useSWRConfig, middleware, BUILT_IN_MIDDLEWARE, withArgs, subscribeCallback;
+  var init_dist = __esm({
+    "node_modules/swr/_internal/dist/index.mjs"() {
+      init_compat_module();
+      SWRGlobalState = /* @__PURE__ */ new WeakMap();
+      EMPTY_CACHE = {};
+      noop = () => {
+      };
+      UNDEFINED = noop();
+      OBJECT = Object;
+      isUndefined = (v4) => v4 === UNDEFINED;
+      isFunction = (v4) => typeof v4 == "function";
+      mergeObjects = (a4, b3) => __spreadValues(__spreadValues({}, a4), b3);
+      STR_UNDEFINED = "undefined";
+      isWindowDefined = typeof window != STR_UNDEFINED;
+      isDocumentDefined = typeof document != STR_UNDEFINED;
+      hasRequestAnimationFrame = () => isWindowDefined && typeof window["requestAnimationFrame"] != STR_UNDEFINED;
+      createCacheHelper = (cache2, key) => {
+        const state = SWRGlobalState.get(cache2);
+        return [
+          () => cache2.get(key) || EMPTY_CACHE,
+          (info) => {
+            const prev = cache2.get(key);
+            state[5](key, mergeObjects(prev, info), prev || EMPTY_CACHE);
+          },
+          state[6]
+        ];
+      };
+      table = /* @__PURE__ */ new WeakMap();
+      counter = 0;
+      stableHash = (arg) => {
+        const type = typeof arg;
+        const constructor = arg && arg.constructor;
+        const isDate = constructor == Date;
+        let result;
+        let index;
+        if (OBJECT(arg) === arg && !isDate && constructor != RegExp) {
+          result = table.get(arg);
+          if (result)
+            return result;
+          result = ++counter + "~";
+          table.set(arg, result);
+          if (constructor == Array) {
+            result = "@";
+            for (index = 0; index < arg.length; index++) {
+              result += stableHash(arg[index]) + ",";
+            }
+            table.set(arg, result);
+          }
+          if (constructor == OBJECT) {
+            result = "#";
+            const keys = OBJECT.keys(arg).sort();
+            while (!isUndefined(index = keys.pop())) {
+              if (!isUndefined(arg[index])) {
+                result += index + ":" + stableHash(arg[index]) + ",";
+              }
+            }
+            table.set(arg, result);
+          }
+        } else {
+          result = isDate ? arg.toJSON() : type == "symbol" ? arg.toString() : type == "string" ? JSON.stringify(arg) : "" + arg;
+        }
+        return result;
+      };
+      online = true;
+      isOnline = () => online;
+      [onWindowEvent, offWindowEvent] = isWindowDefined && window.addEventListener ? [
+        window.addEventListener.bind(window),
+        window.removeEventListener.bind(window)
+      ] : [
+        noop,
+        noop
+      ];
+      isVisible = () => {
+        const visibilityState = isDocumentDefined && document.visibilityState;
+        return isUndefined(visibilityState) || visibilityState !== "hidden";
+      };
+      initFocus = (callback) => {
+        if (isDocumentDefined) {
+          document.addEventListener("visibilitychange", callback);
+        }
+        onWindowEvent("focus", callback);
+        return () => {
+          if (isDocumentDefined) {
+            document.removeEventListener("visibilitychange", callback);
+          }
+          offWindowEvent("focus", callback);
+        };
+      };
+      initReconnect = (callback) => {
+        const onOnline = () => {
+          online = true;
+          callback();
+        };
+        const onOffline = () => {
+          online = false;
+        };
+        onWindowEvent("online", onOnline);
+        onWindowEvent("offline", onOffline);
+        return () => {
+          offWindowEvent("online", onOnline);
+          offWindowEvent("offline", onOffline);
+        };
+      };
+      preset = {
+        isOnline,
+        isVisible
+      };
+      defaultConfigOptions = {
+        initFocus,
+        initReconnect
+      };
+      IS_REACT_LEGACY = !bn.useId;
+      IS_SERVER = !isWindowDefined || "Deno" in window;
+      rAF = (f4) => hasRequestAnimationFrame() ? window["requestAnimationFrame"](f4) : setTimeout(f4, 1);
+      useIsomorphicLayoutEffect = IS_SERVER ? h2 : s2;
+      navigatorConnection = typeof navigator !== "undefined" && navigator.connection;
+      slowConnection = !IS_SERVER && navigatorConnection && ([
+        "slow-2g",
+        "2g"
+      ].includes(navigatorConnection.effectiveType) || navigatorConnection.saveData);
+      serialize = (key) => {
+        if (isFunction(key)) {
+          try {
+            key = key();
+          } catch (err) {
+            key = "";
+          }
+        }
+        const args = key;
+        key = typeof key == "string" ? key : (Array.isArray(key) ? key.length : key) ? stableHash(key) : "";
+        return [
+          key,
+          args
+        ];
+      };
+      __timestamp = 0;
+      getTimestamp = () => ++__timestamp;
+      FOCUS_EVENT = 0;
+      RECONNECT_EVENT = 1;
+      MUTATE_EVENT = 2;
+      constants = {
+        __proto__: null,
+        FOCUS_EVENT,
+        RECONNECT_EVENT,
+        MUTATE_EVENT
+      };
+      revalidateAllKeys = (revalidators, type) => {
+        for (const key in revalidators) {
+          if (revalidators[key][0])
+            revalidators[key][0](type);
+        }
+      };
+      initCache = (provider, options) => {
+        if (!SWRGlobalState.has(provider)) {
+          const opts = mergeObjects(defaultConfigOptions, options);
+          const EVENT_REVALIDATORS = {};
+          const mutate2 = internalMutate.bind(UNDEFINED, provider);
+          let unmount = noop;
+          const subscriptions = {};
+          const subscribe = (key, callback) => {
+            const subs = subscriptions[key] || [];
+            subscriptions[key] = subs;
+            subs.push(callback);
+            return () => subs.splice(subs.indexOf(callback), 1);
+          };
+          const setter = (key, value, prev) => {
+            provider.set(key, value);
+            const subs = subscriptions[key];
+            if (subs) {
+              for (let i4 = subs.length; i4--; ) {
+                subs[i4](prev, value);
+              }
+            }
+          };
+          const initProvider = () => {
+            if (!SWRGlobalState.has(provider)) {
+              SWRGlobalState.set(provider, [
+                EVENT_REVALIDATORS,
+                {},
+                {},
+                {},
+                mutate2,
+                setter,
+                subscribe
+              ]);
+              if (!IS_SERVER) {
+                const releaseFocus = opts.initFocus(setTimeout.bind(UNDEFINED, revalidateAllKeys.bind(UNDEFINED, EVENT_REVALIDATORS, FOCUS_EVENT)));
+                const releaseReconnect = opts.initReconnect(setTimeout.bind(UNDEFINED, revalidateAllKeys.bind(UNDEFINED, EVENT_REVALIDATORS, RECONNECT_EVENT)));
+                unmount = () => {
+                  releaseFocus && releaseFocus();
+                  releaseReconnect && releaseReconnect();
+                  SWRGlobalState.delete(provider);
+                };
+              }
+            }
+          };
+          initProvider();
+          return [
+            provider,
+            mutate2,
+            initProvider,
+            unmount
+          ];
+        }
+        return [
+          provider,
+          SWRGlobalState.get(provider)[4]
+        ];
+      };
+      onErrorRetry = (_3, __, config, revalidate, opts) => {
+        const maxRetryCount = config.errorRetryCount;
+        const currentRetryCount = opts.retryCount;
+        const timeout = ~~((Math.random() + 0.5) * (1 << (currentRetryCount < 8 ? currentRetryCount : 8))) * config.errorRetryInterval;
+        if (!isUndefined(maxRetryCount) && currentRetryCount > maxRetryCount) {
+          return;
+        }
+        setTimeout(revalidate, timeout, opts);
+      };
+      compare = (currentData, newData) => stableHash(currentData) == stableHash(newData);
+      [cache, mutate] = initCache(/* @__PURE__ */ new Map());
+      defaultConfig = mergeObjects(
+        {
+          onLoadingSlow: noop,
+          onSuccess: noop,
+          onError: noop,
+          onErrorRetry,
+          onDiscarded: noop,
+          revalidateOnFocus: true,
+          revalidateOnReconnect: true,
+          revalidateIfStale: true,
+          shouldRetryOnError: true,
+          errorRetryInterval: slowConnection ? 1e4 : 5e3,
+          focusThrottleInterval: 5 * 1e3,
+          dedupingInterval: 2 * 1e3,
+          loadingTimeout: slowConnection ? 5e3 : 3e3,
+          compare,
+          isPaused: () => false,
+          cache,
+          mutate,
+          fallback: {}
+        },
+        preset
+      );
+      mergeConfigs = (a4, b3) => {
+        const v4 = mergeObjects(a4, b3);
+        if (b3) {
+          const { use: u1, fallback: f1 } = a4;
+          const { use: u22, fallback: f22 } = b3;
+          if (u1 && u22) {
+            v4.use = u1.concat(u22);
+          }
+          if (f1 && f22) {
+            v4.fallback = mergeObjects(f1, f22);
+          }
+        }
+        return v4;
+      };
+      SWRConfigContext = B({});
+      SWRConfig = (props) => {
+        const { value } = props;
+        const parentConfig = q2(SWRConfigContext);
+        const isFunctionalConfig = isFunction(value);
+        const config = F(() => isFunctionalConfig ? value(parentConfig) : value, [
+          isFunctionalConfig,
+          parentConfig,
+          value
+        ]);
+        const extendedConfig = F(() => isFunctionalConfig ? config : mergeConfigs(parentConfig, config), [
+          isFunctionalConfig,
+          parentConfig,
+          config
+        ]);
+        const provider = config && config.provider;
+        const [cacheContext] = p2(() => provider ? initCache(provider(extendedConfig.cache || cache), config) : UNDEFINED);
+        if (cacheContext) {
+          extendedConfig.cache = cacheContext[0];
+          extendedConfig.mutate = cacheContext[1];
+        }
+        useIsomorphicLayoutEffect(() => {
+          if (cacheContext) {
+            cacheContext[2] && cacheContext[2]();
+            return cacheContext[3];
+          }
+        }, []);
+        return h(SWRConfigContext.Provider, mergeObjects(props, {
+          value: extendedConfig
+        }));
+      };
+      enableDevtools = isWindowDefined && window.__SWR_DEVTOOLS_USE__;
+      use = enableDevtools ? window.__SWR_DEVTOOLS_USE__ : [];
+      setupDevTools = () => {
+        if (enableDevtools) {
+          window.__SWR_DEVTOOLS_REACT__ = bn;
+        }
+      };
+      normalize = (args) => {
+        return isFunction(args[1]) ? [
+          args[0],
+          args[1],
+          args[2] || {}
+        ] : [
+          args[0],
+          null,
+          (args[1] === null ? args[2] : args[1]) || {}
+        ];
+      };
+      useSWRConfig = () => {
+        return mergeObjects(defaultConfig, q2(SWRConfigContext));
+      };
+      middleware = (useSWRNext) => (key_, fetcher_, config) => {
+        const fetcher = fetcher_ && ((...args) => {
+          const key = serialize(key_)[0];
+          const [, , , PRELOAD] = SWRGlobalState.get(cache);
+          const req = PRELOAD[key];
+          if (req) {
+            delete PRELOAD[key];
+            return req;
+          }
+          return fetcher_(...args);
+        });
+        return useSWRNext(key_, fetcher, config);
+      };
+      BUILT_IN_MIDDLEWARE = use.concat(middleware);
+      withArgs = (hook) => {
+        return function useSWRArgs(...args) {
+          const fallbackConfig = useSWRConfig();
+          const [key, fn2, _config] = normalize(args);
+          const config = mergeConfigs(fallbackConfig, _config);
+          let next = hook;
+          const { use: use2 } = config;
+          const middleware2 = (use2 || []).concat(BUILT_IN_MIDDLEWARE);
+          for (let i4 = middleware2.length; i4--; ) {
+            next = middleware2[i4](next);
+          }
+          return next(key, fn2 || config.fetcher || null, config);
+        };
+      };
+      subscribeCallback = (key, callbacks, callback) => {
+        const keyedRevalidators = callbacks[key] || (callbacks[key] = []);
+        keyedRevalidators.push(callback);
+        return () => {
+          const index = keyedRevalidators.indexOf(callback);
+          if (index >= 0) {
+            keyedRevalidators[index] = keyedRevalidators[keyedRevalidators.length - 1];
+            keyedRevalidators.pop();
+          }
+        };
+      };
+      setupDevTools();
+    }
+  });
+
+  // node_modules/swr/core/dist/index.mjs
+  var import_shim, WITH_DEDUPE, useSWRHandler, SWRConfig2, useSWR;
+  var init_dist2 = __esm({
+    "node_modules/swr/core/dist/index.mjs"() {
+      init_compat_module();
+      import_shim = __toESM(require_shim(), 1);
+      init_dist();
+      init_dist();
+      WITH_DEDUPE = {
+        dedupe: true
+      };
+      useSWRHandler = (_key, fetcher, config) => {
+        const { cache: cache2, compare: compare2, suspense, fallbackData, revalidateOnMount, refreshInterval, refreshWhenHidden, refreshWhenOffline, keepPreviousData } = config;
+        const [EVENT_REVALIDATORS, MUTATION, FETCH] = SWRGlobalState.get(cache2);
+        const [key, fnArg] = serialize(_key);
+        const initialMountedRef = _2(false);
+        const unmountedRef = _2(false);
+        const keyRef = _2(key);
+        const fetcherRef = _2(fetcher);
+        const configRef = _2(config);
+        const getConfig = () => configRef.current;
+        const isActive = () => getConfig().isVisible() && getConfig().isOnline();
+        const [getCache, setCache, subscribeCache] = createCacheHelper(cache2, key);
+        const stateDependencies = _2({}).current;
+        const fallback = isUndefined(fallbackData) ? config.fallback[key] : fallbackData;
+        const isEqual = (prev, current) => {
+          let equal = true;
+          for (const _3 in stateDependencies) {
+            const t3 = _3;
+            if (!compare2(current[t3], prev[t3])) {
+              if (t3 === "data" && isUndefined(prev[t3])) {
+                if (!compare2(current[t3], returnedData)) {
+                  equal = false;
+                }
+              } else {
+                equal = false;
+              }
+            }
+          }
+          return equal;
+        };
+        const getSnapshot = F(() => {
+          const shouldStartRequest = (() => {
+            if (!key)
+              return false;
+            if (!fetcher)
+              return false;
+            if (!isUndefined(revalidateOnMount))
+              return revalidateOnMount;
+            if (getConfig().isPaused())
+              return false;
+            if (suspense)
+              return false;
+            return true;
+          })();
+          const getSelectedCache = () => {
+            const state = getCache();
+            const snapshot = mergeObjects(state);
+            delete snapshot._k;
+            if (!shouldStartRequest) {
+              return snapshot;
+            }
+            return __spreadValues({
+              isValidating: true,
+              isLoading: true
+            }, snapshot);
+          };
+          let memorizedSnapshot = getSelectedCache();
+          return () => {
+            const snapshot = getSelectedCache();
+            return isEqual(snapshot, memorizedSnapshot) ? memorizedSnapshot : memorizedSnapshot = snapshot;
+          };
+        }, [
+          cache2,
+          key
+        ]);
+        const cached = (0, import_shim.useSyncExternalStore)(T2(
+          (callback) => subscribeCache(key, (prev, current) => {
+            if (!isEqual(prev, current))
+              callback();
+          }),
+          [
+            cache2,
+            key
+          ]
+        ), getSnapshot, getSnapshot);
+        const isInitialMount = !initialMountedRef.current;
+        const cachedData = cached.data;
+        const data = isUndefined(cachedData) ? fallback : cachedData;
+        const error = cached.error;
+        const laggyDataRef = _2(data);
+        const returnedData = keepPreviousData ? isUndefined(cachedData) ? laggyDataRef.current : cachedData : data;
+        const shouldDoInitialRevalidation = (() => {
+          if (isInitialMount && !isUndefined(revalidateOnMount))
+            return revalidateOnMount;
+          if (getConfig().isPaused())
+            return false;
+          if (suspense)
+            return isUndefined(data) ? false : config.revalidateIfStale;
+          return isUndefined(data) || config.revalidateIfStale;
+        })();
+        const defaultValidatingState = !!(key && fetcher && isInitialMount && shouldDoInitialRevalidation);
+        const isValidating = isUndefined(cached.isValidating) ? defaultValidatingState : cached.isValidating;
+        const isLoading = isUndefined(cached.isLoading) ? defaultValidatingState : cached.isLoading;
+        const revalidate = T2(
+          async (revalidateOpts) => {
+            const currentFetcher = fetcherRef.current;
+            if (!key || !currentFetcher || unmountedRef.current || getConfig().isPaused()) {
+              return false;
+            }
+            let newData;
+            let startAt;
+            let loading = true;
+            const opts = revalidateOpts || {};
+            const shouldStartNewRequest = !FETCH[key] || !opts.dedupe;
+            const callbackSafeguard = () => {
+              if (IS_REACT_LEGACY) {
+                return !unmountedRef.current && key === keyRef.current && initialMountedRef.current;
+              }
+              return key === keyRef.current;
+            };
+            const finalState = {
+              isValidating: false,
+              isLoading: false
+            };
+            const finishRequestAndUpdateState = () => {
+              setCache(finalState);
+            };
+            const cleanupState = () => {
+              const requestInfo = FETCH[key];
+              if (requestInfo && requestInfo[1] === startAt) {
+                delete FETCH[key];
+              }
+            };
+            const initialState = {
+              isValidating: true
+            };
+            if (isUndefined(getCache().data)) {
+              initialState.isLoading = true;
+            }
+            try {
+              if (shouldStartNewRequest) {
+                setCache(initialState);
+                if (config.loadingTimeout && isUndefined(getCache().data)) {
+                  setTimeout(() => {
+                    if (loading && callbackSafeguard()) {
+                      getConfig().onLoadingSlow(key, config);
+                    }
+                  }, config.loadingTimeout);
+                }
+                FETCH[key] = [
+                  currentFetcher(fnArg),
+                  getTimestamp()
+                ];
+              }
+              [newData, startAt] = FETCH[key];
+              newData = await newData;
+              if (shouldStartNewRequest) {
+                setTimeout(cleanupState, config.dedupingInterval);
+              }
+              if (!FETCH[key] || FETCH[key][1] !== startAt) {
+                if (shouldStartNewRequest) {
+                  if (callbackSafeguard()) {
+                    getConfig().onDiscarded(key);
+                  }
+                }
+                return false;
+              }
+              finalState.error = UNDEFINED;
+              const mutationInfo = MUTATION[key];
+              if (!isUndefined(mutationInfo) && (startAt <= mutationInfo[0] || startAt <= mutationInfo[1] || mutationInfo[1] === 0)) {
+                finishRequestAndUpdateState();
+                if (shouldStartNewRequest) {
+                  if (callbackSafeguard()) {
+                    getConfig().onDiscarded(key);
+                  }
+                }
+                return false;
+              }
+              const cacheData = getCache().data;
+              finalState.data = compare2(cacheData, newData) ? cacheData : newData;
+              if (shouldStartNewRequest) {
+                if (callbackSafeguard()) {
+                  getConfig().onSuccess(newData, key, config);
+                }
+              }
+            } catch (err) {
+              cleanupState();
+              const currentConfig = getConfig();
+              const { shouldRetryOnError } = currentConfig;
+              if (!currentConfig.isPaused()) {
+                finalState.error = err;
+                if (shouldStartNewRequest && callbackSafeguard()) {
+                  currentConfig.onError(err, key, currentConfig);
+                  if (shouldRetryOnError === true || isFunction(shouldRetryOnError) && shouldRetryOnError(err)) {
+                    if (isActive()) {
+                      currentConfig.onErrorRetry(err, key, currentConfig, revalidate, {
+                        retryCount: (opts.retryCount || 0) + 1,
+                        dedupe: true
+                      });
+                    }
+                  }
+                }
+              }
+            }
+            loading = false;
+            finishRequestAndUpdateState();
+            return true;
+          },
+          [
+            key,
+            cache2
+          ]
+        );
+        const boundMutate = T2(
+          (...args) => {
+            return internalMutate(cache2, keyRef.current, ...args);
+          },
+          []
+        );
+        useIsomorphicLayoutEffect(() => {
+          fetcherRef.current = fetcher;
+          configRef.current = config;
+          if (!isUndefined(cachedData)) {
+            laggyDataRef.current = cachedData;
+          }
+        });
+        useIsomorphicLayoutEffect(() => {
+          if (!key)
+            return;
+          const softRevalidate = revalidate.bind(UNDEFINED, WITH_DEDUPE);
+          let nextFocusRevalidatedAt = 0;
+          const onRevalidate = (type) => {
+            if (type == constants.FOCUS_EVENT) {
+              const now = Date.now();
+              if (getConfig().revalidateOnFocus && now > nextFocusRevalidatedAt && isActive()) {
+                nextFocusRevalidatedAt = now + getConfig().focusThrottleInterval;
+                softRevalidate();
+              }
+            } else if (type == constants.RECONNECT_EVENT) {
+              if (getConfig().revalidateOnReconnect && isActive()) {
+                softRevalidate();
+              }
+            } else if (type == constants.MUTATE_EVENT) {
+              return revalidate();
+            }
+            return;
+          };
+          const unsubEvents = subscribeCallback(key, EVENT_REVALIDATORS, onRevalidate);
+          unmountedRef.current = false;
+          keyRef.current = key;
+          initialMountedRef.current = true;
+          setCache({
+            _k: fnArg
+          });
+          if (shouldDoInitialRevalidation) {
+            if (isUndefined(data) || IS_SERVER) {
+              softRevalidate();
+            } else {
+              rAF(softRevalidate);
+            }
+          }
+          return () => {
+            unmountedRef.current = true;
+            unsubEvents();
+          };
+        }, [
+          key
+        ]);
+        useIsomorphicLayoutEffect(() => {
+          let timer;
+          function next() {
+            const interval = isFunction(refreshInterval) ? refreshInterval(data) : refreshInterval;
+            if (interval && timer !== -1) {
+              timer = setTimeout(execute, interval);
+            }
+          }
+          function execute() {
+            if (!getCache().error && (refreshWhenHidden || getConfig().isVisible()) && (refreshWhenOffline || getConfig().isOnline())) {
+              revalidate(WITH_DEDUPE).then(next);
+            } else {
+              next();
+            }
+          }
+          next();
+          return () => {
+            if (timer) {
+              clearTimeout(timer);
+              timer = -1;
+            }
+          };
+        }, [
+          refreshInterval,
+          refreshWhenHidden,
+          refreshWhenOffline,
+          key
+        ]);
+        x2(returnedData);
+        if (suspense && isUndefined(data) && key) {
+          if (!IS_REACT_LEGACY && IS_SERVER) {
+            throw new Error("Fallback data is required when using suspense in SSR.");
+          }
+          fetcherRef.current = fetcher;
+          configRef.current = config;
+          unmountedRef.current = false;
+          throw isUndefined(error) ? revalidate(WITH_DEDUPE) : error;
+        }
+        return {
+          mutate: boundMutate,
+          get data() {
+            stateDependencies.data = true;
+            return returnedData;
+          },
+          get error() {
+            stateDependencies.error = true;
+            return error;
+          },
+          get isValidating() {
+            stateDependencies.isValidating = true;
+            return isValidating;
+          },
+          get isLoading() {
+            stateDependencies.isLoading = true;
+            return isLoading;
+          }
+        };
+      };
+      SWRConfig2 = OBJECT.defineProperty(SWRConfig, "defaultValue", {
+        value: defaultConfig
+      });
+      useSWR = withArgs(useSWRHandler);
+    }
+  });
+
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4e97c4f5-75bc-40d6-9daa-44d90eaf08d9/HeadingTab.js
+  var HeadingTab_default;
+  var init_HeadingTab = __esm({
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4e97c4f5-75bc-40d6-9daa-44d90eaf08d9/HeadingTab.js"() {
+      if (document.getElementById("617685254d") === null) {
+        const element = document.createElement("style");
+        element.id = "617685254d";
+        element.textContent = `._container_i57p0_1 {
+  cursor: pointer;
+  padding: 10px;
+}
+
+._container_i57p0_1:hover {
+  color: var(--figma-color-text) !important;
+}
+
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9zZXR1cC9jb21wb25lbnRzL0hlYWRpbmdUYWIvSGVhZGluZ1RhYi5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxlQUFlO0VBQ2YsYUFBYTtBQUNmOztBQUVBO0VBQ0UseUNBQXlDO0FBQzNDIiwiZmlsZSI6InNyYy9zZXR1cC9jb21wb25lbnRzL0hlYWRpbmdUYWIvSGVhZGluZ1RhYi5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuY29udGFpbmVyIHtcbiAgY3Vyc29yOiBwb2ludGVyO1xuICBwYWRkaW5nOiAxMHB4O1xufVxuXG4uY29udGFpbmVyOmhvdmVyIHtcbiAgY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLXRleHQpICFpbXBvcnRhbnQ7XG59XG4iXX0= */`;
+        document.head.append(element);
+      }
+      HeadingTab_default = { "container": "_container_i57p0_1" };
+    }
+  });
+
+  // src/setup/components/HeadingTab/HeadingTab.tsx
+  var HeadingTab;
+  var init_HeadingTab2 = __esm({
+    "src/setup/components/HeadingTab/HeadingTab.tsx"() {
+      "use strict";
+      init_preact_module();
+      init_HeadingTab();
+      HeadingTab = ({ name, route, currentRoute, onChange }) => {
+        return /* @__PURE__ */ h("div", {
+          className: HeadingTab_default.container,
+          style: {
+            color: route === currentRoute ? "var(--figma-color-text)" : "var(--figma-color-text-secondary)"
+          },
+          onClick: () => onChange(route)
+        }, name);
+      };
+    }
+  });
+
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d22d6e6a-5648-4668-b14b-cee8f63749cf/TopBar.js
+  var TopBar_default;
+  var init_TopBar = __esm({
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d22d6e6a-5648-4668-b14b-cee8f63749cf/TopBar.js"() {
+      if (document.getElementById("f0da42e164") === null) {
+        const element = document.createElement("style");
+        element.id = "f0da42e164";
+        element.textContent = `._container_1lpp9_1 {
+  display: flex;
+  justify-content: space-between;
+  margin: 0px -10px;
+}
+
+._languageContainer_1lpp9_7 {
+  display: flex;
+  margin: 5px 0px;
+}
+
+._tabsContainerLeft_1lpp9_12 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9zZXR1cC92aWV3cy9JbmRleC9Ub3BCYXIvVG9wQmFyLmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLGFBQWE7RUFDYiw4QkFBOEI7RUFDOUIsaUJBQWlCO0FBQ25COztBQUVBO0VBQ0UsYUFBYTtFQUNiLGVBQWU7QUFDakI7O0FBRUE7RUFDRSxhQUFhO0VBQ2IseUJBQXlCO0VBQ3pCLFNBQVM7QUFDWCIsImZpbGUiOiJzcmMvc2V0dXAvdmlld3MvSW5kZXgvVG9wQmFyL1RvcEJhci5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuY29udGFpbmVyIHtcbiAgZGlzcGxheTogZmxleDtcbiAganVzdGlmeS1jb250ZW50OiBzcGFjZS1iZXR3ZWVuO1xuICBtYXJnaW46IDBweCAtMTBweDtcbn1cblxuLmxhbmd1YWdlQ29udGFpbmVyIHtcbiAgZGlzcGxheTogZmxleDtcbiAgbWFyZ2luOiA1cHggMHB4O1xufVxuXG4udGFic0NvbnRhaW5lckxlZnQge1xuICBkaXNwbGF5OiBmbGV4O1xuICBqdXN0aWZ5LWNvbnRlbnQ6IGZsZXgtZW5kO1xuICBnYXA6IDE2cHg7XG59XG4iXX0= */`;
+        document.head.append(element);
+      }
+      TopBar_default = { "container": "_container_1lpp9_1", "languageContainer": "_languageContainer_1lpp9_7", "tabsContainerLeft": "_tabsContainerLeft_1lpp9_12" };
+    }
+  });
+
+  // src/setup/views/Index/TopBar/TopBar.tsx
+  var TopBar;
+  var init_TopBar2 = __esm({
+    "src/setup/views/Index/TopBar/TopBar.tsx"() {
+      "use strict";
+      init_preact_module();
+      init_HeadingTab2();
+      init_GlobalState();
+      init_TopBar();
+      TopBar = ({ languages }) => {
+        var _a;
+        const language = useGlobalState((c3) => {
+          var _a2;
+          return (_a2 = c3.config) == null ? void 0 : _a2.lang;
+        }) || ((_a = languages == null ? void 0 : languages[0]) == null ? void 0 : _a.tag) || "";
+        const { setLanguage } = useGlobalActions();
+        const route = useGlobalState((c3) => c3.route);
+        const { setRoute } = useGlobalActions();
+        const handleRouteChange = (route2) => {
+          setRoute(route2);
+        };
+        return /* @__PURE__ */ h("div", {
+          className: TopBar_default.container
+        }, /* @__PURE__ */ h("div", {
+          className: TopBar_default.languageContainer
+        }, languages && /* @__PURE__ */ h("select", {
+          value: language,
+          placeholder: "Language",
+          onChange: (e3) => {
+            setLanguage(e3.target.value);
+          }
+        }, languages.map((l3) => /* @__PURE__ */ h("option", {
+          key: l3.tag,
+          value: l3.tag
+        }, l3.name)))), /* @__PURE__ */ h("div", {
+          className: TopBar_default.tabsContainerLeft
+        }, /* @__PURE__ */ h(HeadingTab, {
+          name: "Settings",
+          route: "settings",
+          currentRoute: route,
+          onChange: handleRouteChange
+        })));
+      };
+    }
+  });
+
+  // src/setup/views/Index/Index.tsx
   var Index;
   var init_Index = __esm({
-    "src/setup/pages/Index.tsx"() {
+    "src/setup/views/Index/Index.tsx"() {
       "use strict";
       init_lib2();
       init_preact_module();
+      init_dist2();
       init_GlobalState();
+      init_TopBar2();
       Index = () => {
+        var _a;
         const selection = useGlobalState((c3) => c3.selection);
+        const { data: languageData, isLoading } = useSWR("/v2/projects/languages");
+        const languages = (_a = languageData == null ? void 0 : languageData._embedded) == null ? void 0 : _a.languages;
+        if (isLoading) {
+          return /* @__PURE__ */ h(MiddleAlign, null, /* @__PURE__ */ h(LoadingIndicator, null));
+        }
         return /* @__PURE__ */ h(Container, {
           space: "medium"
-        }, !(selection == null ? void 0 : selection.length) && /* @__PURE__ */ h(Text, null, "No nodes selected"), selection == null ? void 0 : selection.map((node) => /* @__PURE__ */ h(Text, {
+        }, /* @__PURE__ */ h(TopBar, {
+          languages
+        }), /* @__PURE__ */ h(VerticalSpace, {
+          space: "large"
+        }), !(selection == null ? void 0 : selection.length) && /* @__PURE__ */ h(Text, null, "No nodes selected"), selection == null ? void 0 : selection.map((node) => /* @__PURE__ */ h(p, {
           key: node.id
-        }, node.id, ": ", node.name)));
+        }, /* @__PURE__ */ h(Text, null, node.id, ": ", node.name), /* @__PURE__ */ h(VerticalSpace, {
+          space: "medium"
+        }))));
       };
     }
   });
 
-  // src/tolgee.ts
-  async function sendTolgeeRequest(endpoint, method, tolgeeConfig, body) {
-    if (!tolgeeConfig) {
-      console.log("ABORT: NO CONFIG");
-      return null;
-    }
-    return new Promise((resolve, reject) => {
-      const request = new XMLHttpRequest();
-      request.open(method, `${tolgeeConfig.url}/${endpoint}`);
-      request.setRequestHeader("X-API-Key", tolgeeConfig.apiKey);
-      request.setRequestHeader("Content-Type", "application/json");
-      request.responseType = "json";
-      request.onloadend = () => {
-        resolve({ status: request.status, data: request.response });
-      };
-      request.onerror = () => {
-        reject();
-      };
-      request.send(body);
-    });
-  }
-  var init_tolgee = __esm({
-    "src/tolgee.ts"() {
-      "use strict";
-    }
-  });
-
-  // src/setup/pages/Settings.tsx
-  var Settings;
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/786ac078-36e9-448b-bc60-92a5398ee61a/Settings.js
+  var Settings_default;
   var init_Settings = __esm({
-    "src/setup/pages/Settings.tsx"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/786ac078-36e9-448b-bc60-92a5398ee61a/Settings.js"() {
+      if (document.getElementById("fa1f875d10") === null) {
+        const element = document.createElement("style");
+        element.id = "fa1f875d10";
+        element.textContent = `._controlsContainer_jr4v9_1 {
+  display: flex;
+  bottom: 12px;
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  gap: 8px;
+}
+
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9zZXR1cC92aWV3cy9TZXR0aW5ncy9TZXR0aW5ncy5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxhQUFhO0VBQ2IsWUFBWTtFQUNaLGtCQUFrQjtFQUNsQixVQUFVO0VBQ1YsV0FBVztFQUNYLFFBQVE7QUFDViIsImZpbGUiOiJzcmMvc2V0dXAvdmlld3MvU2V0dGluZ3MvU2V0dGluZ3MuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmNvbnRyb2xzQ29udGFpbmVyIHtcbiAgZGlzcGxheTogZmxleDtcbiAgYm90dG9tOiAxMnB4O1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIGxlZnQ6IDEycHg7XG4gIHJpZ2h0OiAxMnB4O1xuICBnYXA6IDhweDtcbn1cbiJdfQ== */`;
+        document.head.append(element);
+      }
+      Settings_default = { "controlsContainer": "_controlsContainer_jr4v9_1" };
+    }
+  });
+
+  // src/setup/views/Settings/Settings.tsx
+  var Settings;
+  var init_Settings2 = __esm({
+    "src/setup/views/Settings/Settings.tsx"() {
       "use strict";
       init_hooks_module();
       init_lib2();
       init_preact_module();
       init_lib();
-      init_tolgee();
+      init_dist2();
+      init_Settings();
       init_GlobalState();
       Settings = () => {
-        var _a, _b, _c;
-        const config = useGlobalState((c3) => c3.config);
-        const [isLoading, setIsLoading] = p2(false);
-        const [previousConfig, setPreviousConfig] = p2(config != null ? config : {});
+        var _a, _b;
+        const config = useGlobalState((c3) => c3.config) || {};
         const [tolgeeConfig, setTolgeeConfig] = p2(config != null ? config : {});
-        const [languages, setLanguages] = p2([]);
-        const [open, setOpen] = p2(
-          !config || !!config.apiKey && !!config.url
-        );
+        const [isLoading, setIsLoading] = p2(false);
+        const { fetcher } = useSWRConfig();
         const { setRoute } = useGlobalActions();
         const [error, setError] = p2();
         h2(() => {
           setError(void 0);
         }, [tolgeeConfig]);
-        h2(() => {
-          if (config && config.apiKey && config.url) {
-            validateTolgeeCredentials();
-          }
-        }, [config]);
         const validateTolgeeCredentials = async () => {
-          var _a2, _b2, _c2, _d;
+          var _a2;
           setIsLoading(true);
           try {
-            const res = await sendTolgeeRequest(
-              "v2/api-keys/current",
-              "GET",
-              tolgeeConfig
-            );
-            if (res && res.status === 200 && ((_b2 = (_a2 = res.data) == null ? void 0 : _a2.scopes) == null ? void 0 : _b2.includes("translations.view")) && ((_d = (_c2 = res.data) == null ? void 0 : _c2.scopes) == null ? void 0 : _d.includes("translations.view"))) {
-              getTolgeeLanguages();
-              setOpen(false);
-              setPreviousConfig(tolgeeConfig);
-            } else if (res && res.status === 200) {
-              setOpen(true);
-              setError(
+            const res = await fetcher("/v2/api-keys/current", {
+              headers: { "x-api-key": tolgeeConfig.apiKey },
+              baseUrl: tolgeeConfig.url
+            });
+            if (res && ((_a2 = res.scopes) == null ? void 0 : _a2.includes("translations.view"))) {
+              return true;
+            } else if (res) {
+              throw new Error(
                 "Missing token scopes. The token should have translations.view and translations.edit scopes."
               );
             } else {
-              setOpen(true);
-              setError("Wrong credentials");
+              throw new Error("Wrong credentials");
             }
           } catch (_3) {
-            setError("Invalid values. Please check the entered values");
+            throw new Error("Invalid values. Please check the entered values");
           } finally {
             setIsLoading(false);
           }
         };
-        const getTolgeeLanguages = async () => {
-          var _a2, _b2, _c2, _d;
-          try {
-            const res = await sendTolgeeRequest(
-              "v2/projects/languages",
-              "GET",
-              tolgeeConfig
-            );
-            if (res && res.status === 200 && ((_c2 = (_b2 = (_a2 = res.data) == null ? void 0 : _a2._embedded) == null ? void 0 : _b2.languages) == null ? void 0 : _c2.length)) {
-              setLanguages(
-                res.data._embedded.languages.map((e3) => ({
-                  value: e3.tag,
-                  text: e3.name
-                }))
-              );
-              setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), {
-                lang: (_d = tolgeeConfig.lang) != null ? _d : res.data._embedded.languages[0].tag
-              }));
-            } else {
-              setError("An error occurred while fetching the available languages.");
-            }
-          } catch (e3) {
-            setError("An error occurred while fetching the available languages.");
-          }
-        };
-        const handleSubmit = () => {
+        const handleSubmit = async () => {
           if (!tolgeeConfig.apiKey) {
             setError("Missing API key");
             return;
@@ -3301,29 +3809,22 @@ svg {
             setError("Missing API url");
             return;
           }
-          if (tolgeeConfig.apiKey !== previousConfig.apiKey || tolgeeConfig.url !== previousConfig.url) {
-            validateTolgeeCredentials();
-            return;
-          }
-          if (tolgeeConfig.lang) {
-            emit("SETUP", tolgeeConfig);
+          try {
+            await validateTolgeeCredentials();
+            emit("SETUP", __spreadValues({}, tolgeeConfig));
+            setRoute("index");
+          } catch (e3) {
+            setError(e3.message);
           }
         };
         const handleClose = T2(function() {
           setRoute("index");
         }, []);
-        if (isLoading) {
-          return /* @__PURE__ */ h(MiddleAlign, null, /* @__PURE__ */ h(LoadingIndicator, null));
-        }
         return /* @__PURE__ */ h(Container, {
           space: "medium"
         }, /* @__PURE__ */ h(VerticalSpace, {
           space: "large"
-        }), /* @__PURE__ */ h(Disclosure, {
-          onClick: () => setOpen(!open),
-          open,
-          title: "Tolgee Credentials"
-        }, /* @__PURE__ */ h(Text, null, /* @__PURE__ */ h(Muted, null, "Tolgee URL")), /* @__PURE__ */ h(VerticalSpace, {
+        }), /* @__PURE__ */ h(Text, null, /* @__PURE__ */ h(Muted, null, "Tolgee URL")), /* @__PURE__ */ h(VerticalSpace, {
           space: "small"
         }), /* @__PURE__ */ h(Textbox, {
           onValueInput: (url) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { url })),
@@ -3337,32 +3838,19 @@ svg {
           onValueInput: (apiKey) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { apiKey })),
           value: (_b = tolgeeConfig.apiKey) != null ? _b : "",
           variant: "border"
-        })), error ? /* @__PURE__ */ h(Banner, {
-          icon: /* @__PURE__ */ h(IconWarning32, null)
-        }, error) : /* @__PURE__ */ h("div", null), /* @__PURE__ */ h(VerticalSpace, {
-          space: "medium"
-        }), /* @__PURE__ */ h(Text, null, /* @__PURE__ */ h(Muted, null, "Language")), /* @__PURE__ */ h(VerticalSpace, {
-          space: "small"
-        }), /* @__PURE__ */ h(Dropdown, {
-          placeholder: "Language",
-          disabled: !languages.length,
-          onChange: ({ currentTarget: { value: lang } }) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { lang })),
-          options: languages,
-          value: languages.find((e3) => e3.value === tolgeeConfig.lang) ? (_c = tolgeeConfig.lang) != null ? _c : null : null
         }), /* @__PURE__ */ h(VerticalSpace, {
+          space: "medium"
+        }), isLoading ? /* @__PURE__ */ h(LoadingIndicator, null) : error ? /* @__PURE__ */ h(Banner, {
+          icon: /* @__PURE__ */ h(IconWarning32, null)
+        }, error) : null, /* @__PURE__ */ h(VerticalSpace, {
           space: "extraLarge"
-        }), /* @__PURE__ */ h(Columns, {
+        }), !isLoading && /* @__PURE__ */ h(Columns, {
           space: "extraSmall",
-          style: {
-            bottom: "12px",
-            position: "absolute",
-            left: "12px",
-            right: "12px"
-          }
+          className: Settings_default.controlsContainer
         }, /* @__PURE__ */ h(Button, {
           fullWidth: true,
           onClick: handleSubmit
-        }, languages.length ? "Save" : "Get languages"), /* @__PURE__ */ h(Button, {
+        }, "Save"), /* @__PURE__ */ h(Button, {
           fullWidth: true,
           onClick: handleClose,
           secondary: true
@@ -3373,32 +3861,16 @@ svg {
     }
   });
 
-  // src/setup/components/HeadingTab.tsx
-  var HeadingTab;
-  var init_HeadingTab = __esm({
-    "src/setup/components/HeadingTab.tsx"() {
-      "use strict";
-      init_preact_module();
-      HeadingTab = ({ name, route, currentRoute, onChange }) => {
-        return /* @__PURE__ */ h("div", {
-          style: { color: route === currentRoute ? "white" : "lightgrey" },
-          onClick: () => onChange(route)
-        }, name);
-      };
-    }
-  });
-
-  // src/setup/Router.tsx
+  // src/setup/views/Router.tsx
   var getRoute, Router;
   var init_Router = __esm({
-    "src/setup/Router.tsx"() {
+    "src/setup/views/Router.tsx"() {
       "use strict";
       init_preact_module();
       init_lib2();
       init_Index();
-      init_Settings();
+      init_Settings2();
       init_GlobalState();
-      init_HeadingTab();
       getRoute = (route) => {
         switch (route) {
           case "index":
@@ -3409,35 +3881,16 @@ svg {
       };
       Router = () => {
         const route = useGlobalState((c3) => c3.route);
-        const { setRoute } = useGlobalActions();
-        const handleRouteChange = (route2) => {
-          setRoute(route2);
+        const globalError = useGlobalState((c3) => c3.globalError);
+        const { setRoute, setGlobalError } = useGlobalActions();
+        const handleResolveError = () => {
+          setGlobalError(void 0);
+          setRoute("settings");
         };
-        return /* @__PURE__ */ h(p, null, /* @__PURE__ */ h(Container, {
-          space: "medium"
-        }, /* @__PURE__ */ h("div", {
-          style: {
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "10px 0px"
-          }
-        }, /* @__PURE__ */ h(HeadingTab, {
-          name: "Home",
-          route: "index",
-          currentRoute: route,
-          onChange: handleRouteChange
-        }), /* @__PURE__ */ h("div", {
-          style: {
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: "16px"
-          }
-        }, /* @__PURE__ */ h(HeadingTab, {
-          name: "Settings",
-          route: "settings",
-          currentRoute: route,
-          onChange: handleRouteChange
-        })))), /* @__PURE__ */ h(Divider, null), getRoute(route));
+        return /* @__PURE__ */ h(p, null, globalError && /* @__PURE__ */ h(Banner, {
+          onClick: handleResolveError,
+          icon: /* @__PURE__ */ h(IconWarning32, null)
+        }, globalError), getRoute(route));
       };
     }
   });
@@ -3450,10 +3903,10 @@ svg {
   function Plugin({ config, nodes }) {
     return /* @__PURE__ */ h(GlobalState, {
       initialSelection: nodes,
-      config
-    }, /* @__PURE__ */ h(Router, null));
+      initialConfig: config
+    }, /* @__PURE__ */ h(SWRConfigProvider, null, /* @__PURE__ */ h(Router, null)));
   }
-  var ui_default;
+  var SWRConfigProvider, ui_default;
   var init_ui = __esm({
     "src/setup/ui.tsx"() {
       "use strict";
@@ -3462,6 +3915,34 @@ svg {
       init_styles();
       init_GlobalState();
       init_Router();
+      init_dist2();
+      SWRConfigProvider = ({ children }) => {
+        const config = useGlobalState((c3) => c3.config);
+        const { setGlobalError } = useGlobalActions();
+        const swrConfig = {
+          refreshInterval: 0,
+          dedupingInterval: 0,
+          fetcher: async (resource, init) => {
+            const baseUrl = (init == null ? void 0 : init.baseUrl) || (config == null ? void 0 : config.url);
+            const url = ((baseUrl == null ? void 0 : baseUrl.endsWith("/")) ? baseUrl == null ? void 0 : baseUrl.slice(0, -1) : baseUrl) + resource;
+            const headers = __spreadValues({
+              "x-api-key": config == null ? void 0 : config.apiKey,
+              "content-type": "application/json"
+            }, init == null ? void 0 : init.headers);
+            const response = await fetch(url, __spreadProps(__spreadValues({}, init), { headers }));
+            if (response.status === 401) {
+              setGlobalError("Invalid Tolgee API key");
+            } else if (!response.ok) {
+              setGlobalError(response.statusText);
+            } else {
+              return response.json();
+            }
+          }
+        };
+        return /* @__PURE__ */ h(SWRConfig2, {
+          value: swrConfig
+        }, children);
+      };
       ui_default = render(Plugin);
     }
   });
@@ -3480,6 +3961,15 @@ svg {
 /**
  * @license React
  * scheduler.development.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+/**
+ * @license React
+ * use-sync-external-store-shim.development.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
  *

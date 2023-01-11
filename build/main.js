@@ -161,10 +161,10 @@
     }
   });
 
-  // src/setup/pages/data.ts
+  // src/setup/views/data.ts
   var DEFAULT_SIZE, PAGES;
   var init_data = __esm({
-    "src/setup/pages/data.ts"() {
+    "src/setup/views/data.ts"() {
       "use strict";
       DEFAULT_SIZE = { width: 300, height: 400 };
       PAGES = {
@@ -185,11 +185,13 @@
       emit("SELECTION_CHANGE", nodes);
     });
     on("SETUP", (config2) => {
-      figma.currentPage.setPluginData(
-        TOLGEE_PLUGIN_CONFIG_NAME,
-        JSON.stringify(config2)
-      );
+      setPluginData(config2);
       figma.notify("Tolgee credentials saved.");
+    });
+    on("SET_LANGUAGE", (lang) => {
+      const pluginData = getPluginData();
+      const data = __spreadProps(__spreadValues({}, pluginData), { lang });
+      setPluginData(data);
     });
     on("RESIZE", (size) => {
       figma.ui.resize(size.width, size.height);
@@ -207,10 +209,7 @@
         node.characters = n.characters;
       });
     });
-    const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
-    const config = pluginData !== "" ? JSON.parse(
-      figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME)
-    ) : null;
+    const config = getPluginData();
     showUI(
       {
         title: "Tolgee",
@@ -220,7 +219,7 @@
       { config, nodes: findTextNodes() }
     );
   }
-  var findTextNodes;
+  var findTextNodes, getPluginData, setPluginData;
   var init_main = __esm({
     "src/setup/main.ts"() {
       "use strict";
@@ -245,6 +244,19 @@
           }
         }
         return result;
+      };
+      getPluginData = () => {
+        const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
+        return pluginData !== "" ? JSON.parse(
+          figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME)
+        ) : {};
+      };
+      setPluginData = (data) => {
+        figma.currentPage.setPluginData(
+          TOLGEE_PLUGIN_CONFIG_NAME,
+          JSON.stringify(data)
+        );
+        emit("CONFIG_CHANGE", data);
       };
     }
   });
