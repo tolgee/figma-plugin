@@ -1,13 +1,5 @@
 import { Fragment, h } from "preact";
-import {
-  Banner,
-  Container,
-  Divider,
-  IconWarning32,
-  Tabs,
-  TabsOption,
-  Text,
-} from "@create-figma-plugin/ui";
+import { Banner, IconWarning32 } from "@create-figma-plugin/ui";
 
 import { Route } from "./data";
 import { Index } from "./Index/Index";

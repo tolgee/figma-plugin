@@ -38,9 +38,8 @@ const flattenParams = (
           : { ...acc, ...flattenParams(value) },
       {}
     );
-  } else {
-    return {};
   }
+  return {};
 };
 
 function buildQuery(object: { [key: string]: any }): string {
@@ -49,11 +48,10 @@ function buildQuery(object: { [key: string]: any }): string {
     .map((k) => {
       if (Array.isArray(object[k])) {
         return object[k]
-          .map((v: any) => encodeURIComponent(k) + "=" + encodeURIComponent(v))
+          .map((v: any) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
           .join("&");
-      } else {
-        return encodeURIComponent(k) + "=" + encodeURIComponent(object[k]);
       }
+      return `${encodeURIComponent(k)}=${encodeURIComponent(object[k])}`;
     })
     .join("&");
 }
@@ -137,12 +135,12 @@ export async function client<
     string,
     unknown
   >;
-  let body: FormData | undefined = undefined;
+  let body: FormData | undefined;
   if (formData) {
     body = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (Array.isArray(value)) {
-        let fileName: undefined | string = undefined;
+        let fileName: undefined | string;
         if (Object.prototype.toString.call(value) === "[object File]") {
           fileName = (value as any as File).name;
         }
@@ -162,7 +160,7 @@ export async function client<
   const params = flattenParams(queryParams);
   const query = buildQuery(params);
   if (query) {
-    queryString = "?" + query;
+    queryString = `?${query}`;
   }
 
   const defaultHeaders = jsonBody

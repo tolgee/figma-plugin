@@ -44,11 +44,10 @@ export const Settings = () => {
       const res: any = await mutateAsync("/v2/api-keys/current");
       if (res && res.scopes?.includes("translations.view")) {
         return true;
-      } else {
-        throw new Error(
-          "Missing token scopes. The token should have translations.view and translations.edit scopes."
-        );
       }
+      throw new Error(
+        "Missing token scopes. The token should have translations.view and translations.edit scopes."
+      );
     } catch (e: any) {
       if (e === "Forbidden") {
         throw new Error("Invalid API key");
@@ -67,7 +66,7 @@ export const Settings = () => {
     }
   };
 
-  const handleClose = useCallback(function () {
+  const handleClose = useCallback(() => {
     setRoute("index");
   }, []);
 

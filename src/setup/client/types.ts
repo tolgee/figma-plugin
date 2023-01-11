@@ -1,10 +1,10 @@
-import { paths } from './apiSchema.generated';
+import { paths } from "./apiSchema.generated";
 
 type ExcludeAk<T extends Record<string, Record<string, any>>> = Omit<
   T,
-  'query'
+  "query"
 > & {
-  query?: Omit<T['query'], 'ak'>;
+  query?: Omit<T["query"], "ak">;
 };
 
 export type RequestParamsType<
@@ -13,9 +13,9 @@ export type RequestParamsType<
   Paths = paths
 > = ExcludeAk<
   // @ts-ignore
-  Omit<OperationSchema<Url, Method, Paths>['parameters'], 'header'>
+  Omit<OperationSchema<Url, Method, Paths>["parameters"], "header">
 > &
-  OperationSchema<Url, Method, Paths>['requestBody'];
+  OperationSchema<Url, Method, Paths>["requestBody"];
 
 export type ResponseContent<
   Url extends keyof Paths,
@@ -25,51 +25,51 @@ export type ResponseContent<
   Url,
   Method,
   Paths
->['responses'][200] extends NotNullAnyContent
-  ? OperationSchema<Url, Method, Paths>['responses'][200]['content']['*/*']
+>["responses"][200] extends NotNullAnyContent
+  ? OperationSchema<Url, Method, Paths>["responses"][200]["content"]["*/*"]
   : OperationSchema<
       Url,
       Method,
       Paths
-    >['responses'][200] extends NotNullJsonHalContent
+    >["responses"][200] extends NotNullJsonHalContent
   ? OperationSchema<
       Url,
       Method,
       Paths
-    >['responses'][200]['content']['application/hal+json']
+    >["responses"][200]["content"]["application/hal+json"]
   : OperationSchema<
       Url,
       Method,
       Paths
-    >['responses'][200] extends NotNullJsonContent
+    >["responses"][200] extends NotNullJsonContent
   ? OperationSchema<
       Url,
       Method,
       Paths
-    >['responses'][200]['content']['application/json']
+    >["responses"][200]["content"]["application/json"]
   : OperationSchema<
       Url,
       Method,
       Paths
-    >['responses'][201] extends NotNullAnyContent
-  ? OperationSchema<Url, Method, Paths>['responses'][201]['content']['*/*']
+    >["responses"][201] extends NotNullAnyContent
+  ? OperationSchema<Url, Method, Paths>["responses"][201]["content"]["*/*"]
   : void;
 
 type NotNullAnyContent = {
   content: {
-    '*/*': any;
+    "*/*": any;
   };
 };
 
 type NotNullJsonHalContent = {
   content: {
-    'application/hal+json': any;
+    "application/hal+json": any;
   };
 };
 
 type NotNullJsonContent = {
   content: {
-    'application/json': any;
+    "application/json": any;
   };
 };
 
@@ -77,16 +77,16 @@ type ResponseType = {
   200?:
     | {
         content?: {
-          '*/*'?: any;
-          'application/json'?: any;
-          'application/hal+json'?: any;
+          "*/*"?: any;
+          "application/json"?: any;
+          "application/hal+json"?: any;
         };
       }
     | unknown;
   201?:
     | {
         content?: {
-          '*/*'?: any;
+          "*/*"?: any;
         };
       }
     | unknown;
@@ -95,8 +95,8 @@ type ResponseType = {
 type OperationSchemaType = {
   requestBody?: {
     content?: {
-      'multipart/form-data'?: { [key: string]: any };
-      'application/json'?: any;
+      "multipart/form-data"?: { [key: string]: any };
+      "application/json"?: any;
     };
   };
   parameters?: {
