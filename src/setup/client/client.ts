@@ -84,7 +84,6 @@ async function customFetch(
         const message =
           data?.message || data?.error || "Error status code from server";
 
-        console.log(r.status, message);
         if (r.status === 403 && message === "Forbidden") {
           globalState.actions.setGlobalError("Invalid API key");
         }
@@ -94,7 +93,13 @@ async function customFetch(
       return await getResObject(r);
     })
     .catch((e) => {
-      throw e.message || "Failed to fetch";
+      if (!e.message || e.message === "Failed to fetch") {
+        const message = "Could not connect to server";
+        globalState.actions.setGlobalError(message);
+        throw message;
+      } else {
+        throw e.message;
+      }
     });
 }
 
