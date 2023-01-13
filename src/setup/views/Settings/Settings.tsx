@@ -1,8 +1,8 @@
+import { h } from "preact";
 import { useState, useEffect, useCallback } from "preact/hooks";
 import {
   Banner,
   Button,
-  Columns,
   Container,
   IconWarning32,
   LoadingIndicator,
@@ -11,11 +11,10 @@ import {
   Textbox,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
-import { h } from "preact";
 
-import styles from "./Settings.css";
-import { useGlobalActions, useGlobalState } from "../../state/GlobalState";
-import { useApiMutation } from "../../client/useQueryApi";
+import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
+import { useApiMutation } from "@/setup/client/useQueryApi";
+import { ActionsBottom } from "@/setup/components/ActionsBottom/ActionsBottom";
 
 export const Settings = () => {
   const config = useGlobalState((c) => c.config) || {};
@@ -101,14 +100,12 @@ export const Settings = () => {
       ) : null}
       <VerticalSpace space="extraLarge" />
       {!isLoading && (
-        <Columns space="extraSmall" className={styles.controlsContainer}>
-          <Button fullWidth onClick={handleSubmit}>
-            Save
-          </Button>
-          <Button fullWidth onClick={handleClose} secondary>
+        <ActionsBottom>
+          <Button onClick={handleClose} secondary>
             Close
           </Button>
-        </Columns>
+          <Button onClick={handleSubmit}>Save</Button>
+        </ActionsBottom>
       )}
       <VerticalSpace space="small" />
     </Container>

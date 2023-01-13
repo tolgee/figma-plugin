@@ -4,6 +4,8 @@ export const TOLGEE_PREFIX = "t:";
 
 export const TOLGEE_PLUGIN_CONFIG_NAME = "tolgee_config";
 
+export const TOLGEE_NODE_KEY = "tolgee_key";
+
 export async function sendTolgeeRequest(
   endpoint: string,
   method: "POST" | "PUT" | "GET" | "DELETE",

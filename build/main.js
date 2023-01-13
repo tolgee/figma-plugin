@@ -153,23 +153,26 @@
   });
 
   // src/tolgee.ts
-  var TOLGEE_PLUGIN_CONFIG_NAME;
+  var TOLGEE_PLUGIN_CONFIG_NAME, TOLGEE_NODE_KEY;
   var init_tolgee = __esm({
     "src/tolgee.ts"() {
       "use strict";
       TOLGEE_PLUGIN_CONFIG_NAME = "tolgee_config";
+      TOLGEE_NODE_KEY = "tolgee_key";
     }
   });
 
-  // src/setup/views/data.ts
-  var DEFAULT_SIZE, PAGES;
-  var init_data = __esm({
-    "src/setup/views/data.ts"() {
+  // src/setup/views/routes.ts
+  var DEFAULT_SIZE, SIZES, getWindowSize;
+  var init_routes = __esm({
+    "src/setup/views/routes.ts"() {
       "use strict";
-      DEFAULT_SIZE = { width: 300, height: 400 };
-      PAGES = {
-        index: DEFAULT_SIZE,
+      DEFAULT_SIZE = { width: 500, height: 400 };
+      SIZES = {
         settings: { width: 300, height: 500 }
+      };
+      getWindowSize = (routeKey) => {
+        return SIZES[routeKey] || DEFAULT_SIZE;
       };
     }
   });
@@ -209,13 +212,17 @@
         node.characters = n.characters;
       });
     });
+    on("SET_NODE_CONNECTION", (nodeId, key) => {
+      const node = figma.getNodeById(nodeId);
+      node == null ? void 0 : node.setPluginData(TOLGEE_NODE_KEY, key);
+      const nodes = findTextNodes();
+      emit("SELECTION_CHANGE", nodes);
+    });
     const config = getPluginData();
     showUI(
-      {
-        title: "Tolgee",
-        width: PAGES.index.width,
-        height: PAGES.index.height
-      },
+      __spreadValues({
+        title: "Tolgee"
+      }, getWindowSize("index")),
       { config, nodes: findTextNodes() }
     );
   }
@@ -225,7 +232,7 @@
       "use strict";
       init_lib();
       init_tolgee();
-      init_data();
+      init_routes();
       findTextNodes = (nodes) => {
         if (!nodes) {
           return findTextNodes(figma.currentPage.selection || []);
@@ -236,7 +243,8 @@
             result.push({
               id: node.id,
               name: node.name,
-              characters: node.characters
+              characters: node.characters,
+              key: node.getPluginData(TOLGEE_NODE_KEY)
             });
           }
           if (node.children) {

@@ -4,13 +4,13 @@ import { h } from "preact";
 import "!../styles.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-import { Node, TolgeeConfig } from "../types";
+import { NodeInfo, TolgeeConfig } from "../types";
 import { GlobalState } from "./state/GlobalState";
 import { Router } from "./views/Router";
 
 type Props = {
   config: Partial<TolgeeConfig> | null;
-  nodes: Array<Node>;
+  nodes: Array<NodeInfo>;
 };
 
 const queryClient = new QueryClient({

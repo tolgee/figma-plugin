@@ -391,10 +391,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/908f552e-ac9c-4eaa-b76d-e7663d995595/banner.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/ea553177-ea44-448c-a150-fa06508cdb04/banner.js
   var banner_default;
   var init_banner = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/908f552e-ac9c-4eaa-b76d-e7663d995595/banner.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/ea553177-ea44-448c-a150-fa06508cdb04/banner.js"() {
       if (document.getElementById("3168a726a5") === null) {
         const element = document.createElement("style");
         element.id = "3168a726a5";
@@ -630,10 +630,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/17bcd85b-9eba-4219-861e-5eec3de6f3e7/loading-indicator.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/15c8fc56-70a9-409f-b6d4-446c79600ede/loading-indicator.js
   var loading_indicator_default;
   var init_loading_indicator = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/17bcd85b-9eba-4219-861e-5eec3de6f3e7/loading-indicator.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/15c8fc56-70a9-409f-b6d4-446c79600ede/loading-indicator.js"() {
       if (document.getElementById("25a2c53e04") === null) {
         const element = document.createElement("style");
         element.id = "25a2c53e04";
@@ -684,10 +684,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4faf6c69-120d-4f5c-bd95-0a8dd6412054/button.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/e9b672b2-05f3-4c98-a692-114472805a11/button.js
   var button_default;
   var init_button = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4faf6c69-120d-4f5c-bd95-0a8dd6412054/button.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/e9b672b2-05f3-4c98-a692-114472805a11/button.js"() {
       if (document.getElementById("4698edce65") === null) {
         const element = document.createElement("style");
         element.id = "4698edce65";
@@ -857,10 +857,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9dc17ba6-ba8d-41a6-a0d6-6235e5e623ef/icon.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/40ccd13f-9ccc-41e2-81cb-b064f5ce9ef0/icon.js
   var icon_default;
   var init_icon = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9dc17ba6-ba8d-41a6-a0d6-6235e5e623ef/icon.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/40ccd13f-9ccc-41e2-81cb-b064f5ce9ef0/icon.js"() {
       if (document.getElementById("3b0a4baebe") === null) {
         const element = document.createElement("style");
         element.id = "3b0a4baebe";
@@ -892,6 +892,37 @@
     }
   });
 
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/68cd5e4c-22db-4d46-b166-c38ae2274fd6/divider.js
+  var divider_default;
+  var init_divider = __esm({
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/68cd5e4c-22db-4d46-b166-c38ae2274fd6/divider.js"() {
+      if (document.getElementById("947a88d8c0") === null) {
+        const element = document.createElement("style");
+        element.id = "947a88d8c0";
+        element.textContent = `._divider_m18ta_1 {
+  width: 100%;
+  height: 1px;
+  background-color: var(--figma-color-border);
+}
+
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9AY3JlYXRlLWZpZ21hLXBsdWdpbi91aS9saWIvY29tcG9uZW50cy9kaXZpZGVyL2RpdmlkZXIuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsV0FBVztFQUNYLFdBQVc7RUFDWCwyQ0FBMkM7QUFDN0MiLCJmaWxlIjoibm9kZV9tb2R1bGVzL0BjcmVhdGUtZmlnbWEtcGx1Z2luL3VpL2xpYi9jb21wb25lbnRzL2RpdmlkZXIvZGl2aWRlci5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuZGl2aWRlciB7XG4gIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDFweDtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tZmlnbWEtY29sb3ItYm9yZGVyKTtcbn1cbiJdfQ== */`;
+        document.head.append(element);
+      }
+      divider_default = { "divider": "_divider_m18ta_1" };
+    }
+  });
+
+  // node_modules/@create-figma-plugin/ui/lib/components/divider/divider.js
+  function Divider(props) {
+    return h("hr", __spreadProps(__spreadValues({}, props), { class: divider_default.divider }));
+  }
+  var init_divider2 = __esm({
+    "node_modules/@create-figma-plugin/ui/lib/components/divider/divider.js"() {
+      init_preact_module();
+      init_divider();
+    }
+  });
+
   // node_modules/@create-figma-plugin/ui/lib/utilities/get-current-from-ref.js
   function getCurrentFromRef(ref) {
     if (ref.current === null) {
@@ -904,10 +935,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/786d23dd-666c-45fc-8510-f43f1d6aada2/text.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a883ae09-a7b8-4497-a972-925c6bac2d41/text.js
   var text_default;
   var init_text = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/786d23dd-666c-45fc-8510-f43f1d6aada2/text.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a883ae09-a7b8-4497-a972-925c6bac2d41/text.js"() {
       if (document.getElementById("38f0619aa4") === null) {
         const element = document.createElement("style");
         element.id = "38f0619aa4";
@@ -1122,10 +1153,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f33ad761-1305-44f7-b9f7-cb337a492c6f/textbox.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/b736930d-38c2-4824-b16c-9986aac8c208/textbox.js
   var textbox_default;
   var init_textbox = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f33ad761-1305-44f7-b9f7-cb337a492c6f/textbox.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/b736930d-38c2-4824-b16c-9986aac8c208/textbox.js"() {
       if (document.getElementById("119378e3f7") === null) {
         const element = document.createElement("style");
         element.id = "119378e3f7";
@@ -1249,10 +1280,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d45950d0-9995-4d6a-af43-4c14997e6955/muted.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/6c4b3af4-c22f-42b4-b64f-e51f65d86cda/muted.js
   var muted_default;
   var init_muted = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d45950d0-9995-4d6a-af43-4c14997e6955/muted.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/6c4b3af4-c22f-42b4-b64f-e51f65d86cda/muted.js"() {
       if (document.getElementById("7456fb9670") === null) {
         const element = document.createElement("style");
         element.id = "7456fb9670";
@@ -1279,10 +1310,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/e7710a95-fc1b-4144-9984-3b3a4c65758d/columns.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9a5c45c5-8971-4ab5-9035-75e2bedaf079/columns.js
   var columns_default;
   var init_columns = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/e7710a95-fc1b-4144-9984-3b3a4c65758d/columns.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9a5c45c5-8971-4ab5-9035-75e2bedaf079/columns.js"() {
       if (document.getElementById("aa124f3cd7") === null) {
         const element = document.createElement("style");
         element.id = "aa124f3cd7";
@@ -1349,10 +1380,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/61c2d5ee-cccb-4f41-ab7a-503bb82b2580/container.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/45daa6f2-4999-4882-bb17-23bddba7b838/container.js
   var container_default;
   var init_container = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/61c2d5ee-cccb-4f41-ab7a-503bb82b2580/container.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/45daa6f2-4999-4882-bb17-23bddba7b838/container.js"() {
       if (document.getElementById("66b2a54611") === null) {
         const element = document.createElement("style");
         element.id = "66b2a54611";
@@ -1391,10 +1422,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/b1a86a6c-e7e1-404f-ac26-690bf9701eda/middle-align.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c0ab284d-a635-4651-b0dc-ef28c00881db/middle-align.js
   var middle_align_default;
   var init_middle_align = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/b1a86a6c-e7e1-404f-ac26-690bf9701eda/middle-align.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c0ab284d-a635-4651-b0dc-ef28c00881db/middle-align.js"() {
       if (document.getElementById("28fbd9538f") === null) {
         const element = document.createElement("style");
         element.id = "28fbd9538f";
@@ -1428,10 +1459,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/847bfa13-db64-4bf0-9851-604530731442/vertical-space.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/0474d2aa-018b-4db2-824a-8637cb5f49bf/vertical-space.js
   var vertical_space_default;
   var init_vertical_space = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/847bfa13-db64-4bf0-9851-604530731442/vertical-space.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/0474d2aa-018b-4db2-824a-8637cb5f49bf/vertical-space.js"() {
       if (document.getElementById("8d65b44de9") === null) {
         const element = document.createElement("style");
         element.id = "8d65b44de9";
@@ -1470,9 +1501,9 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4bc60dcb-1680-459f-b26b-d9135c2b2893/base.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/fad798d3-6efd-4000-952f-2ad513f70d54/base.js
   var init_base = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4bc60dcb-1680-459f-b26b-d9135c2b2893/base.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/fad798d3-6efd-4000-952f-2ad513f70d54/base.js"() {
       if (document.getElementById("46215c86c3") === null) {
         const element = document.createElement("style");
         element.id = "46215c86c3";
@@ -1605,6 +1636,7 @@ svg {
     "node_modules/@create-figma-plugin/ui/lib/index.js"() {
       init_banner2();
       init_button2();
+      init_divider2();
       init_loading_indicator2();
       init_text2();
       init_textbox2();
@@ -1618,9 +1650,9 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/8a5d031b-0f1a-4491-9b01-2d24a4294e16/styles.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d5fa4f39-1d3f-4055-8418-2dba23fd43f4/styles.js
   var init_styles = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/8a5d031b-0f1a-4491-9b01-2d24a4294e16/styles.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d5fa4f39-1d3f-4055-8418-2dba23fd43f4/styles.js"() {
       if (document.getElementById("5260158beb") === null) {
         const element = document.createElement("style");
         element.id = "5260158beb";
@@ -4694,15 +4726,17 @@ svg {
     }
   });
 
-  // src/setup/views/data.ts
-  var DEFAULT_SIZE, PAGES;
-  var init_data = __esm({
-    "src/setup/views/data.ts"() {
+  // src/setup/views/routes.ts
+  var DEFAULT_SIZE, SIZES, getWindowSize;
+  var init_routes = __esm({
+    "src/setup/views/routes.ts"() {
       "use strict";
-      DEFAULT_SIZE = { width: 300, height: 400 };
-      PAGES = {
-        index: DEFAULT_SIZE,
+      DEFAULT_SIZE = { width: 500, height: 400 };
+      SIZES = {
         settings: { width: 300, height: 500 }
+      };
+      getWindowSize = (routeKey) => {
+        return SIZES[routeKey] || DEFAULT_SIZE;
       };
     }
   });
@@ -5291,7 +5325,7 @@ svg {
       "use strict";
       init_lib();
       init_hooks_module();
-      init_data();
+      init_routes();
       init_createProvider();
       globalState = {
         actions: void 0
@@ -5299,11 +5333,16 @@ svg {
       [GlobalState, useGlobalActions, useGlobalState] = createProvider(
         ({ initialSelection, initialConfig }) => {
           const [selection, setSelection] = p2(initialSelection);
-          const [route, _setRoute] = p2("index");
+          const [route, _setRoute] = p2(["index"]);
+          const routeKey = route[0];
           const [config, _setConfig] = p2(initialConfig);
           const [globalError, setGlobalError] = p2(
             void 0
           );
+          const [editedKeys, setEditedKeys] = p2({});
+          const setEditedKey = (id, key) => {
+            setEditedKeys((keys) => __spreadProps(__spreadValues({}, keys), { [id]: key }));
+          };
           h2(() => {
             return on("SELECTION_CHANGE", (data2) => {
               setSelection(data2);
@@ -5315,8 +5354,8 @@ svg {
             });
           }, []);
           F(() => {
-            emit("RESIZE", PAGES[route]);
-          }, [route]);
+            emit("RESIZE", getWindowSize(routeKey));
+          }, [routeKey]);
           function setConfig(config2) {
             _setConfig(config2);
             emit("SETUP", config2);
@@ -5325,21 +5364,24 @@ svg {
             _setConfig(__spreadProps(__spreadValues({}, config), { lang: language }));
             emit("SET_LANGUAGE", language);
           }
-          function setRoute(route2) {
+          function setRoute(...route2) {
             setGlobalError(void 0);
             _setRoute(route2);
           }
           const data = {
             route,
+            routeKey,
             selection,
             config,
-            globalError
+            globalError,
+            editedKeys
           };
           const actions = {
             setRoute,
             setConfig,
             setLanguage,
-            setGlobalError
+            setGlobalError,
+            setEditedKey
           };
           globalState.actions = actions;
           return [data, actions];
@@ -5597,10 +5639,214 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/85ab2768-bb5a-4a59-9bee-ba52f850dbf3/HeadingTab.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1552b70c-1108-4b82-93f4-0af1a0a1ab92/NodeList.js
+  var NodeList_default;
+  var init_NodeList = __esm({
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1552b70c-1108-4b82-93f4-0af1a0a1ab92/NodeList.js"() {
+      if (document.getElementById("d40d7f3d55") === null) {
+        const element = document.createElement("style");
+        element.id = "d40d7f3d55";
+        element.textContent = `._container_asxc4_1 {
+  display: grid;
+  gap: 15px 10px;
+  grid-template-columns: 2fr 1fr auto;
+  align-items: center;
+}
+
+._row_text_asxc4_8 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+._row_key_asxc4_14 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+._row_connect_asxc4_23 {
+  justify-self: end;
+}
+
+._key_present_asxc4_27 {
+  color: var(--figma-color-text);
+}
+
+._key_missing_asxc4_31 {
+  color: var(--figma-color-text-secondary);
+}
+
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9zZXR1cC92aWV3cy9JbmRleC9Ob2RlTGlzdC9Ob2RlTGlzdC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxhQUFhO0VBQ2IsY0FBYztFQUNkLG1DQUFtQztFQUNuQyxtQkFBbUI7QUFDckI7O0FBRUE7RUFDRSx1QkFBdUI7RUFDdkIsZ0JBQWdCO0VBQ2hCLG1CQUFtQjtBQUNyQjs7QUFFQTtFQUNFLHVCQUF1QjtFQUN2QixnQkFBZ0I7RUFDaEIsbUJBQW1CO0VBQ25CLGdCQUFnQjtFQUNoQixhQUFhO0VBQ2IsbUJBQW1CO0FBQ3JCOztBQUVBO0VBQ0UsaUJBQWlCO0FBQ25COztBQUVBO0VBQ0UsOEJBQThCO0FBQ2hDOztBQUVBO0VBQ0Usd0NBQXdDO0FBQzFDIiwiZmlsZSI6InNyYy9zZXR1cC92aWV3cy9JbmRleC9Ob2RlTGlzdC9Ob2RlTGlzdC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuY29udGFpbmVyIHtcbiAgZGlzcGxheTogZ3JpZDtcbiAgZ2FwOiAxNXB4IDEwcHg7XG4gIGdyaWQtdGVtcGxhdGUtY29sdW1uczogMmZyIDFmciBhdXRvO1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xufVxuXG4ucm93X3RleHQge1xuICB0ZXh0LW92ZXJmbG93OiBlbGxpcHNpcztcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgd2hpdGUtc3BhY2U6IG5vd3JhcDtcbn1cblxuLnJvd19rZXkge1xuICB0ZXh0LW92ZXJmbG93OiBlbGxpcHNpcztcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgd2hpdGUtc3BhY2U6IG5vd3JhcDtcbiAgbWluLWhlaWdodDogMzBweDtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbn1cblxuLnJvd19jb25uZWN0IHtcbiAganVzdGlmeS1zZWxmOiBlbmQ7XG59XG5cbi5rZXlfcHJlc2VudCB7XG4gIGNvbG9yOiB2YXIoLS1maWdtYS1jb2xvci10ZXh0KTtcbn1cblxuLmtleV9taXNzaW5nIHtcbiAgY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLXRleHQtc2Vjb25kYXJ5KTtcbn1cbiJdfQ== */`;
+        document.head.append(element);
+      }
+      NodeList_default = { "container": "_container_asxc4_1", "row_text": "_row_text_asxc4_8", "row_key": "_row_key_asxc4_14", "row_connect": "_row_connect_asxc4_23", "key_present": "_key_present_asxc4_27", "key_missing": "_key_missing_asxc4_31" };
+    }
+  });
+
+  // src/setup/icons/SvgIcons.tsx
+  var Settings, InsertLink;
+  var init_SvgIcons = __esm({
+    "src/setup/icons/SvgIcons.tsx"() {
+      "use strict";
+      init_preact_module();
+      Settings = (props) => {
+        return /* @__PURE__ */ h("svg", __spreadProps(__spreadValues({}, props), {
+          xmlns: "http://www.w3.org/2000/svg",
+          viewBox: "0 0 39.150001525878906 40.000003814697266"
+        }), /* @__PURE__ */ h("path", {
+          fill: "currentColor",
+          d: "M34.43 21.95c.08-.64.14-1.29.14-1.95s-.06-1.31-.14-1.95l4.23-3.31c.38-.3.49-.84.24-1.28l-4-6.93c-.25-.43-.77-.61-1.22-.43L28.7 8.11c-1.03-.79-2.16-1.46-3.38-1.97l-.75-5.3c-.09-.47-.5-.84-1-.84h-8c-.5 0-.91.37-.99.84l-.75 5.3a14.8 14.8 0 0 0-3.38 1.97L5.47 6.1a1 1 0 0 0-1.22.43l-4 6.93c-.25.43-.14.97.24 1.28l4.22 3.31c-.08.64-.14 1.29-.14 1.95s.06 1.31.14 1.95L.49 25.26c-.38.3-.49.84-.24 1.28l4 6.93c.25.43.77.61 1.22.43l4.98-2.01c1.03.79 2.16 1.46 3.38 1.97l.75 5.3c.08.47.49.84.99.84h8c.5 0 .91-.37.99-.84l.75-5.3a14.8 14.8 0 0 0 3.38-1.97l4.98 2.01a1 1 0 0 0 1.22-.43l4-6.93c.25-.43.14-.97-.24-1.28l-4.22-3.31zM19.57 27c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
+        }));
+      };
+      InsertLink = (props) => {
+        return /* @__PURE__ */ h("svg", __spreadProps(__spreadValues({}, props), {
+          xmlns: "http://www.w3.org/2000/svg",
+          viewBox: "0 0 48 48"
+        }), /* @__PURE__ */ h("path", {
+          fill: "currentColor",
+          d: "M7.8 24c0-3.42 2.78-6.2 6.2-6.2h8V14h-8C8.48 14 4 18.48 4 24s4.48 10 10 10h8v-3.8h-8c-3.42 0-6.2-2.78-6.2-6.2zm8.2 2h16v-4H16v4zm18-12h-8v3.8h8c3.42 0 6.2 2.78 6.2 6.2s-2.78 6.2-6.2 6.2h-8V34h8c5.52 0 10-4.48 10-10s-4.48-10-10-10z"
+        }));
+      };
+    }
+  });
+
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/ef5c5367-cf1c-461b-bfdc-0a143dcf9a80/NodeList.js
+  var NodeList_default2;
+  var init_NodeList2 = __esm({
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/ef5c5367-cf1c-461b-bfdc-0a143dcf9a80/NodeList.js"() {
+      if (document.getElementById("d40d7f3d55") === null) {
+        const element = document.createElement("style");
+        element.id = "d40d7f3d55";
+        element.textContent = `._container_asxc4_1 {
+  display: grid;
+  gap: 15px 10px;
+  grid-template-columns: 2fr 1fr auto;
+  align-items: center;
+}
+
+._row_text_asxc4_8 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+._row_key_asxc4_14 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+._row_connect_asxc4_23 {
+  justify-self: end;
+}
+
+._key_present_asxc4_27 {
+  color: var(--figma-color-text);
+}
+
+._key_missing_asxc4_31 {
+  color: var(--figma-color-text-secondary);
+}
+
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9zZXR1cC92aWV3cy9JbmRleC9Ob2RlTGlzdC9Ob2RlTGlzdC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxhQUFhO0VBQ2IsY0FBYztFQUNkLG1DQUFtQztFQUNuQyxtQkFBbUI7QUFDckI7O0FBRUE7RUFDRSx1QkFBdUI7RUFDdkIsZ0JBQWdCO0VBQ2hCLG1CQUFtQjtBQUNyQjs7QUFFQTtFQUNFLHVCQUF1QjtFQUN2QixnQkFBZ0I7RUFDaEIsbUJBQW1CO0VBQ25CLGdCQUFnQjtFQUNoQixhQUFhO0VBQ2IsbUJBQW1CO0FBQ3JCOztBQUVBO0VBQ0UsaUJBQWlCO0FBQ25COztBQUVBO0VBQ0UsOEJBQThCO0FBQ2hDOztBQUVBO0VBQ0Usd0NBQXdDO0FBQzFDIiwiZmlsZSI6InNyYy9zZXR1cC92aWV3cy9JbmRleC9Ob2RlTGlzdC9Ob2RlTGlzdC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuY29udGFpbmVyIHtcbiAgZGlzcGxheTogZ3JpZDtcbiAgZ2FwOiAxNXB4IDEwcHg7XG4gIGdyaWQtdGVtcGxhdGUtY29sdW1uczogMmZyIDFmciBhdXRvO1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xufVxuXG4ucm93X3RleHQge1xuICB0ZXh0LW92ZXJmbG93OiBlbGxpcHNpcztcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgd2hpdGUtc3BhY2U6IG5vd3JhcDtcbn1cblxuLnJvd19rZXkge1xuICB0ZXh0LW92ZXJmbG93OiBlbGxpcHNpcztcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgd2hpdGUtc3BhY2U6IG5vd3JhcDtcbiAgbWluLWhlaWdodDogMzBweDtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbn1cblxuLnJvd19jb25uZWN0IHtcbiAganVzdGlmeS1zZWxmOiBlbmQ7XG59XG5cbi5rZXlfcHJlc2VudCB7XG4gIGNvbG9yOiB2YXIoLS1maWdtYS1jb2xvci10ZXh0KTtcbn1cblxuLmtleV9taXNzaW5nIHtcbiAgY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLXRleHQtc2Vjb25kYXJ5KTtcbn1cbiJdfQ== */`;
+        document.head.append(element);
+      }
+      NodeList_default2 = { "container": "_container_asxc4_1", "row_text": "_row_text_asxc4_8", "row_key": "_row_key_asxc4_14", "row_connect": "_row_connect_asxc4_23", "key_present": "_key_present_asxc4_27", "key_missing": "_key_missing_asxc4_31" };
+    }
+  });
+
+  // src/setup/views/Index/NodeList/NodeRow.tsx
+  var NodeRow;
+  var init_NodeRow = __esm({
+    "src/setup/views/Index/NodeList/NodeRow.tsx"() {
+      "use strict";
+      init_preact_module();
+      init_lib2();
+      init_GlobalState();
+      init_lib();
+      init_SvgIcons();
+      init_NodeList2();
+      NodeRow = ({ node }) => {
+        const { setEditedKey } = useGlobalActions();
+        const editedKeyText = useGlobalState((c3) => c3.editedKeys[node.id] || "");
+        const handleConnect = () => {
+          emit(
+            "SET_NODE_CONNECTION",
+            node.id,
+            editedKeyText
+          );
+        };
+        const handleNodeDisconnect = () => {
+          setEditedKey(node.id, "");
+          emit("SET_NODE_CONNECTION", node.id, "");
+        };
+        return /* @__PURE__ */ h(p, {
+          key: node.id
+        }, /* @__PURE__ */ h("div", {
+          className: NodeList_default2.row_text
+        }, node.characters), /* @__PURE__ */ h("div", {
+          className: NodeList_default2.row_key
+        }, node.key ? node.key : /* @__PURE__ */ h(Textbox, {
+          variant: "border",
+          placeholder: "No key connected",
+          value: editedKeyText,
+          onChange: (e3) => setEditedKey(node.id, e3.target.value)
+        })), node.key ? /* @__PURE__ */ h("div", {
+          className: NodeList_default2.row_connect,
+          title: "Disconnect"
+        }, /* @__PURE__ */ h(Button, {
+          secondary: true,
+          onClick: handleNodeDisconnect,
+          className: NodeList_default2.key_present
+        }, /* @__PURE__ */ h(InsertLink, {
+          width: 16,
+          height: 16
+        }))) : /* @__PURE__ */ h("div", {
+          className: NodeList_default2.row_connect,
+          title: "Connect to a key"
+        }, /* @__PURE__ */ h(Button, {
+          secondary: true,
+          onClick: handleConnect,
+          className: NodeList_default2.key_missing,
+          disabled: !editedKeyText
+        }, /* @__PURE__ */ h(InsertLink, {
+          width: 16,
+          height: 16
+        }))));
+      };
+    }
+  });
+
+  // src/setup/views/Index/NodeList/NodeList.tsx
+  var NodeList;
+  var init_NodeList3 = __esm({
+    "src/setup/views/Index/NodeList/NodeList.tsx"() {
+      "use strict";
+      init_preact_module();
+      init_NodeList();
+      init_NodeRow();
+      NodeList = ({ nodes }) => {
+        return /* @__PURE__ */ h("div", {
+          className: NodeList_default.container
+        }, nodes == null ? void 0 : nodes.map((node) => /* @__PURE__ */ h(NodeRow, {
+          key: node.id,
+          node
+        })));
+      };
+    }
+  });
+
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c40ce606-cf92-49a7-9087-08299200b0a1/HeadingTab.js
   var HeadingTab_default;
   var init_HeadingTab = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/85ab2768-bb5a-4a59-9bee-ba52f850dbf3/HeadingTab.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c40ce606-cf92-49a7-9087-08299200b0a1/HeadingTab.js"() {
       if (document.getElementById("617685254d") === null) {
         const element = document.createElement("style");
         element.id = "617685254d";
@@ -5627,22 +5873,27 @@ svg {
       "use strict";
       init_preact_module();
       init_HeadingTab();
-      HeadingTab = ({ name, route, currentRoute, onChange }) => {
+      HeadingTab = ({
+        children,
+        route,
+        currentRoute,
+        onChange
+      }) => {
         return /* @__PURE__ */ h("div", {
           className: HeadingTab_default.container,
           style: {
             color: route === currentRoute ? "var(--figma-color-text)" : "var(--figma-color-text-secondary)"
           },
           onClick: () => onChange(route)
-        }, name);
+        }, children);
       };
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/81564cba-9a0f-42be-a6e0-2a53794addb9/TopBar.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/228fe2e0-0ee0-4813-a397-7aefb3013b3c/TopBar.js
   var TopBar_default;
   var init_TopBar = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/81564cba-9a0f-42be-a6e0-2a53794addb9/TopBar.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/228fe2e0-0ee0-4813-a397-7aefb3013b3c/TopBar.js"() {
       if (document.getElementById("f0da42e164") === null) {
         const element = document.createElement("style");
         element.id = "f0da42e164";
@@ -5678,6 +5929,7 @@ svg {
       init_preact_module();
       init_HeadingTab2();
       init_GlobalState();
+      init_SvgIcons();
       init_TopBar();
       TopBar = ({ languages }) => {
         var _a;
@@ -5686,11 +5938,8 @@ svg {
           return (_a2 = c3.config) == null ? void 0 : _a2.lang;
         }) || ((_a = languages == null ? void 0 : languages[0]) == null ? void 0 : _a.tag) || "";
         const { setLanguage } = useGlobalActions();
-        const route = useGlobalState((c3) => c3.route);
+        const routeKey = useGlobalState((c3) => c3.routeKey);
         const { setRoute } = useGlobalActions();
-        const handleRouteChange = (route2) => {
-          setRoute(route2);
-        };
         return /* @__PURE__ */ h("div", {
           className: TopBar_default.container
         }, /* @__PURE__ */ h("div", {
@@ -5707,11 +5956,13 @@ svg {
         }, l3.name)))), /* @__PURE__ */ h("div", {
           className: TopBar_default.tabsContainerLeft
         }, /* @__PURE__ */ h(HeadingTab, {
-          name: "Settings",
           route: "settings",
-          currentRoute: route,
-          onChange: handleRouteChange
-        })));
+          currentRoute: routeKey,
+          onChange: () => setRoute("settings")
+        }, /* @__PURE__ */ h(Settings, {
+          width: 15,
+          height: 15
+        }))));
       };
     }
   });
@@ -5725,6 +5976,7 @@ svg {
       init_preact_module();
       init_useQueryApi();
       init_GlobalState();
+      init_NodeList3();
       init_TopBar2();
       Index = () => {
         var _a;
@@ -5737,56 +5989,73 @@ svg {
         if (isLoading) {
           return /* @__PURE__ */ h(MiddleAlign, null, /* @__PURE__ */ h(LoadingIndicator, null));
         }
-        return /* @__PURE__ */ h(Container, {
+        return /* @__PURE__ */ h(p, null, /* @__PURE__ */ h(Container, {
           space: "medium"
         }, /* @__PURE__ */ h(TopBar, {
           languages
-        }), /* @__PURE__ */ h(VerticalSpace, {
+        })), /* @__PURE__ */ h(Divider, null), /* @__PURE__ */ h(VerticalSpace, {
           space: "large"
-        }), !(selection == null ? void 0 : selection.length) && /* @__PURE__ */ h(Text, null, "No nodes selected"), selection == null ? void 0 : selection.map((node) => /* @__PURE__ */ h(p, {
-          key: node.id
-        }, /* @__PURE__ */ h(Text, null, node.id, ": ", node.name), /* @__PURE__ */ h(VerticalSpace, {
+        }), /* @__PURE__ */ h(Container, {
           space: "medium"
-        }))));
+        }, !!selection.length && /* @__PURE__ */ h(NodeList, {
+          nodes: selection
+        }), !(selection == null ? void 0 : selection.length) && /* @__PURE__ */ h(Text, null, "No nodes selected")));
       };
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/517fe228-94bc-4bcc-a205-9bb973e871b8/Settings.js
-  var Settings_default;
-  var init_Settings = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/517fe228-94bc-4bcc-a205-9bb973e871b8/Settings.js"() {
-      if (document.getElementById("fa1f875d10") === null) {
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/301bcfb3-9d98-4d68-a508-c7e08c358253/ActionsBottom.js
+  var ActionsBottom_default;
+  var init_ActionsBottom = __esm({
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/301bcfb3-9d98-4d68-a508-c7e08c358253/ActionsBottom.js"() {
+      if (document.getElementById("d1c8a68a43") === null) {
         const element = document.createElement("style");
-        element.id = "fa1f875d10";
-        element.textContent = `._controlsContainer_jr4v9_1 {
+        element.id = "d1c8a68a43";
+        element.textContent = `._container_9iumx_1 {
   display: flex;
   bottom: 12px;
   position: absolute;
-  left: 12px;
   right: 12px;
   gap: 8px;
+  justify-content: flex-end;
 }
 
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9zZXR1cC92aWV3cy9TZXR0aW5ncy9TZXR0aW5ncy5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxhQUFhO0VBQ2IsWUFBWTtFQUNaLGtCQUFrQjtFQUNsQixVQUFVO0VBQ1YsV0FBVztFQUNYLFFBQVE7QUFDViIsImZpbGUiOiJzcmMvc2V0dXAvdmlld3MvU2V0dGluZ3MvU2V0dGluZ3MuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmNvbnRyb2xzQ29udGFpbmVyIHtcbiAgZGlzcGxheTogZmxleDtcbiAgYm90dG9tOiAxMnB4O1xuICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gIGxlZnQ6IDEycHg7XG4gIHJpZ2h0OiAxMnB4O1xuICBnYXA6IDhweDtcbn1cbiJdfQ== */`;
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9zZXR1cC9jb21wb25lbnRzL0FjdGlvbnNCb3R0b20vQWN0aW9uc0JvdHRvbS5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDRSxhQUFhO0VBQ2IsWUFBWTtFQUNaLGtCQUFrQjtFQUNsQixXQUFXO0VBQ1gsUUFBUTtFQUNSLHlCQUF5QjtBQUMzQiIsImZpbGUiOiJzcmMvc2V0dXAvY29tcG9uZW50cy9BY3Rpb25zQm90dG9tL0FjdGlvbnNCb3R0b20uY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmNvbnRhaW5lciB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGJvdHRvbTogMTJweDtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICByaWdodDogMTJweDtcbiAgZ2FwOiA4cHg7XG4gIGp1c3RpZnktY29udGVudDogZmxleC1lbmQ7XG59XG4iXX0= */`;
         document.head.append(element);
       }
-      Settings_default = { "controlsContainer": "_controlsContainer_jr4v9_1" };
+      ActionsBottom_default = { "container": "_container_9iumx_1" };
+    }
+  });
+
+  // src/setup/components/ActionsBottom/ActionsBottom.tsx
+  var ActionsBottom;
+  var init_ActionsBottom2 = __esm({
+    "src/setup/components/ActionsBottom/ActionsBottom.tsx"() {
+      "use strict";
+      init_lib2();
+      init_preact_module();
+      init_ActionsBottom();
+      ActionsBottom = ({ children }) => {
+        return /* @__PURE__ */ h(Columns, {
+          space: "extraSmall",
+          className: ActionsBottom_default.container
+        }, children);
+      };
     }
   });
 
   // src/setup/views/Settings/Settings.tsx
-  var Settings;
-  var init_Settings2 = __esm({
+  var Settings2;
+  var init_Settings = __esm({
     "src/setup/views/Settings/Settings.tsx"() {
       "use strict";
+      init_preact_module();
       init_hooks_module();
       init_lib2();
-      init_preact_module();
-      init_Settings();
       init_GlobalState();
       init_useQueryApi();
-      Settings = () => {
+      init_ActionsBottom2();
+      Settings2 = () => {
         var _a, _b;
         const config = useGlobalState((c3) => c3.config) || {};
         const [tolgeeConfig, setTolgeeConfig] = p2(config != null ? config : {});
@@ -5858,17 +6127,12 @@ svg {
           icon: /* @__PURE__ */ h(IconWarning32, null)
         }, error) : null, /* @__PURE__ */ h(VerticalSpace, {
           space: "extraLarge"
-        }), !isLoading && /* @__PURE__ */ h(Columns, {
-          space: "extraSmall",
-          className: Settings_default.controlsContainer
-        }, /* @__PURE__ */ h(Button, {
-          fullWidth: true,
-          onClick: handleSubmit
-        }, "Save"), /* @__PURE__ */ h(Button, {
-          fullWidth: true,
+        }), !isLoading && /* @__PURE__ */ h(ActionsBottom, null, /* @__PURE__ */ h(Button, {
           onClick: handleClose,
           secondary: true
-        }, "Close")), /* @__PURE__ */ h(VerticalSpace, {
+        }, "Close"), /* @__PURE__ */ h(Button, {
+          onClick: handleSubmit
+        }, "Save")), /* @__PURE__ */ h(VerticalSpace, {
           space: "small"
         }));
       };
@@ -5876,26 +6140,27 @@ svg {
   });
 
   // src/setup/views/Router.tsx
-  var getRoute, Router;
+  var getPage, Router;
   var init_Router = __esm({
     "src/setup/views/Router.tsx"() {
       "use strict";
       init_preact_module();
       init_lib2();
-      init_Index();
-      init_Settings2();
-      init_GlobalState();
       init_hooks_module();
-      getRoute = (route) => {
-        switch (route) {
+      init_Index();
+      init_Settings();
+      init_GlobalState();
+      getPage = ([routeKey]) => {
+        switch (routeKey) {
           case "index":
             return /* @__PURE__ */ h(Index, null);
           case "settings":
-            return /* @__PURE__ */ h(Settings, null);
+            return /* @__PURE__ */ h(Settings2, null);
         }
       };
       Router = () => {
         const route = useGlobalState((c3) => c3.route);
+        const routeKey = useGlobalState((c3) => c3.routeKey);
         const globalError = useGlobalState((c3) => c3.globalError);
         const config = useGlobalState((c3) => c3.config);
         const { setRoute } = useGlobalActions();
@@ -5907,11 +6172,11 @@ svg {
         const handleResolveError = () => {
           setRoute("settings");
         };
-        return /* @__PURE__ */ h(p, null, globalError && route !== "settings" && /* @__PURE__ */ h(Banner, {
+        return /* @__PURE__ */ h(p, null, globalError && routeKey !== "settings" && /* @__PURE__ */ h(Banner, {
           style: { cursor: "pointer" },
           onClick: handleResolveError,
           icon: /* @__PURE__ */ h(IconWarning32, null)
-        }, globalError), getRoute(route));
+        }, globalError), getPage(route));
       };
     }
   });

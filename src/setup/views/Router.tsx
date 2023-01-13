@@ -1,14 +1,14 @@
 import { Fragment, h } from "preact";
 import { Banner, IconWarning32 } from "@create-figma-plugin/ui";
+import { useEffect } from "preact/hooks";
 
-import { Route } from "./data";
+import { Route } from "./routes";
 import { Index } from "./Index/Index";
 import { Settings } from "./Settings/Settings";
 import { useGlobalActions, useGlobalState } from "../state/GlobalState";
-import { useEffect } from "preact/hooks";
 
-const getRoute = (route: Route) => {
-  switch (route) {
+const getPage = ([routeKey]: Route) => {
+  switch (routeKey) {
     case "index":
       return <Index />;
 
@@ -19,6 +19,7 @@ const getRoute = (route: Route) => {
 
 export const Router = () => {
   const route = useGlobalState((c) => c.route);
+  const routeKey = useGlobalState((c) => c.routeKey);
   const globalError = useGlobalState((c) => c.globalError);
   const config = useGlobalState((c) => c.config);
   const { setRoute } = useGlobalActions();
@@ -35,7 +36,7 @@ export const Router = () => {
 
   return (
     <Fragment>
-      {globalError && route !== "settings" && (
+      {globalError && routeKey !== "settings" && (
         <Banner
           style={{ cursor: "pointer" }}
           onClick={handleResolveError}
@@ -44,7 +45,7 @@ export const Router = () => {
           {globalError}
         </Banner>
       )}
-      {getRoute(route)}
+      {getPage(route)}
     </Fragment>
   );
 };

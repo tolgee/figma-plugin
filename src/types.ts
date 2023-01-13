@@ -27,7 +27,7 @@ export interface SyncCompleteHandler extends EventHandler {
 
 export interface TranslationsUpdateHandler extends EventHandler {
   name: "UPDATE_NODES";
-  handler: (nodes: Node[]) => void;
+  handler: (nodes: NodeInfo[]) => void;
 }
 
 export interface ResizeHandler extends EventHandler {
@@ -37,13 +37,19 @@ export interface ResizeHandler extends EventHandler {
 
 export interface SelectionChangeHandler extends EventHandler {
   name: "SELECTION_CHANGE";
-  handler: (data: Node[]) => void;
+  handler: (data: NodeInfo[]) => void;
 }
 
-export interface Node {
+export interface SetNodeConnectionHandler extends EventHandler {
+  name: "SET_NODE_CONNECTION";
+  handler: (nodeId: string, key: string) => void;
+}
+
+export interface NodeInfo {
   name: string;
   characters: string;
   id: string;
+  key: string;
 }
 
 export interface TolgeeConfig extends Record<string, string> {

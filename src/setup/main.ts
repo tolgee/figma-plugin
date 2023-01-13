@@ -4,32 +4,34 @@ import {
   on,
   showUI,
 } from "@create-figma-plugin/utilities";
-import { TOLGEE_PLUGIN_CONFIG_NAME } from "../tolgee";
+import { TOLGEE_NODE_KEY, TOLGEE_PLUGIN_CONFIG_NAME } from "../tolgee";
 
 import {
   ConfigChangeHandler,
-  Node,
+  NodeInfo,
   ResizeHandler,
   SelectionChangeHandler,
   SetLanguageHandler,
+  SetNodeConnectionHandler,
   SetupHandle,
   SyncCompleteHandler,
   TolgeeConfig,
   TranslationsUpdateHandler,
 } from "../types";
-import { PAGES } from "./views/data";
+import { getWindowSize } from "./views/routes";
 
-const findTextNodes = (nodes?: readonly SceneNode[]): Node[] => {
+const findTextNodes = (nodes?: readonly SceneNode[]): NodeInfo[] => {
   if (!nodes) {
     return findTextNodes(figma.currentPage.selection || []);
   }
-  let result: Node[] = [];
+  let result: NodeInfo[] = [];
   for (const node of nodes) {
     if (node.type === "TEXT") {
       result.push({
         id: node.id,
         name: node.name,
         characters: node.characters,
+        key: node.getPluginData(TOLGEE_NODE_KEY),
       });
     }
     // @ts-ignore
@@ -83,6 +85,7 @@ export default async function () {
     figma.notify("Synchronization completed.");
     figma.closePlugin();
   });
+
   on<TranslationsUpdateHandler>("UPDATE_NODES", async (nodes) => {
     const textNodes = nodes.map((n) => figma.getNodeById(n.id) as TextNode);
     await loadFontsAsync(textNodes);
@@ -93,13 +96,21 @@ export default async function () {
     });
   });
 
+  on<SetNodeConnectionHandler>("SET_NODE_CONNECTION", (nodeId, key) => {
+    const node = figma.getNodeById(nodeId);
+    node?.setPluginData(TOLGEE_NODE_KEY, key);
+
+    // update selection
+    const nodes = findTextNodes();
+    emit<SelectionChangeHandler>("SELECTION_CHANGE", nodes);
+  });
+
   const config = getPluginData();
 
   showUI(
     {
       title: "Tolgee",
-      width: PAGES.index.width,
-      height: PAGES.index.height,
+      ...getWindowSize("index"),
     },
     { config, nodes: findTextNodes() }
   );

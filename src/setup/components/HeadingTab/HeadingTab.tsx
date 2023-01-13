@@ -1,14 +1,18 @@
-import { h } from "preact";
+import { FunctionalComponent, h } from "preact";
 import styles from "./HeadingTab.css";
 
 type Props = {
-  name: string;
   route: string;
   currentRoute: string;
   onChange: (route: string) => void;
 };
 
-export const HeadingTab = ({ name, route, currentRoute, onChange }: Props) => {
+export const HeadingTab: FunctionalComponent<Props> = ({
+  children,
+  route,
+  currentRoute,
+  onChange,
+}) => {
   return (
     <div
       className={styles.container}
@@ -20,7 +24,7 @@ export const HeadingTab = ({ name, route, currentRoute, onChange }: Props) => {
       }}
       onClick={() => onChange(route)}
     >
-      {name}
+      {children}
     </div>
   );
 };

@@ -7,6 +7,7 @@
     "build": "build-figma-plugin --typecheck --minify",
     "watch": "build-figma-plugin --typecheck --watch",
     "schema": "openapi-typescript http://localhost:8202/v3/api-docs/Accessible%20with%20API%20key --output ./src/setup/client/apiSchema.generated.ts",
+    "icons": "svg-icon build --source icons.json --target ./src/setup --name icons",
     "eslint": "eslint --ext .ts,.tsx,.js,.jsx src",
     "tsc": "tsc --noEmit",
     "prettier": "prettier . --write"
@@ -25,6 +26,7 @@
     "jest": "^29.3.1",
     "openapi-typescript": "^6.1.0",
     "prettier": "^2.8.2",
+    "svg-icon": "^0.8.2",
     "typescript": "*"
   },
   "dependencies": {

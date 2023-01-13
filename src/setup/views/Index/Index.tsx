@@ -1,5 +1,6 @@
 import {
   Container,
+  Divider,
   LoadingIndicator,
   MiddleAlign,
   Text,
@@ -9,6 +10,7 @@ import { Fragment, h } from "preact";
 
 import { useApiQuery } from "../../client/useQueryApi";
 import { useGlobalState } from "../../state/GlobalState";
+import { NodeList } from "./NodeList/NodeList";
 import { TopBar } from "./TopBar/TopBar";
 
 export const Index = () => {
@@ -30,18 +32,16 @@ export const Index = () => {
   }
 
   return (
-    <Container space="medium">
-      <TopBar languages={languages} />
+    <Fragment>
+      <Container space="medium">
+        <TopBar languages={languages} />
+      </Container>
+      <Divider />
       <VerticalSpace space="large" />
-      {!selection?.length && <Text>No nodes selected</Text>}
-      {selection?.map((node) => (
-        <Fragment key={node.id}>
-          <Text>
-            {node.id}: {node.name}
-          </Text>
-          <VerticalSpace space="medium" />
-        </Fragment>
-      ))}
-    </Container>
+      <Container space="medium">
+        {!!selection.length && <NodeList nodes={selection} />}
+        {!selection?.length && <Text>No nodes selected</Text>}
+      </Container>
+    </Fragment>
   );
 };

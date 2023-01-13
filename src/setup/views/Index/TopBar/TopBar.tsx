@@ -1,8 +1,8 @@
 import { h } from "preact";
-import { HeadingTab } from "../../../components/HeadingTab/HeadingTab";
-import { useGlobalActions, useGlobalState } from "../../../state/GlobalState";
-import { Route } from "../../data";
 
+import { HeadingTab } from "@/setup/components/HeadingTab/HeadingTab";
+import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
+import { Settings } from "@/setup/icons/SvgIcons";
 import styles from "./TopBar.css";
 
 type LanguageType = {
@@ -20,12 +20,8 @@ export const TopBar = ({ languages }: Props) => {
 
   const { setLanguage } = useGlobalActions();
 
-  const route = useGlobalState((c) => c.route);
+  const routeKey = useGlobalState((c) => c.routeKey);
   const { setRoute } = useGlobalActions();
-
-  const handleRouteChange = (route: string) => {
-    setRoute(route as Route);
-  };
 
   return (
     <div className={styles.container}>
@@ -48,11 +44,12 @@ export const TopBar = ({ languages }: Props) => {
       </div>
       <div className={styles.tabsContainerLeft}>
         <HeadingTab
-          name="Settings"
           route="settings"
-          currentRoute={route}
-          onChange={handleRouteChange}
-        />
+          currentRoute={routeKey}
+          onChange={() => setRoute("settings")}
+        >
+          <Settings width={15} height={15} />
+        </HeadingTab>
       </div>
     </div>
   );

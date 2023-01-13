@@ -3,18 +3,18 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 
 import {
   ConfigChangeHandler,
-  Node,
+  NodeInfo,
   ResizeHandler,
   SelectionChangeHandler,
   SetLanguageHandler,
   SetupHandle,
   TolgeeConfig,
 } from "../../types";
-import { PAGES, Route } from "../views/data";
+import { getWindowSize, Route } from "../views/routes";
 import { createProvider } from "../tools/createProvider";
 
 type Props = {
-  initialSelection: Array<Node>;
+  initialSelection: Array<NodeInfo>;
   initialConfig: Partial<TolgeeConfig> | null;
 };
 
@@ -24,12 +24,19 @@ export const globalState = {
 
 export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
   ({ initialSelection, initialConfig }: Props) => {
-    const [selection, setSelection] = useState<Node[]>(initialSelection);
-    const [route, _setRoute] = useState<Route>("index");
+    const [selection, setSelection] = useState<NodeInfo[]>(initialSelection);
+    const [route, _setRoute] = useState<Route>(["index"]);
+    const routeKey = route[0];
     const [config, _setConfig] = useState(initialConfig);
     const [globalError, setGlobalError] = useState<string | undefined>(
       undefined
     );
+
+    const [editedKeys, setEditedKeys] = useState<Record<string, string>>({});
+
+    const setEditedKey = (id: string, key: string) => {
+      setEditedKeys((keys) => ({ ...keys, [id]: key }));
+    };
 
     useEffect(() => {
       return on<SelectionChangeHandler>("SELECTION_CHANGE", (data) => {
@@ -44,8 +51,8 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     }, []);
 
     useMemo(() => {
-      emit<ResizeHandler>("RESIZE", PAGES[route]);
-    }, [route]);
+      emit<ResizeHandler>("RESIZE", getWindowSize(routeKey));
+    }, [routeKey]);
 
     function setConfig(config: Partial<TolgeeConfig>) {
       _setConfig(config);
@@ -57,16 +64,18 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
       emit<SetLanguageHandler>("SET_LANGUAGE", language);
     }
 
-    function setRoute(route: Route) {
+    function setRoute(...route: Route) {
       setGlobalError(undefined);
       _setRoute(route);
     }
 
     const data = {
       route,
+      routeKey,
       selection,
       config,
       globalError,
+      editedKeys,
     };
 
     const actions = {
@@ -74,6 +83,7 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
       setConfig,
       setLanguage,
       setGlobalError,
+      setEditedKey,
     };
 
     globalState.actions = actions;

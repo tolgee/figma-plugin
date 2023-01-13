@@ -22,7 +22,7 @@ import { sendTolgeeRequest, TOLGEE_PREFIX } from "../tolgee";
 import "!../styles.css";
 import {
   CloseHandler,
-  Node,
+  NodeInfo,
   TolgeeConfig,
   TranslationsUpdateHandler,
 } from "../types";
@@ -31,7 +31,7 @@ function Plugin({
   nodes,
   config,
 }: {
-  nodes: Array<Node>;
+  nodes: Array<NodeInfo>;
   config: TolgeeConfig;
 }) {
   const [openEdited, setOpenEdited] = useState(true);
@@ -45,8 +45,8 @@ function Plugin({
     null
   );
 
-  const [editedNodes, setEditedNodes] = useState<Node[]>([]);
-  const [selectedNodes, setSelectedNodes] = useState<Node[]>([]);
+  const [editedNodes, setEditedNodes] = useState<NodeInfo[]>([]);
+  const [selectedNodes, setSelectedNodes] = useState<NodeInfo[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -98,7 +98,7 @@ function Plugin({
     }
   }, [editedNodes, selectAll]);
 
-  const toggleNode = (node: Node) => {
+  const toggleNode = (node: NodeInfo) => {
     if (selectedNodes.includes(node)) {
       setSelectedNodes(selectedNodes.filter((n) => n !== node));
     } else {

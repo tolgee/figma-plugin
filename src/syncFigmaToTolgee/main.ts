@@ -8,7 +8,7 @@ import { TOLGEE_PLUGIN_CONFIG_NAME, TOLGEE_PREFIX } from "../tolgee";
 
 import {
   CloseHandler,
-  Node,
+  NodeInfo,
   SyncCompleteHandler,
   TolgeeConfig,
   TranslationsUpdateHandler,
@@ -19,7 +19,7 @@ export default async function () {
     figma.notify("Synchronization completed.");
     figma.closePlugin();
   });
-  once<CloseHandler>("CLOSE", function () {
+  once<CloseHandler>("CLOSE", () => {
     figma.closePlugin();
   });
   on<TranslationsUpdateHandler>("UPDATE_NODES", async (nodes) => {
@@ -32,8 +32,8 @@ export default async function () {
     });
   });
 
-  let nodes: Array<Node> = [];
-  const conflictingNodes: Array<Node> = [];
+  let nodes: Array<NodeInfo> = [];
+  const conflictingNodes: Array<NodeInfo> = [];
   (
     figma.currentPage.children.filter(
       (node) => node.type === "TEXT" && node.name.startsWith(TOLGEE_PREFIX)
@@ -68,9 +68,8 @@ export default async function () {
       n1.name === n2.name
     ) {
       return -1;
-    } else {
-      return 0;
     }
+    return 0;
   });
 
   const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);

@@ -4,7 +4,11 @@
     "types": ["node"],
     "typeRoots": ["node_modules/@figma", "node_modules/@types"],
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

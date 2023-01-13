@@ -1,6 +1,8 @@
 {
   "api": "1.0.0",
-  "editorType": ["figma"],
+  "editorType": [
+    "figma"
+  ],
   "id": "1",
   "name": "Tolgee",
   "main": "build/main.js",
