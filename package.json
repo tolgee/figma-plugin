@@ -6,7 +6,7 @@
   "scripts": {
     "build": "build-figma-plugin --typecheck --minify",
     "watch": "build-figma-plugin --typecheck --watch",
-    "schema": "openapi-typescript http://localhost:8202/v3/api-docs/Accessible%20with%20API%20key --output ./src/setup/client/apiSchema.generated.ts",
+    "schema": "openapi-typescript http://localhost:8080/v3/api-docs/Accessible%20with%20API%20key --output ./src/setup/client/apiSchema.generated.ts",
     "icons": "svg-icon build --source icons.json --target ./src/setup --name icons",
     "eslint": "eslint --ext .ts,.tsx,.js,.jsx src",
     "tsc": "tsc --noEmit",
@@ -32,6 +32,7 @@
   "dependencies": {
     "@create-figma-plugin/ui": "2.1.5",
     "@create-figma-plugin/utilities": "2.1.5",
+    "clsx": "^1.2.1",
     "preact": "^10.11.3",
     "react-query": "^3.39.2",
     "use-context-selector": "^1.4.1"

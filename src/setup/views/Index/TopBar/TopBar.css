@@ -4,13 +4,23 @@
   margin: 0px -10px;
 }
 
-.languageContainer {
-  display: flex;
-  margin: 5px 0px;
-}
-
 .tabsContainerLeft {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: center;
   gap: 16px;
+}
+
+.tabsContainerRight {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+
+.tabsBackButton {
+  padding: 0px 10px;
+  padding-right: 0px;
+  cursor: pointer;
+  margin-right: -16px;
 }

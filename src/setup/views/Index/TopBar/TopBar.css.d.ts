@@ -1,7 +1,8 @@
 declare const styles: {
   readonly "container": string;
-  readonly "languageContainer": string;
   readonly "tabsContainerLeft": string;
+  readonly "tabsContainerRight": string;
+  readonly "tabsBackButton": string;
 };
 export = styles;
 

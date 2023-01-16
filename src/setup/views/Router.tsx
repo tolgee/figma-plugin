@@ -6,14 +6,18 @@ import { Route } from "./routes";
 import { Index } from "./Index/Index";
 import { Settings } from "./Settings/Settings";
 import { useGlobalActions, useGlobalState } from "../state/GlobalState";
+import { Push } from "./Push/Push";
 
-const getPage = ([routeKey]: Route) => {
+const getPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
     case "index":
       return <Index />;
 
     case "settings":
       return <Settings />;
+
+    case "push":
+      return <Push {...routeData} />;
   }
 };
 

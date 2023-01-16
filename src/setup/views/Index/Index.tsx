@@ -1,6 +1,12 @@
+import { useEffect, useState } from "preact/hooks";
+import { HeadingTab } from "@/setup/components/HeadingTab/HeadingTab";
+import { Settings } from "@/setup/icons/SvgIcons";
 import {
+  Banner,
+  Button,
   Container,
   Divider,
+  IconWarning32,
   LoadingIndicator,
   MiddleAlign,
   Text,
@@ -8,13 +14,16 @@ import {
 } from "@create-figma-plugin/ui";
 import { Fragment, h } from "preact";
 
-import { useApiQuery } from "../../client/useQueryApi";
-import { useGlobalState } from "../../state/GlobalState";
+import { useApiQuery } from "@/setup/client/useQueryApi";
+import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
 import { NodeList } from "./NodeList/NodeList";
 import { TopBar } from "./TopBar/TopBar";
+import styles from "./Index.css";
+import { getConflictingNodes } from "@/setup/tools/getConflictingNodes";
 
 export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
+  const [error, setError] = useState<string>();
 
   const { data: languageData, isLoading } = useApiQuery({
     url: "/v2/projects/languages",
@@ -22,6 +31,26 @@ export const Index = () => {
   });
 
   const languages = languageData?._embedded?.languages;
+
+  const language =
+    useGlobalState((c) => c.config?.lang) || languages?.[0]?.tag || "";
+
+  const { setLanguage, setRoute } = useGlobalActions();
+
+  const routeKey = useGlobalState((c) => c.routeKey);
+
+  const handlePush = () => {
+    const conflicts = getConflictingNodes(selection);
+    if (conflicts.length > 0) {
+      setError("There are conflicting nodes");
+    } else {
+      setRoute("push", { nodes: selection.filter((n) => n.key) });
+    }
+  };
+
+  useEffect(() => {
+    setError(undefined);
+  }, [selection]);
 
   if (isLoading) {
     return (
@@ -34,11 +63,57 @@ export const Index = () => {
   return (
     <Fragment>
       <Container space="medium">
-        <TopBar languages={languages} />
+        <TopBar
+          leftPart={
+            <Fragment>
+              <div className={styles.languageContainer}>
+                {languages && (
+                  <select
+                    value={language}
+                    placeholder="Language"
+                    onChange={(e) => {
+                      setLanguage((e.target as HTMLInputElement).value);
+                    }}
+                  >
+                    {languages.map((l) => (
+                      <option key={l.tag} value={l.tag}>
+                        {l.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              <Button onClick={handlePush}>Push</Button>
+            </Fragment>
+          }
+          rightPart={
+            <HeadingTab
+              route="settings"
+              currentRoute={routeKey}
+              onChange={() => setRoute("settings")}
+            >
+              <Settings width={15} height={15} />
+            </HeadingTab>
+          }
+        />
       </Container>
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
+        {error && (
+          <Fragment>
+            <Banner
+              icon={<IconWarning32 />}
+              style={{ cursor: "pointer" }}
+              onClick={() => setError(undefined)}
+            >
+              {error}
+            </Banner>
+            <VerticalSpace space="large" />
+          </Fragment>
+        )}
+
         {!!selection.length && <NodeList nodes={selection} />}
         {!selection?.length && <Text>No nodes selected</Text>}
       </Container>

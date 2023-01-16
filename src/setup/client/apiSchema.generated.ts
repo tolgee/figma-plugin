@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/v2/projects/keys/{keyId}/tags": {
     /** Tags a key with tag. If tag with provided name doesn't exist, it is created */
@@ -18,49 +19,56 @@ export interface paths {
   };
   "/v2/projects/import/result/languages/{languageId}/translations/{translationId}/resolve/set-override": {
     /**
-     * Resolve conflict (override)
+     * Resolve conflict (override) 
      * @description Resolves translation conflict. The old translation will be overridden.
      */
     put: operations["resolveTranslationSetOverride_1"];
   };
   "/v2/projects/import/result/languages/{languageId}/translations/{translationId}/resolve/set-keep-existing": {
     /**
-     * Resolve conflict (keep existing)
+     * Resolve conflict (keep existing) 
      * @description Resolves translation conflict. The old translation will be kept.
      */
     put: operations["resolveTranslationSetKeepExisting_1"];
   };
   "/v2/projects/import/result/languages/{languageId}/resolve-all/set-override": {
     /**
-     * Resolve all translation conflicts (override)
+     * Resolve all translation conflicts (override) 
      * @description Resolves all translation conflicts for provided language. The old translations will be overridden.
      */
     put: operations["resolveTranslationSetOverride_3"];
   };
   "/v2/projects/import/result/languages/{languageId}/resolve-all/set-keep-existing": {
     /**
-     * Resolve all translation conflicts (keep existing)
+     * Resolve all translation conflicts (keep existing) 
      * @description Resolves all translation conflicts for provided language. The old translations will be kept.
      */
     put: operations["resolveTranslationSetKeepExisting_3"];
   };
   "/v2/projects/import/result/languages/{importLanguageId}/select-existing/{existingLanguageId}": {
     /**
-     * Pair existing language
+     * Pair existing language 
      * @description Sets existing language to pair with language to import. Data will be imported to selected existing language when applied.
      */
     put: operations["selectExistingLanguage_1"];
   };
   "/v2/projects/import/result/languages/{importLanguageId}/reset-existing": {
     /**
-     * Reset existing language pairing
+     * Reset existing language pairing 
      * @description Resets existing language paired with language to import.
      */
     put: operations["resetExistingLanguage_1"];
   };
+  "/v2/projects/import/result/files/{fileId}/select-namespace": {
+    /**
+     * Select namespace 
+     * @description Sets namespace for file to import.
+     */
+    put: operations["selectNamespace_1"];
+  };
   "/v2/projects/import/apply": {
     /**
-     * Apply
+     * Apply 
      * @description Imports the data prepared in previous step
      */
     put: operations["applyImport_1"];
@@ -77,7 +85,7 @@ export interface paths {
     /** Returns single translation comment */
     get: operations["get_4"];
     /** Updates single translation comment */
-    put: operations["update_1"];
+    put: operations["update_2"];
     /** Deletes the translation comment */
     delete: operations["delete_6"];
   };
@@ -101,25 +109,17 @@ export interface paths {
   };
   "/v2/projects/keys/{keyId}/auto-translate": {
     /**
-     * Auto translates keys
+     * Auto translates keys 
      * @description Uses enabled auto-translation methods.
      * You need to set at least one of useMachineTranslation or useTranslationMemory to true.
-     *
+     * 
      * This will replace the the existing translation with the result obtained from specified source!
      */
     put: operations["autoTranslate_1"];
   };
-  "/api/project/translations": {
-    /**
-     * Sets translations for existing key
-     * @deprecated
-     */
-    put: operations["setTranslations_3"];
-    /**
-     * Sets translations for existing or not existing key
-     * @deprecated
-     */
-    post: operations["createOrUpdateTranslations_3"];
+  "/v2/projects/keys/import": {
+    /** Import's new keys with translations. If key already exists, it's translations are not updated. */
+    post: operations["importKeys_1"];
   };
   "/v2/projects/keys/create": {
     /** Creates new key */
@@ -133,12 +133,12 @@ export interface paths {
   };
   "/v2/projects/import": {
     /**
-     * Add files
+     * Add files 
      * @description Prepares provided files to import.
      */
     post: operations["addFiles_1"];
     /**
-     * Delete
+     * Delete 
      * @description Deletes prepared import data.
      */
     delete: operations["cancelImport_1"];
@@ -162,7 +162,7 @@ export interface paths {
   "/v2/projects/suggest/translation-memory": {
     /**
      * Suggests machine translations from translation memory.
-     *
+     * 
      * The result is always sorted by similarity, so sorting is not supported.
      */
     post: operations["suggestTranslationMemory_1"];
@@ -179,21 +179,13 @@ export interface paths {
   };
   "/v2/projects/keys/{keyId}/screenshots": {
     /** Returns all screenshots for specified key */
-    get: operations["getKeyScreenshots_2"];
+    get: operations["getKeyScreenshots"];
     /** Upload screenshot for specific key */
     post: operations["uploadScreenshot"];
   };
   "/v2/image-upload": {
     /** Uploads an image for later use */
     post: operations["upload"];
-  };
-  "/api/project/keys/translations/{languages}": {
-    /**
-     * Returns translations for specific key by its name
-     * @deprecated
-     * @description Key name must be provided in method body, since it can be long and can contain characters hard to encode
-     */
-    post: operations["getKeyTranslationsPost_2"];
   };
   "/v2/projects/tags": {
     /** Returns project tags */
@@ -205,41 +197,48 @@ export interface paths {
   };
   "/v2/projects/import/result/languages/{languageId}/translations": {
     /**
-     * Get translations
+     * Get translations 
      * @description Returns translations prepared to import.
      */
     get: operations["getImportTranslations_1"];
   };
   "/v2/projects/import/result/languages/{languageId}": {
     /**
-     * Get import language
+     * Get import language 
      * @description Returns language prepared to import.
      */
     get: operations["getImportLanguage_1"];
     /**
-     * Delete language
+     * Delete language 
      * @description Deletes language prepared to import.
      */
     delete: operations["deleteLanguage_1"];
   };
   "/v2/projects/import/result/files/{importFileId}/issues": {
     /**
-     * Get file issues.
+     * Get file issues 
      * @description Returns issues for uploaded file.
      */
     get: operations["getImportFileIssues_1"];
   };
   "/v2/projects/import/result": {
     /**
-     * Get result
+     * Get result 
      * @description Returns the result of preparation.
      */
     get: operations["getImportResult_1"];
   };
+  "/v2/projects/import/all-namespaces": {
+    /**
+     * Get namespaces 
+     * @description Returns all existing and imported namespaces
+     */
+    get: operations["getAllNamespaces_2"];
+  };
   "/v2/projects/translations/{translationId}/history": {
     /**
-     * Returns history of specific translation.
-     *
+     * Returns history of specific translation. 
+     * 
      * Sorting is not supported for supported. It is automatically sorted from newest to oldest.
      */
     get: operations["getTranslationHistory_1"];
@@ -264,30 +263,12 @@ export interface paths {
     /** Returns current API key info */
     get: operations["getCurrent_1"];
   };
-  "/api/project/keys/{id}": {
-    /**
-     * Returns key with specified id
-     * @deprecated
-     */
-    get: operations["getDeprecated_2"];
-  };
   "/api/project/export/jsonZip": {
     /**
-     * Exports data as ZIP of jsons
+     * Exports data as ZIP of jsons 
      * @deprecated
      */
     get: operations["doExportJsonZip_1"];
-  };
-  "/api/project/translations/{languages}": {
-    /**
-     * Get all translations for specific languages
-     * @deprecated
-     */
-    get: operations["getTranslations_3"];
-  };
-  "/api/apiKeys/scopes": {
-    /** Returns API key scopes */
-    get: operations["getApiKeyScopes"];
   };
   "/v2/projects/keys/{keyId}/tags/{tagId}": {
     /** Removes tag with provided id from key with provided id */
@@ -303,7 +284,7 @@ export interface paths {
   };
   "/v2/image-upload/{ids}": {
     /** Deletes uploaded images */
-    delete: operations["delete_10"];
+    delete: operations["delete_9"];
   };
 }
 
@@ -319,27 +300,27 @@ export interface components {
       /** Format: int64 */
       id: number;
       /**
-       * @description Language name in english
+       * @description Language name in english 
        * @example Czech
        */
       name: string;
       /**
-       * @description Language tag according to BCP 47 definition
+       * @description Language tag according to BCP 47 definition 
        * @example cs-CZ
        */
       tag: string;
       /**
-       * @description Language name in this language
+       * @description Language name in this language 
        * @example čeština
        */
       originalName?: string;
       /**
-       * @description Language flag emoji as UTF-8 emoji
+       * @description Language flag emoji as UTF-8 emoji 
        * @example 🇨🇿
        */
       flagEmoji?: string;
       /**
-       * @description Whether is base language of project
+       * @description Whether is base language of project 
        * @example false
        */
       base: boolean;
@@ -355,30 +336,37 @@ export interface components {
     ComplexEditKeyDto: {
       /** @description Name of the key */
       name: string;
+      /** @description The namespace of the key. (When empty or null default namespace will be used) */
+      namespace?: string;
       /** @description Translations to update */
       translations?: {
         [key: string]: string | undefined;
       };
       /** @description Tags of the key. If not provided tags won't be modified */
-      tags?: string[];
+      tags?: (string)[];
       /** @description IDs of screenshots to delete */
-      screenshotIdsToDelete?: number[];
+      screenshotIdsToDelete?: (number)[];
       /** @description Ids of screenshots uploaded with /v2/image-upload endpoint */
-      screenshotUploadedImageIds?: number[];
+      screenshotUploadedImageIds?: (number)[];
     };
     KeyWithDataModel: {
       /**
-       * Format: int64
+       * Format: int64 
        * @description Id of key record
        */
       id: number;
       /**
-       * @description Name of key
+       * @description Name of key 
        * @example this_is_super_key
        */
       name: string;
       /**
-       * @description Translations object containing values updated in this request
+       * @description Namespace of key 
+       * @example homepage
+       */
+      namespace?: string;
+      /**
+       * @description Translations object containing values updated in this request 
        * @example {
        *   "en": {
        *     "id": 100000003,
@@ -390,9 +378,9 @@ export interface components {
         [key: string]: components["schemas"]["TranslationModel"] | undefined;
       };
       /** @description Tags of key */
-      tags: components["schemas"]["TagModel"][];
+      tags: (components["schemas"]["TagModel"])[];
       /** @description Screenshots of the key */
-      screenshots: components["schemas"]["ScreenshotModel"][];
+      screenshots: (components["schemas"]["ScreenshotModel"])[];
     };
     /** @description Screenshots of the key */
     ScreenshotModel: {
@@ -400,13 +388,13 @@ export interface components {
       id: number;
       /**
        * @description File name, which may be downloaded from the screenshot path.
-       *
+       * 
        * When images are secured. Encrypted timestamp is appended to the filename.
        */
       filename: string;
       /**
        * @description Thumbnail file name, which may be downloaded from the screenshot path.
-       *
+       * 
        * When images are secured. Encrypted timestamp is appended to the filename.
        */
       thumbnail: string;
@@ -416,7 +404,7 @@ export interface components {
       createdAt?: string;
     };
     /**
-     * @description Translations object containing values updated in this request
+     * @description Translations object containing values updated in this request 
      * @example {
      *   "en": {
      *     "id": 100000003,
@@ -426,61 +414,71 @@ export interface components {
      */
     TranslationModel: {
       /**
-       * Format: int64
+       * Format: int64 
        * @description Id of translation record
        */
       id: number;
       /** @description Translation text */
       text?: string;
       /**
-       * @description State of translation
+       * @description State of translation 
        * @enum {string}
        */
       state: "UNTRANSLATED" | "TRANSLATED" | "REVIEWED";
       /** @description Was translated using Translation Memory or Machine translation service? */
       auto: boolean;
       /**
-       * @description Which machine translation service was used to auto translate this
+       * @description Which machine translation service was used to auto translate this 
        * @enum {string}
        */
       mtProvider?: "GOOGLE" | "AWS" | "DEEPL" | "AZURE";
     };
     EditKeyDto: {
       name: string;
+      /** @description The namespace of the key. (When empty or null default namespace will be used) */
+      namespace?: string;
     };
     KeyModel: {
       /**
-       * Format: int64
+       * Format: int64 
        * @description Id of key record
        */
       id: number;
       /**
-       * @description Name of key
+       * @description Name of key 
        * @example this_is_super_key
        */
       name: string;
+      /**
+       * @description Namespace of key 
+       * @example homepage
+       */
+      namespace?: string;
+    };
+    SetFileNamespaceRequest: {
+      namespace?: string;
     };
     TranslationCommentModel: {
       /**
-       * Format: int64
+       * Format: int64 
        * @description Id of translation comment record
        */
       id: number;
       /** @description Text of comment */
       text: string;
       /**
-       * @description State of translation
+       * @description State of translation 
        * @enum {string}
        */
       state: "RESOLUTION_NOT_NEEDED" | "NEEDS_RESOLUTION" | "RESOLVED";
       author: components["schemas"]["UserAccountModel"];
       /**
-       * Format: date-time
+       * Format: date-time 
        * @description Date when it was created
        */
       createdAt: string;
       /**
-       * Format: date-time
+       * Format: date-time 
        * @description Date when it was updated
        */
       updatedAt: string;
@@ -504,12 +502,14 @@ export interface components {
     };
     SetTranslationsWithKeyDto: {
       /**
-       * @description Key name to set translations for
+       * @description Key name to set translations for 
        * @example what_a_key_to_translate
        */
       key: string;
+      /** @description The namespace of the key. (When empty or null default namespace will be used) */
+      namespace?: string;
       /**
-       * @description Object mapping language tag to translation
+       * @description Object mapping language tag to translation 
        * @example {
        *   "en": "What a translated value!",
        *   "cs": "Jaká to přeložená hodnota!"
@@ -519,31 +519,36 @@ export interface components {
         [key: string]: string | undefined;
       };
       /**
-       * @description List of languages to return translations for.
-       *
+       * @description List of languages to return translations for. 
+       * 
        * If not provided, only modified translation will be provided.
-       *
+       *      
        * @example [
        *   "en",
        *   "de",
        *   "fr"
        * ]
        */
-      languagesToReturn?: string[];
+      languagesToReturn?: (string)[];
     };
     SetTranslationsResponseModel: {
       /**
-       * Format: int64
+       * Format: int64 
        * @description Id of key record
        */
       keyId: number;
       /**
-       * @description Name of key
+       * @description Name of key 
        * @example this_is_super_key
        */
       keyName: string;
       /**
-       * @description Translations object containing values updated in this request
+       * @description The namespace of the key 
+       * @example homepage
+       */
+      keyNamespace?: string;
+      /**
+       * @description Translations object containing values updated in this request 
        * @example {
        *   "en": {
        *     "id": 100000003,
@@ -557,43 +562,66 @@ export interface components {
     };
     LanguageDto: {
       /**
-       * @description Language name in english
+       * @description Language name in english 
        * @example Czech
        */
       name: string;
       /**
-       * @description Language tag according to BCP 47 definition
+       * @description Language tag according to BCP 47 definition 
        * @example cs-CZ
        */
       originalName: string;
       /**
-       * @description Language name in this language
+       * @description Language name in this language 
        * @example čeština
        */
       tag: string;
       /**
-       * @description Language flag emoji as UTF-8 emoji
+       * @description Language flag emoji as UTF-8 emoji 
        * @example 🇨🇿
        */
       flagEmoji?: string;
     };
+    ImportKeysDto: {
+      keys: (components["schemas"]["ImportKeysItemDto"])[];
+    };
+    ImportKeysItemDto: {
+      /**
+       * @description Key name to set translations for 
+       * @example what_a_key_to_translate
+       */
+      name: string;
+      /** @description The namespace of the key. (When empty or null default namespace will be used) */
+      namespace?: string;
+      /**
+       * @description Object mapping language tag to translation 
+       * @example {
+       *   "en": "What a translated value!",
+       *   "cs": "Jaká to přeložená hodnota!"
+       * }
+       */
+      translations: {
+        [key: string]: string | undefined;
+      };
+    };
     CreateKeyDto: {
       /** @description Name of the key */
       name: string;
+      /** @description The namespace of the key. (When empty or null default namespace will be used) */
+      namespace?: string;
       translations?: {
         [key: string]: string | undefined;
       };
-      tags?: string[];
+      tags?: (string)[];
       /** @description Ids of screenshots uploaded with /v2/image-upload endpoint */
-      screenshotUploadedImageIds?: number[];
+      screenshotUploadedImageIds?: (number)[];
     };
-    StreamingResponseBody: Record<string, never>;
     ErrorResponseBody: {
       code: string;
-      params?: Record<string, never>[];
+      params?: (Record<string, never>)[];
     };
     ImportAddFilesResultModel: {
-      errors: components["schemas"]["ErrorResponseBody"][];
+      errors: (components["schemas"]["ErrorResponseBody"])[];
       result?: components["schemas"]["PagedModelImportLanguageModel"];
     };
     ImportLanguageModel: {
@@ -610,6 +638,7 @@ export interface components {
       importFileId: number;
       /** Format: int32 */
       importFileIssueCount: number;
+      namespace?: string;
       /** Format: int32 */
       totalCount: number;
       /** Format: int32 */
@@ -629,25 +658,24 @@ export interface components {
     };
     PagedModelImportLanguageModel: {
       _embedded?: {
-        languages?: components["schemas"]["ImportLanguageModel"][];
+        languages?: (components["schemas"]["ImportLanguageModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
     };
     ExportParams: {
-      languages?: string[];
+      languages?: (string)[];
       /** @enum {string} */
       format: "JSON" | "XLIFF";
-      splitByScope: boolean;
-      splitByScopeDelimiter: string;
-      /** Format: int32 */
-      splitByScopeDepth: number;
-      filterKeyId?: number[];
-      filterKeyIdNot?: number[];
+      structureDelimiter?: string;
+      filterKeyId?: (number)[];
+      filterKeyIdNot?: (number)[];
       filterTag?: string;
       filterKeyPrefix?: string;
       filterState?: ("UNTRANSLATED" | "TRANSLATED" | "REVIEWED")[];
+      filterNamespace?: (string)[];
       zip: boolean;
     };
+    StreamingResponseBody: Record<string, never>;
     TranslationCommentWithLangKeyDto: {
       /** Format: int64 */
       keyId: number;
@@ -663,7 +691,7 @@ export interface components {
     };
     SuggestRequestDto: {
       /**
-       * Format: int64
+       * Format: int64 
        * @description Key Id to get results for. Use when key is stored already.
        */
       keyId: number;
@@ -674,7 +702,7 @@ export interface components {
     };
     PagedModelTranslationMemoryItemModel: {
       _embedded?: {
-        translationMemoryItems?: components["schemas"]["TranslationMemoryItemModel"][];
+        translationMemoryItems?: (components["schemas"]["TranslationMemoryItemModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
     };
@@ -687,7 +715,7 @@ export interface components {
     };
     SuggestResultModel: {
       /**
-       * @description Results provided by enabled services
+       * @description Results provided by enabled services 
        * @example {
        *   "GOOGLE": "This was translated by Google",
        *   "AWS": "This was translated by AWS",
@@ -703,12 +731,12 @@ export interface components {
       /** Format: int64 */
       translationCreditsBalanceAfter: number;
       /**
-       * Format: int64
+       * Format: int64 
        * @description Extra credits are neither refilled nor reset every period. User's can refill them on Tolgee cloud.
        */
       translationExtraCreditsBalanceBefore: number;
       /**
-       * Format: int64
+       * Format: int64 
        * @description Extra credits are neither refilled nor reset every period. User's can refill them on Tolgee cloud.
        */
       translationExtraCreditsBalanceAfter: number;
@@ -722,12 +750,9 @@ export interface components {
       /** Format: date-time */
       createdAt: string;
     };
-    GetKeyTranslationsReqDto: {
-      key?: string;
-    };
     PagedModelTagModel: {
       _embedded?: {
-        tags?: components["schemas"]["TagModel"][];
+        tags?: (components["schemas"]["TagModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
     };
@@ -747,9 +772,7 @@ export interface components {
         [key: string]: Record<string, never> | undefined;
       };
       relations: {
-        [key: string]:
-          | components["schemas"]["EntityDescriptionWithRelations"]
-          | undefined;
+        [key: string]: components["schemas"]["EntityDescriptionWithRelations"] | undefined;
       };
       exists?: boolean;
     };
@@ -760,20 +783,16 @@ export interface components {
         [key: string]: Record<string, never> | undefined;
       };
       modifications?: {
-        [key: string]:
-          | components["schemas"]["PropertyModification"]
-          | undefined;
+        [key: string]: components["schemas"]["PropertyModification"] | undefined;
       };
       relations?: {
-        [key: string]:
-          | components["schemas"]["ExistenceEntityDescription"]
-          | undefined;
+        [key: string]: components["schemas"]["ExistenceEntityDescription"] | undefined;
       };
       exists?: boolean;
     };
     PagedModelProjectActivityModel: {
       _embedded?: {
-        activities?: components["schemas"]["ProjectActivityModel"][];
+        activities?: (components["schemas"]["ProjectActivityModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
     };
@@ -791,33 +810,10 @@ export interface components {
       /** Format: int64 */
       timestamp: number;
       /** @enum {string} */
-      type:
-        | "UNKNOWN"
-        | "SET_TRANSLATION_STATE"
-        | "SET_TRANSLATIONS"
-        | "DISMISS_AUTO_TRANSLATED_STATE"
-        | "TRANSLATION_COMMENT_ADD"
-        | "TRANSLATION_COMMENT_DELETE"
-        | "TRANSLATION_COMMENT_EDIT"
-        | "TRANSLATION_COMMENT_SET_STATE"
-        | "SCREENSHOT_DELETE"
-        | "SCREENSHOT_ADD"
-        | "KEY_TAGS_EDIT"
-        | "KEY_NAME_EDIT"
-        | "KEY_DELETE"
-        | "CREATE_KEY"
-        | "COMPLEX_EDIT"
-        | "IMPORT"
-        | "CREATE_LANGUAGE"
-        | "EDIT_LANGUAGE"
-        | "DELETE_LANGUAGE"
-        | "CREATE_PROJECT"
-        | "EDIT_PROJECT";
+      type: "UNKNOWN" | "SET_TRANSLATION_STATE" | "SET_TRANSLATIONS" | "DISMISS_AUTO_TRANSLATED_STATE" | "TRANSLATION_COMMENT_ADD" | "TRANSLATION_COMMENT_DELETE" | "TRANSLATION_COMMENT_EDIT" | "TRANSLATION_COMMENT_SET_STATE" | "SCREENSHOT_DELETE" | "SCREENSHOT_ADD" | "KEY_TAGS_EDIT" | "KEY_NAME_EDIT" | "KEY_DELETE" | "CREATE_KEY" | "COMPLEX_EDIT" | "IMPORT" | "CREATE_LANGUAGE" | "EDIT_LANGUAGE" | "DELETE_LANGUAGE" | "CREATE_PROJECT" | "EDIT_PROJECT" | "NAMESPACE_EDIT";
       author?: components["schemas"]["ProjectActivityAuthorModel"];
       modifiedEntities?: {
-        [key: string]:
-          | components["schemas"]["ModifiedEntityModel"][]
-          | undefined;
+        [key: string]: (components["schemas"]["ModifiedEntityModel"])[] | undefined;
       };
       meta?: {
         [key: string]: Record<string, never> | undefined;
@@ -845,53 +841,52 @@ export interface components {
     };
     PagedModelImportTranslationModel: {
       _embedded?: {
-        translations?: components["schemas"]["ImportTranslationModel"][];
+        translations?: (components["schemas"]["ImportTranslationModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
     };
     EntityModelImportFileIssueView: {
+      params: (components["schemas"]["ImportFileIssueParamView"])[];
       /** Format: int64 */
       id: number;
       /** @enum {string} */
-      type:
-        | "KEY_IS_NOT_STRING"
-        | "MULTIPLE_VALUES_FOR_KEY_AND_LANGUAGE"
-        | "VALUE_IS_NOT_STRING"
-        | "KEY_IS_EMPTY"
-        | "VALUE_IS_EMPTY"
-        | "PO_MSGCTXT_NOT_SUPPORTED"
-        | "ID_ATTRIBUTE_NOT_PROVIDED"
-        | "TARGET_NOT_PROVIDED"
-        | "TRANSLATION_TOO_LONG";
-      params: components["schemas"]["ImportFileIssueParamView"][];
+      type: "KEY_IS_NOT_STRING" | "MULTIPLE_VALUES_FOR_KEY_AND_LANGUAGE" | "VALUE_IS_NOT_STRING" | "KEY_IS_EMPTY" | "VALUE_IS_EMPTY" | "PO_MSGCTXT_NOT_SUPPORTED" | "ID_ATTRIBUTE_NOT_PROVIDED" | "TARGET_NOT_PROVIDED" | "TRANSLATION_TOO_LONG";
     };
     ImportFileIssueParamView: {
       value?: string;
       /** @enum {string} */
-      type:
-        | "KEY_NAME"
-        | "KEY_ID"
-        | "LANGUAGE_ID"
-        | "KEY_INDEX"
-        | "VALUE"
-        | "LINE"
-        | "FILE_NODE_ORIGINAL";
+      type: "KEY_NAME" | "KEY_ID" | "LANGUAGE_ID" | "KEY_INDEX" | "VALUE" | "LINE" | "FILE_NODE_ORIGINAL";
     };
     PagedModelEntityModelImportFileIssueView: {
       _embedded?: {
-        importFileIssueViews?: components["schemas"]["EntityModelImportFileIssueView"][];
+        importFileIssueViews?: (components["schemas"]["EntityModelImportFileIssueView"])[];
       };
       page?: components["schemas"]["PageMetadata"];
     };
+    CollectionModelImportNamespaceModel: {
+      _embedded?: {
+        namespaces?: (components["schemas"]["ImportNamespaceModel"])[];
+      };
+    };
+    ImportNamespaceModel: {
+      /**
+       * Format: int64 
+       * @description The id of namespace. When null, namespace doesn't exist and will be created by import. 
+       * @example 10000048
+       */
+      id?: number;
+      /** @example homepage */
+      name: string;
+    };
     PagedModelTranslationCommentModel: {
       _embedded?: {
-        translationComments?: components["schemas"]["TranslationCommentModel"][];
+        translationComments?: (components["schemas"]["TranslationCommentModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
     };
     PagedModelTranslationHistoryModel: {
       _embedded?: {
-        revisions?: components["schemas"]["TranslationHistoryModel"][];
+        revisions?: (components["schemas"]["TranslationHistoryModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
     };
@@ -907,12 +902,10 @@ export interface components {
     TranslationHistoryModel: {
       /** @description Modified fields */
       modifications?: {
-        [key: string]:
-          | components["schemas"]["PropertyModification"]
-          | undefined;
+        [key: string]: components["schemas"]["PropertyModification"] | undefined;
       };
       /**
-       * Format: int64
+       * Format: int64 
        * @description Unix timestamp of the revision
        */
       timestamp: number;
@@ -921,35 +914,46 @@ export interface components {
       revisionType: "ADD" | "MOD" | "DEL";
     };
     SelectAllResponse: {
-      ids: number[];
+      ids: (number)[];
     };
     KeyWithTranslationsModel: {
       /**
-       * Format: int64
+       * Format: int64 
        * @description Id of key record
        */
       keyId: number;
       /**
-       * @description Name of key
+       * @description Name of key 
        * @example this_is_super_key
        */
       keyName: string;
-      /** @description Tags of key */
-      keyTags: components["schemas"]["TagModel"][];
       /**
-       * Format: int64
-       * @description Count of screenshots provided for the key
+       * Format: int64 
+       * @description The namespace id of the key 
+       * @example 100000282
+       */
+      keyNamespaceId?: number;
+      /**
+       * @description The namespace of the key 
+       * @example homepage
+       */
+      keyNamespace?: string;
+      /** @description Tags of key */
+      keyTags: (components["schemas"]["TagModel"])[];
+      /**
+       * Format: int64 
+       * @description Count of screenshots provided for the key 
        * @example 1
        */
       screenshotCount: number;
       /** @description Key screenshots. Not provided when API key hasn't screenshots.view scope permission. */
-      screenshots?: components["schemas"]["ScreenshotModel"][];
+      screenshots?: (components["schemas"]["ScreenshotModel"])[];
       /**
-       * @description Translations object
-       * @example
+       * @description Translations object 
+       * @example 
        *     {
        *       "en": {
-       *         "id": 100000003,
+       *         "id": 100000003, 
        *         "text": "This is super translation!"
        *         "state": "TRANSLATED",
        *         "commentCount": 1
@@ -957,30 +961,28 @@ export interface components {
        *     }
        */
       translations: {
-        [key: string]:
-          | components["schemas"]["TranslationViewModel"]
-          | undefined;
+        [key: string]: components["schemas"]["TranslationViewModel"] | undefined;
       };
     };
     KeysWithTranslationsPageModel: {
       _embedded?: {
-        keys?: components["schemas"]["KeyWithTranslationsModel"][];
+        keys?: (components["schemas"]["KeyWithTranslationsModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
       /** @description Provided languages data */
-      selectedLanguages: components["schemas"]["LanguageModel"][];
+      selectedLanguages: (components["schemas"]["LanguageModel"])[];
       /**
-       * @description Cursor to get next data
+       * @description Cursor to get next data 
        * @example eyJrZXlJZCI6eyJkaXJlY3Rpb24iOiJBU0MiLCJ2YWx1ZSI6IjEwMDAwMDAxMjAifX0=
        */
       nextCursor?: string;
     };
     /**
-     * @description Translations object
-     * @example
+     * @description Translations object 
+     * @example 
      *     {
      *       "en": {
-     *         "id": 100000003,
+     *         "id": 100000003, 
      *         "text": "This is super translation!"
      *         "state": "TRANSLATED",
      *         "commentCount": 1
@@ -989,31 +991,31 @@ export interface components {
      */
     TranslationViewModel: {
       /**
-       * Format: int64
+       * Format: int64 
        * @description Id of translation record
        */
       id: number;
       /** @description Translation text */
       text?: string;
       /**
-       * @description State of translation
+       * @description State of translation 
        * @enum {string}
        */
       state: "UNTRANSLATED" | "TRANSLATED" | "REVIEWED";
       /** @description Was translated using Translation Memory or Machine translation service? */
       auto: boolean;
       /**
-       * @description Which machine translation service was used to auto translate this
+       * @description Which machine translation service was used to auto translate this 
        * @enum {string}
        */
       mtProvider?: "GOOGLE" | "AWS" | "DEEPL" | "AZURE";
       /**
-       * Format: int64
+       * Format: int64 
        * @description Count of translation comments
        */
       commentCount: number;
       /**
-       * Format: int64
+       * Format: int64 
        * @description Count of unresolved translation comments
        */
       unresolvedCommentCount: number;
@@ -1063,47 +1065,43 @@ export interface components {
       membersCount: number;
       /** Format: int64 */
       tagCount: number;
-      languageStats: components["schemas"]["LanguageStatsModel"][];
+      languageStats: (components["schemas"]["LanguageStatsModel"])[];
     };
     PagedModelLanguageModel: {
       _embedded?: {
-        languages?: components["schemas"]["LanguageModel"][];
+        languages?: (components["schemas"]["LanguageModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
     };
     CollectionModelScreenshotModel: {
       _embedded?: {
-        screenshots?: components["schemas"]["ScreenshotModel"][];
+        screenshots?: (components["schemas"]["ScreenshotModel"])[];
       };
     };
     ApiKeyWithLanguagesModel: {
       /**
        * @description Languages for which user has translate permission.
-       *
+       * 
        * If null, all languages are permitted.
        */
-      permittedLanguageIds?: number[];
+      permittedLanguageIds?: (number)[];
       /** Format: int64 */
       id: number;
       userFullName?: string;
       projectName: string;
-      scopes: string[];
-      username?: string;
       /** Format: int64 */
       lastUsedAt?: number;
       /** Format: int64 */
       projectId: number;
       /** Format: int64 */
       expiresAt?: number;
+      username?: string;
       description: string;
-    };
-    DeprecatedKeyDto: {
-      /** @description This means name of key. Will be renamed in v2 */
-      fullPathString: string;
+      scopes: (string)[];
     };
     DeleteKeysDto: {
       /** @description IDs of keys to delete */
-      ids: number[];
+      ids: (number)[];
     };
   };
   responses: never;
@@ -1116,20 +1114,21 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
+
   tagKey_1: {
     /** Tags a key with tag. If tag with provided name doesn't exist, it is created */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1166,17 +1165,17 @@ export interface operations {
   complexEdit_1: {
     /** More */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1213,17 +1212,17 @@ export interface operations {
   edit_1: {
     /** Edits key name */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1259,21 +1258,21 @@ export interface operations {
   };
   resolveTranslationSetOverride_1: {
     /**
-     * Resolve conflict (override)
+     * Resolve conflict (override) 
      * @description Resolves translation conflict. The old translation will be overridden.
      */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1301,21 +1300,21 @@ export interface operations {
   };
   resolveTranslationSetKeepExisting_1: {
     /**
-     * Resolve conflict (keep existing)
+     * Resolve conflict (keep existing) 
      * @description Resolves translation conflict. The old translation will be kept.
      */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1343,21 +1342,21 @@ export interface operations {
   };
   resolveTranslationSetOverride_3: {
     /**
-     * Resolve all translation conflicts (override)
+     * Resolve all translation conflicts (override) 
      * @description Resolves all translation conflicts for provided language. The old translations will be overridden.
      */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1384,21 +1383,21 @@ export interface operations {
   };
   resolveTranslationSetKeepExisting_3: {
     /**
-     * Resolve all translation conflicts (keep existing)
+     * Resolve all translation conflicts (keep existing) 
      * @description Resolves all translation conflicts for provided language. The old translations will be kept.
      */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1425,21 +1424,21 @@ export interface operations {
   };
   selectExistingLanguage_1: {
     /**
-     * Pair existing language
+     * Pair existing language 
      * @description Sets existing language to pair with language to import. Data will be imported to selected existing language when applied.
      */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1467,21 +1466,21 @@ export interface operations {
   };
   resetExistingLanguage_1: {
     /**
-     * Reset existing language pairing
+     * Reset existing language pairing 
      * @description Resets existing language paired with language to import.
      */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1506,24 +1505,70 @@ export interface operations {
       };
     };
   };
+  selectNamespace_1: {
+    /**
+     * Select namespace 
+     * @description Sets namespace for file to import.
+     */
+    parameters: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+      path: {
+        fileId: number;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SetFileNamespaceRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: never;
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
   applyImport_1: {
     /**
-     * Apply
+     * Apply 
      * @description Imports the data prepared in previous step
      */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         forceMode?: "OVERRIDE" | "KEEP" | "NO_FORCE";
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1548,17 +1593,17 @@ export interface operations {
   setTranslationState_1: {
     /** Sets translation state */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1591,17 +1636,17 @@ export interface operations {
   setState_1: {
     /** Sets state of translation comment */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1634,17 +1679,17 @@ export interface operations {
   get_4: {
     /** Returns single translation comment */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1674,20 +1719,20 @@ export interface operations {
       };
     };
   };
-  update_1: {
+  update_2: {
     /** Updates single translation comment */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1724,17 +1769,17 @@ export interface operations {
   delete_6: {
     /** Deletes the translation comment */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1762,17 +1807,17 @@ export interface operations {
   dismissAutoTranslatedState_1: {
     /** Removes "auto translated" indication */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1804,66 +1849,72 @@ export interface operations {
   getTranslations_1: {
     /** Returns translations in project */
     parameters?: {
-      /** @description Cursor to get next data */
-      /**
-       * @description Translation state in the format: languageTag,state. You can use this parameter multiple times.
-       *
-       * When used with multiple states for same language it is applied with logical OR.
-       *
-       * When used with multiple languages, it is applied with logical AND.
-       */
-      /**
-       * @description Languages to be contained in response.
-       *
-       * To add multiple languages, repeat this param (eg. ?languages=en&languages=de)
-       * @example en
-       */
-      /** @description String to search in key name or translation text */
-      /** @description Selects key with provided names. Use this param multiple times to fetch more keys. */
-      /** @description Selects key with provided ID. Use this param multiple times to fetch more keys. */
-      /** @description Selects only keys, where translation is missing in any language */
-      /** @description Selects only keys, where translation is provided in any language */
-      /**
-       * @description Selects only keys, where translation is missing in specified language
-       * @example en-US
-       */
-      /**
-       * @description Selects only keys, where translation is provided in specified language
-       * @example en-US
-       */
-      /** @description Selects only keys with screenshots */
-      /** @description Selects only keys without screenshots */
-      /** @description Selects only keys with provided tag */
-      /** @description Zero-based page index (0..N) */
-      /** @description The size of the page to be returned */
-      /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Cursor to get next data */
+        /**
+         * @description Translation state in the format: languageTag,state. You can use this parameter multiple times.
+         * 
+         * When used with multiple states for same language it is applied with logical OR. 
+         *  
+         * When used with multiple languages, it is applied with logical AND.
+         */
+        /**
+         * @description Languages to be contained in response.
+         *                 
+         * To add multiple languages, repeat this param (eg. ?languages=en&languages=de) 
+         * @example en
+         */
+        /** @description String to search in key name or translation text */
+        /** @description Selects key with provided names. Use this param multiple times to fetch more keys. */
+        /** @description Selects key with provided ID. Use this param multiple times to fetch more keys. */
+        /** @description Selects only keys, where translation is missing in any language */
+        /** @description Selects only keys, where translation is provided in any language */
+        /**
+         * @description Selects only keys, where translation is missing in specified language 
+         * @example en-US
+         */
+        /**
+         * @description Selects only keys, where translation is provided in specified language 
+         * @example en-US
+         */
+        /** @description Selects only keys with screenshots */
+        /** @description Selects only keys without screenshots */
+        /**
+         * @description Filter namespaces. 
+         * 
+         * To filter default namespace, set to empty string.
+         */
+        /** @description Selects only keys with provided tag */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         cursor?: string;
-        filterState?: string[];
-        languages?: string[];
+        filterState?: (string)[];
+        languages?: (string)[];
         search?: string;
-        filterKeyName?: string[];
-        filterKeyId?: number[];
+        filterKeyName?: (string)[];
+        filterKeyId?: (number)[];
         filterUntranslatedAny?: boolean;
         filterTranslatedAny?: boolean;
         filterUntranslatedInLang?: string;
         filterTranslatedInLang?: string;
         filterHasScreenshot?: boolean;
         filterHasNoScreenshot?: boolean;
-        filterTag?: string[];
+        filterNamespace?: (string)[];
+        filterTag?: (string)[];
         page?: number;
         size?: number;
-        sort?: string[];
+        sort?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1892,17 +1943,17 @@ export interface operations {
   setTranslations_1: {
     /** Sets translations for existing key */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1936,17 +1987,17 @@ export interface operations {
   createOrUpdateTranslations_1: {
     /** Sets translations for existing or not existing key */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -1980,17 +2031,17 @@ export interface operations {
   editLanguage_1: {
     /** Edits language */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2027,17 +2078,17 @@ export interface operations {
   deleteLanguage_3: {
     /** Deletes specific language */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2064,31 +2115,31 @@ export interface operations {
   };
   autoTranslate_1: {
     /**
-     * Auto translates keys
+     * Auto translates keys 
      * @description Uses enabled auto-translation methods.
      * You need to set at least one of useMachineTranslation or useTranslationMemory to true.
-     *
+     * 
      * This will replace the the existing translation with the result obtained from specified source!
      */
     parameters: {
-      /**
-       * @description Tags of languages to auto-translate.
-       * When no languages provided, it translates only untranslated languages.
-       */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description Tags of languages to auto-translate. 
+         * When no languages provided, it translates only untranslated languages.
+         */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
-        languages?: string[];
+        languages?: (string)[];
         useMachineTranslation?: boolean;
         useTranslationMemory?: boolean;
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2113,73 +2164,27 @@ export interface operations {
       };
     };
   };
-  setTranslations_3: {
-    /**
-     * Sets translations for existing key
-     * @deprecated
-     */
+  importKeys_1: {
+    /** Import's new keys with translations. If key already exists, it's translations are not updated. */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["SetTranslationsWithKeyDto"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: never;
-      /** @description Bad Request */
-      400: {
-        content: {
-          "*/*": string;
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "*/*": string;
-        };
-      };
-    };
-  };
-  createOrUpdateTranslations_3: {
-    /**
-     * Sets translations for existing or not existing key
-     * @deprecated
-     */
-    parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
-      query?: {
-        ak?: string;
-      };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
-      header?: {
-        "X-API-Key"?: string;
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SetTranslationsWithKeyDto"];
+        "application/json": components["schemas"]["ImportKeysDto"];
       };
     };
     responses: {
@@ -2202,17 +2207,17 @@ export interface operations {
   create_2: {
     /** Creates new key */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2246,17 +2251,17 @@ export interface operations {
   create_3: {
     /** Creates new key */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2290,17 +2295,17 @@ export interface operations {
   delete_4: {
     /** Deletes one or multiple keys by their IDs in request body */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2329,21 +2334,23 @@ export interface operations {
   };
   addFiles_1: {
     /**
-     * Add files
+     * Add files 
      * @description Prepares provided files to import.
      */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description When importing structured JSONs, you can set the delimiter which will be used in names of improted keys. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
+        structureDelimiter?: string;
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2351,7 +2358,7 @@ export interface operations {
     requestBody?: {
       content: {
         "multipart/form-data": {
-          files: string[];
+          files: (string)[];
         };
       };
     };
@@ -2378,21 +2385,21 @@ export interface operations {
   };
   cancelImport_1: {
     /**
-     * Delete
+     * Delete 
      * @description Deletes prepared import data.
      */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2417,58 +2424,52 @@ export interface operations {
   export_1: {
     /** Exports data */
     parameters?: {
-      /**
-       * @description Languages to be contained in export.
-       *
-       * If null, all languages are exported
-       * @example en
-       */
-      /** @description Format to export to */
-      /** @description When true translations are split to directories by scopes */
-      /**
-       * @description Scope delimiter.
-       *
-       * e.g. For key "home.header.title" scopes would result in "home" -> "header", when splitByScopeDepth is greater than 1.
-       */
-      /**
-       * @description Maximum depth of scoping.
-       *
-       * e.g. For key "home.header.title" and depth 1, resulting scope is  "home".
-       *
-       * For depth 2, resulting scopes are  "home" -> "header".
-       */
-      /** @description Filter key IDs to be contained in export */
-      /** @description Filter key IDs not to be contained in export */
-      /** @description Filter keys tagged by */
-      /** @description Filter keys with prefix */
-      /** @description Filter translations with state. By default, everything except untranslated is exported. */
-      /**
-       * @description If false, it doesn't return zip of files, but it returns single file.
-       *
-       * This is possible only when single language is exported. Otherwise it returns "400 - Bad Request" response.
-       */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description Languages to be contained in export.
+         *                 
+         * If null, all languages are exported 
+         * @example en
+         */
+        /** @description Format to export to */
+        /**
+         * @description Delimiter to structure file content. 
+         * 
+         * e.g. For key "home.header.title" would result in {"home": {"header": "title": {"Hello"}}} structure.
+         * 
+         * When null, resulting file won't be structured.
+         */
+        /** @description Filter key IDs to be contained in export */
+        /** @description Filter key IDs not to be contained in export */
+        /** @description Filter keys tagged by */
+        /** @description Filter keys with prefix */
+        /** @description Filter translations with state. By default, everything except untranslated is exported. */
+        /** @description Select one ore multiple namespaces to export */
+        /**
+         * @description If false, it doesn't return zip of files, but it returns single file.
+         *       
+         * This is possible only when single language is exported. Otherwise it returns "400 - Bad Request" response.
+         */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
-        languages?: string[];
+        languages?: (string)[];
         format?: "JSON" | "XLIFF";
-        splitByScope?: boolean;
-        splitByScopeDelimiter?: string;
-        splitByScopeDepth?: number;
-        filterKeyId?: number[];
-        filterKeyIdNot?: number[];
+        structureDelimiter?: string;
+        filterKeyId?: (number)[];
+        filterKeyIdNot?: (number)[];
         filterTag?: string;
         filterKeyPrefix?: string;
         filterState?: ("UNTRANSLATED" | "TRANSLATED" | "REVIEWED")[];
+        filterNamespace?: (string)[];
         zip?: boolean;
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2497,17 +2498,17 @@ export interface operations {
   exportPost_1: {
     /** Exports data (post). Useful when providing params exceeding allowed query size. */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2541,23 +2542,23 @@ export interface operations {
   getAll_4: {
     /** Returns translation comments of translation */
     parameters: {
-      /** @description Zero-based page index (0..N) */
-      /** @description The size of the page to be returned */
-      /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         page?: number;
         size?: number;
-        sort?: string[];
+        sort?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2589,17 +2590,17 @@ export interface operations {
   create_5: {
     /** Creates a translation comment */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2636,17 +2637,17 @@ export interface operations {
   create_7: {
     /** Creates a translation comment. Empty translation is stored, when not exists. */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2680,27 +2681,27 @@ export interface operations {
   suggestTranslationMemory_1: {
     /**
      * Suggests machine translations from translation memory.
-     *
+     * 
      * The result is always sorted by similarity, so sorting is not supported.
      */
     parameters?: {
-      /** @description Zero-based page index (0..N) */
-      /** @description The size of the page to be returned */
-      /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         page?: number;
         size?: number;
-        sort?: string[];
+        sort?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2734,17 +2735,17 @@ export interface operations {
   suggestMachineTranslations_1: {
     /** Suggests machine translations from enabled services */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2778,23 +2779,23 @@ export interface operations {
   getAll_6: {
     /** Returns all project languages */
     parameters?: {
-      /** @description Zero-based page index (0..N) */
-      /** @description The size of the page to be returned */
-      /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         page?: number;
         size?: number;
-        sort?: string[];
+        sort?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2823,17 +2824,17 @@ export interface operations {
   createLanguage_1: {
     /** Creates language */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2864,20 +2865,20 @@ export interface operations {
       };
     };
   };
-  getKeyScreenshots_2: {
+  getKeyScreenshots: {
     /** Returns all screenshots for specified key */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2909,17 +2910,17 @@ export interface operations {
   uploadScreenshot: {
     /** Upload screenshot for specific key */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -2959,17 +2960,17 @@ export interface operations {
   upload: {
     /** Uploads an image for later use */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3003,80 +3004,27 @@ export interface operations {
       };
     };
   };
-  getKeyTranslationsPost_2: {
-    /**
-     * Returns translations for specific key by its name
-     * @deprecated
-     * @description Key name must be provided in method body, since it can be long and can contain characters hard to encode
-     */
-    parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
-      query?: {
-        ak?: string;
-      };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
-      header?: {
-        "X-API-Key"?: string;
-      };
-      path: {
-        languages: string[];
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["GetKeyTranslationsReqDto"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "*/*": {
-            [key: string]: string | undefined;
-          };
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "*/*": string;
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "*/*": string;
-        };
-      };
-    };
-  };
   getAll_2: {
     /** Returns project tags */
     parameters?: {
-      /** @description Zero-based page index (0..N) */
-      /** @description The size of the page to be returned */
-      /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         search?: string;
         page?: number;
         size?: number;
-        sort?: string[];
+        sort?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3105,23 +3053,23 @@ export interface operations {
   getActivity_1: {
     /** Returns project history */
     parameters?: {
-      /** @description Zero-based page index (0..N) */
-      /** @description The size of the page to be returned */
-      /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         page?: number;
         size?: number;
-        sort?: string[];
+        sort?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3149,30 +3097,30 @@ export interface operations {
   };
   getImportTranslations_1: {
     /**
-     * Get translations
+     * Get translations 
      * @description Returns translations prepared to import.
      */
     parameters: {
-      /** @description Zero-based page index (0..N) */
-      /** @description The size of the page to be returned */
-      /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         onlyConflicts?: boolean;
         onlyUnresolved?: boolean;
         search?: string;
         page?: number;
         size?: number;
-        sort?: string[];
+        sort?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3203,21 +3151,21 @@ export interface operations {
   };
   getImportLanguage_1: {
     /**
-     * Get import language
+     * Get import language 
      * @description Returns language prepared to import.
      */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3248,21 +3196,21 @@ export interface operations {
   };
   deleteLanguage_1: {
     /**
-     * Delete language
+     * Delete language 
      * @description Deletes language prepared to import.
      */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3289,27 +3237,27 @@ export interface operations {
   };
   getImportFileIssues_1: {
     /**
-     * Get file issues.
+     * Get file issues 
      * @description Returns issues for uploaded file.
      */
     parameters: {
-      /** @description Zero-based page index (0..N) */
-      /** @description The size of the page to be returned */
-      /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         page?: number;
         size?: number;
-        sort?: string[];
+        sort?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3340,27 +3288,27 @@ export interface operations {
   };
   getImportResult_1: {
     /**
-     * Get result
+     * Get result 
      * @description Returns the result of preparation.
      */
     parameters?: {
-      /** @description Zero-based page index (0..N) */
-      /** @description The size of the page to be returned */
-      /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         page?: number;
         size?: number;
-        sort?: string[];
+        sort?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3386,30 +3334,72 @@ export interface operations {
       };
     };
   };
+  getAllNamespaces_2: {
+    /**
+     * Get namespaces 
+     * @description Returns all existing and imported namespaces
+     */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["CollectionModelImportNamespaceModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
   getTranslationHistory_1: {
     /**
-     * Returns history of specific translation.
-     *
+     * Returns history of specific translation. 
+     * 
      * Sorting is not supported for supported. It is automatically sorted from newest to oldest.
      */
     parameters: {
-      /** @description Zero-based page index (0..N) */
-      /** @description The size of the page to be returned */
-      /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         page?: number;
         size?: number;
-        sort?: string[];
+        sort?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3441,22 +3431,32 @@ export interface operations {
   getAllTranslations_1: {
     /** Returns all translations for specified languages */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /** @description Namespace to return */
+        /**
+         * @description Delimiter to structure response content. 
+         * 
+         * e.g. For key "home.header.title" would result in {"home": {"header": {"title": "Hello"}}} structure.
+         * 
+         * When null, resulting file will be a flat key-value object.
+         */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
+        ns?: string;
+        structureDelimiter?: string;
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
       path: {
-        languages: string[];
+        languages: (string)[];
       };
     };
     responses: {
@@ -3483,58 +3483,64 @@ export interface operations {
   getSelectAllKeyIds_1: {
     /** Get select all keys */
     parameters?: {
-      /**
-       * @description Translation state in the format: languageTag,state. You can use this parameter multiple times.
-       *
-       * When used with multiple states for same language it is applied with logical OR.
-       *
-       * When used with multiple languages, it is applied with logical AND.
-       */
-      /**
-       * @description Languages to be contained in response.
-       *
-       * To add multiple languages, repeat this param (eg. ?languages=en&languages=de)
-       * @example en
-       */
-      /** @description String to search in key name or translation text */
-      /** @description Selects key with provided names. Use this param multiple times to fetch more keys. */
-      /** @description Selects key with provided ID. Use this param multiple times to fetch more keys. */
-      /** @description Selects only keys, where translation is missing in any language */
-      /** @description Selects only keys, where translation is provided in any language */
-      /**
-       * @description Selects only keys, where translation is missing in specified language
-       * @example en-US
-       */
-      /**
-       * @description Selects only keys, where translation is provided in specified language
-       * @example en-US
-       */
-      /** @description Selects only keys with screenshots */
-      /** @description Selects only keys without screenshots */
-      /** @description Selects only keys with provided tag */
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description Translation state in the format: languageTag,state. You can use this parameter multiple times.
+         * 
+         * When used with multiple states for same language it is applied with logical OR. 
+         *  
+         * When used with multiple languages, it is applied with logical AND.
+         */
+        /**
+         * @description Languages to be contained in response.
+         *                 
+         * To add multiple languages, repeat this param (eg. ?languages=en&languages=de) 
+         * @example en
+         */
+        /** @description String to search in key name or translation text */
+        /** @description Selects key with provided names. Use this param multiple times to fetch more keys. */
+        /** @description Selects key with provided ID. Use this param multiple times to fetch more keys. */
+        /** @description Selects only keys, where translation is missing in any language */
+        /** @description Selects only keys, where translation is provided in any language */
+        /**
+         * @description Selects only keys, where translation is missing in specified language 
+         * @example en-US
+         */
+        /**
+         * @description Selects only keys, where translation is provided in specified language 
+         * @example en-US
+         */
+        /** @description Selects only keys with screenshots */
+        /** @description Selects only keys without screenshots */
+        /**
+         * @description Filter namespaces. 
+         * 
+         * To filter default namespace, set to empty string.
+         */
+        /** @description Selects only keys with provided tag */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
-        filterState?: string[];
-        languages?: string[];
+        filterState?: (string)[];
+        languages?: (string)[];
         search?: string;
-        filterKeyName?: string[];
-        filterKeyId?: number[];
+        filterKeyName?: (string)[];
+        filterKeyId?: (number)[];
         filterUntranslatedAny?: boolean;
         filterTranslatedAny?: boolean;
         filterUntranslatedInLang?: string;
         filterTranslatedInLang?: string;
         filterHasScreenshot?: boolean;
         filterHasNoScreenshot?: boolean;
-        filterTag?: string[];
+        filterNamespace?: (string)[];
+        filterTag?: (string)[];
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3563,17 +3569,17 @@ export interface operations {
   getProjectDailyActivity_1: {
     /** Returns project daily amount of events */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3604,17 +3610,17 @@ export interface operations {
   getProjectStats_1: {
     /** Returns project stats */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3643,17 +3649,17 @@ export interface operations {
   getCurrent_1: {
     /** Returns current API key info */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3679,68 +3685,23 @@ export interface operations {
       };
     };
   };
-  getDeprecated_2: {
-    /**
-     * Returns key with specified id
-     * @deprecated
-     */
-    parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
-      query?: {
-        ak?: string;
-      };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
-      header?: {
-        "X-API-Key"?: string;
-      };
-      path: {
-        id: number;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "*/*": components["schemas"]["DeprecatedKeyDto"];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "*/*": string;
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "*/*": string;
-        };
-      };
-    };
-  };
   doExportJsonZip_1: {
     /**
-     * Exports data as ZIP of jsons
+     * Exports data as ZIP of jsons 
      * @deprecated
      */
     parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3766,106 +3727,20 @@ export interface operations {
       };
     };
   };
-  getTranslations_3: {
-    /**
-     * Get all translations for specific languages
-     * @deprecated
-     */
-    parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
-      query?: {
-        ak?: string;
-      };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
-      header?: {
-        "X-API-Key"?: string;
-      };
-      path: {
-        languages: string[];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "*/*": {
-            [key: string]: Record<string, never> | undefined;
-          };
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "*/*": string;
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "*/*": string;
-        };
-      };
-    };
-  };
-  getApiKeyScopes: {
-    /** Returns API key scopes */
-    parameters?: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
-      query?: {
-        ak?: string;
-      };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
-      header?: {
-        "X-API-Key"?: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "*/*": string[];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "*/*": string;
-        };
-      };
-      /** @description Not Found */
-      404: {
-        content: {
-          "*/*": string;
-        };
-      };
-    };
-  };
   removeTag_1: {
     /** Removes tag with provided id from key with provided id */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
@@ -3894,22 +3769,22 @@ export interface operations {
   delete_2: {
     /** Deletes one or multiple keys by their IDs */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
       path: {
-        ids: number[];
+        ids: (number)[];
       };
     };
     responses: {
@@ -3932,22 +3807,22 @@ export interface operations {
   deleteScreenshots: {
     /** Deletes multiple screenshots by ids */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
       path: {
-        ids: number[];
+        ids: (number)[];
       };
     };
     responses: {
@@ -3967,25 +3842,25 @@ export interface operations {
       };
     };
   };
-  delete_10: {
+  delete_9: {
     /** Deletes uploaded images */
     parameters: {
-      /**
-       * @description API key provided via query parameter. Will be deprecated in the future.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       query?: {
         ak?: string;
       };
-      /**
-       * @description API key provided via header. Safer since headers are not stored in server logs.
-       * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
-       */
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
       header?: {
         "X-API-Key"?: string;
       };
       path: {
-        ids: number[];
+        ids: (number)[];
       };
     };
     responses: {

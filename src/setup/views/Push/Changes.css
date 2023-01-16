@@ -1,0 +1,39 @@
+.sectionTitle {
+  margin-bottom: -3px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.new {
+  color: var(--figma-color-text-success);
+}
+
+.change {
+  color: var(--figma-color-text-warning);
+}
+
+.container {
+  margin-top: -10px;
+  display: grid;
+  gap: 15px 10px;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.rowText {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.rowKey {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.spanAll {
+  grid-column: 1 / -1;
+}
