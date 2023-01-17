@@ -31,10 +31,10 @@ export const getChanges = (
       newValue: node.characters,
     };
 
-    if (change.oldValue) {
-      changedKeys.push(change);
-    } else {
+    if (!change.oldValue) {
       newKeys.push(change);
+    } else if (change.oldValue !== change.newValue) {
+      changedKeys.push(change);
     }
   });
 

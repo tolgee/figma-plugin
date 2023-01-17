@@ -23,6 +23,7 @@ import { getConflictingNodes } from "@/setup/tools/getConflictingNodes";
 
 export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
+  const allNodes = useGlobalState((c) => c.allNodes);
   const [error, setError] = useState<string>();
 
   const { data: languageData, isLoading } = useApiQuery({
@@ -39,12 +40,16 @@ export const Index = () => {
 
   const routeKey = useGlobalState((c) => c.routeKey);
 
+  const nothingSelected = selection.length === 0;
+
   const handlePush = () => {
     const conflicts = getConflictingNodes(selection);
     if (conflicts.length > 0) {
       setError("There are conflicting nodes");
     } else {
-      setRoute("push", { nodes: selection.filter((n) => n.key) });
+      const connectedNodes = nothingSelected ? allNodes : selection;
+      console.log(connectedNodes);
+      setRoute("push", { nodes: connectedNodes.filter((n) => n.key) });
     }
   };
 
@@ -84,7 +89,9 @@ export const Index = () => {
                 )}
               </div>
 
-              <Button onClick={handlePush}>Push</Button>
+              <Button onClick={handlePush}>
+                {nothingSelected ? "Push all" : "Push"}
+              </Button>
             </Fragment>
           }
           rightPart={
@@ -114,8 +121,11 @@ export const Index = () => {
           </Fragment>
         )}
 
-        {!!selection.length && <NodeList nodes={selection} />}
-        {!selection?.length && <Text>No nodes selected</Text>}
+        {nothingSelected ? (
+          <Text>No nodes selected</Text>
+        ) : (
+          <NodeList nodes={selection} />
+        )}
       </Container>
     </Fragment>
   );

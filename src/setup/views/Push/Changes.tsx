@@ -1,6 +1,5 @@
 import { Fragment, h } from "preact";
 import { KeyChanges } from "@/setup/tools/getChanges";
-import { VerticalSpace } from "@create-figma-plugin/ui";
 
 import styles from "./Changes.css";
 import clsx from "clsx";

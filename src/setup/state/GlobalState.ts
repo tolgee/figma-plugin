@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 
 import {
   ConfigChangeHandler,
+  DocumentChangeHandler,
   NodeInfo,
   ResizeHandler,
   SelectionChangeHandler,
@@ -15,6 +16,7 @@ import { createProvider } from "../tools/createProvider";
 
 type Props = {
   initialSelection: Array<NodeInfo>;
+  initialNodes: Array<NodeInfo>;
   initialConfig: Partial<TolgeeConfig> | null;
 };
 
@@ -23,7 +25,8 @@ export const globalState = {
 };
 
 export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
-  ({ initialSelection, initialConfig }: Props) => {
+  ({ initialSelection, initialConfig, initialNodes }: Props) => {
+    const [allNodes, setAllNodes] = useState<NodeInfo[]>(initialNodes);
     const [selection, setSelection] = useState<NodeInfo[]>(initialSelection);
     const [route, _setRoute] = useState<Route>(["index"]);
     const routeKey = route[0];
@@ -41,6 +44,12 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     useEffect(() => {
       return on<SelectionChangeHandler>("SELECTION_CHANGE", (data) => {
         setSelection(data);
+      });
+    }, []);
+
+    useEffect(() => {
+      return on<DocumentChangeHandler>("DOCUMENT_CHANGE", (data) => {
+        setAllNodes(data);
       });
     }, []);
 
@@ -72,6 +81,7 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     const data = {
       route,
       routeKey,
+      allNodes,
       selection,
       config,
       globalError,

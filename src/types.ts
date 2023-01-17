@@ -40,6 +40,11 @@ export interface SelectionChangeHandler extends EventHandler {
   handler: (data: NodeInfo[]) => void;
 }
 
+export interface DocumentChangeHandler extends EventHandler {
+  name: "DOCUMENT_CHANGE";
+  handler: (data: NodeInfo[]) => void;
+}
+
 export interface SetNodeConnectionHandler extends EventHandler {
   name: "SET_NODE_CONNECTION";
   handler: (nodeId: string, key: string) => void;

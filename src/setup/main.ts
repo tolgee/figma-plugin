@@ -8,6 +8,7 @@ import { TOLGEE_NODE_KEY, TOLGEE_PLUGIN_CONFIG_NAME } from "../tolgee";
 
 import {
   ConfigChangeHandler,
+  DocumentChangeHandler,
   NodeInfo,
   ResizeHandler,
   SelectionChangeHandler,
@@ -66,6 +67,12 @@ export default async function () {
     emit<SelectionChangeHandler>("SELECTION_CHANGE", nodes);
   });
 
+  figma.on("documentchange", () => {
+    const nodes = findTextNodes(figma.currentPage.children);
+    console.log(nodes);
+    emit<DocumentChangeHandler>("DOCUMENT_CHANGE", nodes);
+  });
+
   on<SetupHandle>("SETUP", (config) => {
     setPluginData(config);
     figma.notify("Tolgee credentials saved.");
@@ -112,6 +119,10 @@ export default async function () {
       title: "Tolgee",
       ...getWindowSize("index"),
     },
-    { config, nodes: findTextNodes() }
+    {
+      config,
+      selectedNodes: findTextNodes(),
+      allNodes: findTextNodes(figma.currentPage.children),
+    }
   );
 }

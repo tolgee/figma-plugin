@@ -10,7 +10,8 @@ import { Router } from "./views/Router";
 
 type Props = {
   config: Partial<TolgeeConfig> | null;
-  nodes: Array<NodeInfo>;
+  selectedNodes: Array<NodeInfo>;
+  allNodes: Array<NodeInfo>;
 };
 
 const queryClient = new QueryClient({
@@ -23,9 +24,13 @@ const queryClient = new QueryClient({
   },
 });
 
-function Plugin({ config, nodes }: Props) {
+function Plugin({ config, allNodes, selectedNodes }: Props) {
   return (
-    <GlobalState initialSelection={nodes} initialConfig={config}>
+    <GlobalState
+      initialNodes={allNodes}
+      initialSelection={selectedNodes}
+      initialConfig={config}
+    >
       <QueryClientProvider client={queryClient}>
         <Router />
       </QueryClientProvider>

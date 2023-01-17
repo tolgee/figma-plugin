@@ -187,6 +187,11 @@
       const nodes = findTextNodes();
       emit("SELECTION_CHANGE", nodes);
     });
+    figma.on("documentchange", () => {
+      const nodes = findTextNodes(figma.currentPage.children);
+      console.log(nodes);
+      emit("DOCUMENT_CHANGE", nodes);
+    });
     on("SETUP", (config2) => {
       setPluginData(config2);
       figma.notify("Tolgee credentials saved.");
@@ -223,7 +228,11 @@
       __spreadValues({
         title: "Tolgee"
       }, getWindowSize("index")),
-      { config, nodes: findTextNodes() }
+      {
+        config,
+        selectedNodes: findTextNodes(),
+        allNodes: findTextNodes(figma.currentPage.children)
+      }
     );
   }
   var findTextNodes, getPluginData, setPluginData;
