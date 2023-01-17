@@ -23,6 +23,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
   const { setRoute } = useGlobalActions();
   const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
   const translationsLoadable = useApiQuery({
     url: "/v2/projects/translations",
@@ -67,8 +68,18 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
         },
       })
     );
-    await Promise.all(promises);
-    setSuccess(true);
+    try {
+      await Promise.all(promises);
+      setSuccess(true);
+    } catch (e) {
+      setError(true);
+    }
+  };
+
+  const handleRepeat = () => {
+    setError(false);
+    setSuccess(false);
+    translationsLoadable.refetch();
   };
 
   const isLoading =
@@ -89,6 +100,15 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
           <MiddleAlign>
             <LoadingIndicator />
           </MiddleAlign>
+        ) : error ? (
+          <Fragment>
+            <div>
+              {updateTranslations.error || "An error has occured during push."}
+            </div>
+            <ActionsBottom>
+              <Button onClick={handleRepeat}>Try again</Button>
+            </ActionsBottom>
+          </Fragment>
         ) : success ? (
           <Fragment>
             <div>{changesSize} key(s) updated!</div>
