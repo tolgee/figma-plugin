@@ -1,13 +1,12 @@
 import { useApiMutation, useApiQuery } from "@/setup/client/useQueryApi";
 import { ActionsBottom } from "@/setup/components/ActionsBottom/ActionsBottom";
+import { FullPageLoading } from "@/setup/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
 import { getChanges } from "@/setup/tools/getChanges";
 import {
   Button,
   Container,
   Divider,
-  LoadingIndicator,
-  MiddleAlign,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 import { Fragment, FunctionalComponent, h } from "preact";
@@ -97,9 +96,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       <VerticalSpace space="large" />
       <Container space="medium">
         {isLoading ? (
-          <MiddleAlign>
-            <LoadingIndicator />
-          </MiddleAlign>
+          <FullPageLoading />
         ) : error ? (
           <Fragment>
             <div>

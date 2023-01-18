@@ -7,8 +7,6 @@ import {
   Container,
   Divider,
   IconWarning32,
-  LoadingIndicator,
-  MiddleAlign,
   Text,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
@@ -20,6 +18,7 @@ import { NodeList } from "./NodeList/NodeList";
 import { TopBar } from "./TopBar/TopBar";
 import styles from "./Index.css";
 import { getConflictingNodes } from "@/setup/tools/getConflictingNodes";
+import { FullPageLoading } from "@/setup/components/FullPageLoading/FullPageLoading";
 
 export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
@@ -58,11 +57,7 @@ export const Index = () => {
   }, [selection]);
 
   if (isLoading) {
-    return (
-      <MiddleAlign>
-        <LoadingIndicator />
-      </MiddleAlign>
-    );
+    return <FullPageLoading />;
   }
 
   return (
