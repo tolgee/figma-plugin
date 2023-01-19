@@ -20,7 +20,10 @@ const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 
 export const Settings = () => {
   const config = useGlobalState((c) => c.config) || {};
-  const [tolgeeConfig, setTolgeeConfig] = useState(config ?? {});
+  const [tolgeeConfig, setTolgeeConfig] = useState({
+    apiUrl: DEFAULT_TOLGEE_URL,
+    ...config,
+  });
   const { mutateAsync, isLoading } = useApiMutation({
     url: "/v2/api-keys/current",
     method: "get",
@@ -81,7 +84,7 @@ export const Settings = () => {
       <VerticalSpace space="small" />
       <Textbox
         onValueInput={(apiUrl) => setTolgeeConfig({ ...tolgeeConfig, apiUrl })}
-        value={tolgeeConfig.apiUrl || DEFAULT_TOLGEE_URL}
+        value={tolgeeConfig.apiUrl}
         variant="border"
       />
       <VerticalSpace space="medium" />

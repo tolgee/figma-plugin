@@ -4,7 +4,7 @@ import {
   on,
   showUI,
 } from "@create-figma-plugin/utilities";
-import { TOLGEE_NODE_KEY, TOLGEE_PLUGIN_CONFIG_NAME } from "./tolgee";
+import { TOLGEE_NODE_KEY, TOLGEE_PLUGIN_CONFIG_NAME } from "./constants";
 
 import {
   ConfigChangeHandler,
@@ -44,17 +44,15 @@ const findTextNodes = (nodes?: readonly SceneNode[]): NodeInfo[] => {
   return result;
 };
 
-const getPluginData = () => {
-  const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
-  return pluginData !== ""
-    ? (JSON.parse(
-        figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME)
-      ) as Partial<TolgeeConfig>)
-    : {};
+const getPluginData = async () => {
+  const pluginData = await figma.clientStorage.getAsync(
+    TOLGEE_PLUGIN_CONFIG_NAME
+  );
+  return pluginData ? (JSON.parse(pluginData) as Partial<TolgeeConfig>) : {};
 };
 
-const setPluginData = (data: Partial<TolgeeConfig>) => {
-  figma.currentPage.setPluginData(
+const setPluginData = async (data: Partial<TolgeeConfig>) => {
+  await figma.clientStorage.setAsync(
     TOLGEE_PLUGIN_CONFIG_NAME,
     JSON.stringify(data)
   );
@@ -73,15 +71,15 @@ export default async function () {
     emit<DocumentChangeHandler>("DOCUMENT_CHANGE", nodes);
   });
 
-  on<SetupHandle>("SETUP", (config) => {
-    setPluginData(config);
+  on<SetupHandle>("SETUP", async (config) => {
+    await setPluginData(config);
     figma.notify("Tolgee credentials saved.");
   });
 
-  on<SetLanguageHandler>("SET_LANGUAGE", (lang: string) => {
-    const pluginData = getPluginData();
+  on<SetLanguageHandler>("SET_LANGUAGE", async (lang: string) => {
+    const pluginData = await getPluginData();
     const data = { ...pluginData, lang };
-    setPluginData(data);
+    await setPluginData(data);
   });
 
   on<ResizeHandler>("RESIZE", (size) => {
@@ -125,7 +123,7 @@ export default async function () {
     emit<SelectionChangeHandler>("SELECTION_CHANGE", findTextNodes());
   });
 
-  const config = getPluginData();
+  const config = await getPluginData();
 
   showUI(
     {
