@@ -220,8 +220,18 @@
     on("SET_NODE_CONNECTION", (nodeId, key) => {
       const node = figma.getNodeById(nodeId);
       node == null ? void 0 : node.setPluginData(TOLGEE_NODE_KEY, key);
-      const nodes = findTextNodes();
-      emit("SELECTION_CHANGE", nodes);
+      emit("SELECTION_CHANGE", findTextNodes());
+    });
+    on("UPDATE_NODES", async (nodes) => {
+      const textNodes = nodes.map((n) => figma.getNodeById(n.id));
+      await loadFontsAsync(textNodes);
+      nodes.forEach((n) => {
+        const node = textNodes.find((nod) => nod.id === n.id);
+        node.autoRename = false;
+        node.characters = n.characters;
+      });
+      figma.notify("Document translations updated");
+      emit("SELECTION_CHANGE", findTextNodes());
     });
     const config = getPluginData();
     showUI(

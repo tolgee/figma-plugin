@@ -391,10 +391,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/553b2e4c-8664-41f1-bb41-b612bf719448/banner.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/58f8e691-68b2-46f0-9683-c31b874a440e/banner.js
   var banner_default;
   var init_banner = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/553b2e4c-8664-41f1-bb41-b612bf719448/banner.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/58f8e691-68b2-46f0-9683-c31b874a440e/banner.js"() {
       if (document.getElementById("3168a726a5") === null) {
         const element = document.createElement("style");
         element.id = "3168a726a5";
@@ -630,10 +630,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/8129682c-a93e-4175-b943-3d34d865ce4d/loading-indicator.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/eca790f5-0f60-4488-a613-2e35b74b67a5/loading-indicator.js
   var loading_indicator_default;
   var init_loading_indicator = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/8129682c-a93e-4175-b943-3d34d865ce4d/loading-indicator.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/eca790f5-0f60-4488-a613-2e35b74b67a5/loading-indicator.js"() {
       if (document.getElementById("25a2c53e04") === null) {
         const element = document.createElement("style");
         element.id = "25a2c53e04";
@@ -684,10 +684,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c1fb0e0f-1ef2-435b-8b29-97e1d4c0cc18/button.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/326622fc-374d-4e34-95e5-b6c1e39e93cc/button.js
   var button_default;
   var init_button = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c1fb0e0f-1ef2-435b-8b29-97e1d4c0cc18/button.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/326622fc-374d-4e34-95e5-b6c1e39e93cc/button.js"() {
       if (document.getElementById("4698edce65") === null) {
         const element = document.createElement("style");
         element.id = "4698edce65";
@@ -857,10 +857,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c07e1beb-ec62-421a-8c85-3a0d5f166526/icon.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2bab98a3-a165-4f62-8d9d-3570bf282067/icon.js
   var icon_default;
   var init_icon = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c07e1beb-ec62-421a-8c85-3a0d5f166526/icon.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2bab98a3-a165-4f62-8d9d-3570bf282067/icon.js"() {
       if (document.getElementById("3b0a4baebe") === null) {
         const element = document.createElement("style");
         element.id = "3b0a4baebe";
@@ -892,10 +892,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2d33d38a-0d85-42f8-b56f-2adc2606ca06/divider.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/ec7ae516-761d-42f2-88d4-d6998d5158fb/divider.js
   var divider_default;
   var init_divider = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2d33d38a-0d85-42f8-b56f-2adc2606ca06/divider.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/ec7ae516-761d-42f2-88d4-d6998d5158fb/divider.js"() {
       if (document.getElementById("947a88d8c0") === null) {
         const element = document.createElement("style");
         element.id = "947a88d8c0";
@@ -935,10 +935,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/ecadf1d4-e937-4f87-a7fb-e59c548f3ac7/text.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c431a86e-4a3b-4148-a691-d2a52a142a17/text.js
   var text_default;
   var init_text = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/ecadf1d4-e937-4f87-a7fb-e59c548f3ac7/text.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c431a86e-4a3b-4148-a691-d2a52a142a17/text.js"() {
       if (document.getElementById("38f0619aa4") === null) {
         const element = document.createElement("style");
         element.id = "38f0619aa4";
@@ -1153,10 +1153,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7c1d2972-5e57-4065-984e-886cfebc3afb/textbox.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a2df6089-f1bd-4b8b-938f-6aebbd7df664/textbox.js
   var textbox_default;
   var init_textbox = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7c1d2972-5e57-4065-984e-886cfebc3afb/textbox.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a2df6089-f1bd-4b8b-938f-6aebbd7df664/textbox.js"() {
       if (document.getElementById("119378e3f7") === null) {
         const element = document.createElement("style");
         element.id = "119378e3f7";
@@ -1289,10 +1289,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/5132a432-e5d5-4983-971e-0802f97e0064/muted.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2fdb52f6-235d-4e12-a74b-76c3150165c2/muted.js
   var muted_default;
   var init_muted = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/5132a432-e5d5-4983-971e-0802f97e0064/muted.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2fdb52f6-235d-4e12-a74b-76c3150165c2/muted.js"() {
       if (document.getElementById("7456fb9670") === null) {
         const element = document.createElement("style");
         element.id = "7456fb9670";
@@ -1319,10 +1319,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/8e5100b2-d706-4f9c-b362-83a012894679/container.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9c512612-7918-40dc-b49a-fbfeb061b6f8/container.js
   var container_default;
   var init_container = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/8e5100b2-d706-4f9c-b362-83a012894679/container.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9c512612-7918-40dc-b49a-fbfeb061b6f8/container.js"() {
       if (document.getElementById("66b2a54611") === null) {
         const element = document.createElement("style");
         element.id = "66b2a54611";
@@ -1361,10 +1361,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/13f577cb-d94f-4f61-a892-4b2497822587/vertical-space.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7c0a5dcd-9f3c-49ca-97b2-fe95e6889059/vertical-space.js
   var vertical_space_default;
   var init_vertical_space = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/13f577cb-d94f-4f61-a892-4b2497822587/vertical-space.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7c0a5dcd-9f3c-49ca-97b2-fe95e6889059/vertical-space.js"() {
       if (document.getElementById("8d65b44de9") === null) {
         const element = document.createElement("style");
         element.id = "8d65b44de9";
@@ -1403,9 +1403,9 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f0a6a625-93a3-4cdf-9b1a-001dba26ef1c/base.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/11c5ebcc-b817-4206-b970-a73e589ffa5f/base.js
   var init_base = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f0a6a625-93a3-4cdf-9b1a-001dba26ef1c/base.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/11c5ebcc-b817-4206-b970-a73e589ffa5f/base.js"() {
       if (document.getElementById("46215c86c3") === null) {
         const element = document.createElement("style");
         element.id = "46215c86c3";
@@ -1551,9 +1551,9 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/63267f6e-b71e-4f3a-8840-fc49d9e50bd9/styles.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/cad1408c-0805-480e-bb4c-8b0203c8da07/styles.js
   var init_styles = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/63267f6e-b71e-4f3a-8840-fc49d9e50bd9/styles.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/cad1408c-0805-480e-bb4c-8b0203c8da07/styles.js"() {
       if (document.getElementById("5260158beb") === null) {
         const element = document.createElement("style");
         element.id = "5260158beb";
@@ -5298,10 +5298,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1966b2d6-c584-4f9a-a4d7-64f8c9679036/HeadingTab.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/bed2e28b-4c2e-482c-bd10-a7172828376f/HeadingTab.js
   var HeadingTab_default;
   var init_HeadingTab = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1966b2d6-c584-4f9a-a4d7-64f8c9679036/HeadingTab.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/bed2e28b-4c2e-482c-bd10-a7172828376f/HeadingTab.js"() {
       if (document.getElementById("617685254d") === null) {
         const element = document.createElement("style");
         element.id = "617685254d";
@@ -5621,10 +5621,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/12ac3cfc-2f70-4860-903a-1cf7761ba65b/NodeList.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d1911496-98a5-40ce-b986-12bfc6030423/NodeList.js
   var NodeList_default;
   var init_NodeList = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/12ac3cfc-2f70-4860-903a-1cf7761ba65b/NodeList.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d1911496-98a5-40ce-b986-12bfc6030423/NodeList.js"() {
       if (document.getElementById("d40d7f3d55") === null) {
         const element = document.createElement("style");
         element.id = "d40d7f3d55";
@@ -5669,10 +5669,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2486f8bf-409b-4d37-89cb-aa95713529f0/NodeList.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4d04f522-e5d0-42dd-b7e9-7e02cecac3e3/NodeList.js
   var NodeList_default2;
   var init_NodeList2 = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2486f8bf-409b-4d37-89cb-aa95713529f0/NodeList.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4d04f522-e5d0-42dd-b7e9-7e02cecac3e3/NodeList.js"() {
       if (document.getElementById("d40d7f3d55") === null) {
         const element = document.createElement("style");
         element.id = "d40d7f3d55";
@@ -5798,10 +5798,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/229050fb-30a5-4493-838a-8a0c398b437c/TopBar.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/04e55f0c-d3b3-4399-83a1-90e3e559799d/TopBar.js
   var TopBar_default;
   var init_TopBar = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/229050fb-30a5-4493-838a-8a0c398b437c/TopBar.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/04e55f0c-d3b3-4399-83a1-90e3e559799d/TopBar.js"() {
       if (document.getElementById("f0da42e164") === null) {
         const element = document.createElement("style");
         element.id = "f0da42e164";
@@ -5862,10 +5862,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c5de30a8-2d43-4344-9f55-cd0448c0ed32/Index.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1921f826-ee25-4297-a869-d11ed195bf3e/Index.js
   var Index_default;
   var init_Index = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c5de30a8-2d43-4344-9f55-cd0448c0ed32/Index.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1921f826-ee25-4297-a869-d11ed195bf3e/Index.js"() {
       if (document.getElementById("e6bbc504dc") === null) {
         const element = document.createElement("style");
         element.id = "e6bbc504dc";
@@ -5901,10 +5901,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/01110b60-0d38-4fb2-ba04-7b44aa289425/FullPageLoading.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/aabe492c-4de8-4dd8-b516-48eb1f087998/FullPageLoading.js
   var FullPageLoading_default;
   var init_FullPageLoading = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/01110b60-0d38-4fb2-ba04-7b44aa289425/FullPageLoading.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/aabe492c-4de8-4dd8-b516-48eb1f087998/FullPageLoading.js"() {
       if (document.getElementById("fede04882a") === null) {
         const element = document.createElement("style");
         element.id = "fede04882a";
@@ -5974,9 +5974,14 @@ svg {
           var _a2;
           return (_a2 = c3.config) == null ? void 0 : _a2.lang;
         }) || ((_b = languages == null ? void 0 : languages[0]) == null ? void 0 : _b.tag) || "";
-        const { setLanguage, setRoute } = useGlobalActions();
+        const { setRoute } = useGlobalActions();
         const routeKey = useGlobalState((c3) => c3.routeKey);
         const nothingSelected = selection.length === 0;
+        const handleLanguageChange = (lang) => {
+          if (lang !== language) {
+            setRoute("pull", { lang });
+          }
+        };
         const handlePush = () => {
           const conflicts = getConflictingNodes(selection);
           if (conflicts.length > 0) {
@@ -5986,6 +5991,13 @@ svg {
             console.log(connectedNodes);
             setRoute("push", { nodes: connectedNodes.filter((n2) => n2.key) });
           }
+        };
+        const handlePull = () => {
+          const connectedNodes = nothingSelected ? void 0 : selection;
+          setRoute("pull", {
+            nodes: connectedNodes == null ? void 0 : connectedNodes.filter((n2) => n2.key),
+            lang: language
+          });
         };
         h2(() => {
           setError(void 0);
@@ -6002,14 +6014,19 @@ svg {
             value: language,
             placeholder: "Language",
             onChange: (e3) => {
-              setLanguage(e3.target.value);
+              handleLanguageChange(
+                e3.target.value
+              );
             }
           }, languages.map((l3) => /* @__PURE__ */ h("option", {
             key: l3.tag,
             value: l3.tag
           }, l3.name)))), /* @__PURE__ */ h(Button, {
             onClick: handlePush
-          }, nothingSelected ? "Push all" : "Push")),
+          }, nothingSelected ? "Push all" : "Push"), /* @__PURE__ */ h(Button, {
+            onClick: handlePull,
+            secondary: true
+          }, nothingSelected ? "Pull all" : "Pull")),
           rightPart: /* @__PURE__ */ h(HeadingTab, {
             route: "settings",
             currentRoute: routeKey,
@@ -6035,10 +6052,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/50e5e11d-2951-468e-ac65-98f996b8bcbe/ActionsBottom.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/5e92a045-4354-43af-a969-0ca16eb18c05/ActionsBottom.js
   var ActionsBottom_default;
   var init_ActionsBottom = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/50e5e11d-2951-468e-ac65-98f996b8bcbe/ActionsBottom.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/5e92a045-4354-43af-a969-0ca16eb18c05/ActionsBottom.js"() {
       if (document.getElementById("d1c8a68a43") === null) {
         const element = document.createElement("style");
         element.id = "d1c8a68a43";
@@ -6091,7 +6108,7 @@ svg {
   });
 
   // src/setup/views/Settings/Settings.tsx
-  var Settings2;
+  var DEFAULT_TOLGEE_URL, Settings2;
   var init_Settings = __esm({
     "src/setup/views/Settings/Settings.tsx"() {
       "use strict";
@@ -6101,8 +6118,9 @@ svg {
       init_GlobalState();
       init_useQueryApi();
       init_ActionsBottom2();
+      DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
       Settings2 = () => {
-        var _a, _b;
+        var _a;
         const config = useGlobalState((c3) => c3.config) || {};
         const [tolgeeConfig, setTolgeeConfig] = p2(config != null ? config : {});
         const { mutateAsync, isLoading } = useApiMutation({
@@ -6157,7 +6175,7 @@ svg {
           space: "small"
         }), /* @__PURE__ */ h(Textbox, {
           onValueInput: (apiUrl) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { apiUrl })),
-          value: (_a = tolgeeConfig.apiUrl) != null ? _a : "",
+          value: tolgeeConfig.apiUrl || DEFAULT_TOLGEE_URL,
           variant: "border"
         }), /* @__PURE__ */ h(VerticalSpace, {
           space: "medium"
@@ -6165,7 +6183,7 @@ svg {
           space: "small"
         }), /* @__PURE__ */ h(Textbox, {
           onValueInput: (apiKey) => setTolgeeConfig(__spreadProps(__spreadValues({}, tolgeeConfig), { apiKey })),
-          value: (_b = tolgeeConfig.apiKey) != null ? _b : "",
+          value: (_a = tolgeeConfig.apiKey) != null ? _a : "",
           variant: "border"
         }), /* @__PURE__ */ h(VerticalSpace, {
           space: "medium"
@@ -6212,10 +6230,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/02f9826e-7566-492b-9927-d35f4b2ec2f4/Changes.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d845c4b9-c1c8-43a1-a351-72169313e513/Changes.js
   var Changes_default;
   var init_Changes = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/02f9826e-7566-492b-9927-d35f4b2ec2f4/Changes.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d845c4b9-c1c8-43a1-a351-72169313e513/Changes.js"() {
       if (document.getElementById("5fe4964e01") === null) {
         const element = document.createElement("style");
         element.id = "5fe4964e01";
@@ -6424,6 +6442,172 @@ svg {
     }
   });
 
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a8db1228-9e7c-4a46-856f-477229ad8a5d/MissingKeys.js
+  var MissingKeys_default;
+  var init_MissingKeys = __esm({
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a8db1228-9e7c-4a46-856f-477229ad8a5d/MissingKeys.js"() {
+      if (document.getElementById("9abefe4959") === null) {
+        const element = document.createElement("style");
+        element.id = "9abefe4959";
+        element.textContent = `._sectionTitle_1jaui_1 {
+  margin-bottom: -3px;
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+._missing_1jaui_7 {
+  color: var(--figma-color-icon-danger);
+}
+
+._container_1jaui_11 {
+  margin-top: 10px;
+  display: grid;
+  gap: 10px 10px;
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+
+._rowKey_1jaui_19 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+._spanAll_1jaui_27 {
+  grid-column: 1 / -1;
+}
+
+/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9zZXR1cC92aWV3cy9QdWxsL01pc3NpbmdLZXlzLmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLG1CQUFtQjtFQUNuQixnQkFBZ0I7RUFDaEIsZUFBZTtBQUNqQjs7QUFFQTtFQUNFLHFDQUFxQztBQUN2Qzs7QUFFQTtFQUNFLGdCQUFnQjtFQUNoQixhQUFhO0VBQ2IsY0FBYztFQUNkLDBCQUEwQjtFQUMxQixtQkFBbUI7QUFDckI7O0FBRUE7RUFDRSx1QkFBdUI7RUFDdkIsZ0JBQWdCO0VBQ2hCLG1CQUFtQjtFQUNuQixhQUFhO0VBQ2IsbUJBQW1CO0FBQ3JCOztBQUVBO0VBQ0UsbUJBQW1CO0FBQ3JCIiwiZmlsZSI6InNyYy9zZXR1cC92aWV3cy9QdWxsL01pc3NpbmdLZXlzLmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5zZWN0aW9uVGl0bGUge1xuICBtYXJnaW4tYm90dG9tOiAtM3B4O1xuICBtYXJnaW4tdG9wOiAxMHB4O1xuICBmb250LXNpemU6IDEycHg7XG59XG5cbi5taXNzaW5nIHtcbiAgY29sb3I6IHZhcigtLWZpZ21hLWNvbG9yLWljb24tZGFuZ2VyKTtcbn1cblxuLmNvbnRhaW5lciB7XG4gIG1hcmdpbi10b3A6IDEwcHg7XG4gIGRpc3BsYXk6IGdyaWQ7XG4gIGdhcDogMTBweCAxMHB4O1xuICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IDFmcjtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbn1cblxuLnJvd0tleSB7XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICB3aGl0ZS1zcGFjZTogbm93cmFwO1xuICBkaXNwbGF5OiBmbGV4O1xuICBhbGlnbi1pdGVtczogY2VudGVyO1xufVxuXG4uc3BhbkFsbCB7XG4gIGdyaWQtY29sdW1uOiAxIC8gLTE7XG59XG4iXX0= */`;
+        document.head.append(element);
+      }
+      MissingKeys_default = { "sectionTitle": "_sectionTitle_1jaui_1", "missing": "_missing_1jaui_7", "container": "_container_1jaui_11", "rowKey": "_rowKey_1jaui_19", "spanAll": "_spanAll_1jaui_27" };
+    }
+  });
+
+  // src/setup/views/Pull/MissingKeys.tsx
+  var MissingKeys;
+  var init_MissingKeys2 = __esm({
+    "src/setup/views/Pull/MissingKeys.tsx"() {
+      "use strict";
+      init_preact_module();
+      init_MissingKeys();
+      init_clsx_m();
+      MissingKeys = ({ missingKeys }) => {
+        return /* @__PURE__ */ h("div", {
+          className: MissingKeys_default.container
+        }, missingKeys.length > 0 && /* @__PURE__ */ h(p, null, /* @__PURE__ */ h("div", {
+          className: clsx_m_default(MissingKeys_default.sectionTitle, MissingKeys_default.spanAll)
+        }, "Missing translations for keys:"), missingKeys.map((key) => /* @__PURE__ */ h(p, {
+          key
+        }, /* @__PURE__ */ h("div", {
+          className: clsx_m_default(MissingKeys_default.missing, MissingKeys_default.rowKey)
+        }, key)))));
+      };
+    }
+  });
+
+  // src/setup/views/Pull/Pull.tsx
+  var Pull;
+  var init_Pull = __esm({
+    "src/setup/views/Pull/Pull.tsx"() {
+      "use strict";
+      init_useQueryApi();
+      init_ActionsBottom2();
+      init_FullPageLoading2();
+      init_GlobalState();
+      init_lib2();
+      init_lib();
+      init_preact_module();
+      init_hooks_module();
+      init_TopBar2();
+      init_MissingKeys2();
+      Pull = ({ lang, nodes }) => {
+        const allNodes = useGlobalState((c3) => c3.allNodes);
+        const selectedNodes = nodes || allNodes;
+        const { setRoute, setLanguage } = useGlobalActions();
+        const [success, setSuccess] = p2(false);
+        console.log({ lang, nodes });
+        const connectedNodes = F(
+          () => selectedNodes.filter((n2) => n2.key),
+          [selectedNodes]
+        );
+        const allKeys = F(
+          () => [...new Set(connectedNodes.map((n2) => n2.key))],
+          [connectedNodes]
+        );
+        const translationsLoadable = useApiQuery({
+          url: "/v2/projects/translations",
+          method: "get",
+          query: {
+            structureDelimiter: null,
+            languages: [lang],
+            size: 1e4,
+            filterKeyName: allKeys
+          },
+          options: {
+            cacheTime: 0,
+            staleTime: 0
+          }
+        });
+        const { changedNodes, missingKeys } = F(() => {
+          const changedNodes2 = [];
+          const missingKeys2 = [];
+          connectedNodes.forEach((node) => {
+            var _a, _b, _c, _d;
+            const key = (_c = (_b = (_a = translationsLoadable.data) == null ? void 0 : _a._embedded) == null ? void 0 : _b.keys) == null ? void 0 : _c.find(
+              (t3) => t3.keyName === node.key
+            );
+            const value = (_d = key == null ? void 0 : key.translations[lang]) == null ? void 0 : _d.text;
+            if (value) {
+              if (value !== node.characters) {
+                changedNodes2.push(__spreadProps(__spreadValues({}, node), { characters: value }));
+              }
+            } else {
+              missingKeys2.push(node.key);
+            }
+          });
+          return { changedNodes: changedNodes2, missingKeys: missingKeys2 };
+        }, [translationsLoadable.data, connectedNodes, lang]);
+        const handleProcess = async () => {
+          emit("UPDATE_NODES", changedNodes);
+          setLanguage(lang);
+          setRoute("index");
+        };
+        const handleGoBack = () => {
+          setRoute("index");
+        };
+        const handleRepeat = () => {
+          setSuccess(false);
+          handleProcess();
+        };
+        const isLoading = translationsLoadable.isLoading;
+        return /* @__PURE__ */ h(p, null, /* @__PURE__ */ h(TopBar, {
+          onBack: handleGoBack,
+          leftPart: /* @__PURE__ */ h("div", null, "Pull translations (", lang, ")")
+        }), /* @__PURE__ */ h(Divider, null), /* @__PURE__ */ h(VerticalSpace, {
+          space: "large"
+        }), /* @__PURE__ */ h(Container, {
+          space: "medium"
+        }, isLoading ? /* @__PURE__ */ h(FullPageLoading, null) : translationsLoadable.error ? /* @__PURE__ */ h(p, null, /* @__PURE__ */ h("div", null, translationsLoadable.error || "Cannot get translation data"), /* @__PURE__ */ h(ActionsBottom, null, /* @__PURE__ */ h(Button, {
+          onClick: handleRepeat
+        }, "Try again"))) : success ? /* @__PURE__ */ h(p, null, /* @__PURE__ */ h("div", null, "Success!"), /* @__PURE__ */ h(ActionsBottom, null, /* @__PURE__ */ h(Button, {
+          onClick: handleGoBack
+        }, "Continue to home page"))) : /* @__PURE__ */ h(p, null, /* @__PURE__ */ h("div", null, changedNodes.length === 0 ? "Everything up to date" : `This action will replace translations in ${changedNodes.length} nodes.`), /* @__PURE__ */ h("div", null, missingKeys.length > 0 && /* @__PURE__ */ h(MissingKeys, {
+          missingKeys
+        })), /* @__PURE__ */ h(ActionsBottom, null, changedNodes.length === 0 ? /* @__PURE__ */ h(Button, {
+          onClick: handleProcess
+        }, "Ok") : /* @__PURE__ */ h(p, null, /* @__PURE__ */ h(Button, {
+          onClick: handleGoBack,
+          secondary: true
+        }, "Cancel"), /* @__PURE__ */ h(Button, {
+          onClick: handleProcess
+        }, "Submit"))))));
+      };
+    }
+  });
+
   // src/setup/views/Router.tsx
   var getPage, Router;
   var init_Router = __esm({
@@ -6436,6 +6620,7 @@ svg {
       init_Settings();
       init_GlobalState();
       init_Push();
+      init_Pull();
       getPage = ([routeKey, routeData]) => {
         switch (routeKey) {
           case "index":
@@ -6444,6 +6629,8 @@ svg {
             return /* @__PURE__ */ h(Settings2, null);
           case "push":
             return /* @__PURE__ */ h(Push, __spreadValues({}, routeData));
+          case "pull":
+            return /* @__PURE__ */ h(Pull, __spreadValues({}, routeData));
         }
       };
       Router = () => {

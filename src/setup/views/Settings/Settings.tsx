@@ -12,6 +12,8 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
+const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
+
 import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
 import { useApiMutation } from "@/setup/client/useQueryApi";
 import { ActionsBottom } from "@/setup/components/ActionsBottom/ActionsBottom";
@@ -79,7 +81,7 @@ export const Settings = () => {
       <VerticalSpace space="small" />
       <Textbox
         onValueInput={(apiUrl) => setTolgeeConfig({ ...tolgeeConfig, apiUrl })}
-        value={tolgeeConfig.apiUrl ?? ""}
+        value={tolgeeConfig.apiUrl || DEFAULT_TOLGEE_URL}
         variant="border"
       />
       <VerticalSpace space="medium" />

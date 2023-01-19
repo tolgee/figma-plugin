@@ -108,8 +108,21 @@ export default async function () {
     node?.setPluginData(TOLGEE_NODE_KEY, key);
 
     // update selection
-    const nodes = findTextNodes();
-    emit<SelectionChangeHandler>("SELECTION_CHANGE", nodes);
+    emit<SelectionChangeHandler>("SELECTION_CHANGE", findTextNodes());
+  });
+
+  on<TranslationsUpdateHandler>("UPDATE_NODES", async (nodes) => {
+    const textNodes = nodes.map((n) => figma.getNodeById(n.id) as TextNode);
+    await loadFontsAsync(textNodes);
+    nodes.forEach((n) => {
+      const node = textNodes.find((nod) => nod.id === n.id)!;
+      node.autoRename = false;
+      node.characters = n.characters;
+    });
+    figma.notify("Document translations updated");
+
+    // update selection
+    emit<SelectionChangeHandler>("SELECTION_CHANGE", findTextNodes());
   });
 
   const config = getPluginData();

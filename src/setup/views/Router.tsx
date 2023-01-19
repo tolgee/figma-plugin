@@ -7,6 +7,7 @@ import { Index } from "./Index/Index";
 import { Settings } from "./Settings/Settings";
 import { useGlobalActions, useGlobalState } from "../state/GlobalState";
 import { Push } from "./Push/Push";
+import { Pull } from "./Pull/Pull";
 
 const getPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
@@ -18,6 +19,9 @@ const getPage = ([routeKey, routeData]: Route) => {
 
     case "push":
       return <Push {...routeData} />;
+
+    case "pull":
+      return <Pull {...routeData} />;
   }
 };
 

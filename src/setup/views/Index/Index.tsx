@@ -35,11 +35,17 @@ export const Index = () => {
   const language =
     useGlobalState((c) => c.config?.lang) || languages?.[0]?.tag || "";
 
-  const { setLanguage, setRoute } = useGlobalActions();
+  const { setRoute } = useGlobalActions();
 
   const routeKey = useGlobalState((c) => c.routeKey);
 
   const nothingSelected = selection.length === 0;
+
+  const handleLanguageChange = (lang: string) => {
+    if (lang !== language) {
+      setRoute("pull", { lang });
+    }
+  };
 
   const handlePush = () => {
     const conflicts = getConflictingNodes(selection);
@@ -50,6 +56,14 @@ export const Index = () => {
       console.log(connectedNodes);
       setRoute("push", { nodes: connectedNodes.filter((n) => n.key) });
     }
+  };
+
+  const handlePull = () => {
+    const connectedNodes = nothingSelected ? undefined : selection;
+    setRoute("pull", {
+      nodes: connectedNodes?.filter((n) => n.key),
+      lang: language,
+    });
   };
 
   useEffect(() => {
@@ -72,7 +86,9 @@ export const Index = () => {
                     value={language}
                     placeholder="Language"
                     onChange={(e) => {
-                      setLanguage((e.target as HTMLInputElement).value);
+                      handleLanguageChange(
+                        (e.target as HTMLInputElement).value
+                      );
                     }}
                   >
                     {languages.map((l) => (
@@ -86,6 +102,10 @@ export const Index = () => {
 
               <Button onClick={handlePush}>
                 {nothingSelected ? "Push all" : "Push"}
+              </Button>
+
+              <Button onClick={handlePull} secondary>
+                {nothingSelected ? "Pull all" : "Pull"}
               </Button>
             </Fragment>
           }

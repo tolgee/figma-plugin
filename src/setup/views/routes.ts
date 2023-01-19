@@ -1,6 +1,10 @@
 import { NodeInfo, WindowSize } from "@/types";
 
-export type Route = ["index"] | ["settings"] | ["push", { nodes: NodeInfo[] }];
+export type Route =
+  | ["index"]
+  | ["settings"]
+  | ["push", { nodes: NodeInfo[] }]
+  | ["pull", { nodes?: NodeInfo[]; lang: string }];
 
 export type RouteKey = Route[0];
 
