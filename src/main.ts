@@ -4,7 +4,7 @@ import {
   on,
   showUI,
 } from "@create-figma-plugin/utilities";
-import { TOLGEE_NODE_KEY, TOLGEE_PLUGIN_CONFIG_NAME } from "../tolgee";
+import { TOLGEE_NODE_KEY, TOLGEE_PLUGIN_CONFIG_NAME } from "./tolgee";
 
 import {
   ConfigChangeHandler,
@@ -18,7 +18,7 @@ import {
   SyncCompleteHandler,
   TolgeeConfig,
   TranslationsUpdateHandler,
-} from "../types";
+} from "./types";
 import { getWindowSize } from "./views/routes";
 
 const findTextNodes = (nodes?: readonly SceneNode[]): NodeInfo[] => {

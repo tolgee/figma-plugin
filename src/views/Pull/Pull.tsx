@@ -1,9 +1,5 @@
-import { useApiQuery } from "@/setup/client/useQueryApi";
-import { ActionsBottom } from "@/setup/components/ActionsBottom/ActionsBottom";
-import { FullPageLoading } from "@/setup/components/FullPageLoading/FullPageLoading";
-import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
-import { getConnectedNodes } from "@/setup/tools/getConnectedNodes";
-import { NodeInfo, TranslationsUpdateHandler } from "@/types";
+import { Fragment, FunctionalComponent, h } from "preact";
+import { useMemo, useState } from "preact/hooks";
 import {
   Button,
   Container,
@@ -11,8 +7,13 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 import { emit } from "@create-figma-plugin/utilities";
-import { Fragment, FunctionalComponent, h } from "preact";
-import { useMemo, useState } from "preact/hooks";
+
+import { useApiQuery } from "@/client/useQueryApi";
+import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
+import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
+import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
+import { getConnectedNodes } from "@/tools/getConnectedNodes";
+import { NodeInfo, TranslationsUpdateHandler } from "@/types";
 import { TopBar } from "../Index/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import { MissingKeys } from "./MissingKeys";

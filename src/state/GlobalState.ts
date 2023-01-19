@@ -10,7 +10,7 @@ import {
   SetLanguageHandler,
   SetupHandle,
   TolgeeConfig,
-} from "../../types";
+} from "@/types";
 import { getWindowSize, Route } from "../views/routes";
 import { createProvider } from "../tools/createProvider";
 

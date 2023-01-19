@@ -12,11 +12,11 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
+import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
+import { useApiMutation } from "@/client/useQueryApi";
+import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
 
-import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
-import { useApiMutation } from "@/setup/client/useQueryApi";
-import { ActionsBottom } from "@/setup/components/ActionsBottom/ActionsBottom";
+const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 
 export const Settings = () => {
   const config = useGlobalState((c) => c.config) || {};

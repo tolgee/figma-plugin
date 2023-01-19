@@ -1,16 +1,17 @@
-import { useApiMutation, useApiQuery } from "@/setup/client/useQueryApi";
-import { ActionsBottom } from "@/setup/components/ActionsBottom/ActionsBottom";
-import { FullPageLoading } from "@/setup/components/FullPageLoading/FullPageLoading";
-import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
-import { getChanges } from "@/setup/tools/getChanges";
+import { Fragment, FunctionalComponent, h } from "preact";
+import { useMemo, useState } from "preact/hooks";
 import {
   Button,
   Container,
   Divider,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
-import { Fragment, FunctionalComponent, h } from "preact";
-import { useMemo, useState } from "preact/hooks";
+
+import { useApiMutation, useApiQuery } from "@/client/useQueryApi";
+import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
+import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
+import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
+import { getChanges } from "@/tools/getChanges";
 import { TopBar } from "../Index/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import { Changes } from "./Changes";

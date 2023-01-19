@@ -162,10 +162,10 @@
     }
   });
 
-  // src/setup/views/routes.ts
+  // src/views/routes.ts
   var DEFAULT_SIZE, SIZES, getWindowSize;
   var init_routes = __esm({
-    "src/setup/views/routes.ts"() {
+    "src/views/routes.ts"() {
       "use strict";
       DEFAULT_SIZE = { width: 500, height: 400 };
       SIZES = {
@@ -177,7 +177,7 @@
     }
   });
 
-  // src/setup/main.ts
+  // src/main.ts
   var main_exports = {};
   __export(main_exports, {
     default: () => main_default
@@ -247,7 +247,7 @@
   }
   var findTextNodes, getPluginData, setPluginData;
   var init_main = __esm({
-    "src/setup/main.ts"() {
+    "src/main.ts"() {
       "use strict";
       init_lib();
       init_tolgee();
@@ -289,7 +289,7 @@
   });
 
   // <stdin>
-  var modules = { "src/setup/main.ts--default": (init_main(), __toCommonJS(main_exports))["default"] };
-  var commandId = true ? "src/setup/main.ts--default" : figma.command;
+  var modules = { "src/main.ts--default": (init_main(), __toCommonJS(main_exports))["default"] };
+  var commandId = true ? "src/main.ts--default" : figma.command;
   modules[commandId]();
 })();

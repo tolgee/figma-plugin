@@ -6,8 +6,7 @@
   "scripts": {
     "build": "build-figma-plugin --typecheck --minify",
     "watch": "build-figma-plugin --typecheck --watch",
-    "schema": "openapi-typescript http://localhost:8080/v3/api-docs/Accessible%20with%20API%20key --output ./src/setup/client/apiSchema.generated.ts",
-    "icons": "svg-icon build --source icons.json --target ./src/setup --name icons",
+    "schema": "openapi-typescript http://localhost:8080/v3/api-docs/Accessible%20with%20API%20key --output ./src/client/apiSchema.generated.ts",
     "eslint": "eslint --ext .ts,.tsx,.js,.jsx src",
     "tsc": "tsc --noEmit",
     "prettier": "prettier . --write"
@@ -41,8 +40,8 @@
     "editorType": [
       "figma"
     ],
-    "main": "src/setup/main.ts",
-    "ui": "src/setup/ui.tsx",
+    "main": "src/main.ts",
+    "ui": "src/ui.tsx",
     "id": "1",
     "name": "Tolgee"
   }

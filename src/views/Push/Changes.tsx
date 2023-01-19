@@ -1,8 +1,8 @@
 import { Fragment, h } from "preact";
-import { KeyChanges } from "@/setup/tools/getChanges";
-
-import styles from "./Changes.css";
 import clsx from "clsx";
+
+import { KeyChanges } from "@/tools/getChanges";
+import styles from "./Changes.css";
 
 type Props = {
   changes: KeyChanges;

@@ -1,10 +1,10 @@
 import { render } from "@create-figma-plugin/ui";
 import { h } from "preact";
 
-import "!../styles.css";
+import "!./styles.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-import { NodeInfo, TolgeeConfig } from "../types";
+import { NodeInfo, TolgeeConfig } from "./types";
 import { GlobalState } from "./state/GlobalState";
 import { Router } from "./views/Router";
 

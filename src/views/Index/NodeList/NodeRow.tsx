@@ -1,10 +1,10 @@
 import { Fragment, h } from "preact";
-import { NodeInfo, SetNodeConnectionHandler } from "@/types";
 import { Button, Textbox } from "@create-figma-plugin/ui";
-import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
 import { emit } from "@create-figma-plugin/utilities";
-import { InsertLink } from "@/setup/icons/SvgIcons";
 
+import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
+import { InsertLink } from "@/icons/SvgIcons";
+import { NodeInfo, SetNodeConnectionHandler } from "@/types";
 import styles from "./NodeList.css";
 
 type Props = {

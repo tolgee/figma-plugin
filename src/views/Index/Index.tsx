@@ -1,6 +1,5 @@
+import { Fragment, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
-import { HeadingTab } from "@/setup/components/HeadingTab/HeadingTab";
-import { Settings } from "@/setup/icons/SvgIcons";
 import {
   Banner,
   Button,
@@ -10,16 +9,17 @@ import {
   Text,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
-import { Fragment, h } from "preact";
 
-import { useApiQuery } from "@/setup/client/useQueryApi";
-import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
+import { HeadingTab } from "@/components/HeadingTab/HeadingTab";
+import { Settings } from "@/icons/SvgIcons";
+import { useApiQuery } from "@/client/useQueryApi";
+import { getConflictingNodes } from "@/tools/getConflictingNodes";
+import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
+import { getConnectedNodes } from "@/tools/getConnectedNodes";
+import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { NodeList } from "./NodeList/NodeList";
 import { TopBar } from "./TopBar/TopBar";
 import styles from "./Index.css";
-import { getConflictingNodes } from "@/setup/tools/getConflictingNodes";
-import { FullPageLoading } from "@/setup/components/FullPageLoading/FullPageLoading";
-import { getConnectedNodes } from "@/setup/tools/getConnectedNodes";
 
 export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
