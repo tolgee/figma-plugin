@@ -7,5 +7,6 @@ out/
 dist/
 build
 code.js
+manifest.json
 
 .vscode
