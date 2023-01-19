@@ -19,7 +19,7 @@ jobs:
           key: cache-node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install
-        run: npm run tsc
+        run: npm ci
 
       - name: Typescript
         run: npm run tsc
@@ -40,7 +40,7 @@ jobs:
           key: cache-node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install
-        run: npm run tsc
+        run: npm ci
 
       - name: Build
         run: npm run build
