@@ -2,6 +2,7 @@ import { useApiQuery } from "@/setup/client/useQueryApi";
 import { ActionsBottom } from "@/setup/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/setup/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/setup/state/GlobalState";
+import { getConnectedNodes } from "@/setup/tools/getConnectedNodes";
 import { NodeInfo, TranslationsUpdateHandler } from "@/types";
 import {
   Button,
@@ -20,20 +21,13 @@ type Props = RouteParam<"pull">;
 
 export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
   const allNodes = useGlobalState((c) => c.allNodes);
-  const selectedNodes = nodes || allNodes;
+  const selectedNodes = nodes || getConnectedNodes(allNodes);
   const { setRoute, setLanguage } = useGlobalActions();
   const [success, setSuccess] = useState(false);
 
-  console.log({ lang, nodes });
-
-  const connectedNodes = useMemo(
-    () => selectedNodes.filter((n) => n.key),
+  const selectedKeys = useMemo(
+    () => [...new Set(selectedNodes.map((n) => n.key))],
     [selectedNodes]
-  );
-
-  const allKeys = useMemo(
-    () => [...new Set(connectedNodes.map((n) => n.key))],
-    [connectedNodes]
   );
 
   const translationsLoadable = useApiQuery({
@@ -43,7 +37,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
       structureDelimiter: null,
       languages: [lang],
       size: 10000,
-      filterKeyName: allKeys,
+      filterKeyName: selectedKeys,
     },
     options: {
       cacheTime: 0,
@@ -55,7 +49,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
     const changedNodes: NodeInfo[] = [];
     const missingKeys: string[] = [];
 
-    connectedNodes.forEach((node) => {
+    selectedNodes.forEach((node) => {
       const key = translationsLoadable.data?._embedded?.keys?.find(
         (t) => t.keyName === node.key
       );
@@ -71,7 +65,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
     });
 
     return { changedNodes, missingKeys };
-  }, [translationsLoadable.data, connectedNodes, lang]);
+  }, [translationsLoadable.data, selectedNodes, lang]);
 
   const handleProcess = async () => {
     emit<TranslationsUpdateHandler>("UPDATE_NODES", changedNodes);

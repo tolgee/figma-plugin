@@ -19,6 +19,7 @@ import { TopBar } from "./TopBar/TopBar";
 import styles from "./Index.css";
 import { getConflictingNodes } from "@/setup/tools/getConflictingNodes";
 import { FullPageLoading } from "@/setup/components/FullPageLoading/FullPageLoading";
+import { getConnectedNodes } from "@/setup/tools/getConnectedNodes";
 
 export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
@@ -52,16 +53,15 @@ export const Index = () => {
     if (conflicts.length > 0) {
       setError("There are conflicting nodes");
     } else {
-      const connectedNodes = nothingSelected ? allNodes : selection;
-      console.log(connectedNodes);
-      setRoute("push", { nodes: connectedNodes.filter((n) => n.key) });
+      setRoute("push", {
+        nodes: getConnectedNodes(nothingSelected ? allNodes : selection),
+      });
     }
   };
 
   const handlePull = () => {
-    const connectedNodes = nothingSelected ? undefined : selection;
     setRoute("pull", {
-      nodes: connectedNodes?.filter((n) => n.key),
+      nodes: nothingSelected ? undefined : getConnectedNodes(selection),
       lang: language,
     });
   };

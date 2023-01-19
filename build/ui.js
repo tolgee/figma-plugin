@@ -391,10 +391,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/58f8e691-68b2-46f0-9683-c31b874a440e/banner.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f9035ba1-580f-4225-a584-e023c5f27378/banner.js
   var banner_default;
   var init_banner = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/58f8e691-68b2-46f0-9683-c31b874a440e/banner.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f9035ba1-580f-4225-a584-e023c5f27378/banner.js"() {
       if (document.getElementById("3168a726a5") === null) {
         const element = document.createElement("style");
         element.id = "3168a726a5";
@@ -630,10 +630,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/eca790f5-0f60-4488-a613-2e35b74b67a5/loading-indicator.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/992e83b7-3919-4d21-9482-048fb58e94a7/loading-indicator.js
   var loading_indicator_default;
   var init_loading_indicator = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/eca790f5-0f60-4488-a613-2e35b74b67a5/loading-indicator.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/992e83b7-3919-4d21-9482-048fb58e94a7/loading-indicator.js"() {
       if (document.getElementById("25a2c53e04") === null) {
         const element = document.createElement("style");
         element.id = "25a2c53e04";
@@ -684,10 +684,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/326622fc-374d-4e34-95e5-b6c1e39e93cc/button.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/07ddb741-f0ea-40c6-8163-894da51fb7e7/button.js
   var button_default;
   var init_button = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/326622fc-374d-4e34-95e5-b6c1e39e93cc/button.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/07ddb741-f0ea-40c6-8163-894da51fb7e7/button.js"() {
       if (document.getElementById("4698edce65") === null) {
         const element = document.createElement("style");
         element.id = "4698edce65";
@@ -857,10 +857,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2bab98a3-a165-4f62-8d9d-3570bf282067/icon.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/0a0278d0-587e-4a5e-b71b-0128342cfa73/icon.js
   var icon_default;
   var init_icon = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2bab98a3-a165-4f62-8d9d-3570bf282067/icon.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/0a0278d0-587e-4a5e-b71b-0128342cfa73/icon.js"() {
       if (document.getElementById("3b0a4baebe") === null) {
         const element = document.createElement("style");
         element.id = "3b0a4baebe";
@@ -892,10 +892,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/ec7ae516-761d-42f2-88d4-d6998d5158fb/divider.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/362289c9-6f25-42d9-bb2a-d8954554e618/divider.js
   var divider_default;
   var init_divider = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/ec7ae516-761d-42f2-88d4-d6998d5158fb/divider.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/362289c9-6f25-42d9-bb2a-d8954554e618/divider.js"() {
       if (document.getElementById("947a88d8c0") === null) {
         const element = document.createElement("style");
         element.id = "947a88d8c0";
@@ -935,10 +935,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c431a86e-4a3b-4148-a691-d2a52a142a17/text.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/be1c3ac1-ae60-4585-85b1-ae6f08479c3b/text.js
   var text_default;
   var init_text = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c431a86e-4a3b-4148-a691-d2a52a142a17/text.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/be1c3ac1-ae60-4585-85b1-ae6f08479c3b/text.js"() {
       if (document.getElementById("38f0619aa4") === null) {
         const element = document.createElement("style");
         element.id = "38f0619aa4";
@@ -1153,10 +1153,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a2df6089-f1bd-4b8b-938f-6aebbd7df664/textbox.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9c65f3ba-6819-45cd-9029-113cce04cc2b/textbox.js
   var textbox_default;
   var init_textbox = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a2df6089-f1bd-4b8b-938f-6aebbd7df664/textbox.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9c65f3ba-6819-45cd-9029-113cce04cc2b/textbox.js"() {
       if (document.getElementById("119378e3f7") === null) {
         const element = document.createElement("style");
         element.id = "119378e3f7";
@@ -1289,10 +1289,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2fdb52f6-235d-4e12-a74b-76c3150165c2/muted.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/585aa87f-756a-444d-9faf-af3dd2c80c1d/muted.js
   var muted_default;
   var init_muted = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2fdb52f6-235d-4e12-a74b-76c3150165c2/muted.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/585aa87f-756a-444d-9faf-af3dd2c80c1d/muted.js"() {
       if (document.getElementById("7456fb9670") === null) {
         const element = document.createElement("style");
         element.id = "7456fb9670";
@@ -1319,10 +1319,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9c512612-7918-40dc-b49a-fbfeb061b6f8/container.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2a8c12ea-1c05-4758-b398-6d43be774e77/container.js
   var container_default;
   var init_container = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9c512612-7918-40dc-b49a-fbfeb061b6f8/container.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/2a8c12ea-1c05-4758-b398-6d43be774e77/container.js"() {
       if (document.getElementById("66b2a54611") === null) {
         const element = document.createElement("style");
         element.id = "66b2a54611";
@@ -1361,10 +1361,10 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7c0a5dcd-9f3c-49ca-97b2-fe95e6889059/vertical-space.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7f810750-327c-4bde-8414-00e236d98287/vertical-space.js
   var vertical_space_default;
   var init_vertical_space = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7c0a5dcd-9f3c-49ca-97b2-fe95e6889059/vertical-space.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7f810750-327c-4bde-8414-00e236d98287/vertical-space.js"() {
       if (document.getElementById("8d65b44de9") === null) {
         const element = document.createElement("style");
         element.id = "8d65b44de9";
@@ -1403,9 +1403,9 @@
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/11c5ebcc-b817-4206-b970-a73e589ffa5f/base.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f9a62e0a-593a-4cc7-b9d3-3fd4e2f2cc22/base.js
   var init_base = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/11c5ebcc-b817-4206-b970-a73e589ffa5f/base.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/f9a62e0a-593a-4cc7-b9d3-3fd4e2f2cc22/base.js"() {
       if (document.getElementById("46215c86c3") === null) {
         const element = document.createElement("style");
         element.id = "46215c86c3";
@@ -1551,9 +1551,9 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/cad1408c-0805-480e-bb4c-8b0203c8da07/styles.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/46a5d84f-dbf8-4cb3-a779-0d9e6dbcec42/styles.js
   var init_styles = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/cad1408c-0805-480e-bb4c-8b0203c8da07/styles.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/46a5d84f-dbf8-4cb3-a779-0d9e6dbcec42/styles.js"() {
       if (document.getElementById("5260158beb") === null) {
         const element = document.createElement("style");
         element.id = "5260158beb";
@@ -5298,10 +5298,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/bed2e28b-4c2e-482c-bd10-a7172828376f/HeadingTab.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/18ef433d-2abc-4f8b-9f07-69342539b355/HeadingTab.js
   var HeadingTab_default;
   var init_HeadingTab = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/bed2e28b-4c2e-482c-bd10-a7172828376f/HeadingTab.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/18ef433d-2abc-4f8b-9f07-69342539b355/HeadingTab.js"() {
       if (document.getElementById("617685254d") === null) {
         const element = document.createElement("style");
         element.id = "617685254d";
@@ -5621,10 +5621,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d1911496-98a5-40ce-b986-12bfc6030423/NodeList.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7bc3ab96-17c0-434b-b9e4-345269a64d5f/NodeList.js
   var NodeList_default;
   var init_NodeList = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d1911496-98a5-40ce-b986-12bfc6030423/NodeList.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7bc3ab96-17c0-434b-b9e4-345269a64d5f/NodeList.js"() {
       if (document.getElementById("d40d7f3d55") === null) {
         const element = document.createElement("style");
         element.id = "d40d7f3d55";
@@ -5669,10 +5669,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4d04f522-e5d0-42dd-b7e9-7e02cecac3e3/NodeList.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7336fa41-40c6-47bd-81b8-2288731d97b3/NodeList.js
   var NodeList_default2;
   var init_NodeList2 = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/4d04f522-e5d0-42dd-b7e9-7e02cecac3e3/NodeList.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/7336fa41-40c6-47bd-81b8-2288731d97b3/NodeList.js"() {
       if (document.getElementById("d40d7f3d55") === null) {
         const element = document.createElement("style");
         element.id = "d40d7f3d55";
@@ -5798,10 +5798,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/04e55f0c-d3b3-4399-83a1-90e3e559799d/TopBar.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c387f0c3-2cfb-459f-b6b3-3b96c9789e89/TopBar.js
   var TopBar_default;
   var init_TopBar = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/04e55f0c-d3b3-4399-83a1-90e3e559799d/TopBar.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c387f0c3-2cfb-459f-b6b3-3b96c9789e89/TopBar.js"() {
       if (document.getElementById("f0da42e164") === null) {
         const element = document.createElement("style");
         element.id = "f0da42e164";
@@ -5862,10 +5862,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1921f826-ee25-4297-a869-d11ed195bf3e/Index.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/70664646-b596-44f4-846a-907168ab8cf1/Index.js
   var Index_default;
   var init_Index = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/1921f826-ee25-4297-a869-d11ed195bf3e/Index.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/70664646-b596-44f4-846a-907168ab8cf1/Index.js"() {
       if (document.getElementById("e6bbc504dc") === null) {
         const element = document.createElement("style");
         element.id = "e6bbc504dc";
@@ -5901,10 +5901,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/aabe492c-4de8-4dd8-b516-48eb1f087998/FullPageLoading.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9f1b665c-74cb-4111-8da9-e157ab0e2cc2/FullPageLoading.js
   var FullPageLoading_default;
   var init_FullPageLoading = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/aabe492c-4de8-4dd8-b516-48eb1f087998/FullPageLoading.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/9f1b665c-74cb-4111-8da9-e157ab0e2cc2/FullPageLoading.js"() {
       if (document.getElementById("fede04882a") === null) {
         const element = document.createElement("style");
         element.id = "fede04882a";
@@ -5943,6 +5943,17 @@ svg {
     }
   });
 
+  // src/setup/tools/getConnectedNodes.ts
+  var getConnectedNodes;
+  var init_getConnectedNodes = __esm({
+    "src/setup/tools/getConnectedNodes.ts"() {
+      "use strict";
+      getConnectedNodes = (nodes) => {
+        return nodes.filter((n2) => n2.key);
+      };
+    }
+  });
+
   // src/setup/views/Index/Index.tsx
   var Index;
   var init_Index2 = __esm({
@@ -5960,6 +5971,7 @@ svg {
       init_Index();
       init_getConflictingNodes();
       init_FullPageLoading2();
+      init_getConnectedNodes();
       Index = () => {
         var _a, _b;
         const selection = useGlobalState((c3) => c3.selection);
@@ -5987,15 +5999,14 @@ svg {
           if (conflicts.length > 0) {
             setError("There are conflicting nodes");
           } else {
-            const connectedNodes = nothingSelected ? allNodes : selection;
-            console.log(connectedNodes);
-            setRoute("push", { nodes: connectedNodes.filter((n2) => n2.key) });
+            setRoute("push", {
+              nodes: getConnectedNodes(nothingSelected ? allNodes : selection)
+            });
           }
         };
         const handlePull = () => {
-          const connectedNodes = nothingSelected ? void 0 : selection;
           setRoute("pull", {
-            nodes: connectedNodes == null ? void 0 : connectedNodes.filter((n2) => n2.key),
+            nodes: nothingSelected ? void 0 : getConnectedNodes(selection),
             lang: language
           });
         };
@@ -6052,10 +6063,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/5e92a045-4354-43af-a969-0ca16eb18c05/ActionsBottom.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c893deb7-70c3-4893-a7ff-740927328ad8/ActionsBottom.js
   var ActionsBottom_default;
   var init_ActionsBottom = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/5e92a045-4354-43af-a969-0ca16eb18c05/ActionsBottom.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/c893deb7-70c3-4893-a7ff-740927328ad8/ActionsBottom.js"() {
       if (document.getElementById("d1c8a68a43") === null) {
         const element = document.createElement("style");
         element.id = "d1c8a68a43";
@@ -6230,10 +6241,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d845c4b9-c1c8-43a1-a351-72169313e513/Changes.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/0551a840-2097-41ff-9d4c-0fbcbc6000ef/Changes.js
   var Changes_default;
   var init_Changes = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/d845c4b9-c1c8-43a1-a351-72169313e513/Changes.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/0551a840-2097-41ff-9d4c-0fbcbc6000ef/Changes.js"() {
       if (document.getElementById("5fe4964e01") === null) {
         const element = document.createElement("style");
         element.id = "5fe4964e01";
@@ -6442,10 +6453,10 @@ svg {
     }
   });
 
-  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a8db1228-9e7c-4a46-856f-477229ad8a5d/MissingKeys.js
+  // ../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/0cd525e2-92fa-46b6-abaa-43742ef0d078/MissingKeys.js
   var MissingKeys_default;
   var init_MissingKeys = __esm({
-    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/a8db1228-9e7c-4a46-856f-477229ad8a5d/MissingKeys.js"() {
+    "../../../../../private/var/folders/ks/f05_8xtd79sf6d3ddj6c44pr0000gn/T/0cd525e2-92fa-46b6-abaa-43742ef0d078/MissingKeys.js"() {
       if (document.getElementById("9abefe4959") === null) {
         const element = document.createElement("style");
         element.id = "9abefe4959";
@@ -6517,6 +6528,7 @@ svg {
       init_ActionsBottom2();
       init_FullPageLoading2();
       init_GlobalState();
+      init_getConnectedNodes();
       init_lib2();
       init_lib();
       init_preact_module();
@@ -6525,17 +6537,12 @@ svg {
       init_MissingKeys2();
       Pull = ({ lang, nodes }) => {
         const allNodes = useGlobalState((c3) => c3.allNodes);
-        const selectedNodes = nodes || allNodes;
+        const selectedNodes = nodes || getConnectedNodes(allNodes);
         const { setRoute, setLanguage } = useGlobalActions();
         const [success, setSuccess] = p2(false);
-        console.log({ lang, nodes });
-        const connectedNodes = F(
-          () => selectedNodes.filter((n2) => n2.key),
+        const selectedKeys = F(
+          () => [...new Set(selectedNodes.map((n2) => n2.key))],
           [selectedNodes]
-        );
-        const allKeys = F(
-          () => [...new Set(connectedNodes.map((n2) => n2.key))],
-          [connectedNodes]
         );
         const translationsLoadable = useApiQuery({
           url: "/v2/projects/translations",
@@ -6544,7 +6551,7 @@ svg {
             structureDelimiter: null,
             languages: [lang],
             size: 1e4,
-            filterKeyName: allKeys
+            filterKeyName: selectedKeys
           },
           options: {
             cacheTime: 0,
@@ -6554,7 +6561,7 @@ svg {
         const { changedNodes, missingKeys } = F(() => {
           const changedNodes2 = [];
           const missingKeys2 = [];
-          connectedNodes.forEach((node) => {
+          selectedNodes.forEach((node) => {
             var _a, _b, _c, _d;
             const key = (_c = (_b = (_a = translationsLoadable.data) == null ? void 0 : _a._embedded) == null ? void 0 : _b.keys) == null ? void 0 : _c.find(
               (t3) => t3.keyName === node.key
@@ -6569,7 +6576,7 @@ svg {
             }
           });
           return { changedNodes: changedNodes2, missingKeys: missingKeys2 };
-        }, [translationsLoadable.data, connectedNodes, lang]);
+        }, [translationsLoadable.data, selectedNodes, lang]);
         const handleProcess = async () => {
           emit("UPDATE_NODES", changedNodes);
           setLanguage(lang);
