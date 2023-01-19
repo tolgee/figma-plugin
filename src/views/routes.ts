@@ -1,4 +1,4 @@
-import { NodeInfo, WindowSize } from "@/types";
+import { NodeInfo } from "@/types";
 
 export type Route =
   | ["index"]
@@ -10,12 +10,4 @@ export type RouteKey = Route[0];
 
 export type RouteParam<T extends Route[0]> = Extract<Route, [T, any]>[1];
 
-const DEFAULT_SIZE = { width: 500, height: 400 };
-
-export const SIZES = {
-  settings: { width: 300, height: 500 },
-};
-
-export const getWindowSize = (routeKey: RouteKey): WindowSize => {
-  return (SIZES as any)[routeKey] || DEFAULT_SIZE;
-};
+export const DEFAULT_SIZE = { width: 500, height: 400 };

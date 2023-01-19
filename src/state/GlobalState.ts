@@ -1,17 +1,16 @@
 import { emit, on } from "@create-figma-plugin/utilities";
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 
 import {
   ConfigChangeHandler,
   DocumentChangeHandler,
   NodeInfo,
-  ResizeHandler,
   SelectionChangeHandler,
   SetLanguageHandler,
   SetupHandle,
   TolgeeConfig,
 } from "@/types";
-import { getWindowSize, Route } from "../views/routes";
+import { Route } from "../views/routes";
 import { createProvider } from "../tools/createProvider";
 
 type Props = {
@@ -58,10 +57,6 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
         _setConfig(data);
       });
     }, []);
-
-    useMemo(() => {
-      emit<ResizeHandler>("RESIZE", getWindowSize(routeKey));
-    }, [routeKey]);
 
     function setConfig(config: Partial<TolgeeConfig>) {
       _setConfig(config);

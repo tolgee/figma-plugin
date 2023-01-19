@@ -128,7 +128,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
               <Button onClick={handleGoBack} secondary>
                 Cancel
               </Button>
-              <Button onClick={handleSubmit}>Submit</Button>
+              <Button onClick={handleSubmit}>Push to Tolgee</Button>
             </ActionsBottom>
           </Fragment>
         )}

@@ -19,7 +19,7 @@ import {
   TolgeeConfig,
   TranslationsUpdateHandler,
 } from "./types";
-import { getWindowSize } from "./views/routes";
+import { DEFAULT_SIZE } from "./views/routes";
 
 const findTextNodes = (nodes?: readonly SceneNode[]): NodeInfo[] => {
   if (!nodes) {
@@ -128,7 +128,7 @@ export default async function () {
   showUI(
     {
       title: "Tolgee",
-      ...getWindowSize("index"),
+      ...DEFAULT_SIZE,
     },
     {
       config,

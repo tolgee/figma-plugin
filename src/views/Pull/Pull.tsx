@@ -69,7 +69,9 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
   }, [translationsLoadable.data, selectedNodes, lang]);
 
   const handleProcess = async () => {
-    emit<TranslationsUpdateHandler>("UPDATE_NODES", changedNodes);
+    if (changedNodes.length !== 0) {
+      emit<TranslationsUpdateHandler>("UPDATE_NODES", changedNodes);
+    }
     setLanguage(lang);
     setRoute("index");
   };
@@ -89,7 +91,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
     <Fragment>
       <TopBar
         onBack={handleGoBack}
-        leftPart={<div>Pull translations ({lang})</div>}
+        leftPart={<div>Pull translations from Tolgee platform ({lang})</div>}
       />
       <Divider />
       <VerticalSpace space="large" />
@@ -132,7 +134,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
                   <Button onClick={handleGoBack} secondary>
                     Cancel
                   </Button>
-                  <Button onClick={handleProcess}>Submit</Button>
+                  <Button onClick={handleProcess}>Process</Button>
                 </Fragment>
               )}
             </ActionsBottom>
