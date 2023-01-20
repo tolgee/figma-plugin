@@ -2,7 +2,7 @@ import { h } from "preact";
 import clsx from "clsx";
 
 import { useGlobalActions } from "@/state/GlobalState";
-import { AddCircle, AddCircleOutline, InsertLink } from "@/icons/SvgIcons";
+import { AddCircle, InsertLink } from "@/icons/SvgIcons";
 import { NodeInfo } from "@/types";
 import styles from "./NodeRow.css";
 
