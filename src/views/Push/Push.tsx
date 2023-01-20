@@ -12,7 +12,7 @@ import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { getChanges } from "@/tools/getChanges";
-import { TopBar } from "../Index/TopBar/TopBar";
+import { TopBar } from "../../components/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import { Changes } from "./Changes";
 
@@ -29,7 +29,6 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     url: "/v2/projects/translations",
     method: "get",
     query: {
-      structureDelimiter: null,
       languages: [language],
       size: 10000,
       filterKeyName: keys,

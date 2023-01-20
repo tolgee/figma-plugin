@@ -16,7 +16,7 @@ import {
 import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { useApiMutation } from "@/client/useQueryApi";
 import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
-import { TopBar } from "../Index/TopBar/TopBar";
+import { TopBar } from "../../components/TopBar/TopBar";
 
 const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 
@@ -47,7 +47,7 @@ export const Settings = () => {
 
   const validateTolgeeCredentials = async () => {
     try {
-      const res: any = await mutateAsync("/v2/api-keys/current");
+      const res = await mutateAsync({});
       if (res && res.scopes?.includes("translations.view")) {
         return true;
       }

@@ -1,72 +1,45 @@
-import { Fragment, h } from "preact";
-import { Button, Textbox } from "@create-figma-plugin/ui";
-import { emit } from "@create-figma-plugin/utilities";
+import { h } from "preact";
+import clsx from "clsx";
 
-import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
-import { InsertLink } from "@/icons/SvgIcons";
-import { NodeInfo, SetNodeConnectionHandler } from "@/types";
-import styles from "./NodeList.css";
+import { useGlobalActions } from "@/state/GlobalState";
+import { AddCircle, AddCircleOutline, InsertLink } from "@/icons/SvgIcons";
+import { NodeInfo } from "@/types";
+import styles from "./NodeRow.css";
 
 type Props = {
   node: NodeInfo;
 };
 
 export const NodeRow = ({ node }: Props) => {
-  const { setEditedKey } = useGlobalActions();
-  const editedKeyText = useGlobalState((c) => c.editedKeys[node.id] || "");
+  const { setRoute } = useGlobalActions();
 
   const handleConnect = () => {
-    emit<SetNodeConnectionHandler>(
-      "SET_NODE_CONNECTION",
-      node.id,
-      editedKeyText
-    );
-  };
-
-  const handleNodeDisconnect = () => {
-    setEditedKey(node.id, "");
-    emit<SetNodeConnectionHandler>("SET_NODE_CONNECTION", node.id, "");
+    setRoute("connect", { node });
   };
 
   return (
-    <Fragment key={node.id}>
-      <div className={styles.row_text}>{node.characters}</div>
-      <div className={styles.row_key}>
-        {node.key ? (
-          node.key
-        ) : (
-          <Textbox
-            variant="border"
-            placeholder="No key connected"
-            value={editedKeyText}
-            onChange={(e) =>
-              setEditedKey(node.id, (e.target as HTMLInputElement).value)
-            }
-          />
-        )}
+    <div className={styles.container}>
+      <div className={styles.text}>{node.characters}</div>
+      <div className={styles.connect}>
+        <div
+          role="button"
+          title={node.key ? "Connect to a key" : "Edit connection"}
+          onClick={handleConnect}
+          className={styles.connectButton}
+        >
+          {node.key ? (
+            <InsertLink width={16} height={16} />
+          ) : (
+            <AddCircle width={16} height={16} />
+          )}
+        </div>
       </div>
-      {node.key ? (
-        <div className={styles.row_connect} title="Disconnect">
-          <Button
-            secondary
-            onClick={handleNodeDisconnect}
-            className={styles.key_present}
-          >
-            <InsertLink width={16} height={16} />
-          </Button>
-        </div>
-      ) : (
-        <div className={styles.row_connect} title="Connect to a key">
-          <Button
-            secondary
-            onClick={handleConnect}
-            className={styles.key_missing}
-            disabled={!editedKeyText}
-          >
-            <InsertLink width={16} height={16} />
-          </Button>
-        </div>
-      )}
-    </Fragment>
+      <div className={clsx({ [styles.disabled]: !node.key })}>
+        {node.key ? node.key : "not connected"}
+      </div>
+      <div className={clsx({ [styles.disabled]: !node.ns })}>
+        {node.ns || (node.key && "<no namespace>")}
+      </div>
+    </div>
   );
 };

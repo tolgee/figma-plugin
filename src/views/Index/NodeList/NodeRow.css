@@ -1,0 +1,41 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 2px 16px;
+  height: 48px;
+  padding: 6px 8px;
+}
+
+.container > * {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.container:hover {
+  background-color: var(--figma-color-bg-hover);
+}
+
+.disabled {
+  color: var(--figma-color-text-disabled);
+}
+
+.text {
+  grid-column: 1 / span 2;
+}
+
+.connect {
+  display: flex;
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-items: center;
+}
+
+.connectButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}

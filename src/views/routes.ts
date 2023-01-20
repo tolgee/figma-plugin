@@ -4,7 +4,8 @@ export type Route =
   | ["index"]
   | ["settings"]
   | ["push", { nodes: NodeInfo[] }]
-  | ["pull", { nodes?: NodeInfo[]; lang: string }];
+  | ["pull", { nodes?: NodeInfo[]; lang: string }]
+  | ["connect", { node: NodeInfo }];
 
 export type RouteKey = Route[0];
 

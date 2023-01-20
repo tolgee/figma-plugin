@@ -10,7 +10,6 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-import { HeadingTab } from "@/components/HeadingTab/HeadingTab";
 import { Settings } from "@/icons/SvgIcons";
 import { useApiQuery } from "@/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
@@ -18,7 +17,7 @@ import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 import { getConnectedNodes } from "@/tools/getConnectedNodes";
 import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { NodeList } from "./NodeList/NodeList";
-import { TopBar } from "./TopBar/TopBar";
+import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 
 export const Index = () => {
@@ -37,8 +36,6 @@ export const Index = () => {
     useGlobalState((c) => c.config?.lang) || languages?.[0]?.tag || "";
 
   const { setRoute } = useGlobalActions();
-
-  const routeKey = useGlobalState((c) => c.routeKey);
 
   const nothingSelected = selection.length === 0;
 
@@ -80,25 +77,22 @@ export const Index = () => {
         <TopBar
           leftPart={
             <Fragment>
-              <div className={styles.languageContainer}>
-                {languages && (
-                  <select
-                    value={language}
-                    placeholder="Language"
-                    onChange={(e) => {
-                      handleLanguageChange(
-                        (e.target as HTMLInputElement).value
-                      );
-                    }}
-                  >
-                    {languages.map((l) => (
-                      <option key={l.tag} value={l.tag}>
-                        {l.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
+              {languages && (
+                <select
+                  className={styles.languageContainer}
+                  value={language}
+                  placeholder="Language"
+                  onChange={(e) => {
+                    handleLanguageChange((e.target as HTMLInputElement).value);
+                  }}
+                >
+                  {languages.map((l) => (
+                    <option key={l.tag} value={l.tag}>
+                      {l.name}
+                    </option>
+                  ))}
+                </select>
+              )}
 
               <Button onClick={handlePush}>
                 {nothingSelected ? "Push all" : "Push"}
@@ -110,13 +104,12 @@ export const Index = () => {
             </Fragment>
           }
           rightPart={
-            <HeadingTab
-              route="settings"
-              currentRoute={routeKey}
-              onChange={() => setRoute("settings")}
+            <div
+              className={styles.settingsButton}
+              onClick={() => setRoute("settings")}
             >
               <Settings width={15} height={15} />
-            </HeadingTab>
+            </div>
           }
         />
       </Container>
@@ -135,13 +128,15 @@ export const Index = () => {
             <VerticalSpace space="large" />
           </Fragment>
         )}
-
-        {nothingSelected ? (
-          <Text>No nodes selected</Text>
-        ) : (
-          <NodeList nodes={selection} />
-        )}
       </Container>
+
+      {nothingSelected ? (
+        <Container space="medium">
+          <Text>No nodes selected</Text>
+        </Container>
+      ) : (
+        <NodeList nodes={selection} />
+      )}
     </Fragment>
   );
 };

@@ -1090,12 +1090,12 @@ export interface components {
       userFullName?: string;
       projectName: string;
       /** Format: int64 */
+      projectId: number;
+      username?: string;
+      /** Format: int64 */
       lastUsedAt?: number;
       /** Format: int64 */
-      projectId: number;
-      /** Format: int64 */
       expiresAt?: number;
-      username?: string;
       description: string;
       scopes: (string)[];
     };
@@ -3455,6 +3455,10 @@ export interface operations {
       header?: {
         "X-API-Key"?: string;
       };
+        /**
+         * @description Comma-separated language tags to return translations in. 
+         * @example en,de,fr
+         */
       path: {
         languages: (string)[];
       };

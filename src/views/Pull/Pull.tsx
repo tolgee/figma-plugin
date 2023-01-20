@@ -14,7 +14,7 @@ import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { getConnectedNodes } from "@/tools/getConnectedNodes";
 import { NodeInfo, TranslationsUpdateHandler } from "@/types";
-import { TopBar } from "../Index/TopBar/TopBar";
+import { TopBar } from "../../components/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import { MissingKeys } from "./MissingKeys";
 
@@ -35,7 +35,6 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
     url: "/v2/projects/translations",
     method: "get",
     query: {
-      structureDelimiter: null,
       languages: [lang],
       size: 10000,
       filterKeyName: selectedKeys,
@@ -52,7 +51,8 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
 
     selectedNodes.forEach((node) => {
       const key = translationsLoadable.data?._embedded?.keys?.find(
-        (t) => t.keyName === node.key
+        (t) =>
+          t.keyName === node.key && (t.keyNamespace || "") === (node.ns || "")
       );
 
       const value = key?.translations[lang]?.text;

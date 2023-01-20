@@ -47,7 +47,7 @@ export interface DocumentChangeHandler extends EventHandler {
 
 export interface SetNodeConnectionHandler extends EventHandler {
   name: "SET_NODE_CONNECTION";
-  handler: (nodeId: string, key: string) => void;
+  handler: (node: NodeInfo) => void;
 }
 
 export interface NodeInfo {
@@ -55,6 +55,7 @@ export interface NodeInfo {
   characters: string;
   id: string;
   key: string;
+  ns: string;
 }
 
 export interface TolgeeConfig extends Record<string, string> {

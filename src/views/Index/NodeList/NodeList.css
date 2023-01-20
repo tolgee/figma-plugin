@@ -1,33 +1,4 @@
 .container {
   display: grid;
-  gap: 15px 10px;
-  grid-template-columns: 2fr 1fr auto;
-  align-items: center;
-}
-
-.row_text {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.row_key {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  min-height: 30px;
-  display: flex;
-  align-items: center;
-}
-
-.row_connect {
-  justify-self: end;
-}
-
-.key_present {
-  color: var(--figma-color-text);
-}
-
-.key_missing {
-  color: var(--figma-color-text-secondary);
+  margin: 0px 8px;
 }

@@ -1,5 +1,8 @@
 import { h } from "preact";
 
+// icons are copied from 'node_modules/svg-icon/dist/svg/material'
+// add {...props} and fill="currentColor" for more flexibility
+
 export const Settings = (props: h.JSX.SVGAttributes<SVGSVGElement>) => {
   return (
     <svg
@@ -21,6 +24,28 @@ export const InsertLink = (props: h.JSX.SVGAttributes<SVGSVGElement>) => {
       <path
         fill="currentColor"
         d="M7.8 24c0-3.42 2.78-6.2 6.2-6.2h8V14h-8C8.48 14 4 18.48 4 24s4.48 10 10 10h8v-3.8h-8c-3.42 0-6.2-2.78-6.2-6.2zm8.2 2h16v-4H16v4zm18-12h-8v3.8h8c3.42 0 6.2 2.78 6.2 6.2s-2.78 6.2-6.2 6.2h-8V34h8c5.52 0 10-4.48 10-10s-4.48-10-10-10z"
+      />
+    </svg>
+  );
+};
+
+export const AddCircleOutline = (props: h.JSX.SVGAttributes<SVGSVGElement>) => {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+      <path
+        fill="currentColor"
+        d="M26 14h-4v8h-8v4h8v8h4v-8h8v-4h-8v-8zM24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm0 36c-8.82 0-16-7.18-16-16S15.18 8 24 8s16 7.18 16 16-7.18 16-16 16z"
+      />
+    </svg>
+  );
+};
+
+export const AddCircle = (props: h.JSX.SVGAttributes<SVGSVGElement>) => {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+      <path
+        fill="currentColor"
+        d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4zm10 22h-8v8h-4v-8h-8v-4h8v-8h4v8h8v4z"
       />
     </svg>
   );

@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.tabsContainerLeft {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: start;
+  align-items: center;
+  gap: 8px;
+}
+
+.tabsContainerRight {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: end;
+  align-items: center;
+  gap: 8px;
+}
+
+.tabsBackButton {
+  padding: 0px 0px 0px 10px;
+  padding-right: 0px;
+  cursor: pointer;
+  position: relative;
+  left: -5px;
+  margin-right: -10px;
+}

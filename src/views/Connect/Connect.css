@@ -1,0 +1,28 @@
+.page {
+  display: grid;
+  height: 100vh;
+  grid-template-rows: auto 1fr;
+}
+
+.grid {
+  display: grid;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.results {
+  display: grid;
+  max-height: 220px;
+  overflow-y: scroll;
+}

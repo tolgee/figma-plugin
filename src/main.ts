@@ -4,7 +4,11 @@ import {
   on,
   showUI,
 } from "@create-figma-plugin/utilities";
-import { TOLGEE_NODE_KEY, TOLGEE_PLUGIN_CONFIG_NAME } from "./constants";
+import {
+  TOLGEE_NODE_KEY,
+  TOLGEE_NODE_NS,
+  TOLGEE_PLUGIN_CONFIG_NAME,
+} from "./constants";
 
 import {
   ConfigChangeHandler,
@@ -33,6 +37,7 @@ const findTextNodes = (nodes?: readonly SceneNode[]): NodeInfo[] => {
         name: node.name,
         characters: node.characters,
         key: node.getPluginData(TOLGEE_NODE_KEY),
+        ns: node.getPluginData(TOLGEE_NODE_NS),
       });
     }
     // @ts-ignore
@@ -101,9 +106,10 @@ export default async function () {
     });
   });
 
-  on<SetNodeConnectionHandler>("SET_NODE_CONNECTION", (nodeId, key) => {
-    const node = figma.getNodeById(nodeId);
-    node?.setPluginData(TOLGEE_NODE_KEY, key);
+  on<SetNodeConnectionHandler>("SET_NODE_CONNECTION", (nodeInfo) => {
+    const node = figma.getNodeById(nodeInfo.id);
+    node?.setPluginData(TOLGEE_NODE_KEY, nodeInfo.key);
+    node?.setPluginData(TOLGEE_NODE_NS, nodeInfo.ns);
 
     // update selection
     emit<SelectionChangeHandler>("SELECTION_CHANGE", findTextNodes());

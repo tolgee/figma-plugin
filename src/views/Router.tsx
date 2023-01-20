@@ -8,6 +8,7 @@ import { Settings } from "./Settings/Settings";
 import { useGlobalActions, useGlobalState } from "../state/GlobalState";
 import { Push } from "./Push/Push";
 import { Pull } from "./Pull/Pull";
+import { Connect } from "./Connect/Connect";
 
 const getPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
@@ -22,6 +23,9 @@ const getPage = ([routeKey, routeData]: Route) => {
 
     case "pull":
       return <Pull {...routeData} />;
+
+    case "connect":
+      return <Connect {...routeData} />;
   }
 };
 
