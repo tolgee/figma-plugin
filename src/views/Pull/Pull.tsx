@@ -13,10 +13,12 @@ import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { getConnectedNodes } from "@/tools/getConnectedNodes";
-import { NodeInfo, TranslationsUpdateHandler } from "@/types";
+import { NodeInfo, PartialNodeInfo, TranslationsUpdateHandler } from "@/types";
 import { TopBar } from "../../components/TopBar/TopBar";
 import { RouteParam } from "../routes";
-import { MissingKeys } from "./MissingKeys";
+import clsx from "clsx";
+import styles from "./Pull.css";
+import { NodeList } from "@/components/NodeList/NodeList";
 
 type Props = RouteParam<"pull">;
 
@@ -47,7 +49,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
 
   const { changedNodes, missingKeys } = useMemo(() => {
     const changedNodes: NodeInfo[] = [];
-    const missingKeys: string[] = [];
+    const missingKeys: PartialNodeInfo[] = [];
 
     selectedNodes.forEach((node) => {
       const key = translationsLoadable.data?._embedded?.keys?.find(
@@ -61,7 +63,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
           changedNodes.push({ ...node, characters: value });
         }
       } else {
-        missingKeys.push(node.key);
+        missingKeys.push({ id: node.id, key: node.key, ns: node.ns });
       }
     });
 
@@ -121,10 +123,8 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
                 ? "Everything up to date"
                 : `This action will replace translations in ${changedNodes.length} nodes.`}
             </div>
-            <div>
-              {missingKeys.length > 0 && (
-                <MissingKeys missingKeys={missingKeys} />
-              )}
+            <div className={clsx(styles.list, styles.missing)}>
+              {missingKeys.length > 0 && <NodeList nodes={missingKeys} />}
             </div>
             <ActionsBottom>
               {changedNodes.length === 0 ? (

@@ -3,6 +3,7 @@ declare const styles: {
   readonly "new": string;
   readonly "change": string;
   readonly "container": string;
+  readonly "list": string;
   readonly "rowText": string;
   readonly "rowKey": string;
   readonly "spanAll": string;

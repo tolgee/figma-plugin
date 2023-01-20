@@ -58,6 +58,10 @@ export interface NodeInfo {
   ns: string;
 }
 
+export type PartialNodeInfo = Partial<NodeInfo> & {
+  id: string;
+};
+
 export interface TolgeeConfig extends Record<string, string> {
   apiUrl: string;
   apiKey: string;

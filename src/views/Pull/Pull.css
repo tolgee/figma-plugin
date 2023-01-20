@@ -1,0 +1,7 @@
+.list {
+  margin: 10px -16px;
+}
+
+.missing {
+  color: var(--figma-color-icon-danger);
+}

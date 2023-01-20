@@ -20,6 +20,7 @@ import styles from "./Connect.css";
 import { SearchRow } from "./SearchRow";
 import { emit } from "@create-figma-plugin/utilities";
 import { SetNodeConnectionHandler } from "@/types";
+import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 
 type Props = RouteParam<"connect">;
 
@@ -60,6 +61,7 @@ export const Connect = ({ node }: Props) => {
 
   return (
     <Fragment>
+      {translationsLoadable.isFetching && <FullPageLoading />}
       <TopBar
         onBack={handleGoBack}
         leftPart={
@@ -113,6 +115,9 @@ export const Connect = ({ node }: Props) => {
             Remove connection
           </Button>
         )}
+        <Button secondary onClick={handleGoBack}>
+          Cancel
+        </Button>
         <Button disabled={!key} onClick={() => handleConnect(key, ns)}>
           Add new
         </Button>

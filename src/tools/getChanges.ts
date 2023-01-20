@@ -6,6 +6,7 @@ type KeyWithTranslationsModel =
 
 export type KeyChangeValue = {
   key: string;
+  ns: string;
   oldValue?: string;
   newValue: string;
 };
@@ -24,9 +25,13 @@ export const getChanges = (
   const changedKeys: KeyChangeValue[] = [];
 
   nodes.forEach((node) => {
-    const translation = translations.find((t) => t.keyName === node.key);
+    const translation = translations.find(
+      (t) =>
+        t.keyName === node.key && (t.keyNamespace || "") === (node.ns || "")
+    );
     const change = {
       key: node.key,
+      ns: node.ns,
       oldValue: translation?.translations[language]?.text,
       newValue: node.characters,
     };

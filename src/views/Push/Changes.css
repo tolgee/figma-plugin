@@ -20,6 +20,10 @@
   align-items: center;
 }
 
+.list {
+  margin: 10px -16px;
+}
+
 .rowText {
   text-overflow: ellipsis;
   overflow: hidden;

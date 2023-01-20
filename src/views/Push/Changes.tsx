@@ -3,6 +3,7 @@ import clsx from "clsx";
 
 import { KeyChanges } from "@/tools/getChanges";
 import styles from "./Changes.css";
+import { NodeList } from "@/components/NodeList/NodeList";
 
 type Props = {
   changes: KeyChanges;
@@ -10,18 +11,22 @@ type Props = {
 
 export const Changes = ({ changes }: Props) => {
   return (
-    <div className={styles.container}>
+    <Fragment>
       {changes.newKeys.length > 0 && (
         <Fragment>
           <div className={clsx(styles.sectionTitle, styles.spanAll)}>
             New keys
           </div>
-          {changes.newKeys.map(({ key, newValue }) => (
-            <Fragment key={key}>
-              <div className={clsx(styles.new, styles.rowKey)}>{key}</div>
-              <div className={clsx(styles.new, styles.rowText)}>{newValue}</div>
-            </Fragment>
-          ))}
+          <div className={clsx(styles.list, styles.new)}>
+            <NodeList
+              nodes={changes.newKeys.map((k) => ({
+                id: k.key,
+                key: k.key,
+                ns: k.ns,
+                characters: k.newValue,
+              }))}
+            />
+          </div>
         </Fragment>
       )}
       {changes.changedKeys.length > 0 && (
@@ -29,16 +34,18 @@ export const Changes = ({ changes }: Props) => {
           <div className={clsx(styles.sectionTitle, styles.spanAll)}>
             Changed keys
           </div>
-          {changes.changedKeys.map(({ key, newValue }) => (
-            <Fragment key={key}>
-              <div className={clsx(styles.change, styles.rowKey)}>{key}</div>
-              <div className={clsx(styles.change, styles.rowText)}>
-                {newValue}
-              </div>
-            </Fragment>
-          ))}
+          <div className={clsx(styles.list, styles.change)}>
+            <NodeList
+              nodes={changes.changedKeys.map((k) => ({
+                id: k.key,
+                key: k.key,
+                ns: k.ns,
+                characters: k.newValue,
+              }))}
+            />
+          </div>
         </Fragment>
       )}
-    </div>
+    </Fragment>
   );
 };

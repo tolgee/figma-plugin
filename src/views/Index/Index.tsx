@@ -10,13 +10,14 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-import { Settings } from "@/icons/SvgIcons";
+import { NodeInfo } from "@/types";
+import { Settings, AddCircle, InsertLink } from "@/icons/SvgIcons";
 import { useApiQuery } from "@/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 import { getConnectedNodes } from "@/tools/getConnectedNodes";
 import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
-import { NodeList } from "./NodeList/NodeList";
+import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 
@@ -61,6 +62,10 @@ export const Index = () => {
       nodes: nothingSelected ? undefined : getConnectedNodes(selection),
       lang: language,
     });
+  };
+
+  const handleConnect = (node: NodeInfo) => {
+    setRoute("connect", { node });
   };
 
   useEffect(() => {
@@ -135,7 +140,28 @@ export const Index = () => {
           <Text>No nodes selected</Text>
         </Container>
       ) : (
-        <NodeList nodes={selection} />
+        <NodeList
+          nodes={selection}
+          placeholderNoKey={
+            <div className={styles.disabled}>Not connected</div>
+          }
+          actionCallback={(node) => {
+            return (
+              <div
+                role="button"
+                title={!node.key ? "Connect to a key" : "Edit connection"}
+                onClick={() => handleConnect(node)}
+                className={styles.connectButton}
+              >
+                {node.key ? (
+                  <InsertLink width={16} height={16} />
+                ) : (
+                  <AddCircle width={16} height={16} />
+                )}
+              </div>
+            );
+          }}
+        />
       )}
     </Fragment>
   );

@@ -62,6 +62,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
         content: {
           "application/json": {
             key: key.key,
+            namespace: key.ns,
             translations: { [language]: key.newValue },
           },
         },
