@@ -123,11 +123,14 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
                 ? "Everything up to date"
                 : `This action will replace translations in ${changedNodes.length} nodes.`}
             </div>
-            <div className={clsx(styles.list, styles.missing)}>
-              {missingKeys.length > 0 && (
-                <NodeList nodes={missingKeys} compact />
-              )}
-            </div>
+            {missingKeys.length > 0 && (
+              <Fragment>
+                <div className={clsx(styles.sectionTitle)}>Missing keys:</div>
+                <div className={clsx(styles.list, styles.missing)}>
+                  <NodeList nodes={missingKeys} compact />
+                </div>
+              </Fragment>
+            )}
             <ActionsBottom>
               {changedNodes.length === 0 ? (
                 <Button onClick={handleProcess}>Ok</Button>

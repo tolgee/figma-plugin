@@ -5,3 +5,9 @@
 .missing {
   color: var(--figma-color-icon-danger);
 }
+
+.sectionTitle {
+  margin-bottom: -5px;
+  margin-top: 20px;
+  font-size: 12px;
+}
