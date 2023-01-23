@@ -18,6 +18,8 @@ export const NodeRow = ({
   placeholderNoNs,
   compact,
 }: Props) => {
+  const showText = node.characters || !compact || action;
+
   return (
     <div
       className={styles.container}
@@ -25,7 +27,7 @@ export const NodeRow = ({
         gridTemplateColumns: action ? "1fr 1fr auto" : "1fr 1fr",
       }}
     >
-      {node.characters && !action && !compact && (
+      {showText && (
         <div title="Translation text" className={styles.text}>
           {node.characters}
         </div>
@@ -35,7 +37,14 @@ export const NodeRow = ({
         {node.key ? node.key : placeholderNoKey}
       </div>
       <div title="Translation namespace">
-        {node.ns || (node.key && placeholderNoNs)}
+        {node.ns ? (
+          <span>
+            <span className={styles.disabled}>ns:</span>
+            {node.ns}
+          </span>
+        ) : (
+          node.key && placeholderNoNs
+        )}
       </div>
     </div>
   );

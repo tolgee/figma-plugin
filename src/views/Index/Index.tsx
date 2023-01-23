@@ -47,12 +47,17 @@ export const Index = () => {
   };
 
   const handlePush = () => {
-    const conflicts = getConflictingNodes(selection);
+    const subjectNodes = nothingSelected ? allNodes : selection;
+    const conflicts = getConflictingNodes(subjectNodes);
     if (conflicts.length > 0) {
-      setError("There are conflicting nodes");
+      setError(
+        `There are conflicting nodes (${conflicts
+          .map((n) => n.characters)
+          .join(", ")})`
+      );
     } else {
       setRoute("push", {
-        nodes: getConnectedNodes(nothingSelected ? allNodes : selection),
+        nodes: getConnectedNodes(subjectNodes),
       });
     }
   };

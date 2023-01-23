@@ -9,6 +9,7 @@ type Props<T extends PartialNodeInfo> = {
   actionCallback?: (node: T) => ComponentChildren;
   placeholderNoKey?: ComponentChildren;
   placeholderNoNs?: ComponentChildren;
+  compact?: boolean;
 };
 
 export function NodeList<T extends PartialNodeInfo>({
@@ -16,6 +17,7 @@ export function NodeList<T extends PartialNodeInfo>({
   actionCallback,
   placeholderNoKey,
   placeholderNoNs,
+  compact,
 }: Props<T>) {
   return (
     <div className={styles.container}>
@@ -26,6 +28,7 @@ export function NodeList<T extends PartialNodeInfo>({
           action={actionCallback?.(node)}
           placeholderNoKey={placeholderNoKey}
           placeholderNoNs={placeholderNoNs}
+          compact={compact}
         />
       ))}
     </div>

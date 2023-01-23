@@ -9,7 +9,6 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  height: 17px;
 }
 
 .container:hover {
@@ -24,4 +23,8 @@
   grid-column: 3;
   grid-row: 1 / span 2;
   align-self: center;
+}
+
+.disabled {
+  color: var(--figma-color-text-disabled);
 }

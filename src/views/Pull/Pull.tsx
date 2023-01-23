@@ -84,7 +84,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
 
   const handleRepeat = () => {
     setSuccess(false);
-    handleProcess();
+    translationsLoadable.refetch();
   };
 
   const isLoading = translationsLoadable.isLoading;
@@ -124,7 +124,9 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
                 : `This action will replace translations in ${changedNodes.length} nodes.`}
             </div>
             <div className={clsx(styles.list, styles.missing)}>
-              {missingKeys.length > 0 && <NodeList nodes={missingKeys} />}
+              {missingKeys.length > 0 && (
+                <NodeList nodes={missingKeys} compact />
+              )}
             </div>
             <ActionsBottom>
               {changedNodes.length === 0 ? (

@@ -72,7 +72,6 @@ export default async function () {
 
   figma.on("documentchange", () => {
     const nodes = findTextNodes(figma.currentPage.children);
-    console.log(nodes);
     emit<DocumentChangeHandler>("DOCUMENT_CHANGE", nodes);
   });
 
