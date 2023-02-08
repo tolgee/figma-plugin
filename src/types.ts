@@ -68,13 +68,13 @@ export type GlobalSettings = {
   apiKey: string;
 };
 
-export type CurrentPageSettings = {
+export type CurrentPageSettings = GlobalSettings & {
   language: string;
   namespace: string;
   namespacesDisabled: boolean;
 };
 
-export type TolgeeConfig = GlobalSettings & CurrentPageSettings;
+export type TolgeeConfig = CurrentPageSettings;
 
 export type FormattedNode = {
   characters: string;

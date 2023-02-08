@@ -72,6 +72,11 @@ export const NamespaceSelect: FunctionComponent<Props> = ({
               placeholder="Insert namespace name"
               value={nsName}
               onChange={(e) => setNsName(e.currentTarget.value)}
+              onKeyDownCapture={(e) => {
+                if (e.key === "Enter") {
+                  handleSetCustomValue();
+                }
+              }}
             />
             <VerticalSpace space="large" />
           </Container>

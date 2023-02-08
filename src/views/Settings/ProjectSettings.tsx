@@ -11,7 +11,7 @@ type Props = {
   apiKey: string;
   apiUrl: string;
   initialData?: Partial<CurrentPageSettings>;
-  onChange: (data: CurrentPageSettings) => void;
+  onChange: (data: Partial<CurrentPageSettings>) => void;
 };
 
 export const ProjectSettings: FunctionComponent<Props> = ({
@@ -20,9 +20,9 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   onChange,
   initialData,
 }) => {
-  const [settings, setSettings] = useState<CurrentPageSettings | undefined>(
-    undefined
-  );
+  const [settings, setSettings] = useState<
+    Partial<CurrentPageSettings> | undefined
+  >(undefined);
 
   const languagesLoadable = useApiQuery({
     url: "/v2/projects/languages",

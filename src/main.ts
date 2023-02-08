@@ -87,9 +87,9 @@ const getPluginData = async () => {
 };
 
 const setPluginData = async (data: Partial<TolgeeConfig>) => {
-  const { apiKey, apiUrl, ...pageConfig } = data;
+  const { apiKey, apiUrl } = data;
   await setGlobalSettings({ apiKey, apiUrl });
-  setCurrentPageSettings(pageConfig);
+  setCurrentPageSettings(data);
   emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
 };
 
