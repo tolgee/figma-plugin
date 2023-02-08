@@ -1,5 +1,5 @@
 import { Fragment, FunctionalComponent, h } from "preact";
-import { useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import {
   Button,
   Container,
@@ -75,11 +75,6 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     setRoute("index");
   };
 
-  const handleConnectAndGoBack = () => {
-    connectNodes();
-    handleGoBack();
-  };
-
   const connectNodes = () => {
     emit<SetNodesDataHandler>(
       "SET_NODES_DATA",
@@ -105,7 +100,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
         translations: {
           [language]: {
             text: key.newValue,
-            resolution: key.oldValue ? "OVERRIDE" : "NEW",
+            resolution: "OVERRIDE",
           },
         },
       });
@@ -147,11 +142,19 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
 
   const changesSize = changes.changedKeys.length + changes.newKeys.length;
 
+  const changesPresent = changesSize === 0;
+
+  useEffect(() => {
+    if (!changesPresent) {
+      connectNodes();
+    }
+  }, []);
+
   return (
     <Fragment>
       <TopBar
         onBack={handleGoBack}
-        leftPart={<div>Push translations to Tolgee platform</div>}
+        leftPart={<div>Push translations to Tolgee platform ({language})</div>}
       />
       <Divider />
       <VerticalSpace space="large" />
@@ -174,11 +177,11 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
               <Button onClick={handleGoBack}>Ok</Button>
             </ActionsBottom>
           </Fragment>
-        ) : changesSize === 0 ? (
+        ) : changesPresent ? (
           <Fragment>
             <div>Everything up to date</div>
             <ActionsBottom>
-              <Button onClick={handleConnectAndGoBack}>Ok</Button>
+              <Button onClick={handleGoBack}>Ok</Button>
             </ActionsBottom>
           </Fragment>
         ) : (

@@ -13,7 +13,7 @@ import {
 import { emit } from "@create-figma-plugin/utilities";
 
 import { NodeInfo, SetNodesDataHandler } from "@/types";
-import { Settings, AddCircle, InsertLink } from "@/icons/SvgIcons";
+import { Settings, InsertLink } from "@/icons/SvgIcons";
 import { useApiQuery } from "@/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
@@ -103,12 +103,33 @@ export const Index = () => {
     setRoute("connect", { node });
   };
 
+  const handleKeyChange =
+    (node: NodeInfo) => (e: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
+      emit<SetNodesDataHandler>("SET_NODES_DATA", [
+        {
+          ...node,
+          key: e.currentTarget.value,
+        },
+      ]);
+    };
+
+  const handleNsChange = (node: NodeInfo) => (value: string) => {
+    emit<SetNodesDataHandler>("SET_NODES_DATA", [
+      {
+        ...node,
+        ns: value,
+      },
+    ]);
+  };
+
   useEffect(() => {
     setError(undefined);
   }, [selection]);
 
   useWindowSize(
-    !selection?.length ? { width: 500, height: 150 } : DEFAULT_SIZE
+    !selection || selection.length < 2
+      ? { width: 500, height: 150 }
+      : DEFAULT_SIZE
   );
 
   if (languagesLoadable.isLoading || namespacesLoadable.isLoading) {
@@ -186,14 +207,7 @@ export const Index = () => {
               <Textbox
                 placeholder="Key name"
                 value={node.key || ""}
-                onChange={(e) => {
-                  emit<SetNodesDataHandler>("SET_NODES_DATA", [
-                    {
-                      ...node,
-                      key: e.currentTarget.value,
-                    },
-                  ]);
-                }}
+                onChange={handleKeyChange(node)}
                 variant="border"
                 style={{
                   fontSize: 12,
@@ -209,14 +223,7 @@ export const Index = () => {
                 <NamespaceSelect
                   value={node.ns ?? defaultNamespace ?? ""}
                   namespaces={namespaces}
-                  onChange={(value) => {
-                    emit<SetNodesDataHandler>("SET_NODES_DATA", [
-                      {
-                        ...node,
-                        ns: value,
-                      },
-                    ]);
-                  }}
+                  onChange={handleNsChange(node)}
                 />
               </div>
             )
@@ -225,14 +232,24 @@ export const Index = () => {
             return (
               <div
                 role="button"
-                title={!node.connected ? "Connect to a key" : "Edit connection"}
+                title={
+                  !node.connected
+                    ? "Connect to existing key"
+                    : "Edit key connection"
+                }
                 onClick={() => handleConnect(node)}
                 className={styles.connectButton}
               >
                 {node.connected ? (
                   <InsertLink width={16} height={16} />
                 ) : (
-                  <AddCircle width={16} height={16} />
+                  <InsertLink
+                    width={16}
+                    height={16}
+                    style={{
+                      color: "var(--figma-color-icon-oncomponent-tertiary)",
+                    }}
+                  />
                 )}
               </div>
             );

@@ -27,7 +27,9 @@ export const getChanges = (
   nodes.forEach((node) => {
     const key = translations.find(
       (t) =>
-        t.keyName === node.key && (t.keyNamespace || "") === (node.ns || "")
+        t.keyName === node.key &&
+        (t.keyNamespace || "") === (node.ns || "") &&
+        t.translations[language]?.text
     );
     const change = {
       key: node.key,
