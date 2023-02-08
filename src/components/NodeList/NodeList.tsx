@@ -7,16 +7,16 @@ import { NodeRow } from "./NodeRow";
 type Props<T extends PartialNodeInfo> = {
   nodes: T[];
   actionCallback?: (node: T) => ComponentChildren;
-  placeholderNoKey?: ComponentChildren;
-  placeholderNoNs?: ComponentChildren;
+  keyComponent?: (node: T) => ComponentChildren;
+  nsComponent?: (node: T) => ComponentChildren;
   compact?: boolean;
 };
 
 export function NodeList<T extends PartialNodeInfo>({
   nodes,
   actionCallback,
-  placeholderNoKey,
-  placeholderNoNs,
+  keyComponent,
+  nsComponent,
   compact,
 }: Props<T>) {
   return (
@@ -26,8 +26,8 @@ export function NodeList<T extends PartialNodeInfo>({
           key={node.id}
           node={node}
           action={actionCallback?.(node)}
-          placeholderNoKey={placeholderNoKey}
-          placeholderNoNs={placeholderNoNs}
+          keyComponent={keyComponent?.(node)}
+          nsComponent={nsComponent?.(node)}
           compact={compact}
         />
       ))}

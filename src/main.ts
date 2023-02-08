@@ -4,20 +4,18 @@ import {
   on,
   showUI,
 } from "@create-figma-plugin/utilities";
-import {
-  TOLGEE_NODE_KEY,
-  TOLGEE_NODE_NS,
-  TOLGEE_PLUGIN_CONFIG_NAME,
-} from "./constants";
+import { TOLGEE_NODE_INFO, TOLGEE_PLUGIN_CONFIG_NAME } from "./constants";
 
 import {
   ConfigChangeHandler,
+  CurrentPageSettings,
   DocumentChangeHandler,
+  GlobalSettings,
   NodeInfo,
   ResizeHandler,
   SelectionChangeHandler,
   SetLanguageHandler,
-  SetNodeConnectionHandler,
+  SetNodesDataHandler,
   SetupHandle,
   SyncCompleteHandler,
   TolgeeConfig,
@@ -32,12 +30,16 @@ const findTextNodes = (nodes?: readonly SceneNode[]): NodeInfo[] => {
   let result: NodeInfo[] = [];
   for (const node of nodes) {
     if (node.type === "TEXT") {
+      const pluginData = JSON.parse(
+        node.getPluginData(TOLGEE_NODE_INFO) || "{}"
+      ) as Partial<NodeInfo>;
       result.push({
         id: node.id,
         name: node.name,
         characters: node.characters,
-        key: node.getPluginData(TOLGEE_NODE_KEY),
-        ns: node.getPluginData(TOLGEE_NODE_NS),
+        key: pluginData.key || "",
+        ns: pluginData.ns,
+        connected: Boolean(pluginData.connected),
       });
     }
     // @ts-ignore
@@ -49,19 +51,46 @@ const findTextNodes = (nodes?: readonly SceneNode[]): NodeInfo[] => {
   return result;
 };
 
-const getPluginData = async () => {
+const getGlobalSettings = async () => {
   const pluginData = await figma.clientStorage.getAsync(
     TOLGEE_PLUGIN_CONFIG_NAME
   );
-  return pluginData ? (JSON.parse(pluginData) as Partial<TolgeeConfig>) : {};
+  return pluginData ? (JSON.parse(pluginData) as Partial<GlobalSettings>) : {};
 };
 
-const setPluginData = async (data: Partial<TolgeeConfig>) => {
+const setGlobalSettings = async (data: Partial<GlobalSettings>) => {
   await figma.clientStorage.setAsync(
     TOLGEE_PLUGIN_CONFIG_NAME,
     JSON.stringify(data)
   );
-  emit<ConfigChangeHandler>("CONFIG_CHANGE", data);
+};
+
+const getCurrentPageSettings = () => {
+  const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
+  return pluginData
+    ? (JSON.parse(pluginData) as Partial<CurrentPageSettings>)
+    : {};
+};
+
+const setCurrentPageSettings = (data: Partial<CurrentPageSettings>) => {
+  figma.currentPage.setPluginData(
+    TOLGEE_PLUGIN_CONFIG_NAME,
+    JSON.stringify(data)
+  );
+};
+
+const getPluginData = async () => {
+  return {
+    ...(await getGlobalSettings()),
+    ...getCurrentPageSettings(),
+  };
+};
+
+const setPluginData = async (data: Partial<TolgeeConfig>) => {
+  const { apiKey, apiUrl, ...pageConfig } = data;
+  await setGlobalSettings({ apiKey, apiUrl });
+  setCurrentPageSettings(pageConfig);
+  emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
 };
 
 export default async function () {
@@ -77,12 +106,12 @@ export default async function () {
 
   on<SetupHandle>("SETUP", async (config) => {
     await setPluginData(config);
-    figma.notify("Tolgee credentials saved.");
+    figma.notify("Tolgee settings saved.");
   });
 
-  on<SetLanguageHandler>("SET_LANGUAGE", async (lang: string) => {
+  on<SetLanguageHandler>("SET_LANGUAGE", async (language: string) => {
     const pluginData = await getPluginData();
-    const data = { ...pluginData, lang };
+    const data = { ...pluginData, language };
     await setPluginData(data);
   });
 
@@ -95,20 +124,18 @@ export default async function () {
     figma.closePlugin();
   });
 
-  on<TranslationsUpdateHandler>("UPDATE_NODES", async (nodes) => {
-    const textNodes = nodes.map((n) => figma.getNodeById(n.id) as TextNode);
-    await loadFontsAsync(textNodes);
-    nodes.forEach(async (n) => {
-      const node = textNodes.find((nod) => nod.id === n.id)!;
-      node.autoRename = false;
-      node.characters = n.characters;
+  on<SetNodesDataHandler>("SET_NODES_DATA", (nodes) => {
+    nodes.forEach((nodeInfo) => {
+      const node = figma.getNodeById(nodeInfo.id);
+      node?.setPluginData(
+        TOLGEE_NODE_INFO,
+        JSON.stringify({
+          key: nodeInfo.key,
+          ns: nodeInfo.ns,
+          connected: nodeInfo.connected,
+        })
+      );
     });
-  });
-
-  on<SetNodeConnectionHandler>("SET_NODE_CONNECTION", (nodeInfo) => {
-    const node = figma.getNodeById(nodeInfo.id);
-    node?.setPluginData(TOLGEE_NODE_KEY, nodeInfo.key);
-    node?.setPluginData(TOLGEE_NODE_NS, nodeInfo.ns);
 
     // update selection
     emit<SelectionChangeHandler>("SELECTION_CHANGE", findTextNodes());

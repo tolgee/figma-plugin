@@ -64,7 +64,7 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     }
 
     function setLanguage(language: string) {
-      _setConfig({ ...config, lang: language });
+      _setConfig({ ...config, language });
       emit<SetLanguageHandler>("SET_LANGUAGE", language);
     }
 

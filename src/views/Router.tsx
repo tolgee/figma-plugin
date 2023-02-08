@@ -37,7 +37,7 @@ export const Router = () => {
   const { setRoute } = useGlobalActions();
 
   useEffect(() => {
-    if (!config?.apiKey || !config?.apiUrl) {
+    if (!config?.apiKey || !config?.apiUrl || !config.language) {
       setRoute("settings");
     }
   }, [config]);

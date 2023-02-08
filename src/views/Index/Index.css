@@ -21,3 +21,13 @@
 .disabled {
   color: var(--figma-color-text-disabled);
 }
+
+.keyInput {
+  background: blue;
+}
+
+.nsSelect {
+  display: flex;
+  align-items: center;
+  height: 21px;
+}

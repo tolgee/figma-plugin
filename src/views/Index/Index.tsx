@@ -7,15 +7,17 @@ import {
   Divider,
   IconWarning32,
   Text,
+  Textbox,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
+import { emit } from "@create-figma-plugin/utilities";
 
-import { NodeInfo } from "@/types";
+import { NodeInfo, SetNodesDataHandler } from "@/types";
 import { Settings, AddCircle, InsertLink } from "@/icons/SvgIcons";
 import { useApiQuery } from "@/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
-import { getConnectedNodes } from "@/tools/getConnectedNodes";
+import { getConnectedNodes, getNodesWithKey } from "@/tools/getConnectedNodes";
 import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
@@ -25,16 +27,26 @@ export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
   const allNodes = useGlobalState((c) => c.allNodes);
   const [error, setError] = useState<string>();
+  const defaultNamespace = useGlobalState((c) => c.config?.namespace);
+  const namespacesDisabled = useGlobalState(
+    (c) => c.config?.namespacesDisabled
+  );
 
-  const { data: languageData, isLoading } = useApiQuery({
+  const languagesLoadable = useApiQuery({
     url: "/v2/projects/languages",
     method: "get",
   });
 
-  const languages = languageData?._embedded?.languages;
+  const namespacesLoadable = useApiQuery({
+    url: "/v2/projects/used-namespaces",
+    method: "get",
+  });
+
+  const languages = languagesLoadable.data?._embedded?.languages;
+  const namespaces = namespacesLoadable.data?._embedded?.namespaces;
 
   const language =
-    useGlobalState((c) => c.config?.lang) || languages?.[0]?.tag || "";
+    useGlobalState((c) => c.config?.language) || languages?.[0]?.tag || "";
 
   const { setRoute } = useGlobalActions();
 
@@ -47,7 +59,12 @@ export const Index = () => {
   };
 
   const handlePush = () => {
-    const subjectNodes = nothingSelected ? allNodes : selection;
+    const subjectNodes = (nothingSelected ? allNodes : selection).map(
+      (node) => ({
+        ...node,
+        ns: node.ns ?? defaultNamespace,
+      })
+    );
     const conflicts = getConflictingNodes(subjectNodes);
     if (conflicts.length > 0) {
       setError(
@@ -57,7 +74,7 @@ export const Index = () => {
       );
     } else {
       setRoute("push", {
-        nodes: getConnectedNodes(subjectNodes),
+        nodes: getNodesWithKey(subjectNodes),
       });
     }
   };
@@ -77,7 +94,7 @@ export const Index = () => {
     setError(undefined);
   }, [selection]);
 
-  if (isLoading) {
+  if (languagesLoadable.isLoading || namespacesLoadable.isLoading) {
     return <FullPageLoading />;
   }
 
@@ -147,18 +164,61 @@ export const Index = () => {
       ) : (
         <NodeList
           nodes={selection}
-          placeholderNoKey={
-            <div className={styles.disabled}>Not connected</div>
+          keyComponent={(node) =>
+            !node.connected && (
+              <Textbox
+                placeholder="Key name"
+                value={node.key || ""}
+                onChange={(e) => {
+                  emit<SetNodesDataHandler>("SET_NODES_DATA", [
+                    {
+                      ...node,
+                      key: e.currentTarget.value,
+                    },
+                  ]);
+                }}
+                variant="border"
+                style={{
+                  fontSize: 12,
+                  height: 23,
+                }}
+              />
+            )
+          }
+          nsComponent={(node) =>
+            !node.connected &&
+            !namespacesDisabled && (
+              <div className={styles.nsSelect}>
+                <select
+                  value={node.ns ?? defaultNamespace ?? ""}
+                  onChange={(e) => {
+                    emit<SetNodesDataHandler>("SET_NODES_DATA", [
+                      {
+                        ...node,
+                        ns: e.currentTarget.value,
+                      },
+                    ]);
+                  }}
+                  style={{ fontSize: 12 }}
+                >
+                  {namespaces?.map((ns) => (
+                    <option key={ns.name} value={ns.name || ""}>
+                      {ns.name || "<none>"}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )
           }
           actionCallback={(node) => {
             return (
               <div
                 role="button"
-                title={!node.key ? "Connect to a key" : "Edit connection"}
+                title={!node.connected ? "Connect to a key" : "Edit connection"}
                 onClick={() => handleConnect(node)}
                 className={styles.connectButton}
               >
-                {node.key ? (
+                {node.connected ? (
                   <InsertLink width={16} height={16} />
                 ) : (
                   <AddCircle width={16} height={16} />

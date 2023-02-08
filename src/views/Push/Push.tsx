@@ -7,6 +7,7 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
+import { components } from "@/client/apiSchema.generated";
 import { useApiMutation, useApiQuery } from "@/client/useQueryApi";
 import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
@@ -15,15 +16,41 @@ import { getChanges } from "@/tools/getChanges";
 import { TopBar } from "../../components/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import { Changes } from "./Changes";
+import { NodeInfo, SetNodesDataHandler } from "@/types";
+import { emit } from "@create-figma-plugin/utilities";
+
+type ImportKeysResolvableItemDto =
+  components["schemas"]["ImportKeysResolvableItemDto"];
 
 type Props = RouteParam<"push">;
 
 export const Push: FunctionalComponent<Props> = ({ nodes }) => {
-  const language = useGlobalState((c) => c.config!.lang!);
+  const language = useGlobalState((c) => c.config!.language!);
   const { setRoute } = useGlobalActions();
-  const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
+
+  const { deduplicatedNodes } = useMemo(() => {
+    const deduplicatedNodes: NodeInfo[] = [];
+    nodes.forEach((node) => {
+      if (
+        !nodes.find(
+          (n) =>
+            node.id !== node.id &&
+            node.key === n.key &&
+            (node.ns || "") === (n.ns || "")
+        )
+      ) {
+        deduplicatedNodes.push(node);
+      }
+    });
+    return {
+      deduplicatedNodes,
+      keys: Array.from(keys),
+    };
+  }, [nodes]);
 
   const translationsLoadable = useApiQuery({
     url: "/v2/projects/translations",
@@ -40,7 +67,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
   });
 
   const updateTranslations = useApiMutation({
-    url: "/v2/projects/translations",
+    url: "/v2/projects/keys/import-resolvable",
     method: "post",
   });
 
@@ -48,28 +75,61 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     setRoute("index");
   };
 
+  const handleConnectAndGoBack = () => {
+    connectNodes();
+    handleGoBack();
+  };
+
+  const connectNodes = () => {
+    emit<SetNodesDataHandler>(
+      "SET_NODES_DATA",
+      nodes.map((n) => ({ ...n, connected: true }))
+    );
+  };
+
   const changes = useMemo(() => {
     return getChanges(
-      nodes,
+      deduplicatedNodes,
       translationsLoadable.data?._embedded?.keys || [],
       language
     );
   }, [translationsLoadable.data, nodes]);
 
   const handleSubmit = async () => {
-    const promises = [...changes.changedKeys, ...changes.newKeys].map((key) =>
-      updateTranslations.mutateAsync({
-        content: {
-          "application/json": {
-            key: key.key,
-            namespace: key.ns,
-            translations: { [language]: key.newValue },
+    const keys: ImportKeysResolvableItemDto[] = [];
+
+    changes.changedKeys.forEach((key) => {
+      keys.push({
+        name: key.key,
+        namespace: key.ns || undefined,
+        translations: {
+          [language]: {
+            text: key.newValue,
+            resolution: key.oldValue ? "OVERRIDE" : "NEW",
           },
         },
-      })
-    );
+      });
+    });
+
+    changes.newKeys.forEach((key) => {
+      keys.push({
+        name: key.key,
+        namespace: key.ns || undefined,
+        translations: {
+          [language]: { text: key.newValue, resolution: "NEW" },
+        },
+      });
+    });
+
     try {
-      await Promise.all(promises);
+      await updateTranslations.mutateAsync({
+        content: {
+          "application/json": {
+            keys,
+          },
+        },
+      });
+      connectNodes();
       setSuccess(true);
     } catch (e) {
       setError(true);
@@ -118,7 +178,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
           <Fragment>
             <div>Everything up to date</div>
             <ActionsBottom>
-              <Button onClick={handleGoBack}>Ok</Button>
+              <Button onClick={handleConnectAndGoBack}>Ok</Button>
             </ActionsBottom>
           </Fragment>
         ) : (

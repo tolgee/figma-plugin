@@ -1,5 +1,5 @@
 declare const styles: {
-  readonly "success": string;
+  readonly "namespacesRow": string;
 };
 export = styles;
 

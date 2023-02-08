@@ -5,6 +5,10 @@
 
 
 export interface paths {
+  "/v2/projects/namespaces/{id}": {
+    /** Update namespace */
+    put: operations["update_1"];
+  };
   "/v2/projects/keys/{keyId}/tags": {
     /** Tags a key with tag. If tag with provided name doesn't exist, it is created */
     put: operations["tagKey_1"];
@@ -85,7 +89,7 @@ export interface paths {
     /** Returns single translation comment */
     get: operations["get_4"];
     /** Updates single translation comment */
-    put: operations["update_2"];
+    put: operations["update_3"];
     /** Deletes the translation comment */
     delete: operations["delete_6"];
   };
@@ -117,9 +121,17 @@ export interface paths {
      */
     put: operations["autoTranslate_1"];
   };
+  "/v2/projects/keys/info": {
+    /** Returns information about keys. (KeyData, Screenshots, Translation in specified language)If key is not found, it's not included in the response. */
+    post: operations["getInfo_1"];
+  };
+  "/v2/projects/keys/import-resolvable": {
+    /** Import's new keys with translations. Translations can be updated, when specified. */
+    post: operations["importKeys_1"];
+  };
   "/v2/projects/keys/import": {
     /** Import's new keys with translations. If key already exists, it's translations are not updated. */
-    post: operations["importKeys_1"];
+    post: operations["importKeys_3"];
   };
   "/v2/projects/keys/create": {
     /** Creates new key */
@@ -187,9 +199,25 @@ export interface paths {
     /** Uploads an image for later use */
     post: operations["upload"];
   };
+  "/v2/projects/used-namespaces": {
+    /** Returns all used project namespaces. Response contains default (null) namespace if used. */
+    get: operations["getUsedNamespaces_1"];
+  };
   "/v2/projects/tags": {
     /** Returns project tags */
     get: operations["getAll_2"];
+  };
+  "/v2/projects/namespaces": {
+    /** Returns all project namespaces */
+    get: operations["getAllNamespaces_1"];
+  };
+  "/v2/projects/namespace-by-name/{name}": {
+    /** Update namespace */
+    get: operations["getByName_1"];
+  };
+  "/v2/projects/keys/search": {
+    /** This endpoint helps you to find desired key by keyName, base translation or translation in specified language. */
+    get: operations["searchForKey_1"];
   };
   "/v2/projects/activity": {
     /** Returns project history */
@@ -233,7 +261,7 @@ export interface paths {
      * Get namespaces 
      * @description Returns all existing and imported namespaces
      */
-    get: operations["getAllNamespaces_2"];
+    get: operations["getAllNamespaces_3"];
   };
   "/v2/projects/translations/{translationId}/history": {
     /**
@@ -325,6 +353,19 @@ export interface components {
        */
       base: boolean;
     };
+    UpdateNamespaceDto: {
+      name: string;
+    };
+    NamespaceModel: {
+      /**
+       * Format: int64 
+       * @description The id of namespace 
+       * @example 10000048
+       */
+      id: number;
+      /** @example homepage */
+      name: string;
+    };
     TagKeyDto: {
       name: string;
     };
@@ -348,6 +389,44 @@ export interface components {
       screenshotIdsToDelete?: (number)[];
       /** @description Ids of screenshots uploaded with /v2/image-upload endpoint */
       screenshotUploadedImageIds?: (number)[];
+      screenshotsToAdd?: (components["schemas"]["KeyScreenshotDto"])[];
+    };
+    KeyInScreenshotPositionDto: {
+      /** Format: int32 */
+      x: number;
+      /** Format: int32 */
+      y: number;
+      /** Format: int32 */
+      width: number;
+      /** Format: int32 */
+      height: number;
+    };
+    KeyScreenshotDto: {
+      text?: string;
+      /**
+       * Format: int64 
+       * @description Ids of screenshot uploaded with /v2/image-upload endpoint
+       */
+      uploadedImageId: number;
+      positions?: (components["schemas"]["KeyInScreenshotPositionDto"])[];
+    };
+    KeyInScreenshotModel: {
+      /** Format: int64 */
+      keyId: number;
+      position?: components["schemas"]["KeyInScreenshotPosition"];
+      keyName: string;
+      keyNamespace?: string;
+      originalText?: string;
+    };
+    KeyInScreenshotPosition: {
+      /** Format: int32 */
+      x: number;
+      /** Format: int32 */
+      y: number;
+      /** Format: int32 */
+      width: number;
+      /** Format: int32 */
+      height: number;
     };
     KeyWithDataModel: {
       /**
@@ -402,6 +481,7 @@ export interface components {
       thumbnailUrl: string;
       /** Format: date-time */
       createdAt?: string;
+      keyReferences: (components["schemas"]["KeyInScreenshotModel"])[];
     };
     /**
      * @description Translations object containing values updated in this request 
@@ -582,6 +662,66 @@ export interface components {
        */
       flagEmoji?: string;
     };
+    GetKeysRequestDto: {
+      keys: (components["schemas"]["KeyDefinitionDto"])[];
+      /** @description Tags to return language translations in */
+      languageTags: (string)[];
+    };
+    KeyDefinitionDto: {
+      name: string;
+      namespace?: string;
+    };
+    CollectionModelKeyWithDataModel: {
+      _embedded?: {
+        keys?: (components["schemas"]["KeyWithDataModel"])[];
+      };
+    };
+    ImportKeysResolvableDto: {
+      keys: (components["schemas"]["ImportKeysResolvableItemDto"])[];
+    };
+    ImportKeysResolvableItemDto: {
+      /**
+       * @description Key name to set translations for 
+       * @example what_a_key_to_translate
+       */
+      name: string;
+      /** @description The namespace of the key. (When empty or null default namespace will be used) */
+      namespace?: string;
+      screenshots?: (components["schemas"]["KeyScreenshotDto"])[];
+      /** @description Screenshots with these ids will be replaced by the ones in screenshots property */
+      removeScreenshotIds?: (number)[];
+      /** @description Object mapping language tag to translation */
+      translations: {
+        [key: string]: components["schemas"]["ImportTranslationResolvableDto"] | undefined;
+      };
+    };
+    /** @description Object mapping language tag to translation */
+    ImportTranslationResolvableDto: {
+      /**
+       * @description Translation text 
+       * @example Hello! I am a translation!
+       */
+      text: string;
+      /**
+       * @description Determines, how conflict is resolved.
+       * 
+       * - KEEP: Translation is not changed
+       * - OVERRIDE: Translation is overridden
+       * - NEW: New translation is created)
+       *  
+       * @example Hello! I am a translation! 
+       * @enum {string}
+       */
+      resolution: "KEEP" | "OVERRIDE" | "NEW";
+    };
+    KeyImportResolvableResultModel: {
+      /** @description List of keys */
+      keys: (components["schemas"]["KeyModel"])[];
+      /** @description Map uploadedImageId to screenshot */
+      screenshots: {
+        [key: string]: components["schemas"]["ScreenshotModel"] | undefined;
+      };
+    };
     ImportKeysDto: {
       keys: (components["schemas"]["ImportKeysItemDto"])[];
     };
@@ -615,6 +755,7 @@ export interface components {
       tags?: (string)[];
       /** @description Ids of screenshots uploaded with /v2/image-upload endpoint */
       screenshotUploadedImageIds?: (number)[];
+      screenshots?: (components["schemas"]["KeyScreenshotDto"])[];
     };
     ErrorResponseBody: {
       code: string;
@@ -741,6 +882,10 @@ export interface components {
        */
       translationExtraCreditsBalanceAfter: number;
     };
+    ScreenshotInfoDto: {
+      text?: string;
+      positions?: (components["schemas"]["KeyInScreenshotPositionDto"])[];
+    };
     UploadedImageModel: {
       /** Format: int64 */
       id: number;
@@ -750,9 +895,56 @@ export interface components {
       /** Format: date-time */
       createdAt: string;
     };
+    CollectionModelUsedNamespaceModel: {
+      _embedded?: {
+        namespaces?: (components["schemas"]["UsedNamespaceModel"])[];
+      };
+    };
+    UsedNamespaceModel: {
+      /**
+       * Format: int64 
+       * @description The id of namespace. Null for default namespace. 
+       * @example 10000048
+       */
+      id?: number;
+      /**
+       * @description Name of namespace. Null if default. 
+       * @example homepage
+       */
+      name?: string;
+    };
     PagedModelTagModel: {
       _embedded?: {
         tags?: (components["schemas"]["TagModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    PagedModelNamespaceModel: {
+      _embedded?: {
+        namespaces?: (components["schemas"]["NamespaceModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    KeySearchResultView: {
+      name: string;
+      /** Format: int64 */
+      id: number;
+      namespace?: string;
+      translation?: string;
+      baseTranslation?: string;
+    };
+    KeySearchSearchResultModel: {
+      view?: components["schemas"]["KeySearchResultView"];
+      name: string;
+      /** Format: int64 */
+      id: number;
+      namespace?: string;
+      translation?: string;
+      baseTranslation?: string;
+    };
+    PagedModelKeySearchSearchResultModel: {
+      _embedded?: {
+        keys?: (components["schemas"]["KeySearchSearchResultModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
     };
@@ -846,11 +1038,11 @@ export interface components {
       page?: components["schemas"]["PageMetadata"];
     };
     EntityModelImportFileIssueView: {
-      params: (components["schemas"]["ImportFileIssueParamView"])[];
       /** Format: int64 */
       id: number;
       /** @enum {string} */
       type: "KEY_IS_NOT_STRING" | "MULTIPLE_VALUES_FOR_KEY_AND_LANGUAGE" | "VALUE_IS_NOT_STRING" | "KEY_IS_EMPTY" | "VALUE_IS_EMPTY" | "PO_MSGCTXT_NOT_SUPPORTED" | "ID_ATTRIBUTE_NOT_PROVIDED" | "TARGET_NOT_PROVIDED" | "TRANSLATION_TOO_LONG";
+      params: (components["schemas"]["ImportFileIssueParamView"])[];
     };
     ImportFileIssueParamView: {
       value?: string;
@@ -1087,16 +1279,16 @@ export interface components {
       permittedLanguageIds?: (number)[];
       /** Format: int64 */
       id: number;
-      userFullName?: string;
-      projectName: string;
-      /** Format: int64 */
-      projectId: number;
+      description: string;
       username?: string;
       /** Format: int64 */
-      lastUsedAt?: number;
+      projectId: number;
       /** Format: int64 */
       expiresAt?: number;
-      description: string;
+      /** Format: int64 */
+      lastUsedAt?: number;
+      userFullName?: string;
+      projectName: string;
       scopes: (string)[];
     };
     DeleteKeysDto: {
@@ -1115,6 +1307,53 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  update_1: {
+    /** Update namespace */
+    parameters: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+      path: {
+        id: number;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateNamespaceDto"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["NamespaceModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
   tagKey_1: {
     /** Tags a key with tag. If tag with provided name doesn't exist, it is created */
     parameters: {
@@ -1719,7 +1958,7 @@ export interface operations {
       };
     };
   };
-  update_2: {
+  update_3: {
     /** Updates single translation comment */
     parameters: {
         /**
@@ -2164,7 +2403,95 @@ export interface operations {
       };
     };
   };
+  getInfo_1: {
+    /** Returns information about keys. (KeyData, Screenshots, Translation in specified language)If key is not found, it's not included in the response. */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["GetKeysRequestDto"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["CollectionModelKeyWithDataModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
   importKeys_1: {
+    /** Import's new keys with translations. Translations can be updated, when specified. */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ImportKeysResolvableDto"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["KeyImportResolvableResultModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  importKeys_3: {
     /** Import's new keys with translations. If key already exists, it's translations are not updated. */
     parameters?: {
         /**
@@ -2933,6 +3260,7 @@ export interface operations {
         "multipart/form-data": {
           /** Format: binary */
           screenshot: string;
+          info?: components["schemas"]["ScreenshotInfoDto"];
         };
       };
     };
@@ -3004,6 +3332,45 @@ export interface operations {
       };
     };
   };
+  getUsedNamespaces_1: {
+    /** Returns all used project namespaces. Response contains default (null) namespace if used. */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["CollectionModelUsedNamespaceModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
   getAll_2: {
     /** Returns project tags */
     parameters?: {
@@ -3034,6 +3401,142 @@ export interface operations {
       200: {
         content: {
           "*/*": components["schemas"]["PagedModelTagModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  getAllNamespaces_1: {
+    /** Returns all project namespaces */
+    parameters?: {
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        page?: number;
+        size?: number;
+        sort?: (string)[];
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["PagedModelNamespaceModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  getByName_1: {
+    /** Update namespace */
+    parameters: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+      path: {
+        name: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["NamespaceModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  searchForKey_1: {
+    /** This endpoint helps you to find desired key by keyName, base translation or translation in specified language. */
+    parameters: {
+        /** @description Search query */
+        /** @description Language to search in */
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query: {
+        search: string;
+        languageTag?: string;
+        page?: number;
+        size?: number;
+        sort?: (string)[];
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["PagedModelKeySearchSearchResultModel"];
         };
       };
       /** @description Bad Request */
@@ -3334,7 +3837,7 @@ export interface operations {
       };
     };
   };
-  getAllNamespaces_2: {
+  getAllNamespaces_3: {
     /**
      * Get namespaces 
      * @description Returns all existing and imported namespaces
@@ -3827,6 +4330,7 @@ export interface operations {
       };
       path: {
         ids: (number)[];
+        keyId: number;
       };
     };
     responses: {

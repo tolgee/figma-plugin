@@ -6,16 +6,16 @@ import styles from "./NodeRow.css";
 type Props = {
   node: PartialNodeInfo;
   action?: ComponentChildren;
-  placeholderNoKey?: ComponentChildren;
-  placeholderNoNs?: ComponentChildren;
+  keyComponent?: ComponentChildren;
+  nsComponent?: ComponentChildren;
   compact?: boolean;
 };
 
 export const NodeRow = ({
   node,
   action,
-  placeholderNoKey,
-  placeholderNoNs,
+  keyComponent,
+  nsComponent,
   compact,
 }: Props) => {
   const showText = node.characters || !compact || action;
@@ -34,17 +34,17 @@ export const NodeRow = ({
       )}
       <div className={styles.action}>{action}</div>
       <div title="Translation key">
-        {node.key ? node.key : placeholderNoKey}
+        {keyComponent ? keyComponent : node.key}
       </div>
       <div title="Translation namespace">
-        {node.ns ? (
-          <span>
-            <span className={styles.disabled}>ns:</span>
-            {node.ns}
-          </span>
-        ) : (
-          node.key && placeholderNoNs
-        )}
+        {nsComponent
+          ? nsComponent
+          : node.ns && (
+              <span>
+                <span className={styles.disabled}>ns:</span>
+                {node.ns}
+              </span>
+            )}
       </div>
     </div>
   );

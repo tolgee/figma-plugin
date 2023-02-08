@@ -45,9 +45,9 @@ export interface DocumentChangeHandler extends EventHandler {
   handler: (data: NodeInfo[]) => void;
 }
 
-export interface SetNodeConnectionHandler extends EventHandler {
-  name: "SET_NODE_CONNECTION";
-  handler: (node: NodeInfo) => void;
+export interface SetNodesDataHandler extends EventHandler {
+  name: "SET_NODES_DATA";
+  handler: (nodes: NodeInfo[]) => void;
 }
 
 export interface NodeInfo {
@@ -55,23 +55,32 @@ export interface NodeInfo {
   characters: string;
   id: string;
   key: string;
-  ns: string;
+  ns: string | undefined;
+  connected: boolean;
 }
 
 export type PartialNodeInfo = Partial<NodeInfo> & {
   id: string;
 };
 
-export interface TolgeeConfig extends Record<string, string> {
+export type GlobalSettings = {
   apiUrl: string;
   apiKey: string;
-  lang: string;
-}
-export interface FormattedNode {
+};
+
+export type CurrentPageSettings = {
+  language: string;
+  namespace: string;
+  namespacesDisabled: boolean;
+};
+
+export type TolgeeConfig = GlobalSettings & CurrentPageSettings;
+
+export type FormattedNode = {
   characters: string;
   id: string;
   name: string;
-}
+};
 
 export type WindowSize = {
   width: number;

@@ -17,6 +17,8 @@ import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { useApiMutation } from "@/client/useQueryApi";
 import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
 import { TopBar } from "../../components/TopBar/TopBar";
+import styles from "./Settings.css";
+import { ProjectSettings } from "./ProjectSettings";
 
 const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 
@@ -26,6 +28,7 @@ export const Settings = () => {
     apiUrl: DEFAULT_TOLGEE_URL,
     ...config,
   });
+
   const { mutateAsync, isLoading } = useApiMutation({
     url: "/v2/api-keys/current",
     method: "get",
@@ -36,6 +39,8 @@ export const Settings = () => {
       },
     },
   });
+
+  const [validated, setValidated] = useState(false);
 
   const { setRoute, setConfig } = useGlobalActions();
 
@@ -62,9 +67,23 @@ export const Settings = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleValidate = async () => {
     try {
       await validateTolgeeCredentials();
+      setValidated(true);
+    } catch (e: any) {
+      setError(e.message || e);
+    }
+  };
+
+  useEffect(() => {
+    if (tolgeeConfig.apiKey && tolgeeConfig.apiUrl) {
+      handleValidate();
+    }
+  }, []);
+
+  const handleSubmit = async () => {
+    try {
       setConfig(tolgeeConfig);
       setRoute("index");
     } catch (e: any) {
@@ -87,9 +106,10 @@ export const Settings = () => {
         </Text>
         <VerticalSpace space="small" />
         <Textbox
-          onValueInput={(apiUrl) =>
-            setTolgeeConfig({ ...tolgeeConfig, apiUrl })
-          }
+          onValueInput={(apiUrl) => {
+            setValidated(false);
+            setTolgeeConfig({ ...tolgeeConfig, apiUrl });
+          }}
           value={tolgeeConfig.apiUrl}
           variant="border"
         />
@@ -99,12 +119,30 @@ export const Settings = () => {
         </Text>
         <VerticalSpace space="small" />
         <Textbox
-          onValueInput={(apiKey) =>
-            setTolgeeConfig({ ...tolgeeConfig, apiKey })
-          }
+          onValueInput={(apiKey) => {
+            setValidated(false);
+            setTolgeeConfig({ ...tolgeeConfig, apiKey });
+          }}
           value={tolgeeConfig.apiKey ?? ""}
           variant="border"
         />
+        <VerticalSpace space="small" />
+
+        {validated ? (
+          <Text className={styles.success}>Credentials valid</Text>
+        ) : (
+          <Button onClick={handleValidate}>Validate</Button>
+        )}
+
+        {validated && (
+          <ProjectSettings
+            apiUrl={tolgeeConfig.apiUrl}
+            apiKey={tolgeeConfig.apiKey || ""}
+            onChange={(data) => setTolgeeConfig({ ...tolgeeConfig, ...data })}
+            initialData={tolgeeConfig}
+          />
+        )}
+
         <VerticalSpace space="medium" />
         {isLoading ? (
           <LoadingIndicator />
@@ -117,7 +155,9 @@ export const Settings = () => {
             <Button onClick={handleGoBack} secondary>
               Close
             </Button>
-            <Button onClick={handleSubmit}>Save</Button>
+            <Button onClick={handleSubmit} disabled={!validated}>
+              Save
+            </Button>
           </ActionsBottom>
         )}
         <VerticalSpace space="small" />
