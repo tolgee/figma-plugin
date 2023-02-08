@@ -17,6 +17,7 @@
 
 .text {
   grid-column: 1 / span 2;
+  min-height: 16px;
 }
 
 .action {

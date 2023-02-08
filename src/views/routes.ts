@@ -10,5 +10,3 @@ export type Route =
 export type RouteKey = Route[0];
 
 export type RouteParam<T extends Route[0]> = Extract<Route, [T, any]>[1];
-
-export const DEFAULT_SIZE = { width: 500, height: 400 };

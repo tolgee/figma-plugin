@@ -1,5 +1,5 @@
 import { Fragment, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import {
   Banner,
   Button,
@@ -22,6 +22,8 @@ import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
+import { DEFAULT_SIZE, useWindowSize } from "@/tools/useWindowSize";
+import { NamespaceSelect } from "@/components/NamespaceSelect/NamespaceSelect";
 
 export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
@@ -43,7 +45,18 @@ export const Index = () => {
   });
 
   const languages = languagesLoadable.data?._embedded?.languages;
-  const namespaces = namespacesLoadable.data?._embedded?.namespaces;
+  const namespaces = useMemo(
+    () =>
+      Array.from(
+        new Set([
+          ...(namespacesLoadable.data?._embedded?.namespaces || []).map(
+            (ns) => ns.name || ""
+          ),
+          defaultNamespace || "",
+        ])
+      ),
+    [namespacesLoadable.data, defaultNamespace]
+  );
 
   const language =
     useGlobalState((c) => c.config?.language) || languages?.[0]?.tag || "";
@@ -93,6 +106,10 @@ export const Index = () => {
   useEffect(() => {
     setError(undefined);
   }, [selection]);
+
+  useWindowSize(
+    !selection?.length ? { width: 500, height: 150 } : DEFAULT_SIZE
+  );
 
   if (languagesLoadable.isLoading || namespacesLoadable.isLoading) {
     return <FullPageLoading />;
@@ -189,24 +206,18 @@ export const Index = () => {
             !node.connected &&
             !namespacesDisabled && (
               <div className={styles.nsSelect}>
-                <select
+                <NamespaceSelect
                   value={node.ns ?? defaultNamespace ?? ""}
-                  onChange={(e) => {
+                  namespaces={namespaces}
+                  onChange={(value) => {
                     emit<SetNodesDataHandler>("SET_NODES_DATA", [
                       {
                         ...node,
-                        ns: e.currentTarget.value,
+                        ns: value,
                       },
                     ]);
                   }}
-                  style={{ fontSize: 12 }}
-                >
-                  {namespaces?.map((ns) => (
-                    <option key={ns.name} value={ns.name || ""}>
-                      {ns.name || "<none>"}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
             )
           }

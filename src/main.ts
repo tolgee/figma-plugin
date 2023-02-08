@@ -21,7 +21,7 @@ import {
   TolgeeConfig,
   TranslationsUpdateHandler,
 } from "./types";
-import { DEFAULT_SIZE } from "./views/routes";
+import { DEFAULT_SIZE } from "./tools/useWindowSize";
 
 const findTextNodes = (nodes?: readonly SceneNode[]): NodeInfo[] => {
   if (!nodes) {

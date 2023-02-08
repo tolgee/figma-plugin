@@ -1,5 +1,6 @@
 import { useApiQuery } from "@/client/useQueryApi";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
+import { NamespaceSelect } from "@/components/NamespaceSelect/NamespaceSelect";
 import { CurrentPageSettings } from "@/types";
 import { VerticalSpace, Text, Muted, Checkbox } from "@create-figma-plugin/ui";
 import { Fragment, FunctionComponent, h } from "preact";
@@ -107,21 +108,17 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       </Text>
       <VerticalSpace space="small" />
       <div className={styles.namespacesRow}>
-        <select
-          value={settings?.namespace}
-          onChange={(e) =>
+        <NamespaceSelect
+          value={settings?.namespace || ""}
+          namespaces={namespaces?.map((n) => n.name || "") || []}
+          onChange={(namespace) =>
             setSettings((settings) => ({
               ...settings!,
-              namespace: e.currentTarget.value || "",
+              namespace,
             }))
           }
-        >
-          {namespaces?.map((namespace) => (
-            <option key={namespace.id} value={namespace.name ?? ""}>
-              {namespace.name || "<none>"}
-            </option>
-          ))}
-        </select>
+        />
+
         {(namespacesNotPresent || initialData?.namespacesDisabled) && (
           <Checkbox
             value={Boolean(settings?.namespacesDisabled)}
