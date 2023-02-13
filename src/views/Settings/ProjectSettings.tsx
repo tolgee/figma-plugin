@@ -55,15 +55,17 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   });
 
   const languages = languagesLoadable.data?._embedded?.languages;
-  const namespaces = namespacesLoadable.data?._embedded?.namespaces;
-  const namespacesNotPresent = namespaces?.length === 1 && !namespaces[0].name;
+  const namespaces = namespacesLoadable.data?._embedded?.namespaces?.map(
+    (n) => n.name || ""
+  ) || [""];
+  const namespacesNotPresent = namespaces?.length === 1 && !namespaces[0];
 
   useEffect(() => {
     if (!settings && namespacesLoadable.data && languagesLoadable.data) {
       setSettings({
         language:
           initialData?.language || languages?.find((l) => l.base)?.tag || "",
-        namespace: initialData?.namespace ?? namespaces?.[0]?.name ?? "",
+        namespace: initialData?.namespace ?? namespaces?.[0] ?? "",
         namespacesDisabled:
           initialData?.namespacesDisabled ?? namespacesNotPresent,
       });
@@ -110,7 +112,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       <div className={styles.namespacesRow}>
         <NamespaceSelect
           value={settings?.namespace || ""}
-          namespaces={namespaces?.map((n) => n.name || "") || []}
+          namespaces={namespaces}
           onChange={(namespace) =>
             setSettings((settings) => ({
               ...settings!,
