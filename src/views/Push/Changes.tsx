@@ -12,6 +12,13 @@ type Props = {
 export const Changes = ({ changes }: Props) => {
   return (
     <Fragment>
+      {changes.requiredScreenshots.length > 0 && (
+        <Fragment>
+          <div className={clsx(styles.sectionTitle, styles.spanAll)}>
+            Upload {changes.requiredScreenshots.length} screenshots
+          </div>
+        </Fragment>
+      )}
       {changes.newKeys.length > 0 && (
         <Fragment>
           <div className={clsx(styles.sectionTitle, styles.spanAll)}>

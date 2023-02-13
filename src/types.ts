@@ -50,6 +50,26 @@ export interface SetNodesDataHandler extends EventHandler {
   handler: (nodes: NodeInfo[]) => void;
 }
 
+export type SizeInfo = {
+  width: number;
+  height: number;
+};
+
+export type FrameInfo = SizeInfo & {
+  name: string;
+};
+
+export type PositionInfo = {
+  x: number;
+  y: number;
+};
+
+export type FrameScreenshot = {
+  image: Uint8Array;
+  info: FrameInfo;
+  keys: (NodeInfo & SizeInfo & PositionInfo)[];
+};
+
 export interface NodeInfo {
   name: string;
   characters: string;

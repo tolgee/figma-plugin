@@ -12,7 +12,7 @@ import {
 } from "@create-figma-plugin/ui";
 import { emit } from "@create-figma-plugin/utilities";
 
-import { NodeInfo, SetNodesDataHandler } from "@/types";
+import { FrameScreenshot, NodeInfo, SetNodesDataHandler } from "@/types";
 import { Settings, InsertLink } from "@/icons/SvgIcons";
 import { useApiQuery } from "@/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
@@ -24,6 +24,7 @@ import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { DEFAULT_SIZE, useWindowSize } from "@/tools/useWindowSize";
 import { NamespaceSelect } from "@/components/NamespaceSelect/NamespaceSelect";
+import { endpointGetScreenshots } from "@/endpoints";
 
 export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
@@ -122,6 +123,14 @@ export const Index = () => {
     ]);
   };
 
+  const [screenshots, setScreenshots] = useState<FrameScreenshot[]>([]);
+
+  const handleTakeScreenshots = () => {
+    endpointGetScreenshots.call().then((data) => {
+      setScreenshots(data);
+    });
+  };
+
   useEffect(() => {
     setError(undefined);
   }, [selection]);
@@ -165,6 +174,10 @@ export const Index = () => {
 
               <Button onClick={handlePull} secondary>
                 {nothingSelected ? "Pull all" : "Pull"}
+              </Button>
+
+              <Button onClick={handleTakeScreenshots} secondary>
+                Take screenshots
               </Button>
             </Fragment>
           }
@@ -256,6 +269,36 @@ export const Index = () => {
           }}
         />
       )}
+      <div>
+        {screenshots.map((screenshot, i) => (
+          <svg
+            key={i}
+            width={`${screenshot.info.width}px`}
+            height={`${screenshot.info.height}px`}
+          >
+            <image
+              key={i}
+              width={screenshot.info.width}
+              height={screenshot.info.height}
+              href={URL.createObjectURL(
+                new Blob([screenshot.image.buffer], { type: "image/svg" })
+              )}
+            />
+            {screenshot.keys.map((key, i) => (
+              <rect
+                key={i}
+                x={key.x}
+                y={key.y}
+                width={key.width}
+                height={key.height}
+                stroke="red"
+                strokeWidth={2}
+                fill="transparent"
+              />
+            ))}
+          </svg>
+        ))}
+      </div>
     </Fragment>
   );
 };

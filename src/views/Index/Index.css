@@ -31,3 +31,7 @@
   align-items: center;
   height: 21px;
 }
+
+.screenshot {
+  position: relative;
+}

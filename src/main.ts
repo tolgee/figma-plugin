@@ -22,25 +22,27 @@ import {
   TranslationsUpdateHandler,
 } from "./types";
 import { DEFAULT_SIZE } from "./tools/useWindowSize";
+import { endpointGetScreenshots } from "./endpoints";
 
-const findTextNodes = (nodes?: readonly SceneNode[]): NodeInfo[] => {
-  if (!nodes) {
-    return findTextNodes(figma.currentPage.selection || []);
-  }
-  let result: NodeInfo[] = [];
+const toNodeInfo = (node: TextNode) => {
+  const pluginData = JSON.parse(
+    node.getPluginData(TOLGEE_NODE_INFO) || "{}"
+  ) as Partial<NodeInfo>;
+  return {
+    id: node.id,
+    name: node.name,
+    characters: node.characters,
+    key: pluginData.key || "",
+    ns: pluginData.ns,
+    connected: Boolean(pluginData.connected),
+  };
+};
+
+const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
+  let result: TextNode[] = [];
   for (const node of nodes) {
     if (node.type === "TEXT") {
-      const pluginData = JSON.parse(
-        node.getPluginData(TOLGEE_NODE_INFO) || "{}"
-      ) as Partial<NodeInfo>;
-      result.push({
-        id: node.id,
-        name: node.name,
-        characters: node.characters,
-        key: pluginData.key || "",
-        ns: pluginData.ns,
-        connected: Boolean(pluginData.connected),
-      });
+      result.push(node);
     }
     // @ts-ignore
     if (node.children) {
@@ -49,6 +51,10 @@ const findTextNodes = (nodes?: readonly SceneNode[]): NodeInfo[] => {
     }
   }
   return result;
+};
+
+const findTextNodesInfo = (nodes: readonly SceneNode[]): NodeInfo[] => {
+  return findTextNodes(nodes).map(toNodeInfo);
 };
 
 const getGlobalSettings = async () => {
@@ -95,12 +101,12 @@ const setPluginData = async (data: Partial<TolgeeConfig>) => {
 
 export default async function () {
   figma.on("selectionchange", () => {
-    const nodes = findTextNodes();
+    const nodes = findTextNodesInfo(figma.currentPage.selection);
     emit<SelectionChangeHandler>("SELECTION_CHANGE", nodes);
   });
 
   figma.on("documentchange", () => {
-    const nodes = findTextNodes(figma.currentPage.children);
+    const nodes = findTextNodesInfo(figma.currentPage.children);
     emit<DocumentChangeHandler>("DOCUMENT_CHANGE", nodes);
   });
 
@@ -124,6 +130,32 @@ export default async function () {
     figma.closePlugin();
   });
 
+  endpointGetScreenshots.implement(async () => {
+    const frames = figma.currentPage.findAll((node) => node.type === "FRAME");
+    const data = await Promise.all(
+      frames.map(async (frame) => {
+        return {
+          image: await frame.exportAsync({ format: "PNG" }),
+          info: {
+            name: frame.name,
+            width: frame.width,
+            height: frame.height,
+          },
+          keys: findTextNodes([frame]).map((node) => {
+            return {
+              ...toNodeInfo(node),
+              x: node.x,
+              y: node.y,
+              width: node.width,
+              height: node.height,
+            };
+          }),
+        };
+      })
+    );
+    return data;
+  });
+
   on<SetNodesDataHandler>("SET_NODES_DATA", (nodes) => {
     nodes.forEach((nodeInfo) => {
       const node = figma.getNodeById(nodeInfo.id);
@@ -138,7 +170,10 @@ export default async function () {
     });
 
     // update selection
-    emit<SelectionChangeHandler>("SELECTION_CHANGE", findTextNodes());
+    emit<SelectionChangeHandler>(
+      "SELECTION_CHANGE",
+      findTextNodesInfo(figma.currentPage.selection)
+    );
   });
 
   on<TranslationsUpdateHandler>("UPDATE_NODES", async (nodes) => {
@@ -152,7 +187,10 @@ export default async function () {
     figma.notify("Document translations updated");
 
     // update selection
-    emit<SelectionChangeHandler>("SELECTION_CHANGE", findTextNodes());
+    emit<SelectionChangeHandler>(
+      "SELECTION_CHANGE",
+      findTextNodesInfo(figma.currentPage.selection)
+    );
   });
 
   const config = await getPluginData();
@@ -164,8 +202,8 @@ export default async function () {
     },
     {
       config,
-      selectedNodes: findTextNodes(),
-      allNodes: findTextNodes(figma.currentPage.children),
+      selectedNodes: findTextNodesInfo(figma.currentPage.selection),
+      allNodes: findTextNodesInfo(figma.currentPage.children),
     }
   );
 }

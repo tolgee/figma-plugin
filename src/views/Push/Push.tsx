@@ -4,6 +4,8 @@ import {
   Button,
   Container,
   Divider,
+  Muted,
+  Text,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
@@ -12,15 +14,17 @@ import { useApiMutation, useApiQuery } from "@/client/useQueryApi";
 import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
-import { getChanges } from "@/tools/getChanges";
+import { getChanges, KeyChanges, KeyChangeValue } from "@/tools/getChanges";
 import { TopBar } from "../../components/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import { Changes } from "./Changes";
-import { NodeInfo, SetNodesDataHandler } from "@/types";
+import { FrameScreenshot, NodeInfo, SetNodesDataHandler } from "@/types";
 import { emit } from "@create-figma-plugin/utilities";
+import { endpointGetScreenshots } from "@/endpoints";
 
 type ImportKeysResolvableItemDto =
   components["schemas"]["ImportKeysResolvableItemDto"];
+type KeyScreenshotDto = components["schemas"]["KeyScreenshotDto"];
 
 type Props = RouteParam<"push">;
 
@@ -29,27 +33,23 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
   const { setRoute } = useGlobalActions();
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState<string | undefined>();
+  const [changes, setChanges] = useState<KeyChanges>();
 
   const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
 
-  const { deduplicatedNodes } = useMemo(() => {
+  const deduplicatedNodes = useMemo(() => {
     const deduplicatedNodes: NodeInfo[] = [];
     nodes.forEach((node) => {
       if (
-        !nodes.find(
-          (n) =>
-            node.id !== node.id &&
-            node.key === n.key &&
-            (node.ns || "") === (n.ns || "")
+        !deduplicatedNodes.find(
+          (n) => node.key === n.key && (node.ns || "") === (n.ns || "")
         )
       ) {
         deduplicatedNodes.push(node);
       }
     });
-    return {
-      deduplicatedNodes,
-      keys: Array.from(keys),
-    };
+    return deduplicatedNodes;
   }, [nodes]);
 
   const translationsLoadable = useApiQuery({
@@ -63,11 +63,28 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     options: {
       cacheTime: 0,
       staleTime: 0,
+      onSuccess(data) {
+        endpointGetScreenshots.call().then((screenshots) => {
+          setChanges(
+            getChanges(
+              deduplicatedNodes,
+              data?._embedded?.keys || [],
+              language,
+              screenshots
+            )
+          );
+        });
+      },
     },
   });
 
   const updateTranslations = useApiMutation({
     url: "/v2/projects/keys/import-resolvable",
+    method: "post",
+  });
+
+  const uploadImage = useApiMutation({
+    url: "/v2/image-upload",
     method: "post",
   });
 
@@ -82,41 +99,86 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     );
   };
 
-  const changes = useMemo(() => {
-    return getChanges(
-      deduplicatedNodes,
-      translationsLoadable.data?._embedded?.keys || [],
-      language
-    );
-  }, [translationsLoadable.data, nodes]);
-
   const handleSubmit = async () => {
     const keys: ImportKeysResolvableItemDto[] = [];
 
-    changes.changedKeys.forEach((key) => {
-      keys.push({
-        name: key.key,
-        namespace: key.ns || undefined,
-        translations: {
-          [language]: {
-            text: key.newValue,
-            resolution: "OVERRIDE",
-          },
-        },
-      });
-    });
-
-    changes.newKeys.forEach((key) => {
-      keys.push({
-        name: key.key,
-        namespace: key.ns || undefined,
-        translations: {
-          [language]: { text: key.newValue, resolution: "NEW" },
-        },
-      });
-    });
+    if (!changes) {
+      return;
+    }
 
     try {
+      const screenshotsMap = new Map<FrameScreenshot, number>();
+      const requiredScreenshots = changes.requiredScreenshots;
+
+      for (const [i, screenshot] of requiredScreenshots.entries()) {
+        setLoadingStatus(
+          `Uploading images (${i + 1}/${requiredScreenshots.length})`
+        );
+        const blob = new Blob([screenshot.image.buffer], { type: "image/png" });
+        const data = await uploadImage.mutateAsync({
+          content: { "multipart/form-data": { image: blob as any } },
+        });
+        screenshotsMap.set(screenshot, data.id);
+      }
+
+      const mapScreenshots = (item: KeyChangeValue): KeyScreenshotDto[] => {
+        const result: KeyScreenshotDto[] = [];
+        item.screenshots.forEach((screenshot) => {
+          const relevantNodes = screenshot.keys.filter(
+            ({ key, ns, connected }) =>
+              key === item.key && ns === item.ns && connected
+          );
+
+          result.push({
+            text: item.newValue,
+            uploadedImageId: screenshotsMap.get(screenshot)!,
+            positions: relevantNodes.map(({ x, y, width, height }) => ({
+              x,
+              y,
+              width,
+              height,
+            })),
+          });
+        });
+        return result;
+      };
+
+      setLoadingStatus("Updating keys");
+
+      changes.unchangedKeys.forEach((item) => {
+        keys.push({
+          name: item.key,
+          namespace: item.ns || undefined,
+          screenshots: mapScreenshots(item),
+          translations: {},
+        });
+      });
+
+      changes.changedKeys.forEach((item) => {
+        keys.push({
+          name: item.key,
+          namespace: item.ns || undefined,
+          screenshots: mapScreenshots(item),
+          translations: {
+            [language]: {
+              text: item.newValue,
+              resolution: "OVERRIDE",
+            },
+          },
+        });
+      });
+
+      changes.newKeys.forEach((item) => {
+        keys.push({
+          name: item.key,
+          namespace: item.ns || undefined,
+          screenshots: mapScreenshots(item),
+          translations: {
+            [language]: { text: item.newValue, resolution: "NEW" },
+          },
+        });
+      });
+
       await updateTranslations.mutateAsync({
         content: {
           "application/json": {
@@ -128,6 +190,9 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       setSuccess(true);
     } catch (e) {
       setError(true);
+      console.error(e);
+    } finally {
+      setLoadingStatus(undefined);
     }
   };
 
@@ -138,17 +203,15 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
   };
 
   const isLoading =
-    translationsLoadable.isFetching || updateTranslations.isLoading;
+    translationsLoadable.isFetching ||
+    updateTranslations.isLoading ||
+    uploadImage.isLoading;
 
-  const changesSize = changes.changedKeys.length + changes.newKeys.length;
+  const changesSize = changes
+    ? changes.changedKeys.length + changes.newKeys.length
+    : 0;
 
-  const changesPresent = changesSize === 0;
-
-  useEffect(() => {
-    if (!changesPresent) {
-      connectNodes();
-    }
-  }, []);
+  const screenshotCount = changes?.requiredScreenshots.length || 0;
 
   return (
     <Fragment>
@@ -159,8 +222,8 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
-        {isLoading ? (
-          <FullPageLoading />
+        {isLoading || !changes ? (
+          <FullPageLoading text={loadingStatus} />
         ) : error ? (
           <Fragment>
             <div>
@@ -172,14 +235,10 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
           </Fragment>
         ) : success ? (
           <Fragment>
-            <div>{changesSize} key(s) updated!</div>
-            <ActionsBottom>
-              <Button onClick={handleGoBack}>Ok</Button>
-            </ActionsBottom>
-          </Fragment>
-        ) : changesPresent ? (
-          <Fragment>
-            <div>Everything up to date</div>
+            <div>
+              Successfully updated {changesSize} keys and uploaded{" "}
+              {screenshotCount} screenshots.
+            </div>
             <ActionsBottom>
               <Button onClick={handleGoBack}>Ok</Button>
             </ActionsBottom>

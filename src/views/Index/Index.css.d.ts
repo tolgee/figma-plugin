@@ -5,6 +5,7 @@ declare const styles: {
   readonly "disabled": string;
   readonly "keyInput": string;
   readonly "nsSelect": string;
+  readonly "screenshot": string;
 };
 export = styles;
 
