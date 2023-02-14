@@ -1,4 +1,4 @@
-import { emit, on } from "@create-figma-plugin/utilities";
+import { emit, on } from "@/utilities";
 import { useEffect, useState } from "preact/hooks";
 
 import {

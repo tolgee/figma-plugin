@@ -17,7 +17,7 @@ import { TopBar } from "../../components/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import { Changes } from "./Changes";
 import { FrameScreenshot, NodeInfo, SetNodesDataHandler } from "@/types";
-import { emit } from "@create-figma-plugin/utilities";
+import { emit } from "@/utilities";
 import { endpointGetScreenshots } from "@/endpoints";
 
 type ImportKeysResolvableItemDto =

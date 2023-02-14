@@ -1,9 +1,5 @@
-import {
-  emit,
-  loadFontsAsync,
-  on,
-  showUI,
-} from "@create-figma-plugin/utilities";
+import { loadFontsAsync, showUI } from "@create-figma-plugin/utilities";
+import { on, emit } from "@/utilities";
 import { TOLGEE_NODE_INFO, TOLGEE_PLUGIN_CONFIG_NAME } from "./constants";
 
 import {

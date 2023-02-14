@@ -18,7 +18,7 @@ import { useApiQuery } from "@/client/useQueryApi";
 import { RouteParam } from "../routes";
 import styles from "./Connect.css";
 import { SearchRow } from "./SearchRow";
-import { emit } from "@create-figma-plugin/utilities";
+import { emit } from "@/utilities";
 import { SetNodesDataHandler } from "@/types";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 

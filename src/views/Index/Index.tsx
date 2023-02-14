@@ -10,7 +10,7 @@ import {
   Textbox,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
-import { emit } from "@create-figma-plugin/utilities";
+import { emit } from "@/utilities";
 
 import { FrameScreenshot, NodeInfo, SetNodesDataHandler } from "@/types";
 import { Settings, InsertLink } from "@/icons/SvgIcons";

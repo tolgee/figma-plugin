@@ -1,4 +1,4 @@
-import { emit, on, once } from "@create-figma-plugin/utilities";
+import { emit, on, once } from "@/utilities";
 import { FrameScreenshot } from "./types";
 
 export const createEndpoint = <I, O>(name: string) => {

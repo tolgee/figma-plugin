@@ -6,7 +6,7 @@ import {
   Divider,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
-import { emit } from "@create-figma-plugin/utilities";
+import { emit } from "@/utilities";
 
 import { useApiQuery } from "@/client/useQueryApi";
 import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";

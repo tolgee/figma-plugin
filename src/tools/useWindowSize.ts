@@ -1,4 +1,4 @@
-import { emit } from "@create-figma-plugin/utilities";
+import { emit } from "@/utilities";
 import { useEffect, useMemo } from "preact/hooks";
 
 import { ResizeHandler } from "@/types";
