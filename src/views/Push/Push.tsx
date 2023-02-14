@@ -1,11 +1,9 @@
 import { Fragment, FunctionalComponent, h } from "preact";
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useMemo, useState } from "preact/hooks";
 import {
   Button,
   Container,
   Divider,
-  Muted,
-  Text,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
