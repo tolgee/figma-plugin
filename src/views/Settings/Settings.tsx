@@ -106,6 +106,7 @@ export const Settings = () => {
         </Text>
         <VerticalSpace space="small" />
         <Textbox
+          data-cy="settings_input_api_url"
           onValueInput={(apiUrl) => {
             setValidated(false);
             setTolgeeConfig({ ...tolgeeConfig, apiUrl });

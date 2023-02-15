@@ -5,11 +5,13 @@ import { NodeInfo } from "@/types";
 export type PluginData = ComponentProps<typeof Plugin>;
 
 export function createShortcutUrl(props: Partial<PluginData>) {
-  return encodeURIComponent(JSON.stringify(props));
+  return `/?data=${encodeURIComponent(JSON.stringify(props))}`;
 }
 
 export function getUrlConfig(fromParent?: boolean): PluginData {
-  const url = fromParent ? window.parent.location.href : window.location.href;
+  const url = fromParent
+    ? window.parent.parent.location.href
+    : window.location.href;
   const search = new URL(url).search;
   const urlData = JSON.parse(new URLSearchParams(search).get("data") || "{}");
 
@@ -19,13 +21,16 @@ export function getUrlConfig(fromParent?: boolean): PluginData {
     selectedNodes: [],
     ...urlData,
   };
+
+  console.log({ fromParent, url });
+
   return data;
 }
 
 type PluginInitialData = Partial<ComponentProps<typeof Plugin>>;
 
 export function createShortcutLink(name: string, props: PluginInitialData) {
-  return `<div><a href="/?data=${createShortcutUrl(props)}">${name}</a></div>`;
+  return `<div><a href="${createShortcutUrl(props)}">${name}</a></div>`;
 }
 
 export const DEFAULT_CREDENTIALS = {

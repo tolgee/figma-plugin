@@ -1,0 +1,22 @@
+version: "3"
+services:
+  app:
+    container_name: tolgee_js_e2e_server
+    image: tolgee/tolgee:latest
+    ports:
+      - 8080:8080
+      - 8092:8091
+    environment:
+      - tolgee.authentication.enabled=true
+      - tolgee.internal.controllerEnabled=true
+      - "tolgee.screenshots-url=http://localhost:8080/screenshots"
+      - tolgee.authentication.needs-email-verification=true
+      - tolgee.authentication.registrations-allowed=true
+      - tolgee.internal.fake-emails-sent=true
+      - tolgee.authentication.initialPassword=admin
+      - tolgee.import.dir=/data/import-data
+      - tolgee.import.create-implicit-api-key=true
+      - spring.jpa.show-sql=true
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:8091,server=y,suspend=n
+    volumes:
+      - ./import-data:/data/import-data

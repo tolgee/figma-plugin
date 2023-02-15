@@ -9,4 +9,6 @@ build
 code.js
 manifest.json
 
+cypress/videos
+
 .vscode
