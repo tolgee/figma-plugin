@@ -93,6 +93,7 @@ export const Connect = ({ node }: Props) => {
             </Text>
             <VerticalSpace space="small" />
             <Textbox
+              data-cy="connect_search_input"
               placeholder="Search by key or translation"
               autoFocus={true}
               onValueInput={(value) => setSearch(value)}

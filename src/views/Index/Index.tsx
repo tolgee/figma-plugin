@@ -12,7 +12,7 @@ import {
 } from "@create-figma-plugin/ui";
 import { emit } from "@/utilities";
 
-import { FrameScreenshot, NodeInfo, SetNodesDataHandler } from "@/types";
+import { NodeInfo, SetNodesDataHandler } from "@/types";
 import { Settings, InsertLink } from "@/icons/SvgIcons";
 import { useApiQuery } from "@/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
@@ -24,7 +24,6 @@ import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { DEFAULT_SIZE, useWindowSize } from "@/tools/useWindowSize";
 import { NamespaceSelect } from "@/components/NamespaceSelect/NamespaceSelect";
-import { endpointGetScreenshots } from "@/endpoints";
 
 export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
@@ -123,14 +122,6 @@ export const Index = () => {
     ]);
   };
 
-  const [screenshots, setScreenshots] = useState<FrameScreenshot[]>([]);
-
-  const handleTakeScreenshots = () => {
-    endpointGetScreenshots.call().then((data) => {
-      setScreenshots(data);
-    });
-  };
-
   useEffect(() => {
     setError(undefined);
   }, [selection]);
@@ -216,6 +207,7 @@ export const Index = () => {
           keyComponent={(node) =>
             !node.connected && (
               <Textbox
+                data-cy="index_unconnected_key_input"
                 placeholder="Key name"
                 value={node.key || ""}
                 onChange={handleKeyChange(node)}
@@ -242,6 +234,7 @@ export const Index = () => {
           actionCallback={(node) => {
             return (
               <div
+                data-cy="index_link_button"
                 role="button"
                 title={
                   !node.connected

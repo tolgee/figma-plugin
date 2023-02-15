@@ -36,10 +36,14 @@ dockerComposeProcess.stdout.on("data", (data) => {
   if (searchedText) {
     console.log(systemColor(`"${searchedText}" found, container is running`));
 
-    afterProcess = spawn("npx", afterArgs, { stdio: "inherit" });
-    afterProcess.on("close", (code) =>
-      onChildFinish(getProcessName(afterProcess), code || 0)
-    );
+    if (afterArgs.length) {
+      afterProcess = spawn(afterArgs[0], afterArgs.slice(1), {
+        stdio: "inherit",
+      });
+      afterProcess.on("close", (code) =>
+        onChildFinish(getProcessName(afterProcess), code || 0)
+      );
+    }
   }
 });
 

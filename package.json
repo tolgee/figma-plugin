@@ -9,8 +9,9 @@
     "schema": "openapi-typescript http://localhost:8080/v3/api-docs/Accessible%20with%20API%20key --output ./src/client/apiSchema.generated.ts",
     "eslint": "eslint --ext .ts,.tsx,.js,.jsx src",
     "debug": "npm run --prefix browser watch",
-    "cypress:run": "ts-node ./scripts/runAfterApp.ts cypress run",
-    "cypress:open": "ts-node ./scripts/runAfterApp.ts cypress open",
+    "dev": "ts-node ./scripts/runAfterApp.ts",
+    "cypress:run": "ts-node ./scripts/runAfterApp.ts npx cypress run",
+    "cypress:open": "ts-node ./scripts/runAfterApp.ts npx cypress open",
     "tsc": "tsc --noEmit",
     "prettier": "prettier . --write"
   },
