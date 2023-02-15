@@ -44,3 +44,22 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  test:
+    name: Cypress
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: cache-node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install
+        run: npm ci
+
+      - name: Cypress run
+        run: npm run cypress:run
