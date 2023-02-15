@@ -1,7 +1,10 @@
-"type module";
-
 import { ChildProcess, spawn } from "child_process";
 import path from "path";
+import colors from "colors";
+
+function systemColor(text: string) {
+  return colors.grey(text);
+}
 
 const afterArgs = process.argv.slice(2);
 
@@ -29,8 +32,9 @@ dockerComposeProcess.stdout.on("data", (data) => {
 
   process.stdout.write(data);
 
-  if (SEARCHED_TEXTS.find((text) => output.includes(text))) {
-    console.log("Text found, container is running");
+  const searchedText = SEARCHED_TEXTS.find((text) => output.includes(text));
+  if (searchedText) {
+    console.log(systemColor(`"${searchedText}" found, container is running`));
 
     afterProcess = spawn("npx", afterArgs, { stdio: "inherit" });
     afterProcess.on("close", (code) =>
@@ -45,13 +49,13 @@ function finishGracefully() {
   const runningProcesses = allProcesses.filter((p) => p?.kill(0));
   runningProcesses.forEach((p) => {
     if (p?.kill(0)) {
-      console.log(`Waiting for "${p.spawnfile}"`);
+      console.log(systemColor(`Waiting for "${p.spawnfile}"`));
       p.kill("SIGINT");
     }
   });
   if (runningProcesses.length === 0) {
     // if all children are terminated, exit
-    console.log(`Finished with status ${finalCode}`);
+    console.log(systemColor(`Finished with status ${finalCode}`));
     process.exit(finalCode);
   }
 }
@@ -73,7 +77,7 @@ function killAll(code: number) {
 }
 
 function onChildFinish(finishedProcess: string, code: number) {
-  console.log(`"${finishedProcess}" finished with code ${code}`);
+  console.log(systemColor(`"${finishedProcess}" finished with code ${code}`));
   killAll(code);
 }
 
