@@ -10,7 +10,7 @@ describe("Index", () => {
       allNodes: nodes,
     });
 
-    cy.contains("Test node").should("be.visible");
+    cy.iframe().contains("Test node").should("be.visible");
 
     cy.iframe()
       .findDcy("general_node_list_row_text")
@@ -36,7 +36,7 @@ describe("Index", () => {
       allNodes: nodes,
     });
 
-    cy.contains("Test node").should("be.visible");
+    cy.iframe().contains("Test node").should("be.visible");
 
     cy.iframe()
       .findDcy("general_node_list_row_text")
@@ -64,7 +64,7 @@ describe("Index", () => {
       allNodes: nodes,
     });
 
-    cy.contains("Test node").should("be.visible");
+    cy.iframe().contains("Test node").should("be.visible");
 
     cy.iframe()
       .findDcy("general_node_list_row_text")
