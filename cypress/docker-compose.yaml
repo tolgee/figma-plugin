@@ -16,7 +16,6 @@ services:
       - tolgee.authentication.initialPassword=admin
       - tolgee.import.dir=/data/import-data
       - tolgee.import.create-implicit-api-key=true
-      - spring.jpa.show-sql=true
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,address=*:8091,server=y,suspend=n
     volumes:
       - ./import-data:/data/import-data
