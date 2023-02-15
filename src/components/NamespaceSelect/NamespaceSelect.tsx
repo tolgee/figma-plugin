@@ -40,6 +40,7 @@ export const NamespaceSelect: FunctionComponent<Props> = ({
   return (
     <Fragment>
       <select
+        data-cy="general_namespace_select_input"
         value={value}
         onChange={(e) => {
           if (e.currentTarget.value === String(ADD_NEW_VALUE)) {

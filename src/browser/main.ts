@@ -5,6 +5,7 @@ import {
   SetNodesDataHandler,
 } from "@/types";
 import { emit, on } from "../utilities";
+import { generateIframeContent } from "./iframeContent";
 import { createLinks, getUrlConfig } from "./urlConfig";
 
 const iframe = document.getElementById("plugin_iframe") as HTMLIFrameElement;
@@ -12,6 +13,9 @@ const shortcuts = document.getElementById("shortcuts") as HTMLDivElement;
 
 function main() {
   shortcuts.innerHTML = createLinks();
+  // populate the iframe after the listeners are ready
+  iframe.contentDocument?.write(generateIframeContent());
+  iframe.contentDocument?.close();
 
   const state = getUrlConfig();
 

@@ -120,6 +120,7 @@ export const Settings = () => {
         </Text>
         <VerticalSpace space="small" />
         <Textbox
+          data-cy="settings_input_api_key"
           onValueInput={(apiKey) => {
             setValidated(false);
             setTolgeeConfig({ ...tolgeeConfig, apiKey });
@@ -132,7 +133,9 @@ export const Settings = () => {
         {validated ? (
           <Text className={styles.success}>Credentials valid</Text>
         ) : (
-          <Button onClick={handleValidate}>Validate</Button>
+          <Button data-cy="settings_button_validate" onClick={handleValidate}>
+            Validate
+          </Button>
         )}
 
         {validated && (
@@ -153,10 +156,18 @@ export const Settings = () => {
         <VerticalSpace space="extraLarge" />
         {!isLoading && (
           <ActionsBottom>
-            <Button onClick={handleGoBack} secondary>
+            <Button
+              data-cy="settings_button_close"
+              onClick={handleGoBack}
+              secondary
+            >
               Close
             </Button>
-            <Button onClick={handleSubmit} disabled={!validated}>
+            <Button
+              data-cy="settings_button_save"
+              onClick={handleSubmit}
+              disabled={!validated}
+            >
               Save
             </Button>
           </ActionsBottom>

@@ -90,6 +90,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       </Text>
       <VerticalSpace space="small" />
       <select
+        data-cy="settings_input_language"
         value={settings?.language}
         onChange={(e) =>
           setSettings((settings) => ({

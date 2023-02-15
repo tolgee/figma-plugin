@@ -9,5 +9,5 @@ Cypress.Commands.add("gcy", (dataCy) => {
 });
 
 Cypress.Commands.add("findDcy", { prevSubject: true }, (subject, dataCy) => {
-  return subject.find(`[data-cy="${dataCy}"]`);
+  return subject.find(`[data-cy="${dataCy}"]`, { timeout: 30000 });
 });
