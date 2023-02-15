@@ -1,3 +1,4 @@
+import { endpointGetScreenshots } from "@/endpoints";
 import {
   DocumentChangeHandler,
   NodeInfo,
@@ -13,9 +14,7 @@ const shortcuts = document.getElementById("shortcuts") as HTMLDivElement;
 
 function main() {
   shortcuts.innerHTML = createLinks();
-  // populate the iframe after the listeners are ready
-  iframe.contentDocument?.write(generateIframeContent());
-  iframe.contentDocument?.close();
+  iframe.contentDocument?.write("");
 
   const state = getUrlConfig();
 
@@ -51,6 +50,10 @@ function main() {
     }
   }
 
+  endpointGetScreenshots.implement(() => {
+    return [];
+  });
+
   on("RESIZE", (data) => {
     iframe.style.width = `${data.width}px`;
     iframe.style.height = `${data.height}px`;
@@ -59,6 +62,10 @@ function main() {
   on<SetNodesDataHandler>("SET_NODES_DATA", (changes) => {
     updateNodes(changes);
   });
+
+  // populate the iframe after the listeners are ready
+  iframe.contentDocument?.write(generateIframeContent());
+  iframe.contentDocument?.close();
 }
 
 main();

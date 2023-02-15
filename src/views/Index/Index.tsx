@@ -159,11 +159,15 @@ export const Index = () => {
                 </select>
               )}
 
-              <Button onClick={handlePush}>
+              <Button data-cy="index_push_button" onClick={handlePush}>
                 {nothingSelected ? "Push all" : "Push"}
               </Button>
 
-              <Button onClick={handlePull} secondary>
+              <Button
+                data-cy="index_pull_button"
+                onClick={handlePull}
+                secondary
+              >
                 {nothingSelected ? "Pull all" : "Pull"}
               </Button>
             </Fragment>

@@ -24,7 +24,10 @@ export const Changes = ({ changes }: Props) => {
           <div className={clsx(styles.sectionTitle, styles.spanAll)}>
             New keys
           </div>
-          <div className={clsx(styles.list, styles.new)}>
+          <div
+            className={clsx(styles.list, styles.new)}
+            data-cy="changes_new_keys"
+          >
             <NodeList
               nodes={changes.newKeys.map((k) => ({
                 id: k.key,
@@ -41,7 +44,10 @@ export const Changes = ({ changes }: Props) => {
           <div className={clsx(styles.sectionTitle, styles.spanAll)}>
             Changed keys
           </div>
-          <div className={clsx(styles.list, styles.change)}>
+          <div
+            className={clsx(styles.list, styles.change)}
+            data-cy="changes_changed_keys"
+          >
             <NodeList
               nodes={changes.changedKeys.map((k) => ({
                 id: k.key,
