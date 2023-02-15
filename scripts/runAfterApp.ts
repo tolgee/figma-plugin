@@ -38,42 +38,52 @@ dockerComposeProcess.stdout.on("data", (data) => {
 
     afterProcess = spawn("npx", afterArgs, { stdio: "inherit" });
     afterProcess.on("close", (code) =>
-      onChildFinish(afterProcess!.spawnfile, code || 0)
+      onChildFinish(getProcessName(afterProcess), code || 0)
     );
   }
 });
 
 dockerComposeProcess.stderr.pipe(process.stderr);
 
-function finishGracefully() {
+const allProcesses = [...appProcesses, afterProcess];
+let finalCode: number;
+
+function finish(force = false) {
   const runningProcesses = allProcesses.filter((p) => p?.kill(0));
   runningProcesses.forEach((p) => {
     if (p?.kill(0)) {
-      console.log(systemColor(`Waiting for "${p.spawnfile}"`));
-      p.kill("SIGINT");
+      console.log(
+        systemColor(
+          `${force ? "Killing" : "Waiting for"} "${getProcessName(p)}"`
+        )
+      );
+      p.kill(force ? "SIGTERM" : "SIGINT");
     }
   });
-  if (runningProcesses.length === 0) {
+  if (runningProcesses.length === 0 || force) {
     // if all children are terminated, exit
     console.log(systemColor(`Finished with status ${finalCode}`));
     process.exit(finalCode);
   }
 }
 
-const allProcesses = [...appProcesses, afterProcess];
-let finalCode: number;
 function killAll(code: number) {
   if (finalCode === undefined) {
     finalCode = code;
 
-    // KILL MYSELF
-    process.kill(process.pid, "SIGINT");
     // wait for all children to finish
-    finishGracefully();
+    finish();
     setInterval(() => {
-      finishGracefully();
+      finish(true);
     }, 1000);
   }
+}
+
+function getProcessName(p?: ChildProcess) {
+  if (!p) {
+    return `${process.argv.join(" ")}`;
+  }
+  return `${p.spawnargs.join(" ")}`;
 }
 
 function onChildFinish(finishedProcess: string, code: number) {
@@ -82,9 +92,10 @@ function onChildFinish(finishedProcess: string, code: number) {
 }
 
 process.on("SIGINT", () => {
-  killAll(0);
+  console.log(systemColor("Terminated by user"));
+  killAll(1);
 });
 
 appProcesses.forEach((p) =>
-  p.on("close", (code) => onChildFinish(p.spawnfile, code || 0))
+  p.on("close", (code) => onChildFinish(getProcessName(p), code || 0))
 );

@@ -10,5 +10,6 @@ code.js
 manifest.json
 
 cypress/videos
+cypress/screenshots
 
 .vscode
