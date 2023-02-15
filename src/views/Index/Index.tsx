@@ -175,16 +175,14 @@ export const Index = () => {
               <Button onClick={handlePull} secondary>
                 {nothingSelected ? "Pull all" : "Pull"}
               </Button>
-
-              <Button onClick={handleTakeScreenshots} secondary>
-                Take screenshots
-              </Button>
             </Fragment>
           }
           rightPart={
             <div
+              data-cy="index_settings_button"
               className={styles.settingsButton}
               onClick={() => setRoute("settings")}
+              role="button"
             >
               <Settings width={15} height={15} />
             </div>
@@ -269,36 +267,6 @@ export const Index = () => {
           }}
         />
       )}
-      <div>
-        {screenshots.map((screenshot, i) => (
-          <svg
-            key={i}
-            width={`${screenshot.info.width}px`}
-            height={`${screenshot.info.height}px`}
-          >
-            <image
-              key={i}
-              width={screenshot.info.width}
-              height={screenshot.info.height}
-              href={URL.createObjectURL(
-                new Blob([screenshot.image.buffer], { type: "image/svg" })
-              )}
-            />
-            {screenshot.keys.map((key, i) => (
-              <rect
-                key={i}
-                x={key.x}
-                y={key.y}
-                width={key.width}
-                height={key.height}
-                stroke="red"
-                strokeWidth={2}
-                fill="transparent"
-              />
-            ))}
-          </svg>
-        ))}
-      </div>
     </Fragment>
   );
 };
