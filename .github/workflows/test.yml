@@ -59,7 +59,7 @@ jobs:
           key: cache-node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install
-        run: npm ci
+        run: npm install
 
       - name: Cypress run
         run: npm run cypress:run
