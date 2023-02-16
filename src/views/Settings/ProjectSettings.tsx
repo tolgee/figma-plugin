@@ -122,19 +122,17 @@ export const ProjectSettings: FunctionComponent<Props> = ({
           }
         />
 
-        {(namespacesNotPresent || initialData?.namespacesDisabled) && (
-          <Checkbox
-            value={Boolean(settings?.namespacesDisabled)}
-            onChange={(e) =>
-              setSettings((settings) => ({
-                ...settings!,
-                namespacesDisabled: Boolean(e.currentTarget.checked),
-              }))
-            }
-          >
-            <Text>Hide namespace selectors</Text>
-          </Checkbox>
-        )}
+        <Checkbox
+          value={Boolean(settings?.namespacesDisabled)}
+          onChange={(e) =>
+            setSettings((settings) => ({
+              ...settings!,
+              namespacesDisabled: Boolean(e.currentTarget.checked),
+            }))
+          }
+        >
+          <Text>Hide namespace selectors</Text>
+        </Checkbox>
       </div>
     </Fragment>
   );

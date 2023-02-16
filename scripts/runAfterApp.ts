@@ -49,7 +49,12 @@ dockerComposeProcess.stdout.on("data", (data) => {
 
 dockerComposeProcess.stderr.pipe(process.stderr);
 
+let isFinishing = false;
 async function finish(code: number) {
+  if (isFinishing) {
+    return true;
+  }
+  isFinishing = true;
   const allProcesses = [...appProcesses, ...afterProcesses];
   const runningProcesses = allProcesses.filter((p) => p.kill(0));
   const childrenPending = runningProcesses.map(
