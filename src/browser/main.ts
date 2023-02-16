@@ -13,8 +13,11 @@ const iframe = document.getElementById("plugin_iframe") as HTMLIFrameElement;
 const shortcuts = document.getElementById("shortcuts") as HTMLDivElement;
 
 function main() {
+  // populate the iframe the listeners are ready
+  iframe.contentDocument?.write(generateIframeContent());
+  iframe.contentDocument?.close();
+
   shortcuts.innerHTML = createLinks();
-  iframe.contentDocument?.write("");
 
   const state = getUrlConfig();
 
@@ -62,10 +65,6 @@ function main() {
   on<SetNodesDataHandler>("SET_NODES_DATA", (changes) => {
     updateNodes(changes);
   });
-
-  // populate the iframe after the listeners are ready
-  iframe.contentDocument?.write(generateIframeContent());
-  iframe.contentDocument?.close();
 }
 
 main();

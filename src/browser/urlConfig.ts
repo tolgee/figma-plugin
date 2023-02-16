@@ -22,8 +22,6 @@ export function getUrlConfig(fromParent?: boolean): PluginData {
     ...urlData,
   };
 
-  console.log({ fromParent, url });
-
   return data;
 }
 
