@@ -1,6 +1,7 @@
 import { ChildProcess, spawn } from "child_process";
 import path from "path";
 import colors from "colors";
+import terminate from "terminate";
 
 function systemColor(text: string) {
   return colors.grey(text);
@@ -18,14 +19,9 @@ const dockerComposeProcess = spawn(
   }
 );
 
-const frontendProcess = spawn("npm", ["run", "debug"], {
-  cwd: path.join(__dirname, ".."),
-  stdio: "inherit",
-});
+const appProcesses = [dockerComposeProcess];
 
-const appProcesses = [dockerComposeProcess, frontendProcess];
-
-let afterProcess: ChildProcess | undefined;
+const afterProcesses: ChildProcess[] = [];
 
 dockerComposeProcess.stdout.on("data", (data) => {
   const output = data.toString();
@@ -37,50 +33,40 @@ dockerComposeProcess.stdout.on("data", (data) => {
     console.log(systemColor(`"${searchedText}" found, container is running`));
 
     if (afterArgs.length) {
-      afterProcess = spawn(afterArgs[0], afterArgs.slice(1), {
-        stdio: "inherit",
+      afterArgs.forEach((command) => {
+        const afterProcess = spawn(command, [], {
+          stdio: "inherit",
+          shell: true,
+        });
+        afterProcess.on("close", (code) =>
+          onChildFinish(getProcessName(afterProcess), code || 0)
+        );
+        afterProcesses.push(afterProcess);
       });
-      afterProcess.on("close", (code) =>
-        onChildFinish(getProcessName(afterProcess), code || 0)
-      );
     }
   }
 });
 
 dockerComposeProcess.stderr.pipe(process.stderr);
 
-const allProcesses = [...appProcesses, afterProcess];
-let finalCode: number;
+async function finish(code: number) {
+  const allProcesses = [...appProcesses, ...afterProcesses];
+  const runningProcesses = allProcesses.filter((p) => p.kill(0));
+  const childrenPending = runningProcesses.map(
+    (p) =>
+      new Promise<void>((resolve, reject) => {
+        console.log(systemColor(`Terminating process "${getProcessName(p)}"`));
+        terminate(p.pid!, { timeout: 5000 }, (err) =>
+          err ? reject(err) : resolve()
+        );
+      })
+  );
 
-function finish(force = false) {
-  const runningProcesses = allProcesses.filter((p) => p?.kill(0));
-  runningProcesses.forEach((p) => {
-    if (p?.kill(0)) {
-      console.log(
-        systemColor(
-          `${force ? "Killing" : "Waiting for"} "${getProcessName(p)}"`
-        )
-      );
-      p.kill(force ? "SIGTERM" : "SIGINT");
-    }
-  });
-  if (runningProcesses.length === 0 || force) {
-    // if all children are terminated, exit
-    console.log(systemColor(`Finished with status ${finalCode}`));
-    process.exit(finalCode);
-  }
-}
+  await Promise.all(childrenPending);
 
-function killAll(code: number) {
-  if (finalCode === undefined) {
-    finalCode = code;
-
-    // wait for all children to finish
-    finish();
-    setInterval(() => {
-      finish(true);
-    }, 1000);
-  }
+  // if all children are terminated, exit
+  console.log(systemColor(`Finished with status ${code}`));
+  process.exit(code);
 }
 
 function getProcessName(p?: ChildProcess) {
@@ -92,12 +78,12 @@ function getProcessName(p?: ChildProcess) {
 
 function onChildFinish(finishedProcess: string, code: number) {
   console.log(systemColor(`"${finishedProcess}" finished with code ${code}`));
-  killAll(code);
+  finish(code);
 }
 
 process.on("SIGINT", () => {
   console.log(systemColor("Terminated by user"));
-  killAll(1);
+  finish(1);
 });
 
 appProcesses.forEach((p) =>

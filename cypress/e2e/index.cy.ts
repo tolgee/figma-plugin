@@ -1,4 +1,4 @@
-import { createTestNode } from "@/browser/urlConfig";
+import { createTestNode } from "@/web/urlConfig";
 import { visitWithState, SIGNED_IN } from "../common/tools";
 
 describe("Index", () => {

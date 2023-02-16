@@ -2,7 +2,7 @@ import {
   createShortcutUrl,
   PluginData,
   DEFAULT_CREDENTIALS,
-} from "@/browser/urlConfig";
+} from "@/web/urlConfig";
 
 export const SIGNED_IN = {
   ...DEFAULT_CREDENTIALS,

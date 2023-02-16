@@ -1,4 +1,4 @@
-import { DEFAULT_CREDENTIALS } from "@/browser/urlConfig";
+import { DEFAULT_CREDENTIALS } from "@/web/urlConfig";
 import { visitWithState } from "../common/tools";
 
 describe("Settings", () => {
