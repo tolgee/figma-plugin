@@ -34,6 +34,8 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
       undefined
     );
 
+    console.log(allNodes);
+
     const [editedKeys, setEditedKeys] = useState<Record<string, string>>({});
 
     const setEditedKey = (id: string, key: string) => {

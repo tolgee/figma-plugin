@@ -2,8 +2,10 @@ import { Fragment, FunctionalComponent, h } from "preact";
 import { useMemo, useState } from "preact/hooks";
 import {
   Button,
+  Checkbox,
   Container,
   Divider,
+  Text,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
@@ -36,6 +38,8 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
 
   const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
 
+  const [uploadScreenshots, setUploadScreenshots] = useState(true);
+
   const deduplicatedNodes = useMemo(() => {
     const deduplicatedNodes: NodeInfo[] = [];
     nodes.forEach((node) => {
@@ -62,7 +66,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       cacheTime: 0,
       staleTime: 0,
       onSuccess(data) {
-        endpointGetScreenshots.call().then((screenshots) => {
+        endpointGetScreenshots.call(nodes).then((screenshots) => {
           setChanges(
             getChanges(
               deduplicatedNodes,
@@ -90,11 +94,20 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     setRoute("index");
   };
 
-  const connectNodes = () => {
+  const connectNodes = (nodesScreenshots?: Map<string, number>) => {
     emit<SetNodesDataHandler>(
       "SET_NODES_DATA",
-      nodes.map((n) => ({ ...n, connected: true }))
+      nodes.map((n) => ({
+        ...n,
+        connected: true,
+        lastScreenshotId: nodesScreenshots?.get(n.id) || n.lastScreenshotId,
+      }))
     );
+  };
+
+  const handleConnectOnly = () => {
+    connectNodes();
+    setRoute("index");
   };
 
   const handleSubmit = async () => {
@@ -119,6 +132,8 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
         screenshotsMap.set(screenshot, data.id);
       }
 
+      const nodesScreenshots = new Map<string, number>();
+
       const mapScreenshots = (item: KeyChangeValue): KeyScreenshotDto[] => {
         const result: KeyScreenshotDto[] = [];
         item.screenshots.forEach((screenshot) => {
@@ -130,12 +145,15 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
           result.push({
             text: item.newValue,
             uploadedImageId: screenshotsMap.get(screenshot)!,
-            positions: relevantNodes.map(({ x, y, width, height }) => ({
-              x,
-              y,
-              width,
-              height,
-            })),
+            positions: relevantNodes.map(({ id, x, y, width, height }) => {
+              nodesScreenshots.set(id, screenshotsMap.get(screenshot)!);
+              return {
+                x,
+                y,
+                width,
+                height,
+              };
+            }),
           });
         });
         return result;
@@ -184,7 +202,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
           },
         },
       });
-      connectNodes();
+      connectNodes(nodesScreenshots);
       setSuccess(true);
     } catch (e) {
       setError(true);
@@ -211,6 +229,8 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
 
   const screenshotCount = changes?.requiredScreenshots.length || 0;
 
+  const noChanges = changesSize + screenshotCount === 0;
+
   return (
     <Fragment>
       <TopBar
@@ -222,6 +242,15 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       <Container space="medium">
         {isLoading || !changes ? (
           <FullPageLoading text={loadingStatus} />
+        ) : noChanges ? (
+          <Fragment>
+            <div>No changes neccessary</div>
+            <ActionsBottom>
+              <Button onClick={handleConnectOnly}>
+                Mark nodes as connected
+              </Button>
+            </ActionsBottom>
+          </Fragment>
         ) : error ? (
           <Fragment>
             <div>
@@ -243,6 +272,19 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
           </Fragment>
         ) : (
           <Fragment>
+            {screenshotCount !== 0 && (
+              <Fragment>
+                <Checkbox
+                  value={uploadScreenshots}
+                  onChange={(e) =>
+                    setUploadScreenshots(Boolean(e.currentTarget.checked))
+                  }
+                >
+                  <Text>Upload {screenshotCount} screenshot(s)</Text>
+                </Checkbox>
+                <VerticalSpace space="medium" />
+              </Fragment>
+            )}
             <Changes changes={changes} />
             <ActionsBottom>
               <Button onClick={handleGoBack} secondary>

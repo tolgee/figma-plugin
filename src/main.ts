@@ -20,7 +20,7 @@ import {
 import { DEFAULT_SIZE } from "./tools/useWindowSize";
 import { endpointGetScreenshots } from "./endpoints";
 
-const toNodeInfo = (node: TextNode) => {
+const toNodeInfo = (node: TextNode): NodeInfo => {
   const pluginData = JSON.parse(
     node.getPluginData(TOLGEE_NODE_INFO) || "{}"
   ) as Partial<NodeInfo>;
@@ -31,6 +31,7 @@ const toNodeInfo = (node: TextNode) => {
     key: pluginData.key || "",
     ns: pluginData.ns,
     connected: Boolean(pluginData.connected),
+    lastScreenshotId: pluginData.lastScreenshotId,
   };
 };
 
@@ -126,10 +127,28 @@ export default async function () {
     figma.closePlugin();
   });
 
-  endpointGetScreenshots.implement(async () => {
-    const frames = figma.currentPage.findAll((node) => node.type === "FRAME");
+  endpointGetScreenshots.implement(async (nodes) => {
+    // find nodes in document
+    const documentNodes = figma.currentPage.findAll((docNode) =>
+      Boolean(nodes.find((n) => n.id === docNode.id))
+    );
+
+    const frames = new Set<FrameNode>();
+
+    // find frames in parents
+    documentNodes.forEach((docNode) => {
+      let node = docNode as (BaseNode & ChildrenMixin) | null;
+      while (node) {
+        if (node.type === "FRAME") {
+          frames.add(node as FrameNode);
+          break;
+        }
+        node = node.parent;
+      }
+    });
+
     const data = await Promise.all(
-      frames.map(async (frame) => {
+      Array.from(frames).map(async (frame) => {
         return {
           image: await frame.exportAsync({ format: "PNG" }),
           info: {
@@ -161,6 +180,7 @@ export default async function () {
           key: nodeInfo.key,
           ns: nodeInfo.ns,
           connected: nodeInfo.connected,
+          lastScreenshotId: nodeInfo.lastScreenshotId,
         })
       );
     });

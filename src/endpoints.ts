@@ -1,5 +1,5 @@
 import { emit, on, once } from "@/utilities";
-import { FrameScreenshot } from "./types";
+import { FrameScreenshot, NodeInfo } from "./types";
 
 export const createEndpoint = <I, O>(name: string) => {
   return {
@@ -19,6 +19,7 @@ export const createEndpoint = <I, O>(name: string) => {
   };
 };
 
-export const endpointGetScreenshots = createEndpoint<void, FrameScreenshot[]>(
-  "GET_SCREENSHOTS"
-);
+export const endpointGetScreenshots = createEndpoint<
+  NodeInfo[],
+  FrameScreenshot[]
+>("GET_SCREENSHOTS");

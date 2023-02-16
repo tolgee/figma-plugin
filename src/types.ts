@@ -77,6 +77,7 @@ export interface NodeInfo {
   key: string;
   ns: string | undefined;
   connected: boolean;
+  lastScreenshotId?: number;
 }
 
 export type PartialNodeInfo = Partial<NodeInfo> & {
