@@ -14,8 +14,12 @@ describe("Push", () => {
     });
 
     cy.frameLoaded("#plugin_iframe");
+
+    cy.iframe().contains("New key").should("exist");
+
     cy.iframe().findDcy("index_push_button").should("be.visible").click();
-    cy.iframe().contains("New keys").should("be.visible");
+
+    cy.iframe().contains("New keys").should("exist");
 
     cy.iframe()
       .findDcy("changes_new_keys")
