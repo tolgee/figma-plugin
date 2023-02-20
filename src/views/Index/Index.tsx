@@ -80,10 +80,11 @@ export const Index = () => {
     );
     const conflicts = getConflictingNodes(subjectNodes);
     if (conflicts.length > 0) {
+      const keys = Array.from(new Set(conflicts.map((n) => n.key)));
       setError(
-        `There are conflicting nodes (${conflicts
-          .map((n) => n.characters)
-          .join(", ")})`
+        `There are multiple different translations for single key (${keys.join(
+          ", "
+        )})`
       );
     } else {
       setRoute("push", {

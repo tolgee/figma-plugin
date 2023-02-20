@@ -59,8 +59,8 @@ export function createLinks() {
   const notConnected = [createTestNode({ text: "Test node" })];
   const connected = [
     createTestNode({
-      text: "Test node",
-      key: "on-the-road-subtitle",
+      text: "On the road",
+      key: "on-the-road-title",
       connected: true,
     }),
   ];

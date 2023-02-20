@@ -67,6 +67,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       staleTime: 0,
       onSuccess(data) {
         endpointGetScreenshots.call(nodes).then((screenshots) => {
+          console.log(screenshots);
           setChanges(
             getChanges(
               deduplicatedNodes,
@@ -267,11 +268,13 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
             <div>
               Successfully updated {changesSize} keys
               {uploadScreenshots
-                ? ` and uploaded {screenshotCount} screenshots.`
+                ? ` and uploaded ${screenshotCount} screenshots.`
                 : "."}
             </div>
             <ActionsBottom>
-              <Button onClick={handleGoBack}>Ok</Button>
+              <Button data-cy="push_ok_button" onClick={handleGoBack}>
+                Ok
+              </Button>
             </ActionsBottom>
           </Fragment>
         ) : (
@@ -279,6 +282,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
             {screenshotCount !== 0 && (
               <Fragment>
                 <Checkbox
+                  data-cy="push_upload_screenshots_checkbox"
                   value={uploadScreenshots}
                   onChange={(e) =>
                     setUploadScreenshots(Boolean(e.currentTarget.checked))
@@ -290,17 +294,26 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
               </Fragment>
             )}
             <Changes changes={changes} />
-            {noChanges && <div>No changes neccessary</div>}
+            {noChanges && <div>No changes necessary</div>}
             <ActionsBottom>
-              <Button onClick={handleGoBack} secondary>
+              <Button
+                data-cy="push_cancel_button"
+                onClick={handleGoBack}
+                secondary
+              >
                 Cancel
               </Button>
               {noChanges && (screenshotCount === 0 || !uploadScreenshots) ? (
-                <Button onClick={handleConnectOnly}>
-                  Mark nodes as connected
+                <Button
+                  data-cy="push_finish_button"
+                  onClick={handleConnectOnly}
+                >
+                  Finish
                 </Button>
               ) : (
-                <Button onClick={handleSubmit}>Push to Tolgee</Button>
+                <Button data-cy="push_submit_button" onClick={handleSubmit}>
+                  Push to Tolgee
+                </Button>
               )}
             </ActionsBottom>
           </Fragment>

@@ -1,11 +1,14 @@
 import { endpointGetScreenshots } from "@/endpoints";
 import {
   DocumentChangeHandler,
+  FrameScreenshot,
   NodeInfo,
   SelectionChangeHandler,
   SetNodesDataHandler,
+  TranslationsUpdateHandler,
 } from "@/types";
 import { emit, on } from "../utilities";
+import exampleScreenshot from "./exampleScreenshot";
 import { generateIframeContent } from "./iframeContent";
 import { createLinks, getUrlConfig } from "./urlConfig";
 
@@ -53,8 +56,11 @@ function main() {
     }
   }
 
-  endpointGetScreenshots.implement(() => {
-    return [];
+  endpointGetScreenshots.implement((nodes) => {
+    if (nodes.find((n) => n.key === "on-the-road-title")) {
+      return [exampleScreenshot] as FrameScreenshot[];
+    }
+    return [] as FrameScreenshot[];
   });
 
   on("RESIZE", (data) => {
@@ -63,6 +69,10 @@ function main() {
   });
 
   on<SetNodesDataHandler>("SET_NODES_DATA", (changes) => {
+    updateNodes(changes);
+  });
+
+  on<TranslationsUpdateHandler>("UPDATE_NODES", (changes) => {
     updateNodes(changes);
   });
 }
