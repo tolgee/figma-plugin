@@ -94,13 +94,12 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     setRoute("index");
   };
 
-  const connectNodes = (nodesScreenshots?: Map<string, number>) => {
+  const connectNodes = () => {
     emit<SetNodesDataHandler>(
       "SET_NODES_DATA",
       nodes.map((n) => ({
         ...n,
         connected: true,
-        lastScreenshotId: nodesScreenshots?.get(n.id) || n.lastScreenshotId,
       }))
     );
   };
@@ -119,43 +118,55 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
 
     try {
       const screenshotsMap = new Map<FrameScreenshot, number>();
-      const requiredScreenshots = changes.requiredScreenshots;
+      const requiredScreenshots = uploadScreenshots
+        ? changes.requiredScreenshots
+        : [];
 
       for (const [i, screenshot] of requiredScreenshots.entries()) {
         setLoadingStatus(
           `Uploading images (${i + 1}/${requiredScreenshots.length})`
         );
-        const blob = new Blob([screenshot.image.buffer], { type: "image/png" });
+        const imageBlob = new Blob([screenshot.image.buffer], {
+          type: "image/png",
+        });
+        const location = `figma-${screenshot.info.id}`;
+        const infoBlob = new Blob([JSON.stringify({ location })], {
+          type: "application/json",
+        });
         const data = await uploadImage.mutateAsync({
-          content: { "multipart/form-data": { image: blob as any } },
+          content: {
+            "multipart/form-data": {
+              image: imageBlob as any,
+              info: infoBlob as any,
+            },
+          },
         });
         screenshotsMap.set(screenshot, data.id);
       }
 
-      const nodesScreenshots = new Map<string, number>();
-
       const mapScreenshots = (item: KeyChangeValue): KeyScreenshotDto[] => {
         const result: KeyScreenshotDto[] = [];
-        item.screenshots.forEach((screenshot) => {
-          const relevantNodes = screenshot.keys.filter(
-            ({ key, ns, connected }) =>
-              key === item.key && ns === item.ns && connected
-          );
+        if (uploadScreenshots) {
+          item.screenshots.forEach((screenshot) => {
+            const relevantNodes = screenshot.keys.filter(
+              ({ key, ns, connected }) =>
+                key === item.key && ns === item.ns && connected
+            );
 
-          result.push({
-            text: item.newValue,
-            uploadedImageId: screenshotsMap.get(screenshot)!,
-            positions: relevantNodes.map(({ id, x, y, width, height }) => {
-              nodesScreenshots.set(id, screenshotsMap.get(screenshot)!);
-              return {
-                x,
-                y,
-                width,
-                height,
-              };
-            }),
+            result.push({
+              text: item.newValue,
+              uploadedImageId: screenshotsMap.get(screenshot)!,
+              positions: relevantNodes.map(({ x, y, width, height }) => {
+                return {
+                  x,
+                  y,
+                  width,
+                  height,
+                };
+              }),
+            });
           });
-        });
+        }
         return result;
       };
 
@@ -202,7 +213,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
           },
         },
       });
-      connectNodes(nodesScreenshots);
+      connectNodes();
       setSuccess(true);
     } catch (e) {
       setError(true);
@@ -229,7 +240,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
 
   const screenshotCount = changes?.requiredScreenshots.length || 0;
 
-  const noChanges = changesSize + screenshotCount === 0;
+  const noChanges = changesSize === 0;
 
   return (
     <Fragment>
@@ -242,15 +253,6 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       <Container space="medium">
         {isLoading || !changes ? (
           <FullPageLoading text={loadingStatus} />
-        ) : noChanges ? (
-          <Fragment>
-            <div>No changes neccessary</div>
-            <ActionsBottom>
-              <Button onClick={handleConnectOnly}>
-                Mark nodes as connected
-              </Button>
-            </ActionsBottom>
-          </Fragment>
         ) : error ? (
           <Fragment>
             <div>
@@ -263,8 +265,10 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
         ) : success ? (
           <Fragment>
             <div>
-              Successfully updated {changesSize} keys and uploaded{" "}
-              {screenshotCount} screenshots.
+              Successfully updated {changesSize} keys
+              {uploadScreenshots
+                ? ` and uploaded {screenshotCount} screenshots.`
+                : "."}
             </div>
             <ActionsBottom>
               <Button onClick={handleGoBack}>Ok</Button>
@@ -286,11 +290,18 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
               </Fragment>
             )}
             <Changes changes={changes} />
+            {noChanges && <div>No changes neccessary</div>}
             <ActionsBottom>
               <Button onClick={handleGoBack} secondary>
                 Cancel
               </Button>
-              <Button onClick={handleSubmit}>Push to Tolgee</Button>
+              {noChanges && (screenshotCount === 0 || !uploadScreenshots) ? (
+                <Button onClick={handleConnectOnly}>
+                  Mark nodes as connected
+                </Button>
+              ) : (
+                <Button onClick={handleSubmit}>Push to Tolgee</Button>
+              )}
             </ActionsBottom>
           </Fragment>
         )}

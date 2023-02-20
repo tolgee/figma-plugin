@@ -56,6 +56,7 @@ export type SizeInfo = {
 };
 
 export type FrameInfo = SizeInfo & {
+  id: string;
   name: string;
 };
 
@@ -77,7 +78,6 @@ export interface NodeInfo {
   key: string;
   ns: string | undefined;
   connected: boolean;
-  lastScreenshotId?: number;
 }
 
 export type PartialNodeInfo = Partial<NodeInfo> & {

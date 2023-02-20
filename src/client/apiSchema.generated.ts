@@ -482,6 +482,7 @@ export interface components {
       /** Format: date-time */
       createdAt?: string;
       keyReferences: (components["schemas"]["KeyInScreenshotModel"])[];
+      location?: string;
     };
     /**
      * @description Translations object containing values updated in this request 
@@ -688,8 +689,6 @@ export interface components {
       /** @description The namespace of the key. (When empty or null default namespace will be used) */
       namespace?: string;
       screenshots?: (components["schemas"]["KeyScreenshotDto"])[];
-      /** @description Screenshots with these ids will be replaced by the ones in screenshots property */
-      removeScreenshotIds?: (number)[];
       /** @description Object mapping language tag to translation */
       translations: {
         [key: string]: components["schemas"]["ImportTranslationResolvableDto"] | undefined;
@@ -885,6 +884,10 @@ export interface components {
     ScreenshotInfoDto: {
       text?: string;
       positions?: (components["schemas"]["KeyInScreenshotPositionDto"])[];
+      location?: string;
+    };
+    ImageUploadInfoDto: {
+      location?: string;
     };
     UploadedImageModel: {
       /** Format: int64 */
@@ -894,6 +897,7 @@ export interface components {
       requestFilename: string;
       /** Format: date-time */
       createdAt: string;
+      location?: string;
     };
     CollectionModelUsedNamespaceModel: {
       _embedded?: {
@@ -929,18 +933,18 @@ export interface components {
       name: string;
       /** Format: int64 */
       id: number;
-      namespace?: string;
-      translation?: string;
       baseTranslation?: string;
+      translation?: string;
+      namespace?: string;
     };
     KeySearchSearchResultModel: {
       view?: components["schemas"]["KeySearchResultView"];
       name: string;
       /** Format: int64 */
       id: number;
-      namespace?: string;
-      translation?: string;
       baseTranslation?: string;
+      translation?: string;
+      namespace?: string;
     };
     PagedModelKeySearchSearchResultModel: {
       _embedded?: {
@@ -1279,17 +1283,17 @@ export interface components {
       permittedLanguageIds?: (number)[];
       /** Format: int64 */
       id: number;
-      description: string;
+      userFullName?: string;
+      projectName: string;
+      scopes: (string)[];
+      /** Format: int64 */
+      lastUsedAt?: number;
       username?: string;
       /** Format: int64 */
       projectId: number;
       /** Format: int64 */
       expiresAt?: number;
-      /** Format: int64 */
-      lastUsedAt?: number;
-      userFullName?: string;
-      projectName: string;
-      scopes: (string)[];
+      description: string;
     };
     DeleteKeysDto: {
       /** @description IDs of keys to delete */
@@ -3308,6 +3312,7 @@ export interface operations {
         "multipart/form-data": {
           /** Format: binary */
           image: string;
+          info?: components["schemas"]["ImageUploadInfoDto"];
         };
       };
     };

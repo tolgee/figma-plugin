@@ -36,10 +36,6 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
 
     const [editedKeys, setEditedKeys] = useState<Record<string, string>>({});
 
-    const setEditedKey = (id: string, key: string) => {
-      setEditedKeys((keys) => ({ ...keys, [id]: key }));
-    };
-
     useEffect(() => {
       return on<SelectionChangeHandler>("SELECTION_CHANGE", (data) => {
         setSelection(data);
@@ -58,21 +54,6 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
       });
     }, []);
 
-    function setConfig(config: Partial<TolgeeConfig>) {
-      _setConfig(config);
-      emit<SetupHandle>("SETUP", config);
-    }
-
-    function setLanguage(language: string) {
-      _setConfig({ ...config, language });
-      emit<SetLanguageHandler>("SET_LANGUAGE", language);
-    }
-
-    function setRoute(...route: Route) {
-      setGlobalError(undefined);
-      _setRoute(route);
-    }
-
     const data = {
       route,
       routeKey,
@@ -84,11 +65,22 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     };
 
     const actions = {
-      setRoute,
-      setConfig,
-      setLanguage,
+      setRoute(...route: Route) {
+        setGlobalError(undefined);
+        _setRoute(route);
+      },
+      setConfig(config: Partial<TolgeeConfig>) {
+        _setConfig(config);
+        emit<SetupHandle>("SETUP", config);
+      },
+      setLanguage(language: string) {
+        _setConfig({ ...config, language });
+        emit<SetLanguageHandler>("SET_LANGUAGE", language);
+      },
+      setEditedKey(id: string, key: string) {
+        setEditedKeys((keys) => ({ ...keys, [id]: key }));
+      },
       setGlobalError,
-      setEditedKey,
     };
 
     globalState.actions = actions;

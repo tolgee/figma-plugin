@@ -31,7 +31,6 @@ const toNodeInfo = (node: TextNode): NodeInfo => {
     key: pluginData.key || "",
     ns: pluginData.ns,
     connected: Boolean(pluginData.connected),
-    lastScreenshotId: pluginData.lastScreenshotId,
   };
 };
 
@@ -152,6 +151,7 @@ export default async function () {
         return {
           image: await frame.exportAsync({ format: "PNG" }),
           info: {
+            id: frame.id,
             name: frame.name,
             width: frame.width,
             height: frame.height,
@@ -180,7 +180,6 @@ export default async function () {
           key: nodeInfo.key,
           ns: nodeInfo.ns,
           connected: nodeInfo.connected,
-          lastScreenshotId: nodeInfo.lastScreenshotId,
         })
       );
     });
