@@ -139,7 +139,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
                   <Button onClick={handleGoBack} secondary>
                     Cancel
                   </Button>
-                  <Button onClick={handleProcess}>Process</Button>
+                  <Button onClick={handleProcess}>Replace</Button>
                 </Fragment>
               )}
             </ActionsBottom>
