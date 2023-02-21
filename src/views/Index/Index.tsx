@@ -145,6 +145,7 @@ export const Index = () => {
             <Fragment>
               {languages && (
                 <select
+                  data-cy="index_language_select"
                   className={styles.languageContainer}
                   value={language}
                   placeholder="Language"

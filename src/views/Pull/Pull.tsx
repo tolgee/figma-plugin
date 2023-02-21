@@ -133,13 +133,21 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
             )}
             <ActionsBottom>
               {changedNodes.length === 0 ? (
-                <Button onClick={handleProcess}>Ok</Button>
+                <Button data-cy="pull_ok_button" onClick={handleProcess}>
+                  Ok
+                </Button>
               ) : (
                 <Fragment>
-                  <Button onClick={handleGoBack} secondary>
+                  <Button
+                    data-cy="pull_cancel_button"
+                    onClick={handleGoBack}
+                    secondary
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={handleProcess}>Replace</Button>
+                  <Button data-cy="pull_submit_button" onClick={handleProcess}>
+                    Replace
+                  </Button>
                 </Fragment>
               )}
             </ActionsBottom>
