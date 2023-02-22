@@ -19,6 +19,7 @@ import { RouteParam } from "../routes";
 import clsx from "clsx";
 import styles from "./Pull.css";
 import { NodeList } from "@/components/NodeList/NodeList";
+import { compareNs } from "@/tools/compareNs";
 
 type Props = RouteParam<"pull">;
 
@@ -53,8 +54,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
 
     selectedNodes.forEach((node) => {
       const key = translationsLoadable.data?._embedded?.keys?.find(
-        (t) =>
-          t.keyName === node.key && (t.keyNamespace || "") === (node.ns || "")
+        (t) => t.keyName === node.key && compareNs(t.keyNamespace, node.ns)
       );
 
       const value = key?.translations[lang]?.text;

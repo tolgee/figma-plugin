@@ -1,5 +1,6 @@
 import { FrameScreenshot, NodeInfo } from "@/types";
 import { components } from "../client/apiSchema.generated";
+import { compareNs } from "./compareNs";
 
 type KeyWithTranslationsModel =
   components["schemas"]["KeyWithTranslationsModel"];
@@ -16,7 +17,7 @@ export type KeyChanges = {
   newKeys: KeyChangeValue[];
   changedKeys: KeyChangeValue[];
   unchangedKeys: KeyChangeValue[];
-  requiredScreenshots: FrameScreenshot[];
+  screenshots: FrameScreenshot[];
 };
 
 export const getChanges = (
@@ -28,22 +29,15 @@ export const getChanges = (
   const newKeys: KeyChangeValue[] = [];
   const changedKeys: KeyChangeValue[] = [];
   const unchangedKeys: KeyChangeValue[] = [];
-  const requiredScreenshots: FrameScreenshot[] = [];
 
   const getKeyScreenshots = (value: NodeInfo): FrameScreenshot[] => {
     const result: FrameScreenshot[] = [];
     screenshots.forEach((screenshot) => {
       if (
         screenshot.keys.find(
-          (node) =>
-            node.key === value.key &&
-            (node.ns || "") === (value.ns || "") &&
-            node.connected
+          (node) => node.key === value.key && compareNs(node.ns, value.ns)
         )
       ) {
-        if (!requiredScreenshots.includes(screenshot)) {
-          requiredScreenshots.push(screenshot);
-        }
         result.push(screenshot);
       }
     });
@@ -55,7 +49,7 @@ export const getChanges = (
     const key = translations.find(
       (t) =>
         t.keyName === node.key &&
-        (t.keyNamespace || "") === (node.ns || "") &&
+        compareNs(t.keyNamespace, node.ns) &&
         t.translations[language]?.text
     );
     const change = {
@@ -75,5 +69,5 @@ export const getChanges = (
     }
   });
 
-  return { newKeys, changedKeys, unchangedKeys, requiredScreenshots };
+  return { newKeys, changedKeys, unchangedKeys, screenshots };
 };

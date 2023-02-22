@@ -1,4 +1,5 @@
 import { NodeInfo } from "@/types";
+import { compareNs } from "./compareNs";
 
 export type Conflicts = Record<string, string[]>;
 
@@ -10,7 +11,7 @@ export const getConflictingNodes = (nodes: NodeInfo[]) => {
       return (
         n.key &&
         n.key === node.key &&
-        (n.ns || "") === (node.ns || "") &&
+        compareNs(n.ns, node.ns) &&
         n.characters !== node.characters
       );
     });

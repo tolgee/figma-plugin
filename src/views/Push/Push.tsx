@@ -21,6 +21,7 @@ import { Changes } from "./Changes";
 import { FrameScreenshot, NodeInfo, SetNodesDataHandler } from "@/types";
 import { emit } from "@/utilities";
 import { endpointGetScreenshots } from "@/endpoints";
+import { compareNs } from "@/tools/compareNs";
 
 type ImportKeysResolvableItemDto =
   components["schemas"]["ImportKeysResolvableItemDto"];
@@ -45,7 +46,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     nodes.forEach((node) => {
       if (
         !deduplicatedNodes.find(
-          (n) => node.key === n.key && (node.ns || "") === (n.ns || "")
+          (n) => node.key === n.key && compareNs(node.ns, n.ns)
         )
       ) {
         deduplicatedNodes.push(node);
@@ -67,7 +68,6 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       staleTime: 0,
       onSuccess(data) {
         endpointGetScreenshots.call(nodes).then((screenshots) => {
-          console.log(screenshots);
           setChanges(
             getChanges(
               deduplicatedNodes,
@@ -119,9 +119,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
 
     try {
       const screenshotsMap = new Map<FrameScreenshot, number>();
-      const requiredScreenshots = uploadScreenshots
-        ? changes.requiredScreenshots
-        : [];
+      const requiredScreenshots = uploadScreenshots ? changes.screenshots : [];
 
       for (const [i, screenshot] of requiredScreenshots.entries()) {
         setLoadingStatus(
@@ -150,8 +148,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
         if (uploadScreenshots) {
           item.screenshots.forEach((screenshot) => {
             const relevantNodes = screenshot.keys.filter(
-              ({ key, ns, connected }) =>
-                key === item.key && ns === item.ns && connected
+              ({ key, ns }) => key === item.key && compareNs(ns, item.ns)
             );
 
             result.push({
@@ -239,7 +236,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     ? changes.changedKeys.length + changes.newKeys.length
     : 0;
 
-  const screenshotCount = changes?.requiredScreenshots.length || 0;
+  const screenshotCount = changes?.screenshots.length || 0;
 
   const noChanges = changesSize === 0;
 
