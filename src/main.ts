@@ -4,6 +4,7 @@ import { TOLGEE_NODE_INFO, TOLGEE_PLUGIN_CONFIG_NAME } from "./constants";
 
 import {
   ConfigChangeHandler,
+  CurrentDocumentSettings,
   CurrentPageSettings,
   DocumentChangeHandler,
   GlobalSettings,
@@ -67,14 +68,25 @@ const setGlobalSettings = async (data: Partial<GlobalSettings>) => {
   );
 };
 
-const getCurrentPageSettings = () => {
+const getDocumentData = () => {
+  const pluginData = figma.root.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
+  return pluginData
+    ? (JSON.parse(pluginData) as Partial<CurrentDocumentSettings>)
+    : {};
+};
+
+const setDocumentData = (data: Partial<CurrentDocumentSettings>) => {
+  figma.root.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, JSON.stringify(data));
+};
+
+const getPageData = () => {
   const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
   return pluginData
     ? (JSON.parse(pluginData) as Partial<CurrentPageSettings>)
     : {};
 };
 
-const setCurrentPageSettings = (data: Partial<CurrentPageSettings>) => {
+const setPageData = (data: Partial<CurrentPageSettings>) => {
   figma.currentPage.setPluginData(
     TOLGEE_PLUGIN_CONFIG_NAME,
     JSON.stringify(data)
@@ -84,14 +96,22 @@ const setCurrentPageSettings = (data: Partial<CurrentPageSettings>) => {
 const getPluginData = async () => {
   return {
     ...(await getGlobalSettings()),
-    ...getCurrentPageSettings(),
+    ...getDocumentData(),
+    ...getPageData(),
   };
 };
 
 const setPluginData = async (data: Partial<TolgeeConfig>) => {
-  const { apiKey, apiUrl } = data;
+  const { apiKey, apiUrl, language, namespace, namespacesDisabled } = data;
   await setGlobalSettings({ apiKey, apiUrl });
-  setCurrentPageSettings(data);
+  setDocumentData({
+    apiKey,
+    apiUrl,
+    namespace,
+    namespacesDisabled,
+    documentInfo: true,
+  });
+  setPageData({ language, pageInfo: true });
   emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
 };
 
@@ -102,8 +122,21 @@ export default async function () {
   });
 
   figma.on("documentchange", () => {
+    console.log("documentchange");
     const nodes = findTextNodesInfo(figma.currentPage.children);
     emit<DocumentChangeHandler>("DOCUMENT_CHANGE", nodes);
+  });
+
+  figma.on("currentpagechange", async () => {
+    emit<SelectionChangeHandler>(
+      "SELECTION_CHANGE",
+      findTextNodesInfo(figma.currentPage.selection)
+    );
+    emit<DocumentChangeHandler>(
+      "DOCUMENT_CHANGE",
+      findTextNodesInfo(figma.currentPage.children)
+    );
+    emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
   });
 
   on<SetupHandle>("SETUP", async (config) => {

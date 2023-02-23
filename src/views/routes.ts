@@ -5,7 +5,8 @@ export type Route =
   | ["settings"]
   | ["push", { nodes: NodeInfo[] }]
   | ["pull", { nodes?: NodeInfo[]; lang: string }]
-  | ["connect", { node: NodeInfo }];
+  | ["connect", { node: NodeInfo }]
+  | ["create_copy"];
 
 export type RouteKey = Route[0];
 

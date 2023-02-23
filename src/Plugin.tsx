@@ -3,15 +3,11 @@ import { h } from "preact";
 import "!./styles.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-import { NodeInfo, TolgeeConfig } from "./types";
+import { InitialState } from "./types";
 import { GlobalState } from "./state/GlobalState";
 import { Router } from "./views/Router";
 
-type Props = {
-  config: Partial<TolgeeConfig> | null;
-  selectedNodes: Array<NodeInfo>;
-  allNodes: Array<NodeInfo>;
-};
+type Props = InitialState;
 
 const queryClient = new QueryClient({
   defaultOptions: {

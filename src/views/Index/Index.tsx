@@ -22,7 +22,11 @@ import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
-import { DEFAULT_SIZE, useWindowSize } from "@/tools/useWindowSize";
+import {
+  COMPACT_SIZE,
+  DEFAULT_SIZE,
+  useWindowSize,
+} from "@/tools/useWindowSize";
 import { NamespaceSelect } from "@/components/NamespaceSelect/NamespaceSelect";
 
 export const Index = () => {
@@ -100,6 +104,10 @@ export const Index = () => {
     });
   };
 
+  const handleCopy = () => {
+    setRoute("create_copy");
+  };
+
   const handleConnect = (node: NodeInfo) => {
     setRoute("connect", { node });
   };
@@ -128,9 +136,7 @@ export const Index = () => {
   }, [selection]);
 
   useWindowSize(
-    !selection || selection.length < 2
-      ? { width: 500, height: 150 }
-      : DEFAULT_SIZE
+    !selection || selection.length < 2 ? COMPACT_SIZE : DEFAULT_SIZE
   );
 
   if (languagesLoadable.isLoading || namespacesLoadable.isLoading) {
@@ -149,6 +155,7 @@ export const Index = () => {
                   className={styles.languageContainer}
                   value={language}
                   placeholder="Language"
+                  disabled={!nothingSelected}
                   onChange={(e) => {
                     handleLanguageChange((e.target as HTMLInputElement).value);
                   }}
@@ -172,6 +179,16 @@ export const Index = () => {
               >
                 {nothingSelected ? "Pull all" : "Pull"}
               </Button>
+
+              {nothingSelected && (
+                <Button
+                  data-cy="index_create_copy_button"
+                  onClick={handleCopy}
+                  secondary
+                >
+                  Create copy
+                </Button>
+              )}
             </Fragment>
           }
           rightPart={

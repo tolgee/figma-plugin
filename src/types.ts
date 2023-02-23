@@ -45,6 +45,11 @@ export interface DocumentChangeHandler extends EventHandler {
   handler: (data: NodeInfo[]) => void;
 }
 
+export interface PageChangeHandler extends EventHandler {
+  name: "CURRENT_PAGE_CHANGE";
+  handler: (config: Partial<TolgeeConfig>) => void;
+}
+
 export interface SetNodesDataHandler extends EventHandler {
   name: "SET_NODES_DATA";
   handler: (nodes: NodeInfo[]) => void;
@@ -89,13 +94,18 @@ export type GlobalSettings = {
   apiKey: string;
 };
 
-export type CurrentPageSettings = GlobalSettings & {
-  language: string;
+export type CurrentDocumentSettings = GlobalSettings & {
   namespace: string;
   namespacesDisabled: boolean;
+  documentInfo: true;
 };
 
-export type TolgeeConfig = CurrentPageSettings;
+export type CurrentPageSettings = {
+  language: string;
+  pageInfo: true;
+};
+
+export type TolgeeConfig = CurrentDocumentSettings & CurrentPageSettings;
 
 export type FormattedNode = {
   characters: string;
@@ -106,4 +116,10 @@ export type FormattedNode = {
 export type WindowSize = {
   width: number;
   height: number;
+};
+
+export type InitialState = {
+  config: Partial<TolgeeConfig> | null;
+  selectedNodes: Array<NodeInfo>;
+  allNodes: Array<NodeInfo>;
 };

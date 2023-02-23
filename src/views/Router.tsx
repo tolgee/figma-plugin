@@ -1,6 +1,5 @@
 import { Fragment, h } from "preact";
 import { Banner, IconWarning32 } from "@create-figma-plugin/ui";
-import { useEffect } from "preact/hooks";
 
 import { Route } from "./routes";
 import { Index } from "./Index/Index";
@@ -9,6 +8,8 @@ import { useGlobalActions, useGlobalState } from "../state/GlobalState";
 import { Push } from "./Push/Push";
 import { Pull } from "./Pull/Pull";
 import { Connect } from "./Connect/Connect";
+import { PageSetup } from "./PageSettings/PageSetup";
+import { CreateCopy } from "./CreateCopy/CreateCopy";
 
 const getPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
@@ -26,6 +27,9 @@ const getPage = ([routeKey, routeData]: Route) => {
 
     case "connect":
       return <Connect {...routeData} />;
+
+    case "create_copy":
+      return <CreateCopy />;
   }
 };
 
@@ -33,14 +37,9 @@ export const Router = () => {
   const route = useGlobalState((c) => c.route);
   const routeKey = useGlobalState((c) => c.routeKey);
   const globalError = useGlobalState((c) => c.globalError);
-  const config = useGlobalState((c) => c.config);
+  const documentInfo = useGlobalState((c) => c.config?.documentInfo);
+  const pageInfo = useGlobalState((c) => c.config?.pageInfo);
   const { setRoute } = useGlobalActions();
-
-  useEffect(() => {
-    if (!config?.apiKey || !config?.apiUrl || !config.language) {
-      setRoute("settings");
-    }
-  }, [config]);
 
   const handleResolveError = () => {
     setRoute("settings");
@@ -57,7 +56,13 @@ export const Router = () => {
           {globalError}
         </Banner>
       )}
-      {getPage(route)}
+      {!documentInfo ? (
+        <Settings />
+      ) : !pageInfo ? (
+        <PageSetup />
+      ) : (
+        getPage(route)
+      )}
     </Fragment>
   );
 };
