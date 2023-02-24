@@ -55,6 +55,11 @@ export interface SetNodesDataHandler extends EventHandler {
   handler: (nodes: NodeInfo[]) => void;
 }
 
+export interface CopyPageHandler extends EventHandler {
+  name: "COPY_PAGE";
+  handler: (data?: { language: string; nodes: NodeInfo[] }) => void;
+}
+
 export type SizeInfo = {
   width: number;
   height: number;
@@ -103,6 +108,7 @@ export type CurrentDocumentSettings = GlobalSettings & {
 export type CurrentPageSettings = {
   language: string;
   pageInfo: true;
+  pageCopy: true;
 };
 
 export type TolgeeConfig = CurrentDocumentSettings & CurrentPageSettings;

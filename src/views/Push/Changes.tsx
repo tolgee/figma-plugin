@@ -1,7 +1,7 @@
 import { Fragment, h } from "preact";
 import clsx from "clsx";
 
-import { KeyChanges } from "@/tools/getChanges";
+import { KeyChanges } from "@/tools/getPushChanges";
 import styles from "./Changes.css";
 import { NodeList } from "@/components/NodeList/NodeList";
 

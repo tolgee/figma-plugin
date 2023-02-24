@@ -1,8 +1,10 @@
-import { useApiQuery } from "@/client/useQueryApi";
+import { useApiMutation, useApiQuery } from "@/client/useQueryApi";
 import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 import { TopBar } from "@/components/TopBar/TopBar";
-import { useGlobalActions } from "@/state/GlobalState";
+import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
+import { getPullChanges } from "@/tools/getPullChanges";
+import { CopyPageHandler } from "@/types";
 import {
   VerticalSpace,
   Text,
@@ -11,9 +13,11 @@ import {
   Button,
   Divider,
   RadioButtons,
+  Checkbox,
 } from "@create-figma-plugin/ui";
+import { emit } from "@create-figma-plugin/utilities";
 import { Fragment, FunctionComponent, h } from "preact";
-import { useState } from "preact/hooks";
+import { useMemo, useState } from "preact/hooks";
 
 type CopyType = "language" | "keys";
 
@@ -21,7 +25,11 @@ export const CreateCopy: FunctionComponent = () => {
   const { setRoute } = useGlobalActions();
 
   const [copyType, setCopyType] = useState<CopyType>("keys");
-  const [language, setLanguage] = useState<string>();
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+
+  const nodes = useGlobalState((c) => c.allNodes);
+
+  const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
 
   const languagesLoadable = useApiQuery({
     url: "/v2/projects/languages",
@@ -32,17 +40,54 @@ export const CreateCopy: FunctionComponent = () => {
     },
   });
 
+  const translationsLoadable = useApiMutation({
+    url: "/v2/projects/translations",
+    method: "get",
+  });
+
   const languages = languagesLoadable.data?._embedded?.languages;
 
   const handleSubmit = async () => {
-    setRoute("index");
+    if (copyType === "keys") {
+      emit<CopyPageHandler>("COPY_PAGE");
+    } else {
+      for (const language of selectedLanguages) {
+        const response = await translationsLoadable.mutateAsync({
+          query: {
+            languages: [language],
+            size: 10000,
+            filterKeyName: keys,
+          },
+        });
+
+        const { changedNodes } = getPullChanges(
+          nodes,
+          language,
+          response._embedded?.keys || []
+        );
+
+        emit<CopyPageHandler>("COPY_PAGE", {
+          language,
+          nodes: changedNodes,
+        });
+      }
+    }
   };
 
   const handleGoBack = () => {
     setRoute("index");
   };
 
-  const validated = Boolean(copyType === "keys" || language);
+  const handleToggleLanguage = (lang: string) => {
+    setSelectedLanguages((langs) => {
+      if (langs.includes(lang)) {
+        return langs.filter((l) => l !== lang);
+      }
+      return [...langs, lang];
+    });
+  };
+
+  const validated = Boolean(copyType === "keys" || selectedLanguages.length);
 
   if (languagesLoadable.isLoading) {
     return <FullPageLoading />;
@@ -76,20 +121,22 @@ export const CreateCopy: FunctionComponent = () => {
         {copyType === "language" && (
           <Fragment>
             <Text>
-              <Muted>Language</Muted>
+              <Muted>Languages</Muted>
             </Text>
             <VerticalSpace space="small" />
-            <select
-              data-cy="settings_input_language"
-              value={language}
-              onChange={(e) => setLanguage(e.currentTarget.value)}
-            >
-              {languages?.map((language) => (
-                <option key={language.id} value={language.tag}>
-                  {language.name}
-                </option>
-              ))}
-            </select>
+
+            {languages?.map((language) => (
+              <div key={language.id}>
+                <Checkbox
+                  checked={selectedLanguages.includes(language.tag)}
+                  value={selectedLanguages.includes(language.tag)}
+                  onChange={() => handleToggleLanguage(language.tag)}
+                >
+                  <Text>{language.name}</Text>
+                </Checkbox>
+                <VerticalSpace space="small" />
+              </div>
+            ))}
           </Fragment>
         )}
 

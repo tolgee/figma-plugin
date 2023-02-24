@@ -1,5 +1,5 @@
 import { emit } from "@/utilities";
-import { useEffect, useMemo } from "preact/hooks";
+import { useEffect } from "preact/hooks";
 
 import { ResizeHandler } from "@/types";
 export const DEFAULT_SIZE = { width: 500, height: 400 };
@@ -11,11 +11,8 @@ type WindowSize = {
 };
 
 export const useWindowSize = (size: WindowSize) => {
-  useMemo(() => {
-    emit<ResizeHandler>("RESIZE", size);
-  }, [size.height, size.width]);
-
   useEffect(() => {
+    emit<ResizeHandler>("RESIZE", size);
     return () => emit<ResizeHandler>("RESIZE", DEFAULT_SIZE);
-  }, []);
+  }, [size]);
 };

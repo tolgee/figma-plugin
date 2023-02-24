@@ -14,7 +14,11 @@ import { useApiMutation, useApiQuery } from "@/client/useQueryApi";
 import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
-import { getChanges, KeyChanges, KeyChangeValue } from "@/tools/getChanges";
+import {
+  getPushChanges,
+  KeyChanges,
+  KeyChangeValue,
+} from "@/tools/getPushChanges";
 import { TopBar } from "../../components/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import { Changes } from "./Changes";
@@ -69,7 +73,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       onSuccess(data) {
         endpointGetScreenshots.call(nodes).then((screenshots) => {
           setChanges(
-            getChanges(
+            getPushChanges(
               deduplicatedNodes,
               data?._embedded?.keys || [],
               language,

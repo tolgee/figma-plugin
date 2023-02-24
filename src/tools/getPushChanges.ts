@@ -20,7 +20,7 @@ export type KeyChanges = {
   screenshots: FrameScreenshot[];
 };
 
-export const getChanges = (
+export const getPushChanges = (
   nodes: NodeInfo[],
   translations: KeyWithTranslationsModel[],
   language: string,

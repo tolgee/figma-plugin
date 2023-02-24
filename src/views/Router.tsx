@@ -10,6 +10,7 @@ import { Pull } from "./Pull/Pull";
 import { Connect } from "./Connect/Connect";
 import { PageSetup } from "./PageSettings/PageSetup";
 import { CreateCopy } from "./CreateCopy/CreateCopy";
+import { CopyView } from "./CopyView/CopyView";
 
 const getPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
@@ -39,6 +40,7 @@ export const Router = () => {
   const globalError = useGlobalState((c) => c.globalError);
   const documentInfo = useGlobalState((c) => c.config?.documentInfo);
   const pageInfo = useGlobalState((c) => c.config?.pageInfo);
+  const pageCopy = useGlobalState((c) => c.config?.pageCopy);
   const { setRoute } = useGlobalActions();
 
   const handleResolveError = () => {
@@ -56,7 +58,9 @@ export const Router = () => {
           {globalError}
         </Banner>
       )}
-      {!documentInfo ? (
+      {pageCopy ? (
+        <CopyView />
+      ) : !documentInfo ? (
         <Settings />
       ) : !pageInfo ? (
         <PageSetup />

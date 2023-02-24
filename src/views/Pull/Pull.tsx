@@ -13,13 +13,13 @@ import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
 import { getConnectedNodes } from "@/tools/getConnectedNodes";
-import { NodeInfo, PartialNodeInfo, TranslationsUpdateHandler } from "@/types";
+import { TranslationsUpdateHandler } from "@/types";
 import { TopBar } from "../../components/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import clsx from "clsx";
 import styles from "./Pull.css";
 import { NodeList } from "@/components/NodeList/NodeList";
-import { compareNs } from "@/tools/compareNs";
+import { getPullChanges } from "@/tools/getPullChanges";
 
 type Props = RouteParam<"pull">;
 
@@ -49,26 +49,12 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
   });
 
   const { changedNodes, missingKeys } = useMemo(() => {
-    const changedNodes: NodeInfo[] = [];
-    const missingKeys: PartialNodeInfo[] = [];
-
-    selectedNodes.forEach((node) => {
-      const key = translationsLoadable.data?._embedded?.keys?.find(
-        (t) => t.keyName === node.key && compareNs(t.keyNamespace, node.ns)
-      );
-
-      const value = key?.translations[lang]?.text;
-      if (value) {
-        if (value !== node.characters) {
-          changedNodes.push({ ...node, characters: value });
-        }
-      } else {
-        missingKeys.push({ id: node.id, key: node.key, ns: node.ns });
-      }
-    });
-
-    return { changedNodes, missingKeys };
-  }, [translationsLoadable.data, selectedNodes, lang]);
+    return getPullChanges(
+      selectedNodes,
+      lang,
+      translationsLoadable.data?._embedded?.keys || []
+    );
+  }, [selectedNodes, lang, translationsLoadable.data]);
 
   const handleProcess = async () => {
     if (changedNodes.length !== 0) {

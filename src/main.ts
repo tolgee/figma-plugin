@@ -4,6 +4,7 @@ import { TOLGEE_NODE_INFO, TOLGEE_PLUGIN_CONFIG_NAME } from "./constants";
 
 import {
   ConfigChangeHandler,
+  CopyPageHandler,
   CurrentDocumentSettings,
   CurrentPageSettings,
   DocumentChangeHandler,
@@ -20,8 +21,9 @@ import {
 } from "./types";
 import { DEFAULT_SIZE } from "./tools/useWindowSize";
 import { endpointGetScreenshots } from "./endpoints";
+import { compareNs } from "./tools/compareNs";
 
-const toNodeInfo = (node: TextNode): NodeInfo => {
+const getNodeInfo = (node: TextNode): NodeInfo => {
   const pluginData = JSON.parse(
     node.getPluginData(TOLGEE_NODE_INFO) || "{}"
   ) as Partial<NodeInfo>;
@@ -51,7 +53,7 @@ const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
 };
 
 const findTextNodesInfo = (nodes: readonly SceneNode[]): NodeInfo[] => {
-  return findTextNodes(nodes).map(toNodeInfo);
+  return findTextNodes(nodes).map(getNodeInfo);
 };
 
 const getGlobalSettings = async () => {
@@ -79,18 +81,18 @@ const setDocumentData = (data: Partial<CurrentDocumentSettings>) => {
   figma.root.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, JSON.stringify(data));
 };
 
-const getPageData = () => {
-  const pluginData = figma.currentPage.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
+const getPageData = (page = figma.currentPage) => {
+  const pluginData = page.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
   return pluginData
     ? (JSON.parse(pluginData) as Partial<CurrentPageSettings>)
     : {};
 };
 
-const setPageData = (data: Partial<CurrentPageSettings>) => {
-  figma.currentPage.setPluginData(
-    TOLGEE_PLUGIN_CONFIG_NAME,
-    JSON.stringify(data)
-  );
+const setPageData = (
+  data: Partial<CurrentPageSettings>,
+  page = figma.currentPage
+) => {
+  page.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, JSON.stringify(data));
 };
 
 const getPluginData = async () => {
@@ -113,6 +115,12 @@ const setPluginData = async (data: Partial<TolgeeConfig>) => {
   });
   setPageData({ language, pageInfo: true });
   emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
+};
+
+const getAllPages = () => {
+  const document = figma.root;
+
+  return document.children.filter((node) => node.type === "PAGE");
 };
 
 export default async function () {
@@ -191,7 +199,7 @@ export default async function () {
           },
           keys: findTextNodes([frame]).map((node) => {
             return {
-              ...toNodeInfo(node),
+              ...getNodeInfo(node),
               x: node.x,
               y: node.y,
               width: node.width,
@@ -239,6 +247,43 @@ export default async function () {
       "SELECTION_CHANGE",
       findTextNodesInfo(figma.currentPage.selection)
     );
+  });
+
+  on<CopyPageHandler>("COPY_PAGE", async (data) => {
+    const newPage = figma.currentPage.clone();
+    const name = `${figma.currentPage.name} - ${
+      data?.language ? data.language : "keys"
+    }`;
+    getAllPages().forEach((page) => {
+      if (page.name === name && getPageData(page).pageCopy === true) {
+        page.remove();
+      }
+    });
+    newPage.name = name;
+    const textNodes = findTextNodes(newPage.children);
+    await loadFontsAsync(textNodes);
+    console.log(data);
+    textNodes.forEach((node) => {
+      const { connected, key, ns } = getNodeInfo(node);
+      if (connected) {
+        if (data) {
+          const newText = data?.nodes.find(
+            (n) => n.key === key && compareNs(n.ns, ns)
+          )?.characters;
+
+          if (newText) {
+            node.characters = newText;
+          }
+        } else {
+          node.characters = key;
+        }
+      }
+    });
+    setPageData(
+      { pageCopy: true, pageInfo: true, language: data?.language },
+      newPage
+    );
+    figma.notify(`Created page "${name}"`);
   });
 
   const config = await getPluginData();
