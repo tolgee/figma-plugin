@@ -63,3 +63,11 @@ jobs:
 
       - name: Cypress run
         run: npm run cy:run
+
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: e2e_deps
+          path: |
+            ~/node_modules.tgz
+            ~/cypress_cache.tgz

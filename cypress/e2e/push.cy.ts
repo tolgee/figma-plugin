@@ -73,8 +73,6 @@ describe("Push", () => {
     cy.iframe().findDcy("push_upload_screenshots_checkbox").should("exist");
     cy.iframe().findDcy("push_submit_button").should("be.visible").click();
 
-    cy.wait(500);
-
     cy.iframe()
       .contains("Successfully updated 0 keys and uploaded 1 screenshots.")
       .should("be.visible");
