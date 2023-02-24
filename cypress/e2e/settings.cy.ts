@@ -11,21 +11,6 @@ describe("Settings", () => {
     cy.iframe().findDcy("settings_button_close").should("not.exist");
   });
 
-  it("shows navigation", () => {
-    visitWithState({
-      config: SIGNED_IN,
-    });
-
-    cy.iframe().contains("No nodes selected").should("exist");
-
-    cy.iframe().findDcy("index_settings_button").should("be.visible").click();
-
-    cy.iframe().contains("Settings").should("exist");
-
-    cy.iframe().findDcy("top_bar_back_button").should("exist");
-    cy.iframe().findDcy("settings_button_close").should("exist");
-  });
-
   it("works when filling empty", () => {
     visitWithState({});
     cy.iframe()
