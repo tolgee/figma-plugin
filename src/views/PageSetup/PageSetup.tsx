@@ -22,7 +22,7 @@ export const PageSetup: FunctionComponent = () => {
 
   const [settings, setSettings] = useState<
     Partial<CurrentPageSettings> | undefined
-  >(undefined);
+  >({ language: "" });
 
   const languagesLoadable = useApiQuery({
     url: "/v2/projects/languages",
@@ -30,14 +30,6 @@ export const PageSetup: FunctionComponent = () => {
     options: {
       cacheTime: 0,
       staleTime: 0,
-      onSuccess(data) {
-        const languages = data?._embedded?.languages;
-        if (!settings?.language) {
-          setSettings({
-            language: languages?.find((l) => l.base)?.tag || "",
-          });
-        }
-      },
     },
   });
 
@@ -69,7 +61,7 @@ export const PageSetup: FunctionComponent = () => {
         </Text>
         <VerticalSpace space="small" />
         <select
-          data-cy="settings_input_language"
+          data-cy="page_setup_input_language"
           value={settings?.language}
           onChange={(e) =>
             setSettings((settings) => ({
@@ -78,6 +70,7 @@ export const PageSetup: FunctionComponent = () => {
             }))
           }
         >
+          <option value={""}>Select language ...</option>
           {languages?.map((language) => (
             <option key={language.id} value={language.tag}>
               {language.name}
@@ -87,7 +80,7 @@ export const PageSetup: FunctionComponent = () => {
 
         <ActionsBottom>
           <Button
-            data-cy="settings_button_save"
+            data-cy="page_setup_button_save"
             onClick={handleSubmit}
             disabled={!validated}
           >

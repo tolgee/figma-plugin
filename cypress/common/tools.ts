@@ -1,14 +1,4 @@
-import {
-  createShortcutUrl,
-  PluginData,
-  DEFAULT_CREDENTIALS,
-} from "@/web/urlConfig";
-
-export const SIGNED_IN = {
-  ...DEFAULT_CREDENTIALS,
-  language: "en",
-  namespace: "",
-};
+import { createShortcutUrl, PluginData } from "@/web/urlConfig";
 
 const ORIGIN = "http://localhost:3000";
 

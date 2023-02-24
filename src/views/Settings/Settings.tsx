@@ -1,4 +1,4 @@
-import { Fragment, h } from "preact";
+import { Fragment, FunctionComponent, h } from "preact";
 import { useState, useEffect, useCallback } from "preact/hooks";
 import {
   Banner,
@@ -22,7 +22,11 @@ import { ProjectSettings } from "./ProjectSettings";
 
 const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 
-export const Settings = () => {
+type Props = {
+  noNavigation?: boolean;
+};
+
+export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
   const config = useGlobalState((c) => c.config) || {};
   const [tolgeeConfig, setTolgeeConfig] = useState({
     apiUrl: DEFAULT_TOLGEE_URL,
@@ -97,7 +101,13 @@ export const Settings = () => {
 
   return (
     <Fragment>
-      <TopBar onBack={handleGoBack} leftPart={<div>Settings</div>} />
+      {noNavigation ? (
+        <Container space="medium">
+          <TopBar leftPart={<div>Settings</div>} />
+        </Container>
+      ) : (
+        <TopBar onBack={handleGoBack} leftPart={<div>Settings</div>} />
+      )}
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
@@ -156,13 +166,15 @@ export const Settings = () => {
         <VerticalSpace space="extraLarge" />
         {!isLoading && (
           <ActionsBottom>
-            <Button
-              data-cy="settings_button_close"
-              onClick={handleGoBack}
-              secondary
-            >
-              Close
-            </Button>
+            {!noNavigation && (
+              <Button
+                data-cy="settings_button_close"
+                onClick={handleGoBack}
+                secondary
+              >
+                Close
+              </Button>
+            )}
             <Button
               data-cy="settings_button_save"
               onClick={handleSubmit}

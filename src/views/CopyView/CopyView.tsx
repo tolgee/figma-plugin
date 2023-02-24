@@ -73,7 +73,7 @@ export const CopyView = () => {
             <Fragment>
               <Text>Page copy - {language ? language : "keys"}</Text>
               {language && (
-                <Button data-cy="index_pull_button" onClick={handlePull}>
+                <Button data-cy="copy_view_pull_button" onClick={handlePull}>
                   {nothingSelected ? "Pull all" : "Pull"}
                 </Button>
               )}

@@ -1,5 +1,5 @@
-import { createTestNode } from "@/web/urlConfig";
-import { visitWithState, SIGNED_IN } from "../common/tools";
+import { createTestNode, SIGNED_IN } from "@/web/urlConfig";
+import { visitWithState } from "../common/tools";
 
 describe("Push", () => {
   it("shows differences correctly", () => {

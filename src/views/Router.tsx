@@ -8,7 +8,7 @@ import { useGlobalActions, useGlobalState } from "../state/GlobalState";
 import { Push } from "./Push/Push";
 import { Pull } from "./Pull/Pull";
 import { Connect } from "./Connect/Connect";
-import { PageSetup } from "./PageSettings/PageSetup";
+import { PageSetup } from "./PageSetup/PageSetup";
 import { CreateCopy } from "./CreateCopy/CreateCopy";
 import { CopyView } from "./CopyView/CopyView";
 
@@ -61,7 +61,7 @@ export const Router = () => {
       {pageCopy ? (
         <CopyView />
       ) : !documentInfo ? (
-        <Settings />
+        <Settings noNavigation />
       ) : !pageInfo ? (
         <PageSetup />
       ) : (

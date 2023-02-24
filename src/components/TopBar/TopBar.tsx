@@ -14,7 +14,12 @@ export const TopBar = ({ leftPart, rightPart, onBack }: Props) => {
     <div className={styles.container}>
       <div className={styles.tabsContainerLeft}>
         {onBack && (
-          <div className={styles.tabsBackButton} onClick={onBack}>
+          <div
+            className={styles.tabsBackButton}
+            onClick={onBack}
+            role="button"
+            data-cy="top_bar_back_button"
+          >
             <IconChevronLeft32 />
           </div>
         )}

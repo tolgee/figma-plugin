@@ -1,10 +1,13 @@
 import { endpointGetScreenshots } from "@/endpoints";
 import {
+  ConfigChangeHandler,
   DocumentChangeHandler,
   FrameScreenshot,
   NodeInfo,
+  ResizeHandler,
   SelectionChangeHandler,
   SetNodesDataHandler,
+  SetupHandle,
   TranslationsUpdateHandler,
 } from "@/types";
 import { emit, on } from "../utilities";
@@ -63,7 +66,12 @@ function main() {
     return [] as FrameScreenshot[];
   });
 
-  on("RESIZE", (data) => {
+  on<SetupHandle>("SETUP", (data) => {
+    state.config = { ...data, pageInfo: true, documentInfo: true };
+    emit<ConfigChangeHandler>("CONFIG_CHANGE", state.config);
+  });
+
+  on<ResizeHandler>("RESIZE", (data) => {
     iframe.style.width = `${data.width}px`;
     iframe.style.height = `${data.height}px`;
   });
