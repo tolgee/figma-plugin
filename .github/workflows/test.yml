@@ -65,9 +65,9 @@ jobs:
         run: npm run cy:run
 
       - uses: actions/upload-artifact@v2
-        if: always()
+        if: failure()
         with:
-          name: e2e_deps
+          name: e2e
           path: |
-            ~/node_modules.tgz
-            ~/cypress_cache.tgz
+            ./cypress/videos/**/*
+            ./cypress/screenshots/**/*
