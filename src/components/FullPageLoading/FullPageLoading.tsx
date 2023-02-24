@@ -10,7 +10,7 @@ type Props = {
 export const FullPageLoading: FunctionalComponent<Props> = ({ text }) => {
   return (
     <div className={styles.container}>
-      <div className={styles.content}>
+      <div className={styles.content} data-cy="full_page_loading">
         <LoadingIndicator />
         <Muted>
           <Text>{text}</Text>
