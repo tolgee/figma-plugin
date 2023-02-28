@@ -1,0 +1,10 @@
+.modalBody {
+  min-width: 250px;
+  display: grid;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 6px 0px;
+}

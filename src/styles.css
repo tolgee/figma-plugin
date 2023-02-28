@@ -1,13 +1,18 @@
 [class^="_selectableItem_"] {
   height: auto;
-  padding: var(--space-medium) var(--space-small) var(--space-medium) var(--space-medium);
+  padding: var(--space-medium) var(--space-small) var(--space-medium)
+    var(--space-medium);
   margin-bottom: var(--space-small);
 }
 
-[class^="_selectableItem_"]:not([class^="_disabled_"]) [class^="_input_"]:checked ~ [class^="_children_"]{
+[class^="_selectableItem_"]:not([class^="_disabled_"])
+  [class^="_input_"]:checked
+  ~ [class^="_children_"] {
   color: var(--figma-color-text-onbrand);
 }
-[class^="_selectableItem_"]:not([class^="_disabled_"]) [class^="_input_"]:checked ~ [class^="_box_"] {
+[class^="_selectableItem_"]:not([class^="_disabled_"])
+  [class^="_input_"]:checked
+  ~ [class^="_box_"] {
   background-color: rgb(130, 43, 85);
 }
 :root {

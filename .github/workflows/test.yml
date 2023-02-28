@@ -1,0 +1,73 @@
+name: Test
+
+on:
+  push:
+    branches: [main, release]
+  pull_request:
+
+jobs:
+  static-check:
+    name: Static check 🪲
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: cache-node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install
+        run: npm ci
+
+      - name: Typescript
+        run: npm run tsc
+
+      - name: Eslint
+        run: npm run eslint
+
+  build:
+    name: Build 🏗
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: cache-node-modules-build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+  test:
+    name: Cypress
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: cache-node-modules-cypress-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install
+        run: npm ci
+
+      - name: Cypress run
+        run: npm run cy:run
+
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: e2e
+          path: |
+            ./cypress/videos/**/*
+            ./cypress/screenshots/**/*

@@ -1,0 +1,30 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 16px;
+  padding: 6px 0px;
+  margin: 0px 16px;
+  cursor: pointer;
+  height: 48px;
+}
+
+.container > * {
+  padding: 0px 8px;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  height: 17px;
+}
+
+.container:hover {
+  background-color: var(--figma-color-bg-hover);
+}
+
+.disabled {
+  color: var(--figma-color-text-disabled);
+}
+
+.translation {
+  grid-column: 1 / -1;
+}

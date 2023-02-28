@@ -1,0 +1,13 @@
+.list {
+  margin: 10px -16px;
+}
+
+.missing {
+  color: var(--figma-color-icon-danger);
+}
+
+.sectionTitle {
+  margin-bottom: -5px;
+  margin-top: 20px;
+  font-size: 12px;
+}

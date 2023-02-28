@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "watch": "concurrently --kill-others \"npm run build\" \"serve --no-request-logging .\"",
+    "build": "nodemon --exec \"build-figma-plugin --typecheck\" -e tsx,ts,css --watch ../src/ --watch src/"
+  },
+  "figma-plugin": {
+    "editorType": [
+      "figma"
+    ],
+    "main": "src/main.ts",
+    "ui": "src/ui.tsx",
+    "id": "1",
+    "name": "Tolgee"
+  }
+}

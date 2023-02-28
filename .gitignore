@@ -5,4 +5,11 @@ node_modules
 
 out/
 dist/
+build
 code.js
+manifest.json
+
+cypress/videos
+cypress/screenshots
+
+.vscode
