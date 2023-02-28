@@ -55,7 +55,7 @@
     "use-debounce": "^9.0.3"
   },
   "figma-plugin": {
-    "id": "1212372712469292752",
+    "id": "1212381421658754793",
     "name": "Tolgee",
     "main": "src/main.ts",
     "ui": "src/ui.tsx",
