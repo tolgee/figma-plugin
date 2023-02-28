@@ -55,12 +55,12 @@
     "use-debounce": "^9.0.3"
   },
   "figma-plugin": {
-    "editorType": [
-      "figma"
-    ],
+    "id": "1212372712469292752",
+    "name": "Tolgee",
     "main": "src/main.ts",
     "ui": "src/ui.tsx",
-    "id": "1",
-    "name": "Tolgee"
+    "editorType": [
+      "figma"
+    ]
   }
 }

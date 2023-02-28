@@ -72,6 +72,7 @@ export const CreateCopy: FunctionComponent = () => {
         });
       }
     }
+    setRoute("index");
   };
 
   const handleGoBack = () => {
