@@ -57,7 +57,11 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
   const validateTolgeeCredentials = async () => {
     try {
       const res = await mutateAsync({});
-      if (res && res.scopes?.includes("translations.view")) {
+      if (
+        res &&
+        res.scopes?.includes("translations.view") &&
+        res.scopes?.includes("translations.edit")
+      ) {
         return true;
       }
       throw new Error(
