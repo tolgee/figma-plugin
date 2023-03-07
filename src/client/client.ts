@@ -62,10 +62,10 @@ async function customFetch(
   init?: RequestInit
 ): Promise<Response> {
   if (!options.apiUrl) {
-    throw "Api url not specified";
+    throw "URL not specified";
   }
   if (!options.apiKey) {
-    throw "Api key not specified";
+    throw "API key not specified";
   }
 
   init = init || {};
