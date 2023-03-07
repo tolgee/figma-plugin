@@ -68,7 +68,7 @@ export function getProjectIdFromApiKey(
     }
   } catch {
     // eslint-disable-next-line no-console
-    console.warn("Tolgee: Api key can't be parsed");
+    console.warn("Tolgee: API key can't be parsed");
   }
   return undefined;
 }
