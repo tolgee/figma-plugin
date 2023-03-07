@@ -116,10 +116,11 @@ export async function client<
   clientOptions: ClientOptions,
   options: GlobalOptions
 ) {
+  const fetchOptions = { ...options, ...clientOptions?.config };
   const pathParams = (request as any)?.path || {};
   let urlResult = url as string;
 
-  const projectId = getProjectIdFromApiKey(options.apiKey);
+  const projectId = getProjectIdFromApiKey(fetchOptions.apiKey);
   if (projectId !== undefined) {
     pathParams.projectId = projectId;
     urlResult = addProjectIdToUrl(urlResult);
@@ -169,13 +170,9 @@ export async function client<
       }
     : {};
 
-  return customFetch(
-    urlResult + queryString,
-    { ...options, ...clientOptions?.config },
-    {
-      method: method as string,
-      body: body || jsonBody,
-      headers: defaultHeaders as HeadersInit,
-    }
-  ) as Promise<ResponseContent<Url, Method, Paths>>;
+  return customFetch(urlResult + queryString, fetchOptions, {
+    method: method as string,
+    body: body || jsonBody,
+    headers: defaultHeaders as HeadersInit,
+  }) as Promise<ResponseContent<Url, Method, Paths>>;
 }
