@@ -29,7 +29,7 @@ export const Connect = ({ node }: Props) => {
 
   const language = useGlobalState((c) => c.config?.language);
 
-  const [search, setSearch] = useState(node.key || "");
+  const [search, setSearch] = useState(node.key || node.characters);
 
   const [debouncedSearch] = useDebounce(search, 1000);
 
