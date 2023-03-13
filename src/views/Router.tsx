@@ -11,6 +11,7 @@ import { Connect } from "./Connect/Connect";
 import { PageSetup } from "./PageSetup/PageSetup";
 import { CreateCopy } from "./CreateCopy/CreateCopy";
 import { CopyView } from "./CopyView/CopyView";
+import { useEffect } from "preact/hooks";
 
 const getPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
@@ -43,13 +44,16 @@ export const Router = () => {
   const pageCopy = useGlobalState((c) => c.config?.pageCopy);
   const { setRoute } = useGlobalActions();
 
+  const forceSettings = !pageCopy && !documentInfo;
+  const errorOnTop = !forceSettings && routeKey !== "settings";
+
   const handleResolveError = () => {
     setRoute("settings");
   };
 
   return (
     <Fragment>
-      {globalError && routeKey !== "settings" && (
+      {globalError && errorOnTop && (
         <Banner
           style={{ cursor: "pointer" }}
           onClick={handleResolveError}
