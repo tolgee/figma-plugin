@@ -43,13 +43,16 @@ export const Router = () => {
   const pageCopy = useGlobalState((c) => c.config?.pageCopy);
   const { setRoute } = useGlobalActions();
 
+  const forceSettings = !pageCopy && !documentInfo;
+  const errorOnTop = !forceSettings && routeKey !== "settings";
+
   const handleResolveError = () => {
     setRoute("settings");
   };
 
   return (
     <Fragment>
-      {globalError && routeKey !== "settings" && (
+      {globalError && errorOnTop && (
         <Banner
           style={{ cursor: "pointer" }}
           onClick={handleResolveError}
@@ -60,7 +63,7 @@ export const Router = () => {
       )}
       {pageCopy ? (
         <CopyView />
-      ) : !documentInfo ? (
+      ) : forceSettings ? (
         <Settings noNavigation />
       ) : !pageInfo ? (
         <PageSetup />

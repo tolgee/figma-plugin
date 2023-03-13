@@ -274,7 +274,7 @@ export const Index = () => {
                     width={16}
                     height={16}
                     style={{
-                      color: "var(--figma-color-icon-oncomponent-tertiary)",
+                      color: "var(--figma-color-text-secondary)",
                     }}
                   />
                 )}
