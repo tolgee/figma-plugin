@@ -10,6 +10,7 @@ import {
   DocumentChangeHandler,
   GlobalSettings,
   NodeInfo,
+  ResetHandler,
   ResizeHandler,
   SelectionChangeHandler,
   SetLanguageHandler,
@@ -70,6 +71,10 @@ const setGlobalSettings = async (data: Partial<GlobalSettings>) => {
   );
 };
 
+const deleteGlobalSettings = async () => {
+  await figma.clientStorage.deleteAsync(TOLGEE_PLUGIN_CONFIG_NAME);
+};
+
 const getDocumentData = () => {
   const pluginData = figma.root.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
   return pluginData
@@ -79,6 +84,10 @@ const getDocumentData = () => {
 
 const setDocumentData = (data: Partial<CurrentDocumentSettings>) => {
   figma.root.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, JSON.stringify(data));
+};
+
+const deleteDocumentData = () => {
+  figma.root.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, "");
 };
 
 const getPageData = (page = figma.currentPage) => {
@@ -93,6 +102,10 @@ const setPageData = (
   page = figma.currentPage
 ) => {
   page.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, JSON.stringify(data));
+};
+
+const deletePageData = (page = figma.currentPage) => {
+  page.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, "");
 };
 
 const getPluginData = async () => {
@@ -150,6 +163,13 @@ export default async function () {
   on<SetupHandle>("SETUP", async (config) => {
     await setPluginData(config);
     figma.notify("Tolgee settings saved.");
+  });
+
+  on<ResetHandler>("RESET", async () => {
+    await deleteGlobalSettings();
+    deleteDocumentData();
+    deletePageData();
+    emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
   });
 
   on<SetLanguageHandler>("SET_LANGUAGE", async (language: string) => {

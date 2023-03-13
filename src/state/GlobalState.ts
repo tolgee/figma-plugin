@@ -5,6 +5,7 @@ import {
   ConfigChangeHandler,
   DocumentChangeHandler,
   NodeInfo,
+  ResetHandler,
   SelectionChangeHandler,
   SetLanguageHandler,
   SetupHandle,
@@ -79,6 +80,9 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
       },
       setEditedKey(id: string, key: string) {
         setEditedKeys((keys) => ({ ...keys, [id]: key }));
+      },
+      resetConfig() {
+        emit<ResetHandler>("RESET");
       },
       setGlobalError,
     };

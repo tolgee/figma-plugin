@@ -5,6 +5,11 @@ export interface SetupHandle extends EventHandler {
   handler: (config: Partial<TolgeeConfig>) => void;
 }
 
+export interface ResetHandler extends EventHandler {
+  name: "RESET";
+  handler: () => void;
+}
+
 export interface SetLanguageHandler extends EventHandler {
   name: "SET_LANGUAGE";
   handler: (language: string) => void;

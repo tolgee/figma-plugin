@@ -46,7 +46,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
 
   const [validated, setValidated] = useState(false);
 
-  const { setRoute, setConfig } = useGlobalActions();
+  const { setRoute, setConfig, resetConfig } = useGlobalActions();
 
   const [error, setError] = useState<string | undefined>();
 
@@ -102,6 +102,14 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
   const handleGoBack = useCallback(() => {
     setRoute("index");
   }, []);
+
+  const handleForget = () => {
+    resetConfig();
+    setValidated(false);
+    setTolgeeConfig({
+      apiUrl: DEFAULT_TOLGEE_URL,
+    });
+  };
 
   return (
     <Fragment>
@@ -170,6 +178,15 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
         <VerticalSpace space="extraLarge" />
         {!isLoading && (
           <ActionsBottom>
+            {config.documentInfo && (
+              <Button
+                data-cy="settings_button_forget"
+                onClick={handleForget}
+                secondary
+              >
+                Forget credentials
+              </Button>
+            )}
             {!noNavigation && (
               <Button
                 data-cy="settings_button_close"
