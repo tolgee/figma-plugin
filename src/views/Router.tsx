@@ -11,7 +11,6 @@ import { Connect } from "./Connect/Connect";
 import { PageSetup } from "./PageSetup/PageSetup";
 import { CreateCopy } from "./CreateCopy/CreateCopy";
 import { CopyView } from "./CopyView/CopyView";
-import { useEffect } from "preact/hooks";
 
 const getPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
