@@ -143,7 +143,6 @@ export default async function () {
   });
 
   figma.on("documentchange", () => {
-    console.log("documentchange");
     const nodes = findTextNodesInfo(figma.currentPage.children);
     emit<DocumentChangeHandler>("DOCUMENT_CHANGE", nodes);
   });
@@ -168,7 +167,9 @@ export default async function () {
   on<ResetHandler>("RESET", async () => {
     await deleteGlobalSettings();
     deleteDocumentData();
-    deletePageData();
+    getAllPages().forEach((page) => {
+      deletePageData(page);
+    });
     emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
   });
 
@@ -282,7 +283,6 @@ export default async function () {
     newPage.name = name;
     const textNodes = findTextNodes(newPage.children);
     await loadFontsAsync(textNodes);
-    console.log(data);
     textNodes.forEach((node) => {
       const { connected, key, ns } = getNodeInfo(node);
       if (connected) {
