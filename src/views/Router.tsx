@@ -63,7 +63,7 @@ export const Router = () => {
       )}
       {pageCopy ? (
         <CopyView />
-      ) : !documentInfo ? (
+      ) : forceSettings ? (
         <Settings noNavigation />
       ) : !pageInfo ? (
         <PageSetup />
