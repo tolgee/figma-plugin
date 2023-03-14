@@ -70,7 +70,7 @@ export const PageSetup: FunctionComponent = () => {
             }))
           }
         >
-          <option value={""}>Select language ...</option>
+          <option value={""}>Select language...</option>
           {languages?.map((language) => (
             <option key={language.id} value={language.tag}>
               {language.name}

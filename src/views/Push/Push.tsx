@@ -248,7 +248,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     <Fragment>
       <TopBar
         onBack={handleGoBack}
-        leftPart={<div>Push translations to Tolgee platform ({language})</div>}
+        leftPart={<div>Push translations to Tolgee ({language})</div>}
       />
       <Divider />
       <VerticalSpace space="large" />
@@ -258,7 +258,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
         ) : error ? (
           <Fragment>
             <div>
-              {updateTranslations.error || "An error has occured during push."}
+              {updateTranslations.error || "An error has occurred during push."}
             </div>
             <ActionsBottom>
               <Button onClick={handleRepeat}>Try again</Button>
@@ -267,14 +267,14 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
         ) : success ? (
           <Fragment>
             <div>
-              Successfully updated {changesSize} keys
+              Successfully updated {changesSize} key(s)
               {uploadScreenshots
-                ? ` and uploaded ${screenshotCount} screenshots.`
+                ? ` and uploaded ${screenshotCount} screenshot(s).`
                 : "."}
             </div>
             <ActionsBottom>
               <Button data-cy="push_ok_button" onClick={handleGoBack}>
-                Ok
+                OK
               </Button>
             </ActionsBottom>
           </Fragment>

@@ -1,4 +1,4 @@
-import { NEW_PAGE, SIGNED_IN } from "@/web/urlConfig";
+import { NEW_PAGE } from "@/web/urlConfig";
 import { visitWithState } from "../common/tools";
 
 describe("Page setup", () => {
@@ -21,6 +21,6 @@ describe("Page setup", () => {
 
     cy.iframe().findDcy("page_setup_button_save").should("be.visible").click();
 
-    cy.iframe().contains("No nodes selected").should("be.visible");
+    cy.iframe().contains("No texts selected").should("be.visible");
   });
 });
