@@ -96,9 +96,7 @@ export const CreateCopy: FunctionComponent = () => {
 
   return (
     <Fragment>
-      <Container space="medium">
-        <TopBar leftPart={<div>Create new page</div>} />
-      </Container>
+      <TopBar leftPart={<div>Create new page</div>} onBack={handleGoBack} />
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">

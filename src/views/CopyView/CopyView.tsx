@@ -86,7 +86,7 @@ export const CopyView = () => {
 
       {nothingSelected ? (
         <Container space="medium">
-          <Text>No nodes selected</Text>
+          <Text>No texts selected</Text>
         </Container>
       ) : (
         <NodeList

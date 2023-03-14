@@ -32,7 +32,7 @@ describe("Settings", () => {
 
     cy.iframe().findDcy("settings_button_save").click();
 
-    cy.contains("No nodes selected").should("be.visible");
+    cy.contains("No texts selected").should("be.visible");
   });
 
   it("works when filling existing", () => {
@@ -69,6 +69,6 @@ describe("Settings", () => {
 
     cy.iframe().findDcy("settings_button_save").click();
 
-    cy.contains("No nodes selected").should("be.visible");
+    cy.contains("No texts selected").should("be.visible");
   });
 });
