@@ -183,15 +183,13 @@ export const Index = () => {
                 {nothingSelected ? "Pull all" : "Pull"}
               </Button>
 
-              {nothingSelected && (
-                <Button
-                  data-cy="index_create_copy_button"
-                  onClick={handleCopy}
-                  secondary
-                >
-                  Create copy
-                </Button>
-              )}
+              <Button
+                data-cy="index_create_copy_button"
+                onClick={handleCopy}
+                secondary
+              >
+                Create a copy
+              </Button>
             </Fragment>
           }
           rightPart={
@@ -225,7 +223,7 @@ export const Index = () => {
 
       {nothingSelected ? (
         <Container space="medium">
-          <Text>No nodes selected</Text>
+          <Text>No texts selected</Text>
         </Container>
       ) : (
         <NodeList

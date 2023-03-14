@@ -79,7 +79,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
     <Fragment>
       <TopBar
         onBack={handleGoBack}
-        leftPart={<div>Pull translations from Tolgee platform ({lang})</div>}
+        leftPart={<div>Pull translations from Tolgee ({lang})</div>}
       />
       <Divider />
       <VerticalSpace space="large" />
@@ -89,7 +89,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
         ) : translationsLoadable.error ? (
           <Fragment>
             <div>
-              {translationsLoadable.error || "Cannot get translation data"}
+              {translationsLoadable.error || "Cannot get translation data."}
             </div>
             <ActionsBottom>
               <Button onClick={handleRepeat}>Try again</Button>
@@ -107,11 +107,11 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
             <div>
               {changedNodes.length === 0
                 ? "Everything up to date"
-                : `This action will replace translations in ${changedNodes.length} nodes.`}
+                : `This action will replace translations in ${changedNodes.length} text(s).`}
             </div>
             {missingKeys.length > 0 && (
               <Fragment>
-                <div className={clsx(styles.sectionTitle)}>Missing keys:</div>
+                <div className={clsx(styles.sectionTitle)}>Missing key(s):</div>
                 <div className={clsx(styles.list, styles.missing)}>
                   <NodeList nodes={missingKeys} compact />
                 </div>
@@ -120,7 +120,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
             <ActionsBottom>
               {changedNodes.length === 0 ? (
                 <Button data-cy="pull_ok_button" onClick={handleProcess}>
-                  Ok
+                  OK
                 </Button>
               ) : (
                 <Fragment>

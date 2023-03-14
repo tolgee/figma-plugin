@@ -79,9 +79,7 @@ export const Connect = ({ node }: Props) => {
       {translationsLoadable.isFetching && <FullPageLoading />}
       <TopBar
         onBack={handleGoBack}
-        leftPart={
-          <div className={styles.title}>Connect node - {node.characters}</div>
-        }
+        leftPart={<div className={styles.title}>Connect to existing key</div>}
       />
       <Divider />
       <VerticalSpace space="large" />
