@@ -19,7 +19,7 @@ describe("Change language", () => {
     cy.frameLoaded("#plugin_iframe");
     cy.iframe().findDcy("index_language_select").select("de");
 
-    cy.iframe().contains("This action will replace translations in 1 nodes");
+    cy.iframe().contains("This action will replace translations in 1 node(s)");
     cy.iframe().findDcy("pull_submit_button").should("exist").click();
   });
 });
