@@ -67,7 +67,10 @@ export const CopyView = () => {
 
   return (
     <Fragment>
-      <Container space="medium">
+      <Container
+        space="medium"
+        style={{ paddingBlock: "var(--space-extra-small)" }}
+      >
         <TopBar
           leftPart={
             <Fragment>
@@ -86,7 +89,7 @@ export const CopyView = () => {
 
       {nothingSelected ? (
         <Container space="medium">
-          <Text>No nodes selected</Text>
+          <Text>No texts selected</Text>
         </Container>
       ) : (
         <NodeList
