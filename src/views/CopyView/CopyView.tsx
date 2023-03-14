@@ -67,7 +67,10 @@ export const CopyView = () => {
 
   return (
     <Fragment>
-      <Container space="medium">
+      <Container
+        space="medium"
+        style={{ paddingBlock: "var(--space-extra-small)" }}
+      >
         <TopBar
           leftPart={
             <Fragment>
