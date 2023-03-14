@@ -111,7 +111,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
             </div>
             {missingKeys.length > 0 && (
               <Fragment>
-                <div className={clsx(styles.sectionTitle)}>Missing key(s):</div>
+                <div className={clsx(styles.sectionTitle)}>Missing keys:</div>
                 <div className={clsx(styles.list, styles.missing)}>
                   <NodeList nodes={missingKeys} compact />
                 </div>
