@@ -74,7 +74,7 @@ describe("Push", () => {
     cy.iframe().findDcy("push_submit_button").should("be.visible").click();
 
     cy.iframe()
-      .contains("Successfully updated 0 keys and uploaded 1 screenshot(s).")
+      .contains("Successfully updated 0 key(s) and uploaded 1 screenshot(s).")
       .should("be.visible");
     cy.iframe().findDcy("push_ok_button").should("be.visible").click();
   });
