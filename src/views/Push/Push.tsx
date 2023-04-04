@@ -38,7 +38,9 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
   const { setRoute } = useGlobalActions();
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [loadingStatus, setLoadingStatus] = useState<string | undefined>();
+  const [loadingStatus, setLoadingStatus] = useState<string | undefined>(
+    "Loading data and generating screenshots"
+  );
   const [changes, setChanges] = useState<KeyChanges>();
 
   const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
@@ -71,16 +73,21 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       cacheTime: 0,
       staleTime: 0,
       onSuccess(data) {
-        endpointGetScreenshots.call(nodes).then((screenshots) => {
-          setChanges(
-            getPushChanges(
-              deduplicatedNodes,
-              data?._embedded?.keys || [],
-              language,
-              screenshots
-            )
-          );
-        });
+        endpointGetScreenshots
+          .call(nodes)
+          .then((screenshots) => {
+            setChanges(
+              getPushChanges(
+                deduplicatedNodes,
+                data?._embedded?.keys || [],
+                language,
+                screenshots
+              )
+            );
+          })
+          .finally(() => {
+            setLoadingStatus(undefined);
+          });
       },
     },
   });
