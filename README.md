@@ -9,9 +9,9 @@
 
 [<img src="https://raw.githubusercontent.com/tolgee/documentation/main/tolgee_logo_text.svg" alt="Tolgee" width="200" />](https://tolgee.io)
 
-This repository contains the code for the Tolgee figma plugin.
+This repository contains the code for the Tolgee Figma Plugin.
 
-It provides ability to easily manage localization texts directly in context of your figma files.
+It provides ability to easily manage localization texts directly in context of your Figma files.
 
 To learn more visit [https://tolgee.io](https://tolgee.io)
 
