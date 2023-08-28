@@ -1,10 +1,12 @@
 import { Fragment, FunctionalComponent, h } from "preact";
 import { useMemo, useState } from "preact/hooks";
 import {
+  Banner,
   Button,
   Checkbox,
   Container,
   Divider,
+  IconWarning32,
   Text,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
@@ -265,7 +267,10 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
         ) : error ? (
           <Fragment>
             <div>
-              {updateTranslations.error || "An error has occurred during push."}
+              <Banner icon={<IconWarning32 />}>
+                {updateTranslations.error ||
+                  "An error has occurred during push."}
+              </Banner>
             </div>
             <ActionsBottom>
               <Button onClick={handleRepeat}>Try again</Button>
