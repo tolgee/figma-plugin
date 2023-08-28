@@ -17,7 +17,7 @@ describe("Change language", () => {
     });
 
     cy.frameLoaded("#plugin_iframe");
-    cy.wait(100)
+    cy.wait(100);
     cy.iframe().findDcy("index_language_select").select("de");
 
     cy.iframe().contains("This action will replace translations in 1 text(s)");
