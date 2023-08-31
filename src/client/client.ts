@@ -2,6 +2,7 @@ import { getProjectIdFromApiKey } from "./decodeApiKey";
 import { paths } from "./apiSchema.generated";
 import { RequestParamsType, ResponseContent } from "./types";
 import { globalState } from "../state/GlobalState";
+import { errorToText } from "./errorCodes";
 
 type GlobalOptions = {
   apiUrl?: string;
@@ -79,8 +80,7 @@ async function customFetch(
     .then(async (r) => {
       if (!r.ok) {
         const data = await getResObject(r);
-        const message =
-          data?.message || data?.error || "Error status code from server";
+        const message = errorToText(data?.message || data?.error || data?.code);
 
         if (r.status === 403 && message === "Forbidden") {
           globalState.actions.setGlobalError("Invalid API key");
