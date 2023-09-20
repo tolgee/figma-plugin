@@ -104,6 +104,11 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
     method: "post",
   });
 
+  const bigMeta = useApiMutation({
+    url: "/v2/projects/big-meta",
+    method: "post",
+  });
+
   const handleGoBack = () => {
     setRoute("index");
   };
@@ -224,6 +229,23 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
           },
         },
       });
+
+      for (const screenshot of changes.screenshots.values()) {
+        const relatedKeys = screenshot.keys
+          .map((data) => ({
+            keyName: data.key,
+            namespace: data.ns || undefined,
+          }))
+          .slice(0, 100);
+        await bigMeta.mutateAsync({
+          content: {
+            "application/json": {
+              relatedKeysInOrder: relatedKeys,
+            },
+          },
+        });
+      }
+
       connectNodes();
       setSuccess(true);
     } catch (e) {

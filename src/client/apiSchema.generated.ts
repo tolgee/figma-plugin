@@ -77,6 +77,10 @@ export interface paths {
      */
     put: operations["applyImport_1"];
   };
+  "/v2/projects/batch-jobs/{id}/cancel": {
+    /** Stops batch operation (if possible) */
+    put: operations["cancel_1"];
+  };
   "/v2/projects/translations/{translationId}/set-state/{state}": {
     /** Sets translation state */
     put: operations["setTranslationState_1"];
@@ -87,11 +91,15 @@ export interface paths {
   };
   "/v2/projects/translations/{translationId}/comments/{commentId}": {
     /** Returns single translation comment */
-    get: operations["get_4"];
+    get: operations["get_7"];
     /** Updates single translation comment */
     put: operations["update_3"];
     /** Deletes the translation comment */
     delete: operations["delete_6"];
+  };
+  "/v2/projects/translations/{translationId}/set-outdated-flag/{state}": {
+    /** Set's "outdated" indication */
+    put: operations["setOutdated_1"];
   };
   "/v2/projects/translations/{translationId}/dismiss-auto-translated-state": {
     /** Removes "auto translated" indication */
@@ -130,7 +138,7 @@ export interface paths {
     post: operations["importKeys_1"];
   };
   "/v2/projects/keys/import": {
-    /** Import's new keys with translations. If key already exists, it's translations are not updated. */
+    /** Imports new keys with translations. If key already exists, its translations and tags are not updated. */
     post: operations["importKeys_3"];
   };
   "/v2/projects/keys/create": {
@@ -138,10 +146,60 @@ export interface paths {
     post: operations["create_2"];
   };
   "/v2/projects/keys": {
+    /** Returns all keys in the project */
+    get: operations["getAll_4"];
     /** Creates new key */
     post: operations["create_3"];
     /** Deletes one or multiple keys by their IDs in request body */
     delete: operations["delete_4"];
+  };
+  "/v2/projects/start-batch-job/untag-keys": {
+    /** Remove tags */
+    post: operations["untagKeys_1"];
+  };
+  "/v2/projects/start-batch-job/tag-keys": {
+    /** Add tags */
+    post: operations["tagKeys_1"];
+  };
+  "/v2/projects/start-batch-job/set-translation-state": {
+    /** Set translation state */
+    post: operations["setTranslationState_3"];
+  };
+  "/v2/projects/start-batch-job/set-keys-namespace": {
+    /** Set keys namespace */
+    post: operations["setKeysNamespace_1"];
+  };
+  "/v2/projects/start-batch-job/pre-translate-by-tm": {
+    /**
+     * Pre-translate by TM 
+     * @description Pre-translate provided keys to provided languages by TM.
+     */
+    post: operations["translate_1"];
+  };
+  "/v2/projects/start-batch-job/machine-translate": {
+    /**
+     * Machine Translation 
+     * @description Translate provided keys to provided languages through primary MT provider.
+     */
+    post: operations["machineTranslation_1"];
+  };
+  "/v2/projects/start-batch-job/delete-keys": {
+    /** Delete keys */
+    post: operations["deleteKeys_1"];
+  };
+  "/v2/projects/start-batch-job/copy-translations": {
+    /**
+     * Copy translation values 
+     * @description Copy translation values from one language to other languages.
+     */
+    post: operations["copyTranslations_1"];
+  };
+  "/v2/projects/start-batch-job/clear-translations": {
+    /**
+     * Clear translation values 
+     * @description Clear translation values for provided keys in selected languages.
+     */
+    post: operations["clearTranslations_1"];
   };
   "/v2/projects/import": {
     /**
@@ -161,9 +219,13 @@ export interface paths {
     /** Exports data (post). Useful when providing params exceeding allowed query size. */
     post: operations["exportPost_1"];
   };
+  "/v2/projects/big-meta": {
+    /** Stores a bigMeta for a project */
+    post: operations["store_1"];
+  };
   "/v2/projects/translations/{translationId}/comments": {
     /** Returns translation comments of translation */
-    get: operations["getAll_4"];
+    get: operations["getAll_6"];
     /** Creates a translation comment */
     post: operations["create_5"];
   };
@@ -185,7 +247,7 @@ export interface paths {
   };
   "/v2/projects/languages": {
     /** Returns all project languages */
-    get: operations["getAll_6"];
+    get: operations["getAll_8"];
     /** Creates language */
     post: operations["createLanguage_1"];
   };
@@ -222,6 +284,10 @@ export interface paths {
   "/v2/projects/activity": {
     /** Returns project history */
     get: operations["getActivity_1"];
+  };
+  "/v2/projects/my-batch-jobs": {
+    /** Lists all batch operations in project started by current user */
+    get: operations["myList_1"];
   };
   "/v2/projects/import/result/languages/{languageId}/translations": {
     /**
@@ -262,6 +328,21 @@ export interface paths {
      * @description Returns all existing and imported namespaces
      */
     get: operations["getAllNamespaces_3"];
+  };
+  "/v2/projects/current-batch-jobs": {
+    /**
+     * Returns all running and pending batch operations 
+     * @description Completed batch operations are returned only if they are not older than 1 hour. If user doesn't have permission to view all batch operations, only their operations are returned.
+     */
+    get: operations["currentJobs_1"];
+  };
+  "/v2/projects/batch-jobs/{id}": {
+    /** Returns batch operation */
+    get: operations["get_5"];
+  };
+  "/v2/projects/batch-jobs": {
+    /** Lists all batch operations in project */
+    get: operations["list_1"];
   };
   "/v2/projects/translations/{translationId}/history": {
     /**
@@ -320,9 +401,110 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    UserUpdateRequestDto: {
+      name: string;
+      email: string;
+      currentPassword?: string;
+      /** @description Callback url for link sent in e-mail. This may be omitted, when server has set frontEndUrl in properties. */
+      callbackUrl?: string;
+    };
     Avatar: {
       large: string;
       thumbnail: string;
+    };
+    Links: {
+      [key: string]: components["schemas"]["Link"] | undefined;
+    };
+    PrivateUserAccountModel: {
+      /** Format: int64 */
+      id: number;
+      username: string;
+      name?: string;
+      emailAwaitingVerification?: string;
+      mfaEnabled: boolean;
+      avatar?: components["schemas"]["Avatar"];
+      /** @enum {string} */
+      accountType: "LOCAL" | "LDAP" | "THIRD_PARTY";
+      /** @enum {string} */
+      globalServerRole: "USER" | "ADMIN";
+      deletable: boolean;
+      needsSuperJwtToken: boolean;
+    };
+    UserUpdatePasswordRequestDto: {
+      currentPassword: string;
+      password: string;
+    };
+    JwtAuthenticationResponse: {
+      accessToken?: string;
+      tokenType?: string;
+    };
+    UserTotpEnableRequestDto: {
+      totpKey: string;
+      otp: string;
+      password: string;
+    };
+    UserMfaRecoveryRequestDto: {
+      password: string;
+    };
+    EditProjectDTO: {
+      name: string;
+      slug?: string;
+      /** Format: int64 */
+      baseLanguageId?: number;
+      description?: string;
+    };
+    ComputedPermissionModel: {
+      permissionModel?: components["schemas"]["PermissionModel"];
+      /** @enum {string} */
+      origin: "ORGANIZATION_BASE" | "DIRECT" | "ORGANIZATION_OWNER" | "NONE" | "SERVER_ADMIN";
+      /**
+       * @description The user's permission type. This field is null if uses granular permissions 
+       * @enum {string}
+       */
+      type?: "NONE" | "VIEW" | "TRANSLATE" | "REVIEW" | "EDIT" | "MANAGE";
+      /**
+       * @deprecated 
+       * @description Deprecated (use translateLanguageIds). 
+       * 
+       * List of languages current user has TRANSLATE permission to. If null, all languages edition is permitted. 
+       * @example [
+       *   200001,
+       *   200004
+       * ]
+       */
+      permittedLanguageIds?: (number)[];
+      /**
+       * @description Granted scopes to the user. When user has type permissions, this field contains permission scopes of the type. 
+       * @example [
+       *   "KEYS_EDIT",
+       *   "TRANSLATIONS_VIEW"
+       * ]
+       */
+      scopes: ("translations.view" | "translations.edit" | "keys.edit" | "screenshots.upload" | "screenshots.delete" | "screenshots.view" | "activity.view" | "languages.edit" | "admin" | "project.edit" | "members.view" | "members.edit" | "translation-comments.add" | "translation-comments.edit" | "translation-comments.set-state" | "translations.state-edit" | "keys.view" | "keys.delete" | "keys.create" | "batch-jobs.view" | "batch-jobs.cancel" | "translations.batch-by-tm" | "translations.batch-machine")[];
+      /**
+       * @description List of languages user can change state to. If null, changing state of all language values is permitted. 
+       * @example [
+       *   200001,
+       *   200004
+       * ]
+       */
+      stateChangeLanguageIds?: (number)[];
+      /**
+       * @description List of languages user can view. If null, all languages view is permitted. 
+       * @example [
+       *   200001,
+       *   200004
+       * ]
+       */
+      viewLanguageIds?: (number)[];
+      /**
+       * @description List of languages user can translate to. If null, all languages editing is permitted. 
+       * @example [
+       *   200001,
+       *   200004
+       * ]
+       */
+      translateLanguageIds?: (number)[];
     };
     LanguageModel: {
       /** Format: int64 */
@@ -353,6 +535,86 @@ export interface components {
        */
       base: boolean;
     };
+    /**
+     * @description Current user's direct permission 
+     * @example MANAGE
+     */
+    PermissionModel: {
+      /**
+       * @description Granted scopes to the user. When user has type permissions, this field contains permission scopes of the type. 
+       * @example [
+       *   "KEYS_EDIT",
+       *   "TRANSLATIONS_VIEW"
+       * ]
+       */
+      scopes: ("translations.view" | "translations.edit" | "keys.edit" | "screenshots.upload" | "screenshots.delete" | "screenshots.view" | "activity.view" | "languages.edit" | "admin" | "project.edit" | "members.view" | "members.edit" | "translation-comments.add" | "translation-comments.edit" | "translation-comments.set-state" | "translations.state-edit" | "keys.view" | "keys.delete" | "keys.create" | "batch-jobs.view" | "batch-jobs.cancel" | "translations.batch-by-tm" | "translations.batch-machine")[];
+      /**
+       * @description The user's permission type. This field is null if uses granular permissions 
+       * @enum {string}
+       */
+      type?: "NONE" | "VIEW" | "TRANSLATE" | "REVIEW" | "EDIT" | "MANAGE";
+      /**
+       * @deprecated 
+       * @description Deprecated (use translateLanguageIds). 
+       * 
+       * List of languages current user has TRANSLATE permission to. If null, all languages edition is permitted. 
+       * @example [
+       *   200001,
+       *   200004
+       * ]
+       */
+      permittedLanguageIds?: (number)[];
+      /**
+       * @description List of languages user can translate to. If null, all languages editing is permitted. 
+       * @example [
+       *   200001,
+       *   200004
+       * ]
+       */
+      translateLanguageIds?: (number)[];
+      /**
+       * @description List of languages user can view. If null, all languages view is permitted. 
+       * @example [
+       *   200001,
+       *   200004
+       * ]
+       */
+      viewLanguageIds?: (number)[];
+      /**
+       * @description List of languages user can change state to. If null, changing state of all language values is permitted. 
+       * @example [
+       *   200001,
+       *   200004
+       * ]
+       */
+      stateChangeLanguageIds?: (number)[];
+    };
+    ProjectModel: {
+      /** Format: int64 */
+      id: number;
+      name: string;
+      description?: string;
+      slug?: string;
+      avatar?: components["schemas"]["Avatar"];
+      organizationOwner?: components["schemas"]["SimpleOrganizationModel"];
+      baseLanguage?: components["schemas"]["LanguageModel"];
+      /** @enum {string} */
+      organizationRole?: "MEMBER" | "OWNER";
+      directPermission?: components["schemas"]["PermissionModel"];
+      computedPermission: components["schemas"]["ComputedPermissionModel"];
+    };
+    SimpleOrganizationModel: {
+      /** Format: int64 */
+      id: number;
+      /** @example Beautiful organization */
+      name: string;
+      /** @example btforg */
+      slug: string;
+      /** @example This is a beautiful organization full of beautiful and clever people */
+      description?: string;
+      basePermissions: components["schemas"]["PermissionModel"];
+      avatar?: components["schemas"]["Avatar"];
+    };
     UpdateNamespaceDto: {
       name: string;
     };
@@ -365,6 +627,46 @@ export interface components {
       id: number;
       /** @example homepage */
       name: string;
+    };
+    MachineTranslationLanguagePropsDto: {
+      /**
+       * Format: int64 
+       * @description The language to apply those rules. If null, then this settings are default.
+       */
+      targetLanguageId?: number;
+      /**
+       * @description This service will be used for automated translation 
+       * @enum {string}
+       */
+      primaryService?: "GOOGLE" | "AWS" | "DEEPL" | "AZURE" | "BAIDU" | "TOLGEE";
+      /** @description List of enabled services */
+      enabledServices: ("GOOGLE" | "AWS" | "DEEPL" | "AZURE" | "BAIDU" | "TOLGEE")[];
+    };
+    SetMachineTranslationSettingsDto: {
+      settings: (components["schemas"]["MachineTranslationLanguagePropsDto"])[];
+    };
+    CollectionModelLanguageConfigItemModel: {
+      _embedded?: {
+        languageConfigs?: (components["schemas"]["LanguageConfigItemModel"])[];
+      };
+    };
+    LanguageConfigItemModel: {
+      /**
+       * Format: int64 
+       * @description When null, its a default configuration applied to not configured languages
+       */
+      targetLanguageId?: number;
+      /** @description When null, its a default configuration applied to not configured languages */
+      targetLanguageTag?: string;
+      /** @description When null, its a default configuration applied to not configured languages */
+      targetLanguageName?: string;
+      /**
+       * @description Service used for automated translating 
+       * @enum {string}
+       */
+      primaryService?: "GOOGLE" | "AWS" | "DEEPL" | "AZURE" | "BAIDU" | "TOLGEE";
+      /** @description Services to be used for suggesting */
+      enabledServices: ("GOOGLE" | "AWS" | "DEEPL" | "AZURE" | "BAIDU" | "TOLGEE")[];
     };
     TagKeyDto: {
       name: string;
@@ -483,6 +785,10 @@ export interface components {
       createdAt?: string;
       keyReferences: (components["schemas"]["KeyInScreenshotModel"])[];
       location?: string;
+      /** Format: int32 */
+      width?: number;
+      /** Format: int32 */
+      height?: number;
     };
     /**
      * @description Translations object containing values updated in this request 
@@ -506,13 +812,15 @@ export interface components {
        * @enum {string}
        */
       state: "UNTRANSLATED" | "TRANSLATED" | "REVIEWED";
+      /** @description Whether base language translation was changed after this translation was updated */
+      outdated: boolean;
       /** @description Was translated using Translation Memory or Machine translation service? */
       auto: boolean;
       /**
        * @description Which machine translation service was used to auto translate this 
        * @enum {string}
        */
-      mtProvider?: "GOOGLE" | "AWS" | "DEEPL" | "AZURE";
+      mtProvider?: "GOOGLE" | "AWS" | "DEEPL" | "AZURE" | "BAIDU" | "TOLGEE";
     };
     EditKeyDto: {
       name: string;
@@ -535,6 +843,66 @@ export interface components {
        * @example homepage
        */
       namespace?: string;
+    };
+    ProjectInviteUserDto: {
+      /** @enum {string} */
+      type?: "NONE" | "VIEW" | "TRANSLATE" | "REVIEW" | "EDIT" | "MANAGE";
+      /**
+       * @description Granted scopes for the invited user 
+       * @example [
+       *   "translations.view",
+       *   "translations.edit"
+       * ]
+       */
+      scopes?: (string)[];
+      /**
+       * @deprecated 
+       * @description Deprecated -> use translate languages
+       */
+      languages?: (number)[];
+      /**
+       * @deprecated 
+       * @description Languages user can translate to
+       */
+      translateLanguages?: (number)[];
+      /**
+       * @deprecated 
+       * @description Languages user can view
+       */
+      viewLanguages?: (number)[];
+      /**
+       * @deprecated 
+       * @description Languages user can change translation state (review)
+       */
+      stateChangeLanguages?: (number)[];
+      /** @description Email to send invitation to */
+      email?: string;
+      /** @description Name of invited user */
+      name?: string;
+    };
+    ProjectInvitationModel: {
+      /** Format: int64 */
+      id: number;
+      code: string;
+      /** @enum {string} */
+      type?: "NONE" | "VIEW" | "TRANSLATE" | "REVIEW" | "EDIT" | "MANAGE";
+      permittedLanguageIds?: (number)[];
+      /** Format: date-time */
+      createdAt: string;
+      invitedUserName?: string;
+      invitedUserEmail?: string;
+      permission: components["schemas"]["PermissionModel"];
+    };
+    AutoTranslationSettingsDto: {
+      /** @description If true, new keys will be automatically translated via batch operation using translation memory when 100% match is found */
+      usingTranslationMemory: boolean;
+      /** @description If true, new keys will be automatically translated via batch operationusing primary machine translation service.When "usingTranslationMemory" is enabled, it tries to translate it with translation memory first. */
+      usingMachineTranslation: boolean;
+      /**
+       * @description If true, import will trigger batch operation to translate the new new keys.
+       * It includes also the data imported via CLI, Figma, or other integrations using batch key import.
+       */
+      enableForImport: boolean;
     };
     SetFileNamespaceRequest: {
       namespace?: string;
@@ -575,6 +943,7 @@ export interface components {
       /** @enum {string} */
       globalServerRole: "USER" | "ADMIN";
       deleted: boolean;
+      disabled: boolean;
     };
     TranslationCommentDto: {
       text: string;
@@ -648,13 +1017,13 @@ export interface components {
        */
       name: string;
       /**
-       * @description Language tag according to BCP 47 definition 
-       * @example cs-CZ
+       * @description Language name in this language 
+       * @example čeština
        */
       originalName: string;
       /**
-       * @description Language name in this language 
-       * @example čeština
+       * @description Language tag according to BCP 47 definition 
+       * @example cs-CZ
        */
       tag: string;
       /**
@@ -662,6 +1031,220 @@ export interface components {
        * @example 🇨🇿
        */
       flagEmoji?: string;
+    };
+    UpdatePatDto: {
+      /** @description New description of the PAT */
+      description: string;
+    };
+    PatModel: {
+      /** Format: int64 */
+      id: number;
+      description: string;
+      /** Format: int64 */
+      expiresAt?: number;
+      /** Format: int64 */
+      createdAt: number;
+      /** Format: int64 */
+      updatedAt: number;
+      /** Format: int64 */
+      lastUsedAt?: number;
+    };
+    RegeneratePatDto: {
+      /**
+       * Format: int64 
+       * @description Expiration date in epoch format (milliseconds). When null key never expires. 
+       * @example 1661172869000
+       */
+      expiresAt?: number;
+    };
+    RevealedPatModel: {
+      token: string;
+      /** Format: int64 */
+      id: number;
+      /** Format: int64 */
+      lastUsedAt?: number;
+      /** Format: int64 */
+      createdAt: number;
+      /** Format: int64 */
+      updatedAt: number;
+      /** Format: int64 */
+      expiresAt?: number;
+      description: string;
+    };
+    SetOrganizationRoleDto: {
+      /** @enum {string} */
+      roleType: "MEMBER" | "OWNER";
+    };
+    OrganizationDto: {
+      /** @example Beautiful organization */
+      name: string;
+      /** @example This is a beautiful organization full of beautiful and clever people */
+      description?: string;
+      /** @example btforg */
+      slug?: string;
+    };
+    OrganizationModel: {
+      /** Format: int64 */
+      id: number;
+      /** @example Beautiful organization */
+      name: string;
+      /** @example btforg */
+      slug: string;
+      /** @example This is a beautiful organization full of beautiful and clever people */
+      description?: string;
+      basePermissions: components["schemas"]["PermissionModel"];
+      /**
+       * @description The role of currently authorized user. 
+       *     
+       * Can be null when user has direct access to one of the projects owned by the organization. 
+       * @enum {string}
+       */
+      currentUserRole?: "MEMBER" | "OWNER";
+      avatar?: components["schemas"]["Avatar"];
+    };
+    OrganizationInviteUserDto: {
+      /** @enum {string} */
+      roleType: "MEMBER" | "OWNER";
+      /** @description Name of invited user */
+      name?: string;
+      /** @description Email to send invitation to */
+      email?: string;
+    };
+    OrganizationInvitationModel: {
+      /** Format: int64 */
+      id: number;
+      code: string;
+      /** @enum {string} */
+      type: "MEMBER" | "OWNER";
+      /** Format: date-time */
+      createdAt: string;
+      invitedUserName?: string;
+      invitedUserEmail?: string;
+    };
+    SetLicenseKeyDto: {
+      licenseKey: string;
+    };
+    EeSubscriptionModel: {
+      name: string;
+      licenseKey: string;
+      enabledFeatures: ("GRANULAR_PERMISSIONS" | "PRIORITIZED_FEATURE_REQUESTS" | "PREMIUM_SUPPORT" | "DEDICATED_SLACK_CHANNEL" | "ASSISTED_UPDATES" | "DEPLOYMENT_ASSISTANCE" | "BACKUP_CONFIGURATION" | "TEAM_TRAINING" | "ACCOUNT_MANAGER" | "STANDARD_SUPPORT")[];
+      /** Format: int64 */
+      currentPeriodEnd?: number;
+      cancelAtPeriodEnd: boolean;
+      /** Format: int64 */
+      currentUserCount: number;
+      /** @enum {string} */
+      status: "ACTIVE" | "CANCELED" | "PAST_DUE" | "UNPAID" | "ERROR" | "KEY_USED_BY_ANOTHER_INSTANCE";
+      /** Format: date-time */
+      lastValidCheck?: string;
+    };
+    V2EditApiKeyDto: {
+      scopes: (string)[];
+      description?: string;
+    };
+    ApiKeyModel: {
+      /**
+       * Format: int64 
+       * @description ID of the API key
+       */
+      id: number;
+      /** @description Description */
+      description: string;
+      /** @description Username of user owner */
+      username?: string;
+      /** @description Full name of user owner */
+      userFullName?: string;
+      /**
+       * Format: int64 
+       * @description Api key's project ID
+       */
+      projectId: number;
+      /** @description Api key's project name */
+      projectName: string;
+      /**
+       * Format: int64 
+       * @description Timestamp of API key expiraion
+       */
+      expiresAt?: number;
+      /**
+       * Format: int64 
+       * @description Timestamp of API key last usage
+       */
+      lastUsedAt?: number;
+      /**
+       * @description Api key's permission scopes 
+       * @example [
+       *   "screenshots.upload",
+       *   "screenshots.delete",
+       *   "translations.edit",
+       *   "screenshots.view",
+       *   "translations.view",
+       *   "keys.edit"
+       * ]
+       */
+      scopes: (string)[];
+    };
+    RegenerateApiKeyDto: {
+      /**
+       * Format: int64 
+       * @description Expiration date in epoch format (milliseconds). When null key never expires. 
+       * @example 1661172869000
+       */
+      expiresAt?: number;
+    };
+    RevealedApiKeyModel: {
+      /** @description Resulting user's api key */
+      key: string;
+      /** Format: int64 */
+      id: number;
+      userFullName?: string;
+      projectName: string;
+      scopes: (string)[];
+      /** Format: int64 */
+      lastUsedAt?: number;
+      /** Format: int64 */
+      projectId: number;
+      username?: string;
+      /** Format: int64 */
+      expiresAt?: number;
+      description: string;
+    };
+    SuperTokenRequest: {
+      /** @description Has to be provided when TOTP enabled */
+      otp?: string;
+      /** @description Has to be provided when TOTP not enabled */
+      password?: string;
+    };
+    GenerateSlugDto: {
+      name: string;
+      oldSlug?: string;
+    };
+    BusinessEventReportRequest: {
+      eventName: string;
+      anonymousUserId?: string;
+      /** Format: int64 */
+      organizationId?: number;
+      /** Format: int64 */
+      projectId?: number;
+      data?: {
+        [key: string]: Record<string, never> | undefined;
+      };
+    };
+    IdentifyRequest: {
+      anonymousUserId: string;
+    };
+    CreateProjectDTO: {
+      name: string;
+      languages: (components["schemas"]["LanguageDto"])[];
+      /** @description Slug of your project used in url e.g. "/v2/projects/what-a-project". If not provided, it will be generated */
+      slug?: string;
+      /**
+       * Format: int64 
+       * @description Organization to create the project in
+       */
+      organizationId: number;
+      /** @description Tag of one of created languages, to select it as base language. If not provided, first language will be selected as base. */
+      baseLanguageTag?: string;
     };
     GetKeysRequestDto: {
       keys: (components["schemas"]["KeyDefinitionDto"])[];
@@ -742,6 +1325,14 @@ export interface components {
       translations: {
         [key: string]: string | undefined;
       };
+      /**
+       * @description Tags of the key 
+       * @example [
+       *   "homepage",
+       *   "user-profile"
+       * ]
+       */
+      tags?: (string)[];
     };
     CreateKeyDto: {
       /** @description Name of the key */
@@ -755,6 +1346,99 @@ export interface components {
       /** @description Ids of screenshots uploaded with /v2/image-upload endpoint */
       screenshotUploadedImageIds?: (number)[];
       screenshots?: (components["schemas"]["KeyScreenshotDto"])[];
+    };
+    UntagKeysRequest: {
+      keyIds: (number)[];
+      tags: (string)[];
+    };
+    BatchJobModel: {
+      /**
+       * Format: int64 
+       * @description Batch job id
+       */
+      id: number;
+      /**
+       * @description Status of the batch job 
+       * @enum {string}
+       */
+      status: "PENDING" | "RUNNING" | "SUCCESS" | "FAILED" | "CANCELLED";
+      /**
+       * @description Type of the batch job 
+       * @enum {string}
+       */
+      type: "PRE_TRANSLATE_BT_TM" | "MACHINE_TRANSLATE" | "AUTO_TRANSLATE" | "DELETE_KEYS" | "SET_TRANSLATIONS_STATE" | "CLEAR_TRANSLATIONS" | "COPY_TRANSLATIONS" | "TAG_KEYS" | "UNTAG_KEYS" | "SET_KEYS_NAMESPACE";
+      /**
+       * Format: int32 
+       * @description Total items, that have been processed so far
+       */
+      progress: number;
+      /**
+       * Format: int32 
+       * @description Total items
+       */
+      totalItems: number;
+      author?: components["schemas"]["SimpleUserAccountModel"];
+      /**
+       * Format: int64 
+       * @description The time when the job created
+       */
+      createdAt: number;
+      /**
+       * Format: int64 
+       * @description The time when the job was last updated (status change)
+       */
+      updatedAt: number;
+      /**
+       * Format: int64 
+       * @description The activity revision id, that stores the activity details of the job
+       */
+      activityRevisionId?: number;
+      /** @description If the job failed, this is the error message */
+      errorMessage?: string;
+    };
+    /** @description The user who started the job */
+    SimpleUserAccountModel: {
+      /** Format: int64 */
+      id: number;
+      username: string;
+      name?: string;
+      avatar?: components["schemas"]["Avatar"];
+      deleted: boolean;
+    };
+    TagKeysRequest: {
+      keyIds: (number)[];
+      tags: (string)[];
+    };
+    SetTranslationsStateStateRequest: {
+      keyIds: (number)[];
+      languageIds: (number)[];
+      /** @enum {string} */
+      state: "UNTRANSLATED" | "TRANSLATED" | "REVIEWED";
+    };
+    SetKeysNamespaceRequest: {
+      keyIds: (number)[];
+      namespace?: string;
+    };
+    PreTranslationByTmRequest: {
+      keyIds: (number)[];
+      targetLanguageIds: (number)[];
+    };
+    MachineTranslationRequest: {
+      keyIds: (number)[];
+      targetLanguageIds: (number)[];
+    };
+    DeleteKeysRequest: {
+      keyIds: (number)[];
+    };
+    CopyTranslationRequest: {
+      keyIds: (number)[];
+      /** Format: int64 */
+      sourceLanguageId: number;
+      targetLanguageIds: (number)[];
+    };
+    ClearTranslationsRequest: {
+      keyIds: (number)[];
+      languageIds: (number)[];
     };
     ErrorResponseBody: {
       code: string;
@@ -816,6 +1500,15 @@ export interface components {
       zip: boolean;
     };
     StreamingResponseBody: Record<string, never>;
+    BigMetaDto: {
+      /** @description List of keys, visible, in order as they appear in the document. The order is important! We are using it for graph distance calculation. */
+      relatedKeysInOrder: (components["schemas"]["RelatedKeyDto"])[];
+    };
+    /** @description List of keys, visible, in order as they appear in the document. The order is important! We are using it for graph distance calculation. */
+    RelatedKeyDto: {
+      namespace?: string;
+      keyName: string;
+    };
     TranslationCommentWithLangKeyDto: {
       /** Format: int64 */
       keyId: number;
@@ -839,6 +1532,8 @@ export interface components {
       targetLanguageId: number;
       /** @description Text value of base translation. Useful, when base translation is not stored yet. */
       baseText?: string;
+      /** @description List of services to use. If null, then all enabled services are used. */
+      services?: ("GOOGLE" | "AWS" | "DEEPL" | "AZURE" | "BAIDU" | "TOLGEE")[];
     };
     PagedModelTranslationMemoryItemModel: {
       _embedded?: {
@@ -855,13 +1550,13 @@ export interface components {
     };
     SuggestResultModel: {
       /**
-       * @description Results provided by enabled services 
-       * @example {
-       *   "GOOGLE": "This was translated by Google",
-       *   "AWS": "This was translated by AWS",
-       *   "DEEPL": "This was translated by DeepL",
-       *   "AZURE": "This was translated by Azure Cognitive"
-       * }
+       * @deprecated 
+       * @description String translations provided by enabled services. (deprecated, use `result` instead) 
+       * @example 
+       *     {
+       *       "GOOGLE": "This was translated by Google",
+       *       "TOLGEE": "This was translated by Tolgee Translator",
+       *     }
        */
       machineTranslations?: {
         [key: string]: string | undefined;
@@ -870,6 +1565,22 @@ export interface components {
       translationCreditsBalanceBefore: number;
       /** Format: int64 */
       translationCreditsBalanceAfter: number;
+      /**
+       * @description Results provided by enabled services. 
+       * @example {
+       *   "GOOGLE": {
+       *     "output": "This was translated by Google",
+       *     "contextDescription": null
+       *   },
+       *   "TOLGEE": {
+       *     "output": "This was translated by Tolgee Translator",
+       *     "contextDescription": "This is an example in swagger"
+       *   }
+       * }
+       */
+      result?: {
+        [key: string]: components["schemas"]["TranslationItemModel"] | undefined;
+      };
       /**
        * Format: int64 
        * @description Extra credits are neither refilled nor reset every period. User's can refill them on Tolgee cloud.
@@ -881,10 +1592,37 @@ export interface components {
        */
       translationExtraCreditsBalanceAfter: number;
     };
+    /**
+     * @description Results provided by enabled services. 
+     * @example {
+     *   "GOOGLE": {
+     *     "output": "This was translated by Google",
+     *     "contextDescription": null
+     *   },
+     *   "TOLGEE": {
+     *     "output": "This was translated by Tolgee Translator",
+     *     "contextDescription": "This is an example in swagger"
+     *   }
+     * }
+     */
+    TranslationItemModel: {
+      output: string;
+      contextDescription?: string;
+    };
     ScreenshotInfoDto: {
       text?: string;
       positions?: (components["schemas"]["KeyInScreenshotPositionDto"])[];
       location?: string;
+    };
+    CreatePatDto: {
+      /** @description Description of the PAT */
+      description: string;
+      /**
+       * Format: int64 
+       * @description Expiration date in epoch format (milliseconds). When null, token never expires. 
+       * @example 1661172869000
+       */
+      expiresAt?: number;
     };
     ImageUploadInfoDto: {
       location?: string;
@@ -898,6 +1636,231 @@ export interface components {
       /** Format: date-time */
       createdAt: string;
       location?: string;
+    };
+    AverageProportionalUsageItemModel: {
+      total: number;
+      unusedQuantity: number;
+      usedQuantity: number;
+      usedQuantityOverPlan: number;
+    };
+    PlanIncludedUsageModel: {
+      /** Format: int64 */
+      seats: number;
+      /** Format: int64 */
+      translationSlots: number;
+      /** Format: int64 */
+      translations: number;
+      /** Format: int64 */
+      mtCredits: number;
+    };
+    PlanPricesModel: {
+      perSeat: number;
+      perThousandTranslations?: number;
+      perThousandMtCredits?: number;
+      subscriptionMonthly: number;
+      subscriptionYearly: number;
+    };
+    PrepareSetEeLicenceKeyModel: {
+      plan: components["schemas"]["SelfHostedEePlanModel"];
+      usage: components["schemas"]["UsageModel"];
+    };
+    SelfHostedEePlanModel: {
+      /** Format: int64 */
+      id: number;
+      name: string;
+      public: boolean;
+      enabledFeatures: ("GRANULAR_PERMISSIONS" | "PRIORITIZED_FEATURE_REQUESTS" | "PREMIUM_SUPPORT" | "DEDICATED_SLACK_CHANNEL" | "ASSISTED_UPDATES" | "DEPLOYMENT_ASSISTANCE" | "BACKUP_CONFIGURATION" | "TEAM_TRAINING" | "ACCOUNT_MANAGER" | "STANDARD_SUPPORT")[];
+      prices: components["schemas"]["PlanPricesModel"];
+      includedUsage: components["schemas"]["PlanIncludedUsageModel"];
+      hasYearlyPrice: boolean;
+    };
+    SumUsageItemModel: {
+      total: number;
+      /** Format: int64 */
+      unusedQuantity: number;
+      /** Format: int64 */
+      usedQuantity: number;
+      /** Format: int64 */
+      usedQuantityOverPlan: number;
+    };
+    UsageModel: {
+      subscriptionPrice?: number;
+      /** @description Relevant for invoices only. When there are applied stripe credits, we need to reduce the total price by this amount. */
+      appliedStripeCredits?: number;
+      seats: components["schemas"]["AverageProportionalUsageItemModel"];
+      translations: components["schemas"]["AverageProportionalUsageItemModel"];
+      credits?: components["schemas"]["SumUsageItemModel"];
+      total: number;
+    };
+    CreateApiKeyDto: {
+      /** Format: int64 */
+      projectId: number;
+      scopes: (string)[];
+      /** @description Description of the project API key */
+      description?: string;
+      /**
+       * Format: int64 
+       * @description Expiration date in epoch format (milliseconds). When null key never expires. 
+       * @example 1661172869000
+       */
+      expiresAt?: number;
+    };
+    TextNode: Record<string, never>;
+    SignUpDto: {
+      name: string;
+      email: string;
+      organizationName?: string;
+      password: string;
+      invitationCode?: string;
+      callbackUrl?: string;
+      recaptchaToken?: string;
+    };
+    ResetPassword: {
+      email: string;
+      code: string;
+      password?: string;
+    };
+    ResetPasswordRequest: {
+      callbackUrl: string;
+      email: string;
+    };
+    LoginRequest: {
+      username: string;
+      password: string;
+      otp?: string;
+    };
+    CollectionModelSimpleOrganizationModel: {
+      _embedded?: {
+        organizations?: (components["schemas"]["SimpleOrganizationModel"])[];
+      };
+    };
+    UserPreferencesModel: {
+      language?: string;
+      /** Format: int64 */
+      preferredOrganizationId?: number;
+    };
+    HierarchyItem: {
+      /** @enum {string} */
+      scope: "translations.view" | "translations.edit" | "keys.edit" | "screenshots.upload" | "screenshots.delete" | "screenshots.view" | "activity.view" | "languages.edit" | "admin" | "project.edit" | "members.view" | "members.edit" | "translation-comments.add" | "translation-comments.edit" | "translation-comments.set-state" | "translations.state-edit" | "keys.view" | "keys.delete" | "keys.create" | "batch-jobs.view" | "batch-jobs.cancel" | "translations.batch-by-tm" | "translations.batch-machine";
+      requires: (components["schemas"]["HierarchyItem"])[];
+    };
+    AnnouncementDto: {
+      /** @enum {string} */
+      type: "FEATURE_BATCH_OPERATIONS";
+    };
+    AuthMethodsDTO: {
+      github: components["schemas"]["OAuthPublicConfigDTO"];
+      google: components["schemas"]["OAuthPublicConfigDTO"];
+      oauth2: components["schemas"]["OAuthPublicExtendsConfigDTO"];
+    };
+    InitialDataModel: {
+      serverConfiguration: components["schemas"]["PublicConfigurationDTO"];
+      userInfo?: components["schemas"]["PrivateUserAccountModel"];
+      preferredOrganization?: components["schemas"]["PrivateOrganizationModel"];
+      languageTag?: string;
+      eeSubscription?: components["schemas"]["EeSubscriptionModel"];
+      announcement?: components["schemas"]["AnnouncementDto"];
+    };
+    MtServiceDTO: {
+      enabled: boolean;
+      defaultEnabledForProject: boolean;
+    };
+    MtServicesDTO: {
+      /** @enum {string} */
+      defaultPrimaryService?: "GOOGLE" | "AWS" | "DEEPL" | "AZURE" | "BAIDU" | "TOLGEE";
+      services: {
+        [key: string]: components["schemas"]["MtServiceDTO"] | undefined;
+      };
+    };
+    OAuthPublicConfigDTO: {
+      clientId?: string;
+      enabled: boolean;
+    };
+    OAuthPublicExtendsConfigDTO: {
+      clientId?: string;
+      authorizationUrl?: string;
+      scopes?: (string)[];
+      enabled: boolean;
+    };
+    PrivateOrganizationModel: {
+      organizationModel?: components["schemas"]["OrganizationModel"];
+      /** @example Features organization has enabled */
+      enabledFeatures: ("GRANULAR_PERMISSIONS" | "PRIORITIZED_FEATURE_REQUESTS" | "PREMIUM_SUPPORT" | "DEDICATED_SLACK_CHANNEL" | "ASSISTED_UPDATES" | "DEPLOYMENT_ASSISTANCE" | "BACKUP_CONFIGURATION" | "TEAM_TRAINING" | "ACCOUNT_MANAGER" | "STANDARD_SUPPORT")[];
+      /** @example Beautiful organization */
+      name: string;
+      /** Format: int64 */
+      id: number;
+      basePermissions: components["schemas"]["PermissionModel"];
+      /** @example btforg */
+      slug: string;
+      avatar?: components["schemas"]["Avatar"];
+      /**
+       * @description The role of currently authorized user. 
+       *     
+       * Can be null when user has direct access to one of the projects owned by the organization. 
+       * @enum {string}
+       */
+      currentUserRole?: "MEMBER" | "OWNER";
+      /** @example This is a beautiful organization full of beautiful and clever people */
+      description?: string;
+    };
+    PublicBillingConfigurationDTO: {
+      enabled: boolean;
+    };
+    PublicConfigurationDTO: {
+      machineTranslationServices: components["schemas"]["MtServicesDTO"];
+      billing: components["schemas"]["PublicBillingConfigurationDTO"];
+      version: string;
+      authentication: boolean;
+      authMethods?: components["schemas"]["AuthMethodsDTO"];
+      passwordResettable: boolean;
+      allowRegistrations: boolean;
+      screenshotsUrl: string;
+      /** Format: int32 */
+      maxUploadFileSize: number;
+      clientSentryDsn?: string;
+      needsEmailVerification: boolean;
+      userCanCreateOrganizations: boolean;
+      appName: string;
+      showVersion: boolean;
+      internalControllerEnabled: boolean;
+      /** Format: int64 */
+      maxTranslationTextLength: number;
+      recaptchaSiteKey?: string;
+      chatwootToken?: string;
+      capterraTracker?: string;
+      ga4Tag?: string;
+      postHogApiKey?: string;
+      postHogHost?: string;
+    };
+    DocItem: {
+      name: string;
+      displayName?: string;
+      description?: string;
+    };
+    PagedModelProjectModel: {
+      _embedded?: {
+        projects?: (components["schemas"]["ProjectModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    PagedModelUserAccountInProjectModel: {
+      _embedded?: {
+        users?: (components["schemas"]["UserAccountInProjectModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    UserAccountInProjectModel: {
+      /** Format: int64 */
+      id: number;
+      username: string;
+      name?: string;
+      avatar?: components["schemas"]["Avatar"];
+      /** @enum {string} */
+      organizationRole?: "MEMBER" | "OWNER";
+      organizationBasePermission: components["schemas"]["PermissionModel"];
+      directPermission?: components["schemas"]["PermissionModel"];
+      computedPermission: components["schemas"]["ComputedPermissionModel"];
     };
     CollectionModelUsedNamespaceModel: {
       _embedded?: {
@@ -929,6 +1892,14 @@ export interface components {
       };
       page?: components["schemas"]["PageMetadata"];
     };
+    CreditBalanceModel: {
+      /** Format: int64 */
+      creditBalance: number;
+      /** Format: int64 */
+      bucketSize: number;
+      /** Format: int64 */
+      extraCreditBalance: number;
+    };
     KeySearchResultView: {
       name: string;
       /** Format: int64 */
@@ -951,6 +1922,17 @@ export interface components {
         keys?: (components["schemas"]["KeySearchSearchResultModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
+    };
+    PagedModelKeyModel: {
+      _embedded?: {
+        keys?: (components["schemas"]["KeyModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    CollectionModelKeyModel: {
+      _embedded?: {
+        keys?: (components["schemas"]["KeyModel"])[];
+      };
     };
     EntityDescriptionWithRelations: {
       entityClass: string;
@@ -1006,7 +1988,7 @@ export interface components {
       /** Format: int64 */
       timestamp: number;
       /** @enum {string} */
-      type: "UNKNOWN" | "SET_TRANSLATION_STATE" | "SET_TRANSLATIONS" | "DISMISS_AUTO_TRANSLATED_STATE" | "TRANSLATION_COMMENT_ADD" | "TRANSLATION_COMMENT_DELETE" | "TRANSLATION_COMMENT_EDIT" | "TRANSLATION_COMMENT_SET_STATE" | "SCREENSHOT_DELETE" | "SCREENSHOT_ADD" | "KEY_TAGS_EDIT" | "KEY_NAME_EDIT" | "KEY_DELETE" | "CREATE_KEY" | "COMPLEX_EDIT" | "IMPORT" | "CREATE_LANGUAGE" | "EDIT_LANGUAGE" | "DELETE_LANGUAGE" | "CREATE_PROJECT" | "EDIT_PROJECT" | "NAMESPACE_EDIT";
+      type: "UNKNOWN" | "SET_TRANSLATION_STATE" | "SET_TRANSLATIONS" | "DISMISS_AUTO_TRANSLATED_STATE" | "SET_OUTDATED_FLAG" | "TRANSLATION_COMMENT_ADD" | "TRANSLATION_COMMENT_DELETE" | "TRANSLATION_COMMENT_EDIT" | "TRANSLATION_COMMENT_SET_STATE" | "SCREENSHOT_DELETE" | "SCREENSHOT_ADD" | "KEY_TAGS_EDIT" | "KEY_NAME_EDIT" | "KEY_DELETE" | "CREATE_KEY" | "COMPLEX_EDIT" | "IMPORT" | "CREATE_LANGUAGE" | "EDIT_LANGUAGE" | "DELETE_LANGUAGE" | "CREATE_PROJECT" | "EDIT_PROJECT" | "NAMESPACE_EDIT" | "BATCH_PRE_TRANSLATE_BY_TM" | "BATCH_MACHINE_TRANSLATE" | "AUTO_TRANSLATE" | "BATCH_CLEAR_TRANSLATIONS" | "BATCH_COPY_TRANSLATIONS" | "BATCH_SET_TRANSLATION_STATE" | "BATCH_TAG_KEYS" | "BATCH_UNTAG_KEYS" | "BATCH_SET_KEYS_NAMESPACE";
       author?: components["schemas"]["ProjectActivityAuthorModel"];
       modifiedEntities?: {
         [key: string]: (components["schemas"]["ModifiedEntityModel"])[] | undefined;
@@ -1017,10 +1999,17 @@ export interface components {
       counts?: {
         [key: string]: number | undefined;
       };
+      params?: Record<string, never>;
     };
     PropertyModification: {
       old?: Record<string, never>;
       new?: Record<string, never>;
+    };
+    PagedModelBatchJobModel: {
+      _embedded?: {
+        batchJobs?: (components["schemas"]["BatchJobModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
     };
     ImportTranslationModel: {
       /** Format: int64 */
@@ -1074,6 +2063,11 @@ export interface components {
       /** @example homepage */
       name: string;
     };
+    CollectionModelBatchJobModel: {
+      _embedded?: {
+        batchJobs?: (components["schemas"]["BatchJobModel"])[];
+      };
+    };
     PagedModelTranslationCommentModel: {
       _embedded?: {
         translationComments?: (components["schemas"]["TranslationCommentModel"])[];
@@ -1085,15 +2079,6 @@ export interface components {
         revisions?: (components["schemas"]["TranslationHistoryModel"])[];
       };
       page?: components["schemas"]["PageMetadata"];
-    };
-    /** @description Author of the change */
-    SimpleUserAccountModel: {
-      /** Format: int64 */
-      id: number;
-      username: string;
-      name?: string;
-      avatar?: components["schemas"]["Avatar"];
-      deleted: boolean;
     };
     TranslationHistoryModel: {
       /** @description Modified fields */
@@ -1144,6 +2129,8 @@ export interface components {
       screenshotCount: number;
       /** @description Key screenshots. Not provided when API key hasn't screenshots.view scope permission. */
       screenshots?: (components["schemas"]["ScreenshotModel"])[];
+      /** @description There is a context available for this key */
+      contextPresent: boolean;
       /**
        * @description Translations object 
        * @example 
@@ -1198,13 +2185,15 @@ export interface components {
        * @enum {string}
        */
       state: "UNTRANSLATED" | "TRANSLATED" | "REVIEWED";
+      /** @description Whether base language translation was changed after this translation was updated */
+      outdated: boolean;
       /** @description Was translated using Translation Memory or Machine translation service? */
       auto: boolean;
       /**
        * @description Which machine translation service was used to auto translate this 
        * @enum {string}
        */
-      mtProvider?: "GOOGLE" | "AWS" | "DEEPL" | "AZURE";
+      mtProvider?: "GOOGLE" | "AWS" | "DEEPL" | "AZURE" | "BAIDU" | "TOLGEE";
       /**
        * Format: int64 
        * @description Count of translation comments
@@ -1217,6 +2206,17 @@ export interface components {
       unresolvedCommentCount: number;
       /** @description Was translation memory used to translate this? */
       fromTranslationMemory: boolean;
+    };
+    CollectionModelProjectTransferOptionModel: {
+      _embedded?: {
+        transferOptions?: (components["schemas"]["ProjectTransferOptionModel"])[];
+      };
+    };
+    ProjectTransferOptionModel: {
+      name: string;
+      slug: string;
+      /** Format: int64 */
+      id: number;
     };
     LanguageStatsModel: {
       /** Format: int64 */
@@ -1269,10 +2269,190 @@ export interface components {
       };
       page?: components["schemas"]["PageMetadata"];
     };
+    CollectionModelProjectInvitationModel: {
+      _embedded?: {
+        invitations?: (components["schemas"]["ProjectInvitationModel"])[];
+      };
+    };
+    Pageable: {
+      /** Format: int32 */
+      page?: number;
+      /** Format: int32 */
+      size?: number;
+      sort?: (string)[];
+    };
+    PagedModelApiKeyModel: {
+      _embedded?: {
+        apiKeys?: (components["schemas"]["ApiKeyModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    PagedModelProjectWithStatsModel: {
+      _embedded?: {
+        projects?: (components["schemas"]["ProjectWithStatsModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    ProjectStatistics: {
+      /** Format: int64 */
+      projectId: number;
+      /** Format: int64 */
+      keyCount: number;
+      /** Format: int64 */
+      languageCount: number;
+      translationStatePercentages: {
+        [key: string]: number | undefined;
+      };
+    };
+    ProjectWithStatsModel: {
+      /** Format: int64 */
+      id: number;
+      name: string;
+      description?: string;
+      slug?: string;
+      avatar?: components["schemas"]["Avatar"];
+      organizationOwner?: components["schemas"]["SimpleOrganizationModel"];
+      baseLanguage?: components["schemas"]["LanguageModel"];
+      /** @enum {string} */
+      organizationRole?: "MEMBER" | "OWNER";
+      directPermission?: components["schemas"]["PermissionModel"];
+      computedPermission: components["schemas"]["ComputedPermissionModel"];
+      stats: components["schemas"]["ProjectStatistics"];
+      languages: (components["schemas"]["LanguageModel"])[];
+    };
     CollectionModelScreenshotModel: {
       _embedded?: {
         screenshots?: (components["schemas"]["ScreenshotModel"])[];
       };
+    };
+    PagedModelPatModel: {
+      _embedded?: {
+        pats?: (components["schemas"]["PatModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    PatWithUserModel: {
+      user: components["schemas"]["SimpleUserAccountModel"];
+      /** Format: int64 */
+      id: number;
+      /** Format: int64 */
+      lastUsedAt?: number;
+      /** Format: int64 */
+      createdAt: number;
+      /** Format: int64 */
+      updatedAt: number;
+      /** Format: int64 */
+      expiresAt?: number;
+      description: string;
+    };
+    OrganizationRequestParamsDto: {
+      filterCurrentUserOwner: boolean;
+      search?: string;
+    };
+    PagedModelOrganizationModel: {
+      _embedded?: {
+        organizations?: (components["schemas"]["OrganizationModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    CollectionModelOrganizationInvitationModel: {
+      _embedded?: {
+        organizationInvitations?: (components["schemas"]["OrganizationInvitationModel"])[];
+      };
+    };
+    PublicUsageModel: {
+      /** Format: int64 */
+      organizationId: number;
+      /**
+       * Format: int64 
+       * @description Current balance of standard credits. Standard credits are refilled every month
+       */
+      creditBalance: number;
+      /**
+       * Format: int64 
+       * @description How many credits are included in your current plan
+       */
+      includedMtCredits: number;
+      /**
+       * Format: int64 
+       * @description Date when credits were refilled. (In epoch format)
+       */
+      creditBalanceRefilledAt: number;
+      /**
+       * Format: int64 
+       * @description Date when credits will be refilled. (In epoch format)
+       */
+      creditBalanceNextRefillAt: number;
+      /**
+       * Format: int64 
+       * @description Currently used credits over credits included in plan and extra credits
+       */
+      currentPayAsYouGoMtCredits: number;
+      /**
+       * Format: int64 
+       * @description The maximum amount organization can spend on MT credit usage before they reach the spending limit
+       */
+      availablePayAsYouGoMtCredits: number;
+      /**
+       * Format: int64 
+       * @description Extra credits, which are neither refilled nor reset every month. These credits are used when there are no standard credits
+       */
+      extraCreditBalance: number;
+      /**
+       * Format: int64 
+       * @description How many translations can be stored within your organization
+       */
+      translationSlotsLimit: number;
+      /**
+       * Format: int64 
+       * @description How many translation slots are included in current subscription plan. How many translation slots can organization use without additional costs
+       */
+      includedTranslationSlots: number;
+      /**
+       * Format: int64 
+       * @description How many translations are included in current subscription plan. How many translations can organization use without additional costs
+       */
+      includedTranslations: number;
+      /**
+       * Format: int64 
+       * @description How many translations slots are currently used by organization
+       */
+      currentTranslationSlots: number;
+      /**
+       * Format: int64 
+       * @description How many non-empty translations are currently stored by organization
+       */
+      currentTranslations: number;
+      /**
+       * Format: int64 
+       * @description How many translations can be stored until reaching the limit. (For pay us you go, the top limit is the spending limit)
+       */
+      translationsLimit: number;
+    };
+    PagedModelUserAccountWithOrganizationRoleModel: {
+      _embedded?: {
+        usersInOrganization?: (components["schemas"]["UserAccountWithOrganizationRoleModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    SimpleProjectModel: {
+      /** Format: int64 */
+      id: number;
+      name: string;
+      description?: string;
+      slug?: string;
+      avatar?: components["schemas"]["Avatar"];
+      baseLanguage?: components["schemas"]["LanguageModel"];
+    };
+    UserAccountWithOrganizationRoleModel: {
+      /** Format: int64 */
+      id: number;
+      name: string;
+      username: string;
+      /** @enum {string} */
+      organizationRole?: "MEMBER" | "OWNER";
+      projectsWithDirectPermission: (components["schemas"]["SimpleProjectModel"])[];
+      avatar?: components["schemas"]["Avatar"];
     };
     ApiKeyWithLanguagesModel: {
       /**
@@ -1288,16 +2468,35 @@ export interface components {
       scopes: (string)[];
       /** Format: int64 */
       lastUsedAt?: number;
-      username?: string;
       /** Format: int64 */
       projectId: number;
+      username?: string;
       /** Format: int64 */
       expiresAt?: number;
       description: string;
     };
+    PagedModelUserAccountModel: {
+      _embedded?: {
+        users?: (components["schemas"]["UserAccountModel"])[];
+      };
+      page?: components["schemas"]["PageMetadata"];
+    };
+    UserTotpDisableRequestDto: {
+      password: string;
+    };
     DeleteKeysDto: {
       /** @description IDs of keys to delete */
       ids: (number)[];
+    };
+    Link: {
+      href?: string;
+      hreflang?: string;
+      title?: string;
+      type?: string;
+      deprecation?: string;
+      profile?: string;
+      name?: string;
+      templated?: boolean;
     };
   };
   responses: never;
@@ -1800,6 +2999,7 @@ export interface operations {
      * @description Imports the data prepared in previous step
      */
     parameters?: {
+        /** @description Whether override or keep all translations with unresolved conflicts */
         /**
          * @description API key provided via query parameter. Will be deprecated in the future. 
          * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
@@ -1814,6 +3014,44 @@ export interface operations {
          */
       header?: {
         "X-API-Key"?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: never;
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  cancel_1: {
+    /** Stops batch operation (if possible) */
+    parameters: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+      path: {
+        id: number;
       };
     };
     responses: {
@@ -1852,7 +3090,7 @@ export interface operations {
       };
       path: {
         translationId: number;
-        state: "UNTRANSLATED" | "TRANSLATED" | "REVIEWED";
+        state: "TRANSLATED" | "REVIEWED";
       };
     };
     responses: {
@@ -1919,7 +3157,7 @@ export interface operations {
       };
     };
   };
-  get_4: {
+  get_7: {
     /** Returns single translation comment */
     parameters: {
         /**
@@ -2047,6 +3285,49 @@ export interface operations {
       };
     };
   };
+  setOutdated_1: {
+    /** Set's "outdated" indication */
+    parameters: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+      path: {
+        translationId: number;
+        state: boolean;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["TranslationModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
   dismissAutoTranslatedState_1: {
     /** Removes "auto translated" indication */
     parameters: {
@@ -2127,6 +3408,14 @@ export interface operations {
          * To filter default namespace, set to empty string.
          */
         /** @description Selects only keys with provided tag */
+        /**
+         * @description Selects only keys, where translation in provided langs is in outdated state 
+         * @example en-US
+         */
+        /**
+         * @description Selects only keys, where translation in provided langs is not in outdated state 
+         * @example en-US
+         */
         /** @description Zero-based page index (0..N) */
         /** @description The size of the page to be returned */
         /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
@@ -2149,6 +3438,8 @@ export interface operations {
         filterHasNoScreenshot?: boolean;
         filterNamespace?: (string)[];
         filterTag?: (string)[];
+        filterOutdatedLanguage?: (string)[];
+        filterNotOutdatedLanguage?: (string)[];
         page?: number;
         size?: number;
         sort?: (string)[];
@@ -2496,7 +3787,7 @@ export interface operations {
     };
   };
   importKeys_3: {
-    /** Import's new keys with translations. If key already exists, it's translations are not updated. */
+    /** Imports new keys with translations. If key already exists, its translations and tags are not updated. */
     parameters?: {
         /**
          * @description API key provided via query parameter. Will be deprecated in the future. 
@@ -2563,6 +3854,51 @@ export interface operations {
       201: {
         content: {
           "*/*": components["schemas"]["KeyWithDataModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  getAll_4: {
+    /** Returns all keys in the project */
+    parameters?: {
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        page?: number;
+        size?: number;
+        sort?: (string)[];
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["PagedModelKeyModel"];
         };
       };
       /** @description Bad Request */
@@ -2649,6 +3985,414 @@ export interface operations {
     responses: {
       /** @description OK */
       200: never;
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  untagKeys_1: {
+    /** Remove tags */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UntagKeysRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["BatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  tagKeys_1: {
+    /** Add tags */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TagKeysRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["BatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  setTranslationState_3: {
+    /** Set translation state */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SetTranslationsStateStateRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["BatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  setKeysNamespace_1: {
+    /** Set keys namespace */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SetKeysNamespaceRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["BatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  translate_1: {
+    /**
+     * Pre-translate by TM 
+     * @description Pre-translate provided keys to provided languages by TM.
+     */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PreTranslationByTmRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["BatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  machineTranslation_1: {
+    /**
+     * Machine Translation 
+     * @description Translate provided keys to provided languages through primary MT provider.
+     */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MachineTranslationRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["BatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  deleteKeys_1: {
+    /** Delete keys */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DeleteKeysRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["BatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  copyTranslations_1: {
+    /**
+     * Copy translation values 
+     * @description Copy translation values from one language to other languages.
+     */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CopyTranslationRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["BatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  clearTranslations_1: {
+    /**
+     * Clear translation values 
+     * @description Clear translation values for provided keys in selected languages.
+     */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ClearTranslationsRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["BatchJobModel"];
+        };
+      };
       /** @description Bad Request */
       400: {
         content: {
@@ -2870,7 +4614,47 @@ export interface operations {
       };
     };
   };
-  getAll_4: {
+  store_1: {
+    /** Stores a bigMeta for a project */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BigMetaDto"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: never;
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  getAll_6: {
     /** Returns translation comments of translation */
     parameters: {
         /** @description Zero-based page index (0..N) */
@@ -3107,7 +4891,7 @@ export interface operations {
       };
     };
   };
-  getAll_6: {
+  getAll_8: {
     /** Returns all project languages */
     parameters?: {
         /** @description Zero-based page index (0..N) */
@@ -3603,12 +5387,60 @@ export interface operations {
       };
     };
   };
+  myList_1: {
+    /** Lists all batch operations in project started by current user */
+    parameters?: {
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        page?: number;
+        size?: number;
+        sort?: (string)[];
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["PagedModelBatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
   getImportTranslations_1: {
     /**
      * Get translations 
      * @description Returns translations prepared to import.
      */
     parameters: {
+        /** @description Whether only translations, which are in conflict with existing translations should be returned */
+        /** @description Whether only translations with unresolved conflictswith existing translations should be returned */
+        /** @description String to search in translation text or key */
         /** @description Zero-based page index (0..N) */
         /** @description The size of the page to be returned */
         /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
@@ -3884,6 +5716,135 @@ export interface operations {
       };
     };
   };
+  currentJobs_1: {
+    /**
+     * Returns all running and pending batch operations 
+     * @description Completed batch operations are returned only if they are not older than 1 hour. If user doesn't have permission to view all batch operations, only their operations are returned.
+     */
+    parameters?: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["CollectionModelBatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  get_5: {
+    /** Returns batch operation */
+    parameters: {
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["BatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
+  list_1: {
+    /** Lists all batch operations in project */
+    parameters?: {
+        /** @description Zero-based page index (0..N) */
+        /** @description The size of the page to be returned */
+        /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+        /**
+         * @description API key provided via query parameter. Will be deprecated in the future. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      query?: {
+        page?: number;
+        size?: number;
+        sort?: (string)[];
+        ak?: string;
+      };
+        /**
+         * @description API key provided via header. Safer since headers are not stored in server logs. 
+         * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
+         */
+      header?: {
+        "X-API-Key"?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["PagedModelBatchJobModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "*/*": string;
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "*/*": string;
+        };
+      };
+    };
+  };
   getTranslationHistory_1: {
     /**
      * Returns history of specific translation. 
@@ -4030,6 +5991,14 @@ export interface operations {
          */
         /** @description Selects only keys with provided tag */
         /**
+         * @description Selects only keys, where translation in provided langs is in outdated state 
+         * @example en-US
+         */
+        /**
+         * @description Selects only keys, where translation in provided langs is not in outdated state 
+         * @example en-US
+         */
+        /**
          * @description API key provided via query parameter. Will be deprecated in the future. 
          * @example tgpak_gm2dcxzynjvdqm3fozwwgmdjmvwdgojqonvxamldnu4hi5lp
          */
@@ -4047,6 +6016,8 @@ export interface operations {
         filterHasNoScreenshot?: boolean;
         filterNamespace?: (string)[];
         filterTag?: (string)[];
+        filterOutdatedLanguage?: (string)[];
+        filterNotOutdatedLanguage?: (string)[];
         ak?: string;
       };
         /**
