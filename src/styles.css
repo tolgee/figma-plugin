@@ -13,10 +13,10 @@
 [class^="_selectableItem_"]:not([class^="_disabled_"])
   [class^="_input_"]:checked
   ~ [class^="_box_"] {
-  background-color: rgb(130, 43, 85);
+  background-color: #ec407a;
 }
 :root {
-  --figma-color-bg-brand: rgb(130, 43, 85);
-  --figma-color-bg-selected: rgb(130, 43, 85);
+  --figma-color-bg-brand: #ec407a;
+  --figma-color-bg-selected: #ec407a;
   --figma-color-icon-brand: white;
 }
