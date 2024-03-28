@@ -1,6 +1,5 @@
 import { FrameScreenshot, NodeInfo } from "@/types";
 import { createEndpoint } from "../utils/createEndpoint";
-import { findTextNodes, getNodeInfo } from "../utils/nodeTools";
 
 export const getScreenshotsEndpoint = createEndpoint(
   "GET_SCREENSHOTS",

@@ -12,7 +12,7 @@ import { emit } from "@/utilities";
 import { useApiQuery } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
-import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
+import { useGlobalActions } from "@/ui/state/GlobalState";
 import { getConnectedNodes } from "@/tools/getConnectedNodes";
 import { NodeInfo, TranslationsUpdateHandler } from "@/types";
 import { NodeList } from "@/ui/components/NodeList/NodeList";
