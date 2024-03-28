@@ -12,8 +12,8 @@ const afterArgs = process.argv.slice(2);
 const SEARCHED_TEXTS = ["Tomcat started on port(s):"];
 
 const dockerComposeProcess = spawn(
-  "docker",
-  ["compose", "up", "--force-recreate"],
+  "docker-compose",
+  ["up", "--force-recreate"],
   {
     cwd: path.join(__dirname, "..", "cypress"),
   }

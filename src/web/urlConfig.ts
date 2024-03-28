@@ -1,5 +1,5 @@
 import { ComponentProps } from "preact";
-import { type Plugin } from "../Plugin";
+import { type Plugin } from "../ui/Plugin";
 import { NodeInfo, TolgeeConfig } from "@/types";
 
 export type PluginData = ComponentProps<typeof Plugin>;

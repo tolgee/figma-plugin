@@ -1,5 +1,5 @@
 import { FrameScreenshot, NodeInfo } from "@/types";
-import { components } from "../client/apiSchema.generated";
+import { components } from "@/ui/client/apiSchema.generated";
 import { compareNs } from "./compareNs";
 
 type KeyWithTranslationsModel =

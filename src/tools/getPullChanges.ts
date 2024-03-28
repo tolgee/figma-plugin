@@ -1,4 +1,4 @@
-import { components } from "@/client/apiSchema.generated";
+import { components } from "@/ui/client/apiSchema.generated";
 import { NodeInfo, PartialNodeInfo } from "@/types";
 import { compareNs } from "./compareNs";
 
