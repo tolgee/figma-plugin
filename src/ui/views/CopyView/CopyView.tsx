@@ -7,21 +7,21 @@ import {
   Text,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
-
-import { useGlobalState } from "@/state/GlobalState";
-import { NodeList } from "../../components/NodeList/NodeList";
-import { TopBar } from "../../components/TopBar/TopBar";
+import { useGlobalState } from "@/ui/state/GlobalState";
+import { useApiMutation } from "@/ui/client/useQueryApi";
+import { getPullChanges } from "@/tools/getPullChanges";
+import { emit } from "@create-figma-plugin/utilities";
+import { TranslationsUpdateHandler } from "@/types";
+import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
+import { getConnectedNodes } from "@/tools/getConnectedNodes";
 import {
   COMPACT_SIZE,
   DEFAULT_SIZE,
   useWindowSize,
 } from "@/tools/useWindowSize";
-import { useApiMutation } from "@/client/useQueryApi";
-import { getPullChanges } from "@/tools/getPullChanges";
-import { emit } from "@create-figma-plugin/utilities";
-import { TranslationsUpdateHandler } from "@/types";
-import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
-import { getConnectedNodes } from "@/tools/getConnectedNodes";
+
+import { NodeList } from "../../components/NodeList/NodeList";
+import { TopBar } from "../../components/TopBar/TopBar";
 
 export const CopyView = () => {
   const selection = useGlobalState((c) => c.selection);

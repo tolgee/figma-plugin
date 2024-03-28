@@ -1,6 +1,6 @@
 import { loadFontsAsync, showUI } from "@create-figma-plugin/utilities";
 import { on, emit } from "@/utilities";
-import { TOLGEE_NODE_INFO, TOLGEE_PLUGIN_CONFIG_NAME } from "./constants";
+import { TOLGEE_NODE_INFO, TOLGEE_PLUGIN_CONFIG_NAME } from "../constants";
 
 import {
   ConfigChangeHandler,
@@ -19,43 +19,15 @@ import {
   SyncCompleteHandler,
   TolgeeConfig,
   TranslationsUpdateHandler,
-} from "./types";
-import { DEFAULT_SIZE } from "./tools/useWindowSize";
-import { endpointGetScreenshots } from "./endpoints";
-import { compareNs } from "./tools/compareNs";
-
-const getNodeInfo = (node: TextNode): NodeInfo => {
-  const pluginData = JSON.parse(
-    node.getPluginData(TOLGEE_NODE_INFO) || "{}"
-  ) as Partial<NodeInfo>;
-  return {
-    id: node.id,
-    name: node.name,
-    characters: node.characters,
-    key: pluginData.key || "",
-    ns: pluginData.ns,
-    connected: Boolean(pluginData.connected),
-  };
-};
-
-const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
-  let result: TextNode[] = [];
-  for (const node of nodes) {
-    if (node.type === "TEXT") {
-      result.push(node);
-    }
-    // @ts-ignore
-    if (node.children) {
-      // @ts-ignore
-      result = result.concat(findTextNodes(node.children as SceneNode[]));
-    }
-  }
-  return result;
-};
-
-const findTextNodesInfo = (nodes: readonly SceneNode[]): NodeInfo[] => {
-  return findTextNodes(nodes).map(getNodeInfo);
-};
+} from "../types";
+import { DEFAULT_SIZE } from "../tools/useWindowSize";
+import { compareNs } from "../tools/compareNs";
+import {
+  findTextNodes,
+  findTextNodesInfo,
+  getNodeInfo,
+} from "./utils/nodeTools";
+import { getScreenshotsEndpoint } from "./endpoints/getScreenshots";
 
 const getGlobalSettings = async () => {
   const pluginData = await figma.clientStorage.getAsync(
@@ -142,22 +114,22 @@ export default async function () {
     emit<SelectionChangeHandler>("SELECTION_CHANGE", nodes);
   });
 
-  figma.on("documentchange", () => {
-    const nodes = findTextNodesInfo(figma.currentPage.children);
-    emit<DocumentChangeHandler>("DOCUMENT_CHANGE", nodes);
-  });
+  // figma.on("documentchange", () => {
+  //   const nodes = findTextNodesInfo(figma.currentPage.children);
+  //   emit<DocumentChangeHandler>("DOCUMENT_CHANGE", nodes);
+  // });
 
-  figma.on("currentpagechange", async () => {
-    emit<SelectionChangeHandler>(
-      "SELECTION_CHANGE",
-      findTextNodesInfo(figma.currentPage.selection)
-    );
-    emit<DocumentChangeHandler>(
-      "DOCUMENT_CHANGE",
-      findTextNodesInfo(figma.currentPage.children)
-    );
-    emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
-  });
+  // figma.on("currentpagechange", async () => {
+  //   emit<SelectionChangeHandler>(
+  //     "SELECTION_CHANGE",
+  //     findTextNodesInfo(figma.currentPage.selection)
+  //   );
+  //   emit<DocumentChangeHandler>(
+  //     "DOCUMENT_CHANGE",
+  //     findTextNodesInfo(figma.currentPage.children)
+  //   );
+  //   emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
+  // });
 
   on<SetupHandle>("SETUP", async (config) => {
     await setPluginData(config);
@@ -186,51 +158,6 @@ export default async function () {
   on<SyncCompleteHandler>("SYNC_COMPLETE", () => {
     figma.notify("Synchronization completed.");
     figma.closePlugin();
-  });
-
-  endpointGetScreenshots.implement(async (nodes) => {
-    // find nodes in document
-    const documentNodes = figma.currentPage.findAll((docNode) =>
-      Boolean(nodes.find((n) => n.id === docNode.id))
-    );
-
-    const frames = new Set<FrameNode>();
-
-    // find frames in parents
-    documentNodes.forEach((docNode) => {
-      let node = docNode as (BaseNode & ChildrenMixin) | null;
-      while (node) {
-        if (node.type === "FRAME") {
-          frames.add(node as FrameNode);
-          break;
-        }
-        node = node.parent;
-      }
-    });
-
-    const data = await Promise.all(
-      Array.from(frames).map(async (frame) => {
-        return {
-          image: await frame.exportAsync({ format: "PNG" }),
-          info: {
-            id: frame.id,
-            name: frame.name,
-            width: frame.width,
-            height: frame.height,
-          },
-          keys: findTextNodes([frame]).map((node) => {
-            return {
-              ...getNodeInfo(node),
-              x: node.x,
-              y: node.y,
-              width: node.width,
-              height: node.height,
-            };
-          }),
-        };
-      })
-    );
-    return data;
   });
 
   on<SetNodesDataHandler>("SET_NODES_DATA", (nodes) => {
@@ -281,9 +208,9 @@ export default async function () {
       }
     });
     newPage.name = name;
-    const textNodes = findTextNodes(newPage.children);
+    const textNodes = [...findTextNodes(newPage.children)];
     await loadFontsAsync(textNodes);
-    textNodes.forEach((node) => {
+    [...textNodes].forEach((node) => {
       const { connected, key, ns } = getNodeInfo(node);
       if (connected) {
         if (data) {
@@ -305,6 +232,8 @@ export default async function () {
     );
     figma.notify(`Created page "${name}"`);
   });
+
+  getScreenshotsEndpoint.register();
 
   const config = await getPluginData();
 

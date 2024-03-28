@@ -3,7 +3,7 @@ import { h } from "preact";
 import "!./styles.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-import { InitialState } from "./types";
+import { InitialState } from "../types";
 import { GlobalState } from "./state/GlobalState";
 import { Router } from "./views/Router";
 

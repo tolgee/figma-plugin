@@ -1,7 +1,7 @@
 import { h } from "preact";
 import clsx from "clsx";
 
-import { components } from "@/client/apiSchema.generated";
+import { components } from "@/ui/client/apiSchema.generated";
 import styles from "./SearchRow.css";
 
 type KeySearchSearchResultModel =

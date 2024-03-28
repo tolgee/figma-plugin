@@ -13,9 +13,9 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
-import { useApiMutation } from "@/client/useQueryApi";
-import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
+import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
+import { useApiMutation } from "@/ui/client/useQueryApi";
+import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Settings.css";
 import { ProjectSettings } from "./ProjectSettings";

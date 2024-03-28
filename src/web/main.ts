@@ -1,4 +1,3 @@
-import { endpointGetScreenshots } from "@/endpoints";
 import {
   ConfigChangeHandler,
   DocumentChangeHandler,
@@ -10,10 +9,11 @@ import {
   SetupHandle,
   TranslationsUpdateHandler,
 } from "@/types";
-import { emit, on } from "../utilities";
+import { emit, on } from "@/utilities";
 import exampleScreenshot from "./exampleScreenshot";
 import { generateIframeContent } from "./iframeContent";
 import { createLinks, getUrlConfig } from "./urlConfig";
+import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
 
 const iframe = document.getElementById("plugin_iframe") as HTMLIFrameElement;
 const shortcuts = document.getElementById("shortcuts") as HTMLDivElement;
@@ -59,12 +59,14 @@ function main() {
     }
   }
 
-  endpointGetScreenshots.implement((nodes) => {
-    if (nodes.find((n) => n.key === "on-the-road-title")) {
-      return [exampleScreenshot] as FrameScreenshot[];
-    }
-    return [] as FrameScreenshot[];
-  });
+  getScreenshotsEndpoint
+    .mock((nodes) => {
+      if (nodes.find((n) => n.key === "on-the-road-title")) {
+        return [exampleScreenshot] as FrameScreenshot[];
+      }
+      return [] as FrameScreenshot[];
+    })
+    .register();
 
   on<SetupHandle>("SETUP", (data) => {
     state.config = { ...data, pageInfo: true, documentInfo: true };

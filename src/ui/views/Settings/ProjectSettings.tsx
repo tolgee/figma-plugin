@@ -1,6 +1,6 @@
-import { useApiQuery } from "@/client/useQueryApi";
-import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
-import { NamespaceSelect } from "@/components/NamespaceSelect/NamespaceSelect";
+import { useApiQuery } from "@/ui/client/useQueryApi";
+import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
+import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
 import { TolgeeConfig } from "@/types";
 import { VerticalSpace, Text, Muted, Checkbox } from "@create-figma-plugin/ui";
 import { Fragment, FunctionComponent, h } from "preact";

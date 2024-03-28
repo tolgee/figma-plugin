@@ -57,8 +57,8 @@
   "figma-plugin": {
     "id": "1212381421658754793",
     "name": "Tolgee",
-    "main": "src/main.ts",
-    "ui": "src/ui.tsx",
+    "main": "src/main/main.ts",
+    "ui": "src/ui/ui.tsx",
     "editorType": [
       "figma"
     ]

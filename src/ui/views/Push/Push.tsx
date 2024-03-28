@@ -11,11 +11,11 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-import { components } from "@/client/apiSchema.generated";
-import { useApiMutation, useApiQuery } from "@/client/useQueryApi";
-import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
-import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
-import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
+import { components } from "@/ui/client/apiSchema.generated";
+import { useApiMutation, useApiQuery } from "@/ui/client/useQueryApi";
+import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
+import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
+import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import {
   getPushChanges,
   KeyChanges,
@@ -26,8 +26,8 @@ import { RouteParam } from "../routes";
 import { Changes } from "./Changes";
 import { FrameScreenshot, NodeInfo, SetNodesDataHandler } from "@/types";
 import { emit } from "@/utilities";
-import { endpointGetScreenshots } from "@/endpoints";
 import { compareNs } from "@/tools/compareNs";
+import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
 
 type ImportKeysResolvableItemDto =
   components["schemas"]["ImportKeysResolvableItemDto"];
@@ -75,7 +75,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       cacheTime: 0,
       staleTime: 0,
       onSuccess(data) {
-        endpointGetScreenshots
+        getScreenshotsEndpoint
           .call(nodes)
           .then((screenshots) => {
             setChanges(

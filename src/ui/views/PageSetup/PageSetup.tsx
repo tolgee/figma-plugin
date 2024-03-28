@@ -1,8 +1,8 @@
-import { useApiQuery } from "@/client/useQueryApi";
-import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
-import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
-import { TopBar } from "@/components/TopBar/TopBar";
-import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
+import { useApiQuery } from "@/ui/client/useQueryApi";
+import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
+import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
+import { TopBar } from "@/ui/components/TopBar/TopBar";
+import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { COMPACT_SIZE, useWindowSize } from "@/tools/useWindowSize";
 import { CurrentPageSettings } from "@/types";
 import {

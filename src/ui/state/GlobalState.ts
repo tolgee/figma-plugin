@@ -12,7 +12,7 @@ import {
   TolgeeConfig,
 } from "@/types";
 import { Route } from "../views/routes";
-import { createProvider } from "../tools/createProvider";
+import { createProvider } from "@/tools/createProvider";
 
 type Props = {
   initialSelection: Array<NodeInfo>;

@@ -7,27 +7,28 @@ import {
   Divider,
   IconWarning32,
   Text,
-  Textbox,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 import { emit } from "@/utilities";
 
 import { NodeInfo, SetNodesDataHandler } from "@/types";
-import { Settings, InsertLink } from "@/icons/SvgIcons";
-import { useApiQuery } from "@/client/useQueryApi";
+import { Settings, InsertLink } from "@/ui/icons/SvgIcons";
+import { useApiQuery } from "@/ui/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
-import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
+import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { getConnectedNodes, getNodesWithKey } from "@/tools/getConnectedNodes";
-import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
-import { NodeList } from "../../components/NodeList/NodeList";
-import { TopBar } from "../../components/TopBar/TopBar";
-import styles from "./Index.css";
+import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
+import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
 import {
   COMPACT_SIZE,
   DEFAULT_SIZE,
   useWindowSize,
 } from "@/tools/useWindowSize";
-import { NamespaceSelect } from "@/components/NamespaceSelect/NamespaceSelect";
+
+import { NodeList } from "../../components/NodeList/NodeList";
+import { TopBar } from "../../components/TopBar/TopBar";
+import styles from "./Index.css";
+import { KeyInput } from "./KeyInput";
 
 export const Index = () => {
   const selection = useGlobalState((c) => c.selection);
@@ -112,15 +113,14 @@ export const Index = () => {
     setRoute("connect", { node });
   };
 
-  const handleKeyChange =
-    (node: NodeInfo) => (e: h.JSX.TargetedEvent<HTMLInputElement, Event>) => {
-      emit<SetNodesDataHandler>("SET_NODES_DATA", [
-        {
-          ...node,
-          key: e.currentTarget.value,
-        },
-      ]);
-    };
+  const handleKeyChange = (node: NodeInfo) => (value: string) => {
+    emit<SetNodesDataHandler>("SET_NODES_DATA", [
+      {
+        ...node,
+        key: value,
+      },
+    ]);
+  };
 
   const handleNsChange = (node: NodeInfo) => (value: string) => {
     emit<SetNodesDataHandler>("SET_NODES_DATA", [
@@ -230,16 +230,9 @@ export const Index = () => {
           nodes={selection}
           keyComponent={(node) =>
             !node.connected && (
-              <Textbox
-                data-cy="index_unconnected_key_input"
-                placeholder="Key name"
-                value={node.key || ""}
-                onChange={handleKeyChange(node)}
-                variant="border"
-                style={{
-                  fontSize: 12,
-                  height: 23,
-                }}
+              <KeyInput
+                initialValue={node.key || ""}
+                onDebouncedChange={handleKeyChange(node)}
               />
             )
           }

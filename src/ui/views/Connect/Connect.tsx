@@ -11,16 +11,16 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
-import { TopBar } from "@/components/TopBar/TopBar";
-import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
-import { useApiQuery } from "@/client/useQueryApi";
+import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
+import { TopBar } from "@/ui/components/TopBar/TopBar";
+import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
+import { useApiQuery } from "@/ui/client/useQueryApi";
+import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
+import { emit } from "@/utilities";
+import { SetNodesDataHandler } from "@/types";
 import { RouteParam } from "../routes";
 import styles from "./Connect.css";
 import { SearchRow } from "./SearchRow";
-import { emit } from "@/utilities";
-import { SetNodesDataHandler } from "@/types";
-import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
 
 type Props = RouteParam<"connect">;
 

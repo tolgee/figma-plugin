@@ -2,8 +2,9 @@ import { Fragment, h } from "preact";
 import clsx from "clsx";
 
 import { KeyChanges } from "@/tools/getPushChanges";
+import { NodeList } from "@/ui/components/NodeList/NodeList";
+
 import styles from "./Changes.css";
-import { NodeList } from "@/components/NodeList/NodeList";
 
 type Props = {
   changes: KeyChanges;

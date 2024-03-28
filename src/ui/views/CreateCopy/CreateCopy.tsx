@@ -1,8 +1,8 @@
-import { useApiMutation, useApiQuery } from "@/client/useQueryApi";
-import { ActionsBottom } from "@/components/ActionsBottom/ActionsBottom";
-import { FullPageLoading } from "@/components/FullPageLoading/FullPageLoading";
-import { TopBar } from "@/components/TopBar/TopBar";
-import { useGlobalActions, useGlobalState } from "@/state/GlobalState";
+import { useApiMutation, useApiQuery } from "@/ui/client/useQueryApi";
+import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
+import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
+import { TopBar } from "@/ui/components/TopBar/TopBar";
+import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { getPullChanges } from "@/tools/getPullChanges";
 import { CopyPageHandler } from "@/types";
 import {
