@@ -2,9 +2,9 @@ import { useApiMutation, useApiQuery } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { TopBar } from "@/ui/components/TopBar/TopBar";
-import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
+import { useGlobalActions } from "@/ui/state/GlobalState";
 import { getPullChanges } from "@/tools/getPullChanges";
-import { CopyPageHandler } from "@/types";
+import { CopyPageHandler, NodeInfo } from "@/types";
 import {
   VerticalSpace,
   Text,
@@ -27,7 +27,7 @@ export const CreateCopy: FunctionComponent = () => {
   const [copyType, setCopyType] = useState<CopyType>("keys");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
-  const nodes = useGlobalState((c) => c.allNodes);
+  const nodes = /*useGlobalState((c) => c.allNodes)*/ [] as NodeInfo[];
 
   const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
 

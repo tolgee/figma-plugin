@@ -29,10 +29,12 @@ import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { KeyInput } from "./KeyInput";
+import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
 
 export const Index = () => {
-  const selection = useGlobalState((c) => c.selection);
-  const allNodes = useGlobalState((c) => c.allNodes);
+  const selectionLoadable = useSelectedNodes();
+  const selection = selectionLoadable.data?.items || [];
+
   const [error, setError] = useState<string>();
   const defaultNamespace = useGlobalState((c) => c.config?.namespace);
   const namespacesDisabled = useGlobalState(
@@ -77,7 +79,7 @@ export const Index = () => {
   };
 
   const handlePush = () => {
-    const subjectNodes = (nothingSelected ? allNodes : selection).map(
+    const subjectNodes = /*nothingSelected ? allNodes :*/ selection.map(
       (node) => ({
         ...node,
         ns: node.ns ?? defaultNamespace,
@@ -135,98 +137,103 @@ export const Index = () => {
     setError(undefined);
   }, [selection]);
 
-  useWindowSize(
-    !selection || selection.length < 2 ? COMPACT_SIZE : DEFAULT_SIZE
-  );
+  const size = !selection || selection.length < 2 ? COMPACT_SIZE : DEFAULT_SIZE;
+
+  useWindowSize(size);
 
   if (languagesLoadable.isLoading || namespacesLoadable.isLoading) {
     return <FullPageLoading />;
   }
 
   return (
-    <Fragment>
-      <Container
-        space="medium"
-        style={{ paddingBlock: "var(--space-extra-small)" }}
-      >
-        <TopBar
-          leftPart={
-            <Fragment>
-              {languages && (
-                <select
-                  data-cy="index_language_select"
-                  className={styles.languageContainer}
-                  value={language}
-                  placeholder="Language"
-                  disabled={!nothingSelected}
-                  onChange={(e) => {
-                    handleLanguageChange((e.target as HTMLInputElement).value);
-                  }}
+    <div className={styles.container} style={{ height: size.height }}>
+      {selectionLoadable.isFetching && <FullPageLoading />}
+      <div>
+        <Container
+          space="medium"
+          style={{ paddingBlock: "var(--space-extra-small)" }}
+        >
+          <TopBar
+            leftPart={
+              <Fragment>
+                {languages && (
+                  <select
+                    data-cy="index_language_select"
+                    className={styles.languageContainer}
+                    value={language}
+                    placeholder="Language"
+                    disabled={!nothingSelected}
+                    onChange={(e) => {
+                      handleLanguageChange(
+                        (e.target as HTMLInputElement).value
+                      );
+                    }}
+                  >
+                    {languages.map((l) => (
+                      <option key={l.tag} value={l.tag}>
+                        {l.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                <Button data-cy="index_push_button" onClick={handlePush}>
+                  {nothingSelected ? "Push all" : "Push"}
+                </Button>
+
+                <Button
+                  data-cy="index_pull_button"
+                  onClick={handlePull}
+                  secondary
                 >
-                  {languages.map((l) => (
-                    <option key={l.tag} value={l.tag}>
-                      {l.name}
-                    </option>
-                  ))}
-                </select>
-              )}
+                  {nothingSelected ? "Pull all" : "Pull"}
+                </Button>
 
-              <Button data-cy="index_push_button" onClick={handlePush}>
-                {nothingSelected ? "Push all" : "Push"}
-              </Button>
-
-              <Button
-                data-cy="index_pull_button"
-                onClick={handlePull}
-                secondary
+                <Button
+                  data-cy="index_create_copy_button"
+                  onClick={handleCopy}
+                  secondary
+                >
+                  Create a copy
+                </Button>
+              </Fragment>
+            }
+            rightPart={
+              <div
+                data-cy="index_settings_button"
+                className={styles.settingsButton}
+                onClick={() => setRoute("settings")}
+                role="button"
               >
-                {nothingSelected ? "Pull all" : "Pull"}
-              </Button>
-
-              <Button
-                data-cy="index_create_copy_button"
-                onClick={handleCopy}
-                secondary
+                <Settings width={15} height={15} />
+              </div>
+            }
+          />
+        </Container>
+        <Divider />
+        <Container space="medium">
+          {error && (
+            <Fragment>
+              <Banner
+                icon={<IconWarning32 />}
+                style={{ cursor: "pointer" }}
+                onClick={() => setError(undefined)}
               >
-                Create a copy
-              </Button>
+                {error}
+              </Banner>
+              <VerticalSpace space="large" />
             </Fragment>
-          }
-          rightPart={
-            <div
-              data-cy="index_settings_button"
-              className={styles.settingsButton}
-              onClick={() => setRoute("settings")}
-              role="button"
-            >
-              <Settings width={15} height={15} />
-            </div>
-          }
-        />
-      </Container>
-      <Divider />
-      <VerticalSpace space="large" />
-      <Container space="medium">
-        {error && (
-          <Fragment>
-            <Banner
-              icon={<IconWarning32 />}
-              style={{ cursor: "pointer" }}
-              onClick={() => setError(undefined)}
-            >
-              {error}
-            </Banner>
-            <VerticalSpace space="large" />
-          </Fragment>
-        )}
-      </Container>
+          )}
+        </Container>
+      </div>
 
       {nothingSelected ? (
-        <Container space="medium">
+        <Container space="medium" style={{ marginTop: 8 }}>
           <Text>No texts selected</Text>
         </Container>
       ) : (
         <NodeList
+          onBottomReached={selectionLoadable.fetchMore}
           nodes={selection}
           keyComponent={(node) =>
             !node.connected && (
@@ -277,6 +284,6 @@ export const Index = () => {
           }}
         />
       )}
-    </Fragment>
+    </div>
   );
 };

@@ -40,6 +40,10 @@ export const PageSetup: FunctionComponent = () => {
     setRoute("index");
   };
 
+  const handleClear = () => {
+    setConfig({ pageCopy: false });
+  };
+
   const validated = Boolean(settings?.language);
 
   useWindowSize(COMPACT_SIZE);
@@ -51,7 +55,14 @@ export const PageSetup: FunctionComponent = () => {
   return (
     <Fragment>
       <Container space="medium">
-        <TopBar leftPart={<div>Page setup</div>} />
+        <TopBar
+          leftPart={<div>Page setup</div>}
+          rightPart={
+            <Button data-cy="index_pull_button" onClick={handleClear} secondary>
+              Clear page data
+            </Button>
+          }
+        />
       </Container>
       <Divider />
       <VerticalSpace space="large" />

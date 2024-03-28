@@ -23,6 +23,7 @@ export const createEndpoint = <I, O>(
       implementation = fn;
       return self;
     },
+    name,
   };
   return self;
 };

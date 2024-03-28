@@ -3,10 +3,8 @@ import { useEffect, useState } from "preact/hooks";
 
 import {
   ConfigChangeHandler,
-  DocumentChangeHandler,
   NodeInfo,
   ResetHandler,
-  SelectionChangeHandler,
   SetLanguageHandler,
   SetupHandle,
   TolgeeConfig,
@@ -15,8 +13,6 @@ import { Route } from "../views/routes";
 import { createProvider } from "@/tools/createProvider";
 
 type Props = {
-  initialSelection: Array<NodeInfo>;
-  initialNodes: Array<NodeInfo>;
   initialConfig: Partial<TolgeeConfig> | null;
 };
 
@@ -25,9 +21,7 @@ export const globalState = {
 };
 
 export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
-  ({ initialSelection, initialConfig, initialNodes }: Props) => {
-    const [allNodes, setAllNodes] = useState<NodeInfo[]>(initialNodes);
-    const [selection, setSelection] = useState<NodeInfo[]>(initialSelection);
+  ({ initialConfig }: Props) => {
     const [route, _setRoute] = useState<Route>(["index"]);
     const routeKey = route[0];
     const [config, _setConfig] = useState(initialConfig);
@@ -38,18 +32,6 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     const [editedKeys, setEditedKeys] = useState<Record<string, string>>({});
 
     useEffect(() => {
-      return on<SelectionChangeHandler>("SELECTION_CHANGE", (data) => {
-        setSelection(data);
-      });
-    }, []);
-
-    useEffect(() => {
-      return on<DocumentChangeHandler>("DOCUMENT_CHANGE", (data) => {
-        setAllNodes(data);
-      });
-    }, []);
-
-    useEffect(() => {
       return on<ConfigChangeHandler>("CONFIG_CHANGE", (data) => {
         _setConfig(data);
       });
@@ -58,8 +40,7 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     const data = {
       route,
       routeKey,
-      allNodes,
-      selection,
+      selection: [] as NodeInfo[],
       config,
       globalError,
       editedKeys,

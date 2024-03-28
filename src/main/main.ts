@@ -9,7 +9,6 @@ import {
   CurrentPageSettings,
   DocumentChangeHandler,
   GlobalSettings,
-  NodeInfo,
   ResetHandler,
   ResizeHandler,
   SelectionChangeHandler,
@@ -28,6 +27,7 @@ import {
   getNodeInfo,
 } from "./utils/nodeTools";
 import { getScreenshotsEndpoint } from "./endpoints/getScreenshots";
+import { getSelectedNodesEndpoint } from "./endpoints/getSelectedNodes";
 
 const getGlobalSettings = async () => {
   const pluginData = await figma.clientStorage.getAsync(
@@ -110,26 +110,27 @@ const getAllPages = () => {
 
 export default async function () {
   figma.on("selectionchange", () => {
-    const nodes = findTextNodesInfo(figma.currentPage.selection);
-    emit<SelectionChangeHandler>("SELECTION_CHANGE", nodes);
+    emit<SelectionChangeHandler>("SELECTION_CHANGE");
   });
 
-  // figma.on("documentchange", () => {
-  //   const nodes = findTextNodesInfo(figma.currentPage.children);
-  //   emit<DocumentChangeHandler>("DOCUMENT_CHANGE", nodes);
-  // });
+  figma.on("documentchange", (e) => {
+    if (
+      !e.documentChanges.every((ch) => {
+        return (
+          ch.type === "PROPERTY_CHANGE" &&
+          ch.properties.every((p) => p === "pluginData")
+        );
+      })
+    ) {
+      emit<DocumentChangeHandler>("DOCUMENT_CHANGE");
+    }
+  });
 
-  // figma.on("currentpagechange", async () => {
-  //   emit<SelectionChangeHandler>(
-  //     "SELECTION_CHANGE",
-  //     findTextNodesInfo(figma.currentPage.selection)
-  //   );
-  //   emit<DocumentChangeHandler>(
-  //     "DOCUMENT_CHANGE",
-  //     findTextNodesInfo(figma.currentPage.children)
-  //   );
-  //   emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
-  // });
+  figma.on("currentpagechange", async () => {
+    emit<SelectionChangeHandler>("SELECTION_CHANGE");
+    emit<DocumentChangeHandler>("DOCUMENT_CHANGE");
+    emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
+  });
 
   on<SetupHandle>("SETUP", async (config) => {
     await setPluginData(config);
@@ -172,12 +173,6 @@ export default async function () {
         })
       );
     });
-
-    // update selection
-    emit<SelectionChangeHandler>(
-      "SELECTION_CHANGE",
-      findTextNodesInfo(figma.currentPage.selection)
-    );
   });
 
   on<TranslationsUpdateHandler>("UPDATE_NODES", async (nodes) => {
@@ -191,10 +186,7 @@ export default async function () {
     figma.notify("Document translations updated");
 
     // update selection
-    emit<SelectionChangeHandler>(
-      "SELECTION_CHANGE",
-      findTextNodesInfo(figma.currentPage.selection)
-    );
+    emit<SelectionChangeHandler>("SELECTION_CHANGE");
   });
 
   on<CopyPageHandler>("COPY_PAGE", async (data) => {
@@ -234,6 +226,7 @@ export default async function () {
   });
 
   getScreenshotsEndpoint.register();
+  getSelectedNodesEndpoint.register();
 
   const config = await getPluginData();
 
@@ -245,7 +238,6 @@ export default async function () {
     {
       config,
       selectedNodes: findTextNodesInfo(figma.currentPage.selection),
-      allNodes: findTextNodesInfo(figma.currentPage.children),
     }
   );
 }

@@ -34,15 +34,16 @@ export const getScreenshotsEndpoint = createEndpoint(
             width: frame.width,
             height: frame.height,
           },
-          keys: [...findTextNodes([frame])].map((node) => {
-            return {
-              ...getNodeInfo(node),
-              x: node.x,
-              y: node.y,
-              width: node.width,
-              height: node.height,
-            };
-          }),
+          keys: [],
+          // keys: [...findTextNodes(frame)].map((node) => {
+          //   return {
+          //     ...getNodeInfo(node),
+          //     x: node.x,
+          //     y: node.y,
+          //     width: node.width,
+          //     height: node.height,
+          //   };
+          // }),
         };
       })
     );

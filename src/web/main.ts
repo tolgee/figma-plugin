@@ -52,10 +52,10 @@ function main() {
     );
 
     if (changed.allNodesChanged) {
-      emit<DocumentChangeHandler>("DOCUMENT_CHANGE", state.allNodes);
+      emit<DocumentChangeHandler>("DOCUMENT_CHANGE");
     }
     if (changed.selectionChanged) {
-      emit<SelectionChangeHandler>("SELECTION_CHANGE", state.selectedNodes);
+      emit<SelectionChangeHandler>("SELECTION_CHANGE");
     }
   }
 

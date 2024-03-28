@@ -9,7 +9,6 @@ export const emit = <Handler extends EventHandler>(
   ...args: Parameters<Handler["handler"]>
 ): void => {
   const iframe = document?.getElementById("plugin_iframe") as HTMLIFrameElement;
-  console.log({ name });
   if (iframe) {
     iframe.contentWindow!.postMessage({ pluginMessage: [name, ...args] });
   } else {

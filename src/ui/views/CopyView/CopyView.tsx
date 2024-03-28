@@ -11,7 +11,7 @@ import { useGlobalState } from "@/ui/state/GlobalState";
 import { useApiMutation } from "@/ui/client/useQueryApi";
 import { getPullChanges } from "@/tools/getPullChanges";
 import { emit } from "@create-figma-plugin/utilities";
-import { TranslationsUpdateHandler } from "@/types";
+import { NodeInfo, TranslationsUpdateHandler } from "@/types";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { getConnectedNodes } from "@/tools/getConnectedNodes";
 import {
@@ -26,7 +26,7 @@ import { TopBar } from "../../components/TopBar/TopBar";
 export const CopyView = () => {
   const selection = useGlobalState((c) => c.selection);
   const language = useGlobalState((c) => c.config?.language);
-  const allNodes = useGlobalState((c) => c.allNodes);
+  const allNodes = /*useGlobalState((c) => c.allNodes) */ [] as NodeInfo[];
 
   const nothingSelected = selection.length === 0;
 

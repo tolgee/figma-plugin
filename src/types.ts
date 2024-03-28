@@ -42,12 +42,12 @@ export interface ResizeHandler extends EventHandler {
 
 export interface SelectionChangeHandler extends EventHandler {
   name: "SELECTION_CHANGE";
-  handler: (data: NodeInfo[]) => void;
+  handler: () => void;
 }
 
 export interface DocumentChangeHandler extends EventHandler {
   name: "DOCUMENT_CHANGE";
-  handler: (data: NodeInfo[]) => void;
+  handler: () => void;
 }
 
 export interface PageChangeHandler extends EventHandler {
@@ -112,8 +112,8 @@ export type CurrentDocumentSettings = GlobalSettings & {
 
 export type CurrentPageSettings = {
   language: string;
-  pageInfo: true;
-  pageCopy: true;
+  pageInfo: boolean;
+  pageCopy: boolean;
 };
 
 export type TolgeeConfig = CurrentDocumentSettings & CurrentPageSettings;

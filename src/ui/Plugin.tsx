@@ -19,13 +19,9 @@ const queryClient = new QueryClient({
   },
 });
 
-export function Plugin({ config, allNodes, selectedNodes }: Props) {
+export function Plugin({ config, selectedNodes }: Props) {
   return (
-    <GlobalState
-      initialNodes={allNodes}
-      initialSelection={selectedNodes}
-      initialConfig={config}
-    >
+    <GlobalState initialConfig={config}>
       <QueryClientProvider client={queryClient}>
         <Router />
       </QueryClientProvider>

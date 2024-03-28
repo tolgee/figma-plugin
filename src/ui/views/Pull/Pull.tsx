@@ -14,7 +14,7 @@ import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { getConnectedNodes } from "@/tools/getConnectedNodes";
-import { TranslationsUpdateHandler } from "@/types";
+import { NodeInfo, TranslationsUpdateHandler } from "@/types";
 import { NodeList } from "@/ui/components/NodeList/NodeList";
 import { getPullChanges } from "@/tools/getPullChanges";
 
@@ -25,7 +25,7 @@ import styles from "./Pull.css";
 type Props = RouteParam<"pull">;
 
 export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
-  const allNodes = useGlobalState((c) => c.allNodes);
+  const allNodes = /*useGlobalState((c) => c.allNodes);*/ [] as NodeInfo[];
   const selectedNodes = nodes || getConnectedNodes(allNodes);
   const { setRoute, setLanguage } = useGlobalActions();
   const [success, setSuccess] = useState(false);
