@@ -100,7 +100,6 @@ export const Index = () => {
 
   const handlePull = () => {
     setRoute("pull", {
-      nodes: nothingSelected ? undefined : getConnectedNodes(selection),
       lang: language,
     });
   };

@@ -4,7 +4,6 @@ import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading
 import { TopBar } from "@/ui/components/TopBar/TopBar";
 import { useGlobalActions } from "@/ui/state/GlobalState";
 import { getPullChanges } from "@/tools/getPullChanges";
-import { CopyPageHandler, NodeInfo } from "@/types";
 import {
   VerticalSpace,
   Text,
@@ -15,9 +14,10 @@ import {
   RadioButtons,
   Checkbox,
 } from "@create-figma-plugin/ui";
-import { emit } from "@create-figma-plugin/utilities";
 import { Fragment, FunctionComponent, h } from "preact";
 import { useMemo, useState } from "preact/hooks";
+import { useCopyPage } from "@/ui/hooks/useCopyPage";
+import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
 
 type CopyType = "language" | "keys";
 
@@ -27,9 +27,12 @@ export const CreateCopy: FunctionComponent = () => {
   const [copyType, setCopyType] = useState<CopyType>("keys");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
 
-  const nodes = /*useGlobalState((c) => c.allNodes)*/ [] as NodeInfo[];
+  const connectedNodes = useConnectedNodes({ ignoreSelection: true });
 
-  const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
+  const keys = useMemo(
+    () => [...new Set(connectedNodes.data?.items.map((n) => n.key))],
+    [connectedNodes.data]
+  );
 
   const languagesLoadable = useApiQuery({
     url: "/v2/projects/languages",
@@ -45,11 +48,15 @@ export const CreateCopy: FunctionComponent = () => {
     method: "get",
   });
 
+  const copyPageMutation = useCopyPage();
+
   const languages = languagesLoadable.data?._embedded?.languages;
 
   const handleSubmit = async () => {
     if (copyType === "keys") {
-      emit<CopyPageHandler>("COPY_PAGE");
+      copyPageMutation.mutate(undefined, {
+        onSuccess: goToIndex,
+      });
     } else {
       for (const language of selectedLanguages) {
         const response = await translationsLoadable.mutateAsync({
@@ -61,21 +68,23 @@ export const CreateCopy: FunctionComponent = () => {
         });
 
         const { changedNodes } = getPullChanges(
-          nodes,
+          connectedNodes.data?.items || [],
           language,
           response._embedded?.keys || []
         );
 
-        emit<CopyPageHandler>("COPY_PAGE", {
-          language,
-          nodes: changedNodes,
-        });
+        copyPageMutation.mutate(
+          {
+            language,
+            nodes: changedNodes,
+          },
+          { onSuccess: goToIndex }
+        );
       }
     }
-    setRoute("index");
   };
 
-  const handleGoBack = () => {
+  const goToIndex = () => {
     setRoute("index");
   };
 
@@ -90,13 +99,17 @@ export const CreateCopy: FunctionComponent = () => {
 
   const validated = Boolean(copyType === "keys" || selectedLanguages.length);
 
-  if (languagesLoadable.isLoading) {
-    return <FullPageLoading />;
+  if (connectedNodes.isLoading) {
+    return <FullPageLoading text="Analyzing document" />;
+  }
+
+  if (languagesLoadable.isLoading || copyPageMutation.isLoading) {
+    return <FullPageLoading text="Copying page(s)" />;
   }
 
   return (
     <Fragment>
-      <TopBar leftPart={<div>Create new page</div>} onBack={handleGoBack} />
+      <TopBar leftPart={<div>Create new page</div>} onBack={goToIndex} />
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
@@ -142,7 +155,7 @@ export const CreateCopy: FunctionComponent = () => {
         <ActionsBottom>
           <Button
             data-cy="create_copy_button_close"
-            onClick={handleGoBack}
+            onClick={goToIndex}
             secondary
           >
             Close

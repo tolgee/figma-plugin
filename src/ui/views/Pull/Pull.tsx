@@ -13,26 +13,25 @@ import { useApiQuery } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions } from "@/ui/state/GlobalState";
-import { getConnectedNodes } from "@/tools/getConnectedNodes";
-import { NodeInfo, TranslationsUpdateHandler } from "@/types";
+import { TranslationsUpdateHandler } from "@/types";
 import { NodeList } from "@/ui/components/NodeList/NodeList";
 import { getPullChanges } from "@/tools/getPullChanges";
 
 import { TopBar } from "../../components/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import styles from "./Pull.css";
+import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
 
 type Props = RouteParam<"pull">;
 
-export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
-  const allNodes = /*useGlobalState((c) => c.allNodes);*/ [] as NodeInfo[];
-  const selectedNodes = nodes || getConnectedNodes(allNodes);
+export const Pull: FunctionalComponent<Props> = ({ lang }) => {
+  const selectedNodes = useConnectedNodes({ ignoreSelection: false });
   const { setRoute, setLanguage } = useGlobalActions();
   const [success, setSuccess] = useState(false);
 
   const selectedKeys = useMemo(
-    () => [...new Set(selectedNodes.map((n) => n.key))],
-    [selectedNodes]
+    () => [...new Set(selectedNodes.data?.items.map((n) => n.key))],
+    [selectedNodes.data]
   );
 
   const translationsLoadable = useApiQuery({
@@ -44,6 +43,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
       filterKeyName: selectedKeys,
     },
     options: {
+      enabled: selectedNodes.isSuccess,
       cacheTime: 0,
       staleTime: 0,
     },
@@ -51,11 +51,11 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
 
   const { changedNodes, missingKeys } = useMemo(() => {
     return getPullChanges(
-      selectedNodes,
+      selectedNodes.data?.items || [],
       lang,
       translationsLoadable.data?._embedded?.keys || []
     );
-  }, [selectedNodes, lang, translationsLoadable.data]);
+  }, [selectedNodes.data, lang, translationsLoadable.data]);
 
   const handleProcess = async () => {
     if (changedNodes.length !== 0) {
@@ -74,7 +74,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
     translationsLoadable.refetch();
   };
 
-  const isLoading = translationsLoadable.isLoading;
+  const isLoading = translationsLoadable.isLoading || selectedNodes.isLoading;
 
   return (
     <Fragment>
@@ -86,7 +86,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang, nodes }) => {
       <VerticalSpace space="large" />
       <Container space="medium">
         {isLoading ? (
-          <FullPageLoading />
+          <FullPageLoading text="Searching document for translations" />
         ) : translationsLoadable.error ? (
           <Fragment>
             <div>

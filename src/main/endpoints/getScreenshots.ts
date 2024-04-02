@@ -9,10 +9,11 @@ import {
 export const getScreenshotsEndpoint = createEndpoint(
   "GET_SCREENSHOTS",
   async () => {
-    // find nodes in document
-    const connectedNodes = findTextNodes(figma.currentPage.selection).filter(
-      (node) => getNodeInfo(node).key
-    );
+    const connectedNodes = findTextNodes(
+      figma.currentPage.selection.length
+        ? figma.currentPage.selection
+        : figma.currentPage.children
+    ).filter((node) => getNodeInfo(node).key);
 
     const frames = new Set<FrameNode>();
 

@@ -1,6 +1,6 @@
 export const delayed =
-  <T>(promise: () => Promise<T>) =>
-  () =>
+  <T, P>(promise: (props: P) => Promise<T>) =>
+  (props: P) =>
     new Promise<T>((resolve, reject) =>
-      setTimeout(() => promise().then(resolve).catch(reject))
+      setTimeout(() => promise(props).then(resolve).catch(reject), 10)
     );

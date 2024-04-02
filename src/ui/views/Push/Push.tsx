@@ -40,7 +40,7 @@ export const Push: FunctionalComponent = () => {
   const [success, setSuccess] = useState(false);
   const [_loadingStatus, setLoadingStatus] = useState<string | undefined>();
   const [changes, setChanges] = useState<KeyChanges>();
-  const selectedNodes = useConnectedNodes();
+  const selectedNodes = useConnectedNodes({ ignoreSelection: false });
 
   const nodes = selectedNodes.data?.items ?? [];
 
