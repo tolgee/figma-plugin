@@ -16,7 +16,7 @@ import { Settings, InsertLink } from "@/ui/icons/SvgIcons";
 import { useApiQuery } from "@/ui/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
-import { getConnectedNodes, getNodesWithKey } from "@/tools/getConnectedNodes";
+import { getConnectedNodes } from "@/tools/getConnectedNodes";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
 import {
@@ -94,9 +94,7 @@ export const Index = () => {
         )})`
       );
     } else {
-      setRoute("push", {
-        nodes: getNodesWithKey(subjectNodes),
-      });
+      setRoute("push");
     }
   };
 
@@ -233,7 +231,6 @@ export const Index = () => {
         </Container>
       ) : (
         <NodeList
-          onBottomReached={selectionLoadable.fetchMore}
           nodes={selection}
           keyComponent={(node) =>
             !node.connected && (

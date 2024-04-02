@@ -3,7 +3,7 @@ import { NodeInfo } from "@/types";
 export type Route =
   | ["index"]
   | ["settings"]
-  | ["push", { nodes: NodeInfo[] }]
+  | ["push"]
   | ["pull", { nodes?: NodeInfo[]; lang: string }]
   | ["connect", { node: NodeInfo }]
   | ["create_copy"];

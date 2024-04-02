@@ -15,7 +15,7 @@ export const getNodeInfo = (node: TextNode): NodeInfo => {
   };
 };
 
-export function* findTextNodes(
+export function* findTextNodesGenerator(
   nodes: readonly SceneNode[]
 ): Generator<TextNode> {
   const toExplore = [...nodes].reverse();
@@ -34,29 +34,22 @@ export function* findTextNodes(
   }
 }
 
-export const findTextNodesInfo = (
-  nodes: readonly SceneNode[],
-  items = 20
-): NodeInfo[] => {
-  // const time = Date.now();
+export const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
+  return [...findTextNodesGenerator(nodes)];
+};
 
-  const nodesGenerator = findTextNodes(nodes);
-  const result: NodeInfo[] = [];
+export const findTextNodesInfo = (nodes: readonly SceneNode[]): NodeInfo[] => {
+  return findTextNodes(nodes).map(getNodeInfo);
+};
 
-  let i = 0;
-  for (const item of nodesGenerator) {
-    if (i >= items) {
-      break;
+export const findLastParentFrame = (subject: BaseNode) => {
+  let node = subject as (BaseNode & ChildrenMixin) | null;
+  let lastFrame: FrameNode | undefined;
+  while (node) {
+    if (node.type === "FRAME") {
+      lastFrame = node;
     }
-    result.push(getNodeInfo(item));
-
-    i++;
+    node = node.parent;
   }
-  // console.log(
-  //   "nodes traversed in:",
-  //   (Date.now() - time) / 1000,
-  //   "s",
-  //   `(${items})`
-  // );
-  return result;
+  return lastFrame;
 };

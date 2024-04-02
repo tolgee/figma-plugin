@@ -10,9 +10,9 @@ import {
   TranslationsUpdateHandler,
 } from "@/types";
 import { emit, on } from "@/utilities";
-import exampleScreenshot from "./exampleScreenshot";
 import { generateIframeContent } from "./iframeContent";
 import { createLinks, getUrlConfig } from "./urlConfig";
+import exampleScreenshot from "./exampleScreenshot";
 import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
 
 const iframe = document.getElementById("plugin_iframe") as HTMLIFrameElement;
@@ -60,11 +60,11 @@ function main() {
   }
 
   getScreenshotsEndpoint
-    .mock((nodes) => {
-      if (nodes.find((n) => n.key === "on-the-road-title")) {
-        return [exampleScreenshot] as FrameScreenshot[];
-      }
-      return [] as FrameScreenshot[];
+    .mock(() => {
+      // if (nodes.find((n) => n.key === "on-the-road-title")) {
+      return [exampleScreenshot] as FrameScreenshot[];
+      // }
+      // return [] as FrameScreenshot[];
     })
     .register();
 

@@ -21,7 +21,7 @@ const getPage = ([routeKey, routeData]: Route) => {
       return <Settings />;
 
     case "push":
-      return <Push {...routeData} />;
+      return <Push />;
 
     case "pull":
       return <Pull {...routeData} />;

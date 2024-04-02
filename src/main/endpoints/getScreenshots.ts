@@ -1,48 +1,50 @@
-import { FrameScreenshot, NodeInfo } from "@/types";
+import { FrameScreenshot } from "@/types";
 import { createEndpoint } from "../utils/createEndpoint";
+import {
+  findLastParentFrame,
+  findTextNodes,
+  getNodeInfo,
+} from "../utils/nodeTools";
 
 export const getScreenshotsEndpoint = createEndpoint(
   "GET_SCREENSHOTS",
-  async (nodes: NodeInfo[]) => {
+  async () => {
     // find nodes in document
-    const documentNodes = figma.currentPage.findAll((docNode) =>
-      Boolean(nodes.find((n) => n.id === docNode.id))
+    const connectedNodes = findTextNodes(figma.currentPage.selection).filter(
+      (node) => getNodeInfo(node).key
     );
 
     const frames = new Set<FrameNode>();
 
     // find frames in parents
-    documentNodes.forEach((docNode) => {
-      let node = docNode as (BaseNode & ChildrenMixin) | null;
-      while (node) {
-        if (node.type === "FRAME") {
-          frames.add(node as FrameNode);
-          break;
-        }
-        node = node.parent;
+    connectedNodes.forEach((connectedNode) => {
+      const frame = findLastParentFrame(connectedNode);
+      if (frame) {
+        frames.add(frame);
       }
     });
 
     const data: FrameScreenshot[] = await Promise.all(
       Array.from(frames).map(async (frame) => {
+        const framePosition = frame.absoluteBoundingBox!;
         return {
           image: await frame.exportAsync({ format: "PNG" }),
           info: {
             id: frame.id,
             name: frame.name,
-            width: frame.width,
-            height: frame.height,
+            width: framePosition.width,
+            height: framePosition.height,
           },
-          keys: [],
-          // keys: [...findTextNodes(frame)].map((node) => {
-          //   return {
-          //     ...getNodeInfo(node),
-          //     x: node.x,
-          //     y: node.y,
-          //     width: node.width,
-          //     height: node.height,
-          //   };
-          // }),
+          keys: [...findTextNodes([frame])].map((node) => {
+            const nodePosition = node.absoluteBoundingBox!;
+            return {
+              ...getNodeInfo(node),
+              x: nodePosition.x - framePosition.x,
+              y: nodePosition.y - framePosition.y,
+              width: nodePosition.width,
+              height: nodePosition.height,
+            };
+          }),
         };
       })
     );

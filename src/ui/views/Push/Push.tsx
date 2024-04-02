@@ -22,28 +22,27 @@ import {
   KeyChangeValue,
 } from "@/tools/getPushChanges";
 import { TopBar } from "../../components/TopBar/TopBar";
-import { RouteParam } from "../routes";
 import { Changes } from "./Changes";
 import { FrameScreenshot, NodeInfo, SetNodesDataHandler } from "@/types";
 import { emit } from "@/utilities";
 import { compareNs } from "@/tools/compareNs";
 import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
+import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
 
 type ImportKeysResolvableItemDto =
   components["schemas"]["ImportKeysResolvableItemDto"];
 type KeyScreenshotDto = components["schemas"]["KeyScreenshotDto"];
 
-type Props = RouteParam<"push">;
-
-export const Push: FunctionalComponent<Props> = ({ nodes }) => {
+export const Push: FunctionalComponent = () => {
   const language = useGlobalState((c) => c.config!.language!);
   const { setRoute } = useGlobalActions();
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [loadingStatus, setLoadingStatus] = useState<string | undefined>(
-    "Loading data and generating screenshots"
-  );
+  const [_loadingStatus, setLoadingStatus] = useState<string | undefined>();
   const [changes, setChanges] = useState<KeyChanges>();
+  const selectedNodes = useConnectedNodes();
+
+  const nodes = selectedNodes.data?.items ?? [];
 
   const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
 
@@ -72,6 +71,7 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       filterKeyName: keys,
     },
     options: {
+      enabled: selectedNodes.isSuccess,
       cacheTime: 0,
       staleTime: 0,
       onSuccess(data) {
@@ -93,6 +93,11 @@ export const Push: FunctionalComponent<Props> = ({ nodes }) => {
       },
     },
   });
+
+  const loadingStatus =
+    translationsLoadable.isLoading || selectedNodes.isLoading
+      ? "Loading data and generating screenshots"
+      : _loadingStatus;
 
   const updateTranslations = useApiMutation({
     url: "/v2/projects/keys/import-resolvable",

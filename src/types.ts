@@ -86,6 +86,12 @@ export type FrameScreenshot = {
   keys: (NodeInfo & SizeInfo & PositionInfo)[];
 };
 
+export type FrameScreenshotInfo = {
+  frame: string;
+  info: FrameInfo;
+  keys: (NodeInfo & SizeInfo & PositionInfo)[];
+};
+
 export interface NodeInfo {
   name: string;
   characters: string;
