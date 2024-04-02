@@ -8,12 +8,10 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-import { emit } from "@/utilities";
 import { useApiQuery } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions } from "@/ui/state/GlobalState";
-import { TranslationsUpdateHandler } from "@/types";
 import { NodeList } from "@/ui/components/NodeList/NodeList";
 import { getPullChanges } from "@/tools/getPullChanges";
 
@@ -21,6 +19,7 @@ import { TopBar } from "../../components/TopBar/TopBar";
 import { RouteParam } from "../routes";
 import styles from "./Pull.css";
 import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
+import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 
 type Props = RouteParam<"pull">;
 
@@ -39,7 +38,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
     method: "get",
     query: {
       languages: [lang],
-      size: 10000,
+      size: 1000000,
       filterKeyName: selectedKeys,
     },
     options: {
@@ -48,6 +47,8 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
       staleTime: 0,
     },
   });
+
+  const updateNodeLoadable = useUpdateNodesMutation();
 
   const { changedNodes, missingKeys } = useMemo(() => {
     return getPullChanges(
@@ -59,7 +60,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
 
   const handleProcess = async () => {
     if (changedNodes.length !== 0) {
-      emit<TranslationsUpdateHandler>("UPDATE_NODES", changedNodes);
+      await updateNodeLoadable.mutateAsync({ nodes: changedNodes });
     }
     setLanguage(lang);
     setRoute("index");

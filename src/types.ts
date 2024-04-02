@@ -30,11 +30,6 @@ export interface SyncCompleteHandler extends EventHandler {
   handler: () => void;
 }
 
-export interface TranslationsUpdateHandler extends EventHandler {
-  name: "UPDATE_NODES";
-  handler: (nodes: NodeInfo[]) => void;
-}
-
 export interface ResizeHandler extends EventHandler {
   name: "RESIZE";
   handler: (size: WindowSize) => void;
@@ -53,11 +48,6 @@ export interface DocumentChangeHandler extends EventHandler {
 export interface PageChangeHandler extends EventHandler {
   name: "CURRENT_PAGE_CHANGE";
   handler: (config: Partial<TolgeeConfig>) => void;
-}
-
-export interface SetNodesDataHandler extends EventHandler {
-  name: "SET_NODES_DATA";
-  handler: (nodes: NodeInfo[]) => void;
 }
 
 export type SizeInfo = {

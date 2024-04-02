@@ -9,11 +9,7 @@ import {
 } from "@create-figma-plugin/ui";
 import { useGlobalState } from "@/ui/state/GlobalState";
 import { useApiMutation } from "@/ui/client/useQueryApi";
-import { getPullChanges } from "@/tools/getPullChanges";
-import { emit } from "@create-figma-plugin/utilities";
-import { NodeInfo, TranslationsUpdateHandler } from "@/types";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
-import { getConnectedNodes } from "@/tools/getConnectedNodes";
 import {
   COMPACT_SIZE,
   DEFAULT_SIZE,
@@ -22,47 +18,60 @@ import {
 
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
+import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
+import { getPullChanges } from "@/tools/getPullChanges";
+import { useConnectedMutation } from "@/ui/hooks/useConnectedMutation";
+import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 
 export const CopyView = () => {
-  const selection = useGlobalState((c) => c.selection);
+  const selectionLoadable = useSelectedNodes();
   const language = useGlobalState((c) => c.config?.language);
-  const allNodes = /*useGlobalState((c) => c.allNodes) */ [] as NodeInfo[];
+  const connectedNodesLoadable = useConnectedMutation({
+    ignoreSelection: false,
+  });
 
-  const nothingSelected = selection.length === 0;
+  const selection = selectionLoadable.data?.items ?? [];
+
+  const nothingSelected = !selectionLoadable.data?.somethingSelected;
 
   const translationsLoadable = useApiMutation({
     url: "/v2/projects/translations",
     method: "get",
   });
 
+  const updateNodesLoadalbe = useUpdateNodesMutation();
+
   const handlePull = async () => {
-    const selectedNodes = getConnectedNodes(
-      nothingSelected ? allNodes : selection
-    );
-    const keys = [...new Set(selectedNodes.map((n) => n.key))];
-    const response = await translationsLoadable.mutateAsync({
+    const keys = [...new Set(selection.map((n) => n.key))];
+    const translations = await translationsLoadable.mutateAsync({
       query: {
         languages: [language!],
-        size: 10000,
-        filterKeyName: keys,
+        size: 1000000,
+        filterKeyName: nothingSelected ? undefined : keys,
       },
     });
 
+    const connectedNodes = await connectedNodesLoadable.mutateAsync(undefined);
+
     const { changedNodes } = getPullChanges(
-      selectedNodes,
+      connectedNodes.items,
       language!,
-      response._embedded?.keys || []
+      translations._embedded?.keys || []
     );
 
-    emit<TranslationsUpdateHandler>("UPDATE_NODES", changedNodes);
+    await updateNodesLoadalbe.mutateAsync({ nodes: changedNodes });
   };
 
   useWindowSize(
     !selection || selection.length < 2 ? COMPACT_SIZE : DEFAULT_SIZE
   );
 
-  if (translationsLoadable.isLoading) {
-    return <FullPageLoading />;
+  if (
+    translationsLoadable.isLoading ||
+    connectedNodesLoadable.isLoading ||
+    updateNodesLoadalbe.isLoading
+  ) {
+    return <FullPageLoading text="Updating translations" />;
   }
 
   return (

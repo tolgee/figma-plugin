@@ -1,6 +1,6 @@
-import { loadFontsAsync, showUI } from "@create-figma-plugin/utilities";
+import { showUI } from "@create-figma-plugin/utilities";
 import { on, emit } from "@/utilities";
-import { TOLGEE_NODE_INFO, TOLGEE_PLUGIN_CONFIG_NAME } from "../constants";
+import { TOLGEE_PLUGIN_CONFIG_NAME } from "../constants";
 
 import {
   ConfigChangeHandler,
@@ -12,11 +12,9 @@ import {
   ResizeHandler,
   SelectionChangeHandler,
   SetLanguageHandler,
-  SetNodesDataHandler,
   SetupHandle,
   SyncCompleteHandler,
   TolgeeConfig,
-  TranslationsUpdateHandler,
 } from "../types";
 import { DEFAULT_SIZE } from "../tools/useWindowSize";
 import { findTextNodesInfo } from "./utils/nodeTools";
@@ -25,6 +23,8 @@ import { getSelectedNodesEndpoint } from "./endpoints/getSelectedNodes";
 import { getConnectedNodesEndpoint } from "./endpoints/getConnectedNodes";
 import { setPageData } from "./utils/pages";
 import { copyPageEndpoint } from "./endpoints/copyPage";
+import { updateNodesEndpoint } from "./endpoints/updateNodes";
+import { setNodesDataEndpoint } from "./endpoints/setNodesData";
 
 const getGlobalSettings = async () => {
   const pluginData = await figma.clientStorage.getAsync(
@@ -151,42 +151,12 @@ export default async function () {
     figma.closePlugin();
   });
 
-  on<SetNodesDataHandler>("SET_NODES_DATA", (nodes) => {
-    nodes.forEach((nodeInfo) => {
-      const node = figma.getNodeById(nodeInfo.id);
-      node?.setPluginData(
-        TOLGEE_NODE_INFO,
-        JSON.stringify({
-          key: nodeInfo.key,
-          ns: nodeInfo.ns,
-          connected: nodeInfo.connected,
-        })
-      );
-    });
-  });
-
-  on<TranslationsUpdateHandler>("UPDATE_NODES", async (nodes) => {
-    const textNodes = nodes.map((n) => figma.getNodeById(n.id) as TextNode);
-    try {
-      await loadFontsAsync(textNodes);
-    } catch (e) {
-      console.error(e);
-    }
-    nodes.forEach((n) => {
-      const node = textNodes.find((nod) => nod.id === n.id)!;
-      node.autoRename = false;
-      node.characters = n.characters;
-    });
-    figma.notify("Document translations updated");
-
-    // update selection
-    emit<SelectionChangeHandler>("SELECTION_CHANGE");
-  });
-
   getScreenshotsEndpoint.register();
   getSelectedNodesEndpoint.register();
   getConnectedNodesEndpoint.register();
   copyPageEndpoint.register();
+  updateNodesEndpoint.register();
+  setNodesDataEndpoint.register();
 
   const config = await getPluginData();
 

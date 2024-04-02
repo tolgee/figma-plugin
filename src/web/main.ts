@@ -5,15 +5,15 @@ import {
   NodeInfo,
   ResizeHandler,
   SelectionChangeHandler,
-  SetNodesDataHandler,
   SetupHandle,
-  TranslationsUpdateHandler,
 } from "@/types";
 import { emit, on } from "@/utilities";
 import { generateIframeContent } from "./iframeContent";
 import { createLinks, getUrlConfig } from "./urlConfig";
 import exampleScreenshot from "./exampleScreenshot";
 import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
+import { updateNodesEndpoint } from "@/main/endpoints/updateNodes";
+import { setNodesDataEndpoint } from "@/main/endpoints/setNodesData";
 
 const iframe = document.getElementById("plugin_iframe") as HTMLIFrameElement;
 const shortcuts = document.getElementById("shortcuts") as HTMLDivElement;
@@ -68,6 +68,9 @@ function main() {
     })
     .register();
 
+  updateNodesEndpoint.mock(({ nodes }) => updateNodes(nodes));
+  setNodesDataEndpoint.mock(({ nodes }) => updateNodes(nodes));
+
   on<SetupHandle>("SETUP", (data) => {
     state.config = { ...data, pageInfo: true, documentInfo: true };
     emit<ConfigChangeHandler>("CONFIG_CHANGE", state.config);
@@ -76,14 +79,6 @@ function main() {
   on<ResizeHandler>("RESIZE", (data) => {
     iframe.style.width = `${data.width}px`;
     iframe.style.height = `${data.height}px`;
-  });
-
-  on<SetNodesDataHandler>("SET_NODES_DATA", (changes) => {
-    updateNodes(changes);
-  });
-
-  on<TranslationsUpdateHandler>("UPDATE_NODES", (changes) => {
-    updateNodes(changes);
   });
 }
 

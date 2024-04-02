@@ -4,7 +4,6 @@ import { getAllPages, getPageData, setPageData } from "../utils/pages";
 import { findTextNodes, getNodeInfo } from "../utils/nodeTools";
 import { loadFontsAsync } from "@create-figma-plugin/utilities";
 import { compareNs } from "@/tools/compareNs";
-import { sleep } from "react-query/types/core/utils";
 
 type Props = {
   language: string;
@@ -14,7 +13,6 @@ type Props = {
 export const copyPageEndpoint = createEndpoint<Props | undefined, void>(
   "COPY_PAGE",
   async (data) => {
-    await sleep(100);
     const newPage = figma.currentPage.clone();
     const name = `${figma.currentPage.name} - ${
       data?.language ? data.language : "keys"

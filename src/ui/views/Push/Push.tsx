@@ -23,11 +23,11 @@ import {
 } from "@/tools/getPushChanges";
 import { TopBar } from "../../components/TopBar/TopBar";
 import { Changes } from "./Changes";
-import { FrameScreenshot, NodeInfo, SetNodesDataHandler } from "@/types";
-import { emit } from "@/utilities";
+import { FrameScreenshot, NodeInfo } from "@/types";
 import { compareNs } from "@/tools/compareNs";
 import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
 import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
+import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 
 type ImportKeysResolvableItemDto =
   components["schemas"]["ImportKeysResolvableItemDto"];
@@ -67,7 +67,7 @@ export const Push: FunctionalComponent = () => {
     method: "get",
     query: {
       languages: [language],
-      size: 10000,
+      size: 1000000,
       filterKeyName: keys,
     },
     options: {
@@ -94,6 +94,8 @@ export const Push: FunctionalComponent = () => {
     },
   });
 
+  const setNodesDataMutation = useSetNodesDataMutation();
+
   const loadingStatus =
     translationsLoadable.isLoading || selectedNodes.isLoading
       ? "Loading data and generating screenshots"
@@ -119,13 +121,12 @@ export const Push: FunctionalComponent = () => {
   };
 
   const connectNodes = () => {
-    emit<SetNodesDataHandler>(
-      "SET_NODES_DATA",
-      nodes.map((n) => ({
+    setNodesDataMutation.mutate({
+      nodes: nodes.map((n) => ({
         ...n,
         connected: true,
-      }))
-    );
+      })),
+    });
   };
 
   const handleConnectOnly = () => {

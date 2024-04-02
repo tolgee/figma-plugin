@@ -62,7 +62,7 @@ export const CreateCopy: FunctionComponent = () => {
         const response = await translationsLoadable.mutateAsync({
           query: {
             languages: [language],
-            size: 10000,
+            size: 1000000,
             filterKeyName: keys,
           },
         });

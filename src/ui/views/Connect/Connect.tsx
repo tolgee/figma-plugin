@@ -16,8 +16,7 @@ import { TopBar } from "@/ui/components/TopBar/TopBar";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { useApiQuery } from "@/ui/client/useQueryApi";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
-import { emit } from "@/utilities";
-import { SetNodesDataHandler } from "@/types";
+import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { RouteParam } from "../routes";
 import styles from "./Connect.css";
 import { SearchRow } from "./SearchRow";
@@ -46,31 +45,37 @@ export const Connect = ({ node }: Props) => {
     },
   });
 
+  const setNodesDataMutation = useSetNodesDataMutation();
+
   const handleGoBack = () => {
     setRoute("index");
   };
 
-  const handleConnect = (key: string, ns: string | undefined) => {
-    emit<SetNodesDataHandler>("SET_NODES_DATA", [
-      {
-        ...node,
-        key,
-        ns: ns || "",
-        connected: true,
-      },
-    ]);
+  const handleConnect = async (key: string, ns: string | undefined) => {
+    await setNodesDataMutation.mutateAsync({
+      nodes: [
+        {
+          ...node,
+          key,
+          ns: ns || "",
+          connected: true,
+        },
+      ],
+    });
     setRoute("index");
   };
 
-  const handleRemoveConnection = () => {
-    emit<SetNodesDataHandler>("SET_NODES_DATA", [
-      {
-        ...node,
-        key: "",
-        ns: undefined,
-        connected: false,
-      },
-    ]);
+  const handleRemoveConnection = async () => {
+    await setNodesDataMutation.mutateAsync({
+      nodes: [
+        {
+          ...node,
+          key: "",
+          ns: undefined,
+          connected: false,
+        },
+      ],
+    });
     setRoute("index");
   };
 

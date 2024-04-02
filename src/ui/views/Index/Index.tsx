@@ -9,14 +9,12 @@ import {
   Text,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
-import { emit } from "@/utilities";
 
-import { NodeInfo, SetNodesDataHandler } from "@/types";
+import { NodeInfo } from "@/types";
 import { Settings, InsertLink } from "@/ui/icons/SvgIcons";
 import { useApiQuery } from "@/ui/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
-import { getConnectedNodes } from "@/tools/getConnectedNodes";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
 import {
@@ -30,6 +28,7 @@ import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { KeyInput } from "./KeyInput";
 import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
+import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
@@ -51,6 +50,8 @@ export const Index = () => {
     method: "get",
   });
 
+  const setNodesDataMutation = useSetNodesDataMutation();
+
   const languages = languagesLoadable.data?._embedded?.languages;
   const namespaces = useMemo(
     () =>
@@ -70,7 +71,7 @@ export const Index = () => {
 
   const { setRoute } = useGlobalActions();
 
-  const nothingSelected = selection.length === 0;
+  const nothingSelected = !selectionLoadable.data?.somethingSelected;
 
   const handleLanguageChange = (lang: string) => {
     if (lang !== language) {
@@ -113,21 +114,12 @@ export const Index = () => {
   };
 
   const handleKeyChange = (node: NodeInfo) => (value: string) => {
-    emit<SetNodesDataHandler>("SET_NODES_DATA", [
-      {
-        ...node,
-        key: value,
-      },
-    ]);
+    console.log({ value });
+    setNodesDataMutation.mutate({ nodes: [{ ...node, key: value }] });
   };
 
   const handleNsChange = (node: NodeInfo) => (value: string) => {
-    emit<SetNodesDataHandler>("SET_NODES_DATA", [
-      {
-        ...node,
-        ns: value,
-      },
-    ]);
+    setNodesDataMutation.mutate({ nodes: [{ ...node, ns: value }] });
   };
 
   useEffect(() => {
@@ -225,7 +217,7 @@ export const Index = () => {
       </div>
 
       {nothingSelected ? (
-        <Container space="medium" style={{ marginTop: 8 }}>
+        <Container space="medium" style={{ marginTop: 16 }}>
           <Text>No texts selected</Text>
         </Container>
       ) : (

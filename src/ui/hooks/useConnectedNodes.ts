@@ -1,12 +1,11 @@
-import { getConnectedNodesEndpoint } from "@/main/endpoints/getConnectedNodes";
+import {
+  ConnectedNodesProps,
+  getConnectedNodesEndpoint,
+} from "@/main/endpoints/getConnectedNodes";
 import { delayed } from "@/main/utils/delayed";
 import { useQuery } from "react-query";
 
-type Props = {
-  ignoreSelection: boolean;
-};
-
-export const useConnectedNodes = (props: Props) => {
+export const useConnectedNodes = (props: ConnectedNodesProps) => {
   const result = useQuery(
     [getConnectedNodesEndpoint.name],
     delayed(() => getConnectedNodesEndpoint.call(props)),
