@@ -73,6 +73,7 @@ async function customFetch(
   init.headers = init.headers || {};
   init.headers = {
     "X-API-Key": options.apiKey,
+    "X-Tolgee-SDK-Type": "Figma",
     ...init.headers,
   };
 
