@@ -14,6 +14,9 @@ import exampleScreenshot from "./exampleScreenshot";
 import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
 import { updateNodesEndpoint } from "@/main/endpoints/updateNodes";
 import { setNodesDataEndpoint } from "@/main/endpoints/setNodesData";
+import { getSelectedNodesEndpoint } from "@/main/endpoints/getSelectedNodes";
+import { getConnectedNodesEndpoint } from "@/main/endpoints/getConnectedNodes";
+import { copyPageEndpoint } from "@/main/endpoints/copyPage";
 
 const iframe = document.getElementById("plugin_iframe") as HTMLIFrameElement;
 const shortcuts = document.getElementById("shortcuts") as HTMLDivElement;
@@ -59,18 +62,6 @@ function main() {
     }
   }
 
-  getScreenshotsEndpoint
-    .mock(() => {
-      // if (nodes.find((n) => n.key === "on-the-road-title")) {
-      return [exampleScreenshot] as FrameScreenshot[];
-      // }
-      // return [] as FrameScreenshot[];
-    })
-    .register();
-
-  updateNodesEndpoint.mock(({ nodes }) => updateNodes(nodes));
-  setNodesDataEndpoint.mock(({ nodes }) => updateNodes(nodes));
-
   on<SetupHandle>("SETUP", (data) => {
     state.config = { ...data, pageInfo: true, documentInfo: true };
     emit<ConfigChangeHandler>("CONFIG_CHANGE", state.config);
@@ -80,6 +71,27 @@ function main() {
     iframe.style.width = `${data.width}px`;
     iframe.style.height = `${data.height}px`;
   });
+
+  getScreenshotsEndpoint.mock(() => {
+    return [exampleScreenshot] as FrameScreenshot[];
+  });
+  getSelectedNodesEndpoint.mock(() => ({
+    items: state.selectedNodes,
+    somethingSelected: state.selectedNodes.length > 0,
+  }));
+  getConnectedNodesEndpoint.mock(({ ignoreSelection }) => {
+    const basedOnSelection = !ignoreSelection && state.selectedNodes.length > 0;
+    const items = basedOnSelection ? state.selectedNodes : state.allNodes;
+    return {
+      items: items.filter(({ key }) => key),
+      basedOnSelection,
+    };
+  });
+  copyPageEndpoint.mock(() => {
+    throw new Error("Not implemented");
+  });
+  updateNodesEndpoint.mock(({ nodes }) => updateNodes(nodes));
+  setNodesDataEndpoint.mock(({ nodes }) => updateNodes(nodes));
 }
 
 main();

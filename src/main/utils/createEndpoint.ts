@@ -21,6 +21,7 @@ export const createEndpoint = <I, O>(
     },
     mock: (fn: ((input: I) => Promise<O>) | ((input: I) => O)) => {
       implementation = fn;
+      self.register();
       return self;
     },
     name,

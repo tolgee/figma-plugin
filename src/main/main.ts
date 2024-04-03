@@ -17,7 +17,6 @@ import {
   TolgeeConfig,
 } from "../types";
 import { DEFAULT_SIZE } from "../tools/useWindowSize";
-import { findTextNodesInfo } from "./utils/nodeTools";
 import { getScreenshotsEndpoint } from "./endpoints/getScreenshots";
 import { getSelectedNodesEndpoint } from "./endpoints/getSelectedNodes";
 import { getConnectedNodesEndpoint } from "./endpoints/getConnectedNodes";
@@ -167,7 +166,6 @@ export default async function () {
     },
     {
       config,
-      selectedNodes: findTextNodesInfo(figma.currentPage.selection),
     }
   );
 }
