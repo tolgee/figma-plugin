@@ -1,5 +1,5 @@
 import { h, render } from "preact";
-import { Plugin } from "../Plugin";
+import { Plugin } from "../ui/Plugin";
 import "!@create-figma-plugin/ui/lib/css/base.css";
 import { getUrlConfig } from "./urlConfig";
 

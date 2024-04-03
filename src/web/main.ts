@@ -1,4 +1,3 @@
-import { endpointGetScreenshots } from "@/endpoints";
 import {
   ConfigChangeHandler,
   DocumentChangeHandler,
@@ -6,14 +5,18 @@ import {
   NodeInfo,
   ResizeHandler,
   SelectionChangeHandler,
-  SetNodesDataHandler,
   SetupHandle,
-  TranslationsUpdateHandler,
 } from "@/types";
-import { emit, on } from "../utilities";
-import exampleScreenshot from "./exampleScreenshot";
+import { emit, on } from "@/utilities";
 import { generateIframeContent } from "./iframeContent";
 import { createLinks, getUrlConfig } from "./urlConfig";
+import exampleScreenshot from "./exampleScreenshot";
+import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
+import { updateNodesEndpoint } from "@/main/endpoints/updateNodes";
+import { setNodesDataEndpoint } from "@/main/endpoints/setNodesData";
+import { getSelectedNodesEndpoint } from "@/main/endpoints/getSelectedNodes";
+import { getConnectedNodesEndpoint } from "@/main/endpoints/getConnectedNodes";
+import { copyPageEndpoint } from "@/main/endpoints/copyPage";
 
 const iframe = document.getElementById("plugin_iframe") as HTMLIFrameElement;
 const shortcuts = document.getElementById("shortcuts") as HTMLDivElement;
@@ -52,19 +55,12 @@ function main() {
     );
 
     if (changed.allNodesChanged) {
-      emit<DocumentChangeHandler>("DOCUMENT_CHANGE", state.allNodes);
+      emit<DocumentChangeHandler>("DOCUMENT_CHANGE");
     }
     if (changed.selectionChanged) {
-      emit<SelectionChangeHandler>("SELECTION_CHANGE", state.selectedNodes);
+      emit<SelectionChangeHandler>("SELECTION_CHANGE");
     }
   }
-
-  endpointGetScreenshots.implement((nodes) => {
-    if (nodes.find((n) => n.key === "on-the-road-title")) {
-      return [exampleScreenshot] as FrameScreenshot[];
-    }
-    return [] as FrameScreenshot[];
-  });
 
   on<SetupHandle>("SETUP", (data) => {
     state.config = { ...data, pageInfo: true, documentInfo: true };
@@ -76,13 +72,26 @@ function main() {
     iframe.style.height = `${data.height}px`;
   });
 
-  on<SetNodesDataHandler>("SET_NODES_DATA", (changes) => {
-    updateNodes(changes);
+  getScreenshotsEndpoint.mock(() => {
+    return [exampleScreenshot] as FrameScreenshot[];
   });
-
-  on<TranslationsUpdateHandler>("UPDATE_NODES", (changes) => {
-    updateNodes(changes);
+  getSelectedNodesEndpoint.mock(() => ({
+    items: state.selectedNodes,
+    somethingSelected: state.selectedNodes.length > 0,
+  }));
+  getConnectedNodesEndpoint.mock(({ ignoreSelection }) => {
+    const basedOnSelection = !ignoreSelection && state.selectedNodes.length > 0;
+    const items = basedOnSelection ? state.selectedNodes : state.allNodes;
+    return {
+      items: items.filter(({ key }) => key),
+      basedOnSelection,
+    };
   });
+  copyPageEndpoint.mock(() => {
+    throw new Error("Not implemented");
+  });
+  updateNodesEndpoint.mock(({ nodes }) => updateNodes(nodes));
+  setNodesDataEndpoint.mock(({ nodes }) => updateNodes(nodes));
 }
 
 main();

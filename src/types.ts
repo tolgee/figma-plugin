@@ -30,11 +30,6 @@ export interface SyncCompleteHandler extends EventHandler {
   handler: () => void;
 }
 
-export interface TranslationsUpdateHandler extends EventHandler {
-  name: "UPDATE_NODES";
-  handler: (nodes: NodeInfo[]) => void;
-}
-
 export interface ResizeHandler extends EventHandler {
   name: "RESIZE";
   handler: (size: WindowSize) => void;
@@ -42,27 +37,17 @@ export interface ResizeHandler extends EventHandler {
 
 export interface SelectionChangeHandler extends EventHandler {
   name: "SELECTION_CHANGE";
-  handler: (data: NodeInfo[]) => void;
+  handler: () => void;
 }
 
 export interface DocumentChangeHandler extends EventHandler {
   name: "DOCUMENT_CHANGE";
-  handler: (data: NodeInfo[]) => void;
+  handler: () => void;
 }
 
 export interface PageChangeHandler extends EventHandler {
   name: "CURRENT_PAGE_CHANGE";
   handler: (config: Partial<TolgeeConfig>) => void;
-}
-
-export interface SetNodesDataHandler extends EventHandler {
-  name: "SET_NODES_DATA";
-  handler: (nodes: NodeInfo[]) => void;
-}
-
-export interface CopyPageHandler extends EventHandler {
-  name: "COPY_PAGE";
-  handler: (data?: { language: string; nodes: NodeInfo[] }) => void;
 }
 
 export type SizeInfo = {
@@ -112,8 +97,8 @@ export type CurrentDocumentSettings = GlobalSettings & {
 
 export type CurrentPageSettings = {
   language: string;
-  pageInfo: true;
-  pageCopy: true;
+  pageInfo: boolean;
+  pageCopy: boolean;
 };
 
 export type TolgeeConfig = CurrentDocumentSettings & CurrentPageSettings;
