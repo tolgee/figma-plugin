@@ -1,12 +1,12 @@
 declare const styles: {
-  readonly "languageContainer": string;
-  readonly "settingsButton": string;
   readonly "connectButton": string;
+  readonly "container": string;
   readonly "disabled": string;
   readonly "keyInput": string;
+  readonly "languageContainer": string;
   readonly "nsSelect": string;
   readonly "screenshot": string;
-  readonly "container": string;
+  readonly "settingsButton": string;
 };
 export = styles;
 

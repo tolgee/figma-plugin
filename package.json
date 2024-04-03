@@ -20,8 +20,8 @@
   "author": "Tolgee",
   "license": "MIT",
   "devDependencies": {
-    "@create-figma-plugin/build": "^2.1.5",
-    "@create-figma-plugin/tsconfig": "^2.1.5",
+    "@create-figma-plugin/build": "^3.1.0",
+    "@create-figma-plugin/tsconfig": "^3.1.0",
     "@figma/plugin-typings": "^1.55.1",
     "@types/jest": "^29.4.0",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
@@ -61,6 +61,13 @@
     "ui": "src/ui/ui.tsx",
     "editorType": [
       "figma"
-    ]
+    ],
+    "documentAccess": "dynamic-page",
+    "networkAccess": {
+      "allowedDomains": [
+        "*"
+      ],
+      "reasoning": "For self-hosted instances, Tolgee needs to be able to fetch data from any URL."
+    }
   }
 }

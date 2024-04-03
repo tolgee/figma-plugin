@@ -1,9 +1,9 @@
 declare const styles: {
-  readonly "page": string;
-  readonly "grid": string;
   readonly "container": string;
-  readonly "title": string;
+  readonly "grid": string;
+  readonly "page": string;
   readonly "results": string;
+  readonly "title": string;
 };
 export = styles;
 
