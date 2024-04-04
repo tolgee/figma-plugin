@@ -103,7 +103,6 @@ export default async function () {
   });
 
   figma.currentPage.on("nodechange", (e) => {
-    console.log(e);
     if (
       !e.nodeChanges.every((ch) => {
         return (

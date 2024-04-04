@@ -10,6 +10,7 @@ export const updateNodesEndpoint = createEndpoint<UpdateNodeProps, void>(
   "UPDATE_NODES",
   async ({ nodes }) => {
     const textNodes = nodes.map((n) => figma.getNodeById(n.id) as TextNode);
+
     try {
       await loadFontsAsync(textNodes);
     } catch (e) {

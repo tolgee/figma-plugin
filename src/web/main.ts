@@ -35,7 +35,7 @@ function main() {
     console.log(...e.data.pluginMessage);
   });
 
-  function updateNodes(changes: NodeInfo[]) {
+  function updateNodes(changes: NodeInfo[], notify: boolean) {
     const changed = { allNodesChanged: false, selectionChanged: false };
 
     const updateNode = (prop: keyof typeof changed) => (node: NodeInfo) => {
@@ -54,10 +54,10 @@ function main() {
       updateNode("selectionChanged")
     );
 
-    if (changed.allNodesChanged) {
-      emit<DocumentChangeHandler>("DOCUMENT_CHANGE");
-    }
-    if (changed.selectionChanged) {
+    if (notify) {
+      if (changed.allNodesChanged) {
+        emit<DocumentChangeHandler>("DOCUMENT_CHANGE");
+      }
       emit<SelectionChangeHandler>("SELECTION_CHANGE");
     }
   }
@@ -90,8 +90,8 @@ function main() {
   copyPageEndpoint.mock(() => {
     throw new Error("Not implemented");
   });
-  updateNodesEndpoint.mock(({ nodes }) => updateNodes(nodes));
-  setNodesDataEndpoint.mock(({ nodes }) => updateNodes(nodes));
+  updateNodesEndpoint.mock(({ nodes }) => updateNodes(nodes, true));
+  setNodesDataEndpoint.mock(({ nodes }) => updateNodes(nodes, false));
 }
 
 main();

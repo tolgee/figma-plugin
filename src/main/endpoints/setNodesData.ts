@@ -9,8 +9,7 @@ export type SetNodesDataProps = {
 export const setNodesDataEndpoint = createEndpoint<SetNodesDataProps, void>(
   "SET_NODES_DATA",
   async ({ nodes }) => {
-    console.log(nodes);
-    nodes.forEach((nodeInfo) => {
+    for (const nodeInfo of nodes) {
       const node = figma.getNodeById(nodeInfo.id);
       node?.setPluginData(
         TOLGEE_NODE_INFO,
@@ -20,6 +19,6 @@ export const setNodesDataEndpoint = createEndpoint<SetNodesDataProps, void>(
           connected: nodeInfo.connected,
         })
       );
-    });
+    }
   }
 );

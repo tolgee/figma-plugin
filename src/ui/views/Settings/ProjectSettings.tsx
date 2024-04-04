@@ -58,6 +58,13 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   const namespaces = namespacesLoadable.data?._embedded?.namespaces?.map(
     (n) => n.name || ""
   ) || [""];
+
+  if (
+    settings?.namespace !== undefined &&
+    !namespaces.includes(settings.namespace)
+  ) {
+    namespaces.push(settings.namespace);
+  }
   const namespacesNotPresent = namespaces?.length === 1 && !namespaces[0];
 
   useEffect(() => {
@@ -112,7 +119,8 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       <VerticalSpace space="small" />
       <div className={styles.namespacesRow}>
         <NamespaceSelect
-          value={settings?.namespace || ""}
+          key={settings?.namespace || ""}
+          initialValue={settings?.namespace || ""}
           namespaces={namespaces}
           onChange={(namespace) =>
             setSettings((settings) => ({

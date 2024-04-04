@@ -114,7 +114,6 @@ export const Index = () => {
   };
 
   const handleKeyChange = (node: NodeInfo) => (value: string) => {
-    console.log({ value });
     setNodesDataMutation.mutate({ nodes: [{ ...node, key: value }] });
   };
 
@@ -236,7 +235,7 @@ export const Index = () => {
             !namespacesDisabled && (
               <div className={styles.nsSelect}>
                 <NamespaceSelect
-                  value={node.ns ?? defaultNamespace ?? ""}
+                  initialValue={node.ns ?? defaultNamespace ?? ""}
                   namespaces={namespaces}
                   onChange={handleNsChange(node)}
                 />
