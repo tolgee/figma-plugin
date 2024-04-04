@@ -102,9 +102,10 @@ export default async function () {
     emit<SelectionChangeHandler>("SELECTION_CHANGE");
   });
 
-  figma.on("documentchange", (e) => {
+  figma.currentPage.on("nodechange", (e) => {
+    console.log(e);
     if (
-      !e.documentChanges.every((ch) => {
+      !e.nodeChanges.every((ch) => {
         return (
           ch.type === "PROPERTY_CHANGE" &&
           ch.properties.every((p) => p === "pluginData")
