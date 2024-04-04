@@ -31,13 +31,16 @@ export const copyPageEndpoint = createEndpoint<Props | undefined, void>(
       (n) => getNodeInfo(n).key
     );
 
+    try {
+      await loadFontsAsync(textNodes);
+    } catch (e) {
+      console.error(e);
+    }
     for (const node of textNodes) {
       const { key, ns } = getNodeInfo(node);
 
-      try {
-        await loadFontsAsync([node]);
-      } catch (e) {
-        console.error(e);
+      if (node.hasMissingFont) {
+        continue;
       }
 
       if (data?.language) {

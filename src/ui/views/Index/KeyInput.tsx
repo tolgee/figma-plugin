@@ -13,7 +13,7 @@ export const KeyInput = ({ initialValue, onDebouncedChange }: Props) => {
 
   const debouncedcallback = useDebouncedCallback(
     (value: string) => onDebouncedChange(value),
-    1000
+    100
   );
 
   return (
