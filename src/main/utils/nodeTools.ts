@@ -1,5 +1,6 @@
 import { TOLGEE_NODE_INFO } from "@/constants";
-import { NodeInfo } from "@/types";
+import { CurrentDocumentSettings, NodeInfo } from "@/types";
+import { getDocumentData } from "./settingsTools";
 
 export const getNodeInfo = (node: TextNode): NodeInfo => {
   const pluginData = JSON.parse(
@@ -15,27 +16,37 @@ export const getNodeInfo = (node: TextNode): NodeInfo => {
   };
 };
 
-export function* findTextNodesGenerator(
-  nodes: readonly SceneNode[]
-): Generator<TextNode> {
-  const toExplore = [...nodes].reverse();
-  let node: SceneNode | undefined;
-  while ((node = toExplore.pop())) {
+function shouldIncludeNode(
+  node: TextNode,
+  settings: Partial<CurrentDocumentSettings>
+) {
+  if (settings.ignoreNumbers && /^\d+$/.test(node.characters)) {
+    return false;
+  }
+  if (settings.ignorePrefix && node.name.startsWith(settings.ignorePrefix)) {
+    return false;
+  }
+  return true;
+}
+
+export const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
+  const documentSettings = getDocumentData();
+  const result: TextNode[] = [];
+  for (const node of nodes) {
     if (node.type === "TEXT") {
-      yield node;
+      if (shouldIncludeNode(node, documentSettings)) {
+        result.push(node);
+      }
     }
     // @ts-ignore
     if (node.children) {
       // @ts-ignore
-      [...(node.children as SceneNode[])].reverse().forEach((value) => {
-        toExplore.push(value);
-      });
+      findTextNodes(node.children as SceneNode[]).forEach((n) =>
+        result.push(n)
+      );
     }
   }
-}
-
-export const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
-  return [...findTextNodesGenerator(nodes)];
+  return result;
 };
 
 export const findTextNodesInfo = (nodes: readonly SceneNode[]): NodeInfo[] => {

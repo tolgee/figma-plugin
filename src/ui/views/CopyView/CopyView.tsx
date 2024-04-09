@@ -14,7 +14,7 @@ import {
   COMPACT_SIZE,
   DEFAULT_SIZE,
   useWindowSize,
-} from "@/tools/useWindowSize";
+} from "@/ui/hooks/useWindowSize";
 
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";

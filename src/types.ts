@@ -87,6 +87,8 @@ export type PartialNodeInfo = Partial<NodeInfo> & {
 export type GlobalSettings = {
   apiUrl: string;
   apiKey: string;
+  ignorePrefix: string;
+  ignoreNumbers: boolean;
 };
 
 export type CurrentDocumentSettings = GlobalSettings & {
