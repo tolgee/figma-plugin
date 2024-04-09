@@ -11,7 +11,7 @@ import {
 } from "@create-figma-plugin/ui";
 
 import { NodeInfo } from "@/types";
-import { Settings, InsertLink } from "@/ui/icons/SvgIcons";
+import { Settings, InsertLink, MyLocation } from "@/ui/icons/SvgIcons";
 import { useApiQuery } from "@/ui/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
@@ -29,6 +29,7 @@ import styles from "./Index.css";
 import { KeyInput } from "./KeyInput";
 import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
+import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
@@ -49,6 +50,8 @@ export const Index = () => {
     url: "/v2/projects/used-namespaces",
     method: "get",
   });
+
+  const highlightMutation = useHighlightNodeMutation();
 
   const setNodesDataMutation = useSetNodesDataMutation();
 
@@ -97,6 +100,10 @@ export const Index = () => {
     } else {
       setRoute("push");
     }
+  };
+
+  const handleHighlight = (node: NodeInfo) => {
+    highlightMutation.mutate({ key: node.id });
   };
 
   const handlePull = () => {
@@ -244,28 +251,40 @@ export const Index = () => {
           }
           actionCallback={(node) => {
             return (
-              <div
-                data-cy="index_link_button"
-                role="button"
-                title={
-                  !node.connected
-                    ? "Connect to existing key"
-                    : "Edit key connection"
-                }
-                onClick={() => handleConnect(node)}
-                className={styles.connectButton}
-              >
-                {node.connected ? (
-                  <InsertLink width={16} height={16} />
-                ) : (
-                  <InsertLink
-                    width={16}
-                    height={16}
-                    style={{
-                      color: "var(--figma-color-text-secondary)",
-                    }}
-                  />
-                )}
+              <div className={styles.actionsContainer}>
+                <div
+                  data-cy="index_highlight_button"
+                  role="button"
+                  title="Locate on the page"
+                  onClick={() => handleHighlight(node)}
+                  className={styles.highlightButton}
+                >
+                  <MyLocation width={16} height={16} />
+                </div>
+
+                <div
+                  data-cy="index_link_button"
+                  role="button"
+                  title={
+                    !node.connected
+                      ? "Connect to existing key"
+                      : "Edit key connection"
+                  }
+                  onClick={() => handleConnect(node)}
+                  className={styles.connectButton}
+                >
+                  {node.connected ? (
+                    <InsertLink width={16} height={16} />
+                  ) : (
+                    <InsertLink
+                      width={16}
+                      height={16}
+                      style={{
+                        color: "var(--figma-color-text-secondary)",
+                      }}
+                    />
+                  )}
+                </div>
               </div>
             );
           }}

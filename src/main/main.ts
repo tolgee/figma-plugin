@@ -25,6 +25,7 @@ import {
   setPluginData,
 } from "./utils/settingsTools";
 import { DEFAULT_SIZE } from "@/ui/hooks/useWindowSize";
+import { highlightNodeEndpoint } from "./endpoints/highlightNode";
 
 const getAllPages = () => {
   const document = figma.root;
@@ -91,6 +92,7 @@ export default async function () {
   copyPageEndpoint.register();
   updateNodesEndpoint.register();
   setNodesDataEndpoint.register();
+  highlightNodeEndpoint.register();
 
   const config = await getPluginData();
 

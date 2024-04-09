@@ -26,6 +26,9 @@ function shouldIncludeNode(
   if (settings.ignorePrefix && node.name.startsWith(settings.ignorePrefix)) {
     return false;
   }
+  if (node.characters.trim().length === 0) {
+    return false;
+  }
   return true;
 }
 
