@@ -22,6 +22,7 @@ import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
 import { getPullChanges } from "@/tools/getPullChanges";
 import { useConnectedMutation } from "@/ui/hooks/useConnectedMutation";
 import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
+import { LocateNodeButton } from "@/ui/components/LocateNodeButton/LocateNodeButton";
 
 export const CopyView = () => {
   const selectionLoadable = useSelectedNodes();
@@ -102,13 +103,14 @@ export const CopyView = () => {
         </Container>
       ) : (
         <NodeList
-          nodes={selection}
+          items={selection}
           keyComponent={(node) => {
             if (!node.connected) {
               return <Muted>Not connected</Muted>;
             }
             return node.key || "";
           }}
+          actionCallback={(item) => <LocateNodeButton nodeId={item.id} />}
         />
       )}
     </Fragment>

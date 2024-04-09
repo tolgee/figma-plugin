@@ -24,16 +24,6 @@
   height: 20px;
 }
 
-.highlightButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  color: var(--figma-color-text-secondary);
-}
-
 .disabled {
   color: var(--figma-color-text-disabled);
 }

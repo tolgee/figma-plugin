@@ -3,7 +3,6 @@ declare const styles: {
   readonly "connectButton": string;
   readonly "container": string;
   readonly "disabled": string;
-  readonly "highlightButton": string;
   readonly "keyInput": string;
   readonly "languageContainer": string;
   readonly "nsSelect": string;

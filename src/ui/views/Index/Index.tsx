@@ -11,7 +11,7 @@ import {
 } from "@create-figma-plugin/ui";
 
 import { NodeInfo } from "@/types";
-import { Settings, InsertLink, MyLocation } from "@/ui/icons/SvgIcons";
+import { Settings, InsertLink } from "@/ui/icons/SvgIcons";
 import { useApiQuery } from "@/ui/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
@@ -22,14 +22,14 @@ import {
   DEFAULT_SIZE,
   useWindowSize,
 } from "@/ui/hooks/useWindowSize";
+import { LocateNodeButton } from "@/ui/components/LocateNodeButton/LocateNodeButton";
+import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
 
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { KeyInput } from "./KeyInput";
-import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
-import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
@@ -50,8 +50,6 @@ export const Index = () => {
     url: "/v2/projects/used-namespaces",
     method: "get",
   });
-
-  const highlightMutation = useHighlightNodeMutation();
 
   const setNodesDataMutation = useSetNodesDataMutation();
 
@@ -100,10 +98,6 @@ export const Index = () => {
     } else {
       setRoute("push");
     }
-  };
-
-  const handleHighlight = (node: NodeInfo) => {
-    highlightMutation.mutate({ key: node.id });
   };
 
   const handlePull = () => {
@@ -228,7 +222,7 @@ export const Index = () => {
         </Container>
       ) : (
         <NodeList
-          nodes={selection}
+          items={selection}
           keyComponent={(node) =>
             !node.connected && (
               <KeyInput
@@ -252,15 +246,7 @@ export const Index = () => {
           actionCallback={(node) => {
             return (
               <div className={styles.actionsContainer}>
-                <div
-                  data-cy="index_highlight_button"
-                  role="button"
-                  title="Locate on the page"
-                  onClick={() => handleHighlight(node)}
-                  className={styles.highlightButton}
-                >
-                  <MyLocation width={16} height={16} />
-                </div>
+                <LocateNodeButton nodeId={node.id} />
 
                 <div
                   data-cy="index_link_button"

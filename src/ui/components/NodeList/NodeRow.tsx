@@ -9,6 +9,7 @@ type Props = {
   keyComponent?: ComponentChildren;
   nsComponent?: ComponentChildren;
   compact?: boolean;
+  onClick?: () => void;
 };
 
 export const NodeRow = ({
@@ -17,6 +18,7 @@ export const NodeRow = ({
   keyComponent,
   nsComponent,
   compact,
+  onClick,
 }: Props) => {
   const showText = node.characters || !compact || action;
 
@@ -26,7 +28,10 @@ export const NodeRow = ({
       className={styles.container}
       style={{
         gridTemplateColumns: action ? "1fr 1fr auto" : "1fr 1fr",
+        cursor: onClick ? "pointer" : "default",
       }}
+      role={onClick ? "button" : undefined}
+      onClick={onClick}
     >
       {showText && (
         <div
@@ -40,7 +45,11 @@ export const NodeRow = ({
       <div className={styles.action} data-cy="general_node_list_row_action">
         {action}
       </div>
-      <div title="Translation key" data-cy="general_node_list_row_key">
+      <div
+        title="Translation key"
+        data-cy="general_node_list_row_key"
+        className={styles.key}
+      >
         {keyComponent ? keyComponent : node.key}
       </div>
       <div

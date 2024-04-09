@@ -1,13 +1,14 @@
 import { createEndpoint } from "../utils/createEndpoint";
 
 export type HighlightNodeProps = {
-  key: string;
+  id: string;
 };
 
 export const highlightNodeEndpoint = createEndpoint(
   "HIGHLIGHT_NODE",
-  async ({ key }: HighlightNodeProps) => {
-    const node = figma.getNodeById(key);
+  async ({ id }: HighlightNodeProps) => {
+    const node = figma.getNodeById(id);
+
     if (node) {
       figma.viewport.scrollAndZoomIntoView([node]);
     }
