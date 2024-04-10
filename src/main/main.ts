@@ -1,95 +1,31 @@
 import { showUI } from "@create-figma-plugin/utilities";
 import { on, emit } from "@/utilities";
-import { TOLGEE_PLUGIN_CONFIG_NAME } from "../constants";
 
 import {
   ConfigChangeHandler,
-  CurrentDocumentSettings,
-  CurrentPageSettings,
   DocumentChangeHandler,
-  GlobalSettings,
   ResetHandler,
   ResizeHandler,
   SelectionChangeHandler,
   SetLanguageHandler,
   SetupHandle,
   SyncCompleteHandler,
-  TolgeeConfig,
 } from "../types";
-import { DEFAULT_SIZE } from "../tools/useWindowSize";
 import { getScreenshotsEndpoint } from "./endpoints/getScreenshots";
 import { getSelectedNodesEndpoint } from "./endpoints/getSelectedNodes";
 import { getConnectedNodesEndpoint } from "./endpoints/getConnectedNodes";
-import { setPageData } from "./utils/pages";
 import { copyPageEndpoint } from "./endpoints/copyPage";
 import { updateNodesEndpoint } from "./endpoints/updateNodes";
 import { setNodesDataEndpoint } from "./endpoints/setNodesData";
-
-const getGlobalSettings = async () => {
-  const pluginData = await figma.clientStorage.getAsync(
-    TOLGEE_PLUGIN_CONFIG_NAME
-  );
-  return pluginData ? (JSON.parse(pluginData) as Partial<GlobalSettings>) : {};
-};
-
-const setGlobalSettings = async (data: Partial<GlobalSettings>) => {
-  await figma.clientStorage.setAsync(
-    TOLGEE_PLUGIN_CONFIG_NAME,
-    JSON.stringify(data)
-  );
-};
-
-const deleteGlobalSettings = async () => {
-  await figma.clientStorage.deleteAsync(TOLGEE_PLUGIN_CONFIG_NAME);
-};
-
-const getDocumentData = () => {
-  const pluginData = figma.root.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
-  return pluginData
-    ? (JSON.parse(pluginData) as Partial<CurrentDocumentSettings>)
-    : {};
-};
-
-const setDocumentData = (data: Partial<CurrentDocumentSettings>) => {
-  figma.root.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, JSON.stringify(data));
-};
-
-const deleteDocumentData = () => {
-  figma.root.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, "");
-};
-
-const getPageData = (page = figma.currentPage) => {
-  const pluginData = page.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
-  return pluginData
-    ? (JSON.parse(pluginData) as Partial<CurrentPageSettings>)
-    : {};
-};
-
-const deletePageData = (page = figma.currentPage) => {
-  page.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, "");
-};
-
-const getPluginData = async () => {
-  return {
-    ...(await getGlobalSettings()),
-    ...getDocumentData(),
-    ...getPageData(),
-  };
-};
-
-const setPluginData = async (data: Partial<TolgeeConfig>) => {
-  const { apiKey, apiUrl, language, namespace, namespacesDisabled } = data;
-  await setGlobalSettings({ apiKey, apiUrl });
-  setDocumentData({
-    apiKey,
-    apiUrl,
-    namespace,
-    namespacesDisabled,
-    documentInfo: true,
-  });
-  setPageData({ language, pageInfo: true });
-  emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());
-};
+import {
+  deleteDocumentData,
+  deleteGlobalSettings,
+  deletePageData,
+  getPluginData,
+  setPluginData,
+} from "./utils/settingsTools";
+import { DEFAULT_SIZE } from "@/ui/hooks/useWindowSize";
+import { highlightNodeEndpoint } from "./endpoints/highlightNode";
 
 const getAllPages = () => {
   const document = figma.root;
@@ -156,6 +92,7 @@ export default async function () {
   copyPageEndpoint.register();
   updateNodesEndpoint.register();
   setNodesDataEndpoint.register();
+  highlightNodeEndpoint.register();
 
   const config = await getPluginData();
 

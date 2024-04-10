@@ -1,38 +1,40 @@
 import { ComponentChildren, h } from "preact";
 
-import { PartialNodeInfo } from "@/types";
 import styles from "./NodeList.css";
 import { NodeRow } from "./NodeRow";
 import { useRef } from "preact/hooks";
 
-type Props<T extends PartialNodeInfo> = {
-  nodes: T[];
-  actionCallback?: (node: T) => ComponentChildren;
-  keyComponent?: (node: T) => ComponentChildren;
-  nsComponent?: (node: T) => ComponentChildren;
+type Props<T extends { id: string }> = {
+  items: T[];
+  actionCallback?: (item: T) => ComponentChildren;
+  keyComponent?: (item: T) => ComponentChildren;
+  nsComponent?: (item: T) => ComponentChildren;
   compact?: boolean;
+  onClick?: (item: T) => void;
   onBottomReached?: () => void;
 };
 
-export function NodeList<T extends PartialNodeInfo>({
-  nodes,
+export function NodeList<T extends { id: string }>({
+  items,
   actionCallback,
   keyComponent,
   nsComponent,
   compact,
+  onClick,
 }: Props<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className={styles.container} ref={containerRef}>
-      {nodes?.map((node) => (
+      {items?.map((item) => (
         <NodeRow
-          key={node.id}
-          node={node}
-          action={actionCallback?.(node)}
-          keyComponent={keyComponent?.(node)}
-          nsComponent={nsComponent?.(node)}
+          key={item.id}
+          node={item}
+          action={actionCallback?.(item)}
+          keyComponent={keyComponent?.(item)}
+          nsComponent={nsComponent?.(item)}
           compact={compact}
+          onClick={onClick ? () => onClick?.(item) : undefined}
         />
       ))}
     </div>

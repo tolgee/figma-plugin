@@ -20,6 +20,7 @@ import { RouteParam } from "../routes";
 import styles from "./Pull.css";
 import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
 import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
+import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
 
 type Props = RouteParam<"pull">;
 
@@ -75,6 +76,8 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
     translationsLoadable.refetch();
   };
 
+  const highlightNode = useHighlightNodeMutation();
+
   const isLoading = translationsLoadable.isLoading || selectedNodes.isLoading;
 
   return (
@@ -115,7 +118,11 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
               <Fragment>
                 <div className={clsx(styles.sectionTitle)}>Missing keys:</div>
                 <div className={clsx(styles.list, styles.missing)}>
-                  <NodeList nodes={missingKeys} compact />
+                  <NodeList
+                    items={missingKeys}
+                    onClick={(item) => highlightNode.mutate({ id: item.id })}
+                    compact
+                  />
                 </div>
               </Fragment>
             )}

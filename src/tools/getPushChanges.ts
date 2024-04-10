@@ -52,7 +52,7 @@ export const getPushChanges = (
         compareNs(t.keyNamespace, node.ns) &&
         t.translations[language]?.text
     );
-    const change = {
+    const change: KeyChangeValue = {
       key: node.key,
       ns: node.ns,
       oldValue: key?.translations[language]?.text,

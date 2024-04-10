@@ -25,7 +25,7 @@ export const Changes = ({ changes }: Props) => {
             data-cy="changes_new_keys"
           >
             <NodeList
-              nodes={changes.newKeys.map((k) => ({
+              items={changes.newKeys.map((k) => ({
                 id: k.key,
                 key: k.key,
                 ns: k.ns,
@@ -47,7 +47,7 @@ export const Changes = ({ changes }: Props) => {
             data-cy="changes_changed_keys"
           >
             <NodeList
-              nodes={changes.changedKeys.map((k) => ({
+              items={changes.changedKeys.map((k) => ({
                 id: k.key,
                 key: k.key,
                 ns: k.ns,

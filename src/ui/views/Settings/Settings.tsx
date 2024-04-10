@@ -19,6 +19,8 @@ import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Settings.css";
 import { ProjectSettings } from "./ProjectSettings";
+import { useWindowSize } from "@/ui/hooks/useWindowSize";
+import { useQueryClient } from "react-query";
 
 const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 
@@ -27,6 +29,7 @@ type Props = {
 };
 
 export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
+  const queryClient = useQueryClient();
   const config = useGlobalState((c) => c.config) || {};
   const [tolgeeConfig, setTolgeeConfig] = useState({
     apiUrl: DEFAULT_TOLGEE_URL,
@@ -43,6 +46,8 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       },
     },
   });
+
+  useWindowSize({ width: 500, height: 500 });
 
   const [validated, setValidated] = useState(false);
 
@@ -97,6 +102,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
     } catch (e: any) {
       setError(e.message || e);
     }
+    queryClient.clear();
   };
 
   const handleGoBack = useCallback(() => {

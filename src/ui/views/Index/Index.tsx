@@ -21,13 +21,14 @@ import {
   COMPACT_SIZE,
   DEFAULT_SIZE,
   useWindowSize,
-} from "@/tools/useWindowSize";
+} from "@/ui/hooks/useWindowSize";
+import { LocateNodeButton } from "@/ui/components/LocateNodeButton/LocateNodeButton";
+import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
 
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { KeyInput } from "./KeyInput";
-import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 
 export const Index = () => {
@@ -221,7 +222,7 @@ export const Index = () => {
         </Container>
       ) : (
         <NodeList
-          nodes={selection}
+          items={selection}
           keyComponent={(node) =>
             !node.connected && (
               <KeyInput
@@ -244,28 +245,32 @@ export const Index = () => {
           }
           actionCallback={(node) => {
             return (
-              <div
-                data-cy="index_link_button"
-                role="button"
-                title={
-                  !node.connected
-                    ? "Connect to existing key"
-                    : "Edit key connection"
-                }
-                onClick={() => handleConnect(node)}
-                className={styles.connectButton}
-              >
-                {node.connected ? (
-                  <InsertLink width={16} height={16} />
-                ) : (
-                  <InsertLink
-                    width={16}
-                    height={16}
-                    style={{
-                      color: "var(--figma-color-text-secondary)",
-                    }}
-                  />
-                )}
+              <div className={styles.actionsContainer}>
+                <LocateNodeButton nodeId={node.id} />
+
+                <div
+                  data-cy="index_link_button"
+                  role="button"
+                  title={
+                    !node.connected
+                      ? "Connect to existing key"
+                      : "Edit key connection"
+                  }
+                  onClick={() => handleConnect(node)}
+                  className={styles.connectButton}
+                >
+                  {node.connected ? (
+                    <InsertLink width={16} height={16} />
+                  ) : (
+                    <InsertLink
+                      width={16}
+                      height={16}
+                      style={{
+                        color: "var(--figma-color-text-secondary)",
+                      }}
+                    />
+                  )}
+                </div>
               </div>
             );
           }}
