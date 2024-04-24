@@ -83,6 +83,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
           initialData?.namespacesDisabled ?? namespacesNotPresent,
         ignoreNumbers: initialData?.ignoreNumbers ?? true,
         ignorePrefix: initialData?.ignorePrefix ?? "_",
+        useNameAsDefaultKey: initialData?.useNameAsDefaultKey ?? false,
       });
     }
   }, [languages, namespaces]);
@@ -177,6 +178,18 @@ export const ProjectSettings: FunctionComponent<Props> = ({
         }
       >
         <Text>Ignore nodes with numbers</Text>
+      </Checkbox>
+      <VerticalSpace space="small" />
+      <Checkbox
+        value={Boolean(settings?.useNameAsDefaultKey)}
+        onChange={(e) =>
+          setSettings((settings) => ({
+            ...settings!,
+            useNameAsDefaultKey: Boolean(e.currentTarget.checked),
+          }))
+        }
+      >
+        <Text>Use node name as key</Text>
       </Checkbox>
     </Fragment>
   );

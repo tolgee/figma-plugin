@@ -89,6 +89,7 @@ export type GlobalSettings = {
   apiKey: string;
   ignorePrefix: string;
   ignoreNumbers: boolean;
+  useNameAsDefaultKey: boolean;
 };
 
 export type CurrentDocumentSettings = GlobalSettings & {
