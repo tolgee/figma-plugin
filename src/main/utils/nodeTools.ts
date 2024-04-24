@@ -13,6 +13,7 @@ export const getNodeInfo = (node: TextNode): NodeInfo => {
     key: pluginData.key || "",
     ns: pluginData.ns,
     connected: Boolean(pluginData.connected),
+    visible: Boolean(pluginData.visible),
   };
 };
 
@@ -27,6 +28,9 @@ function shouldIncludeNode(
     return false;
   }
   if (node.characters.trim().length === 0) {
+    return false;
+  }
+  if (!node.visible) {
     return false;
   }
   return true;
