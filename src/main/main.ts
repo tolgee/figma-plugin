@@ -26,6 +26,7 @@ import {
 } from "./utils/settingsTools";
 import { DEFAULT_SIZE } from "@/ui/hooks/useWindowSize";
 import { highlightNodeEndpoint } from "./endpoints/highlightNode";
+import { deselectNodeEndpoint } from "./endpoints/deselectNode";
 
 const getAllPages = () => {
   const document = figma.root;
@@ -93,6 +94,7 @@ export default async function () {
   updateNodesEndpoint.register();
   setNodesDataEndpoint.register();
   highlightNodeEndpoint.register();
+  deselectNodeEndpoint.register();
 
   const config = await getPluginData();
 
