@@ -40,6 +40,9 @@ export const Index = () => {
   const namespacesDisabled = useGlobalState(
     (c) => c.config?.namespacesDisabled
   );
+  const useNameAsDefaultKey = useGlobalState(
+    (c) => c.config?.useNameAsDefaultKey
+  );
 
   const languagesLoadable = useApiQuery({
     url: "/v2/projects/languages",
@@ -226,7 +229,9 @@ export const Index = () => {
           keyComponent={(node) =>
             !node.connected && (
               <KeyInput
-                initialValue={node.key || ""}
+                initialValue={
+                  node.key || (useNameAsDefaultKey ? node.name : "")
+                }
                 onDebouncedChange={handleKeyChange(node)}
               />
             )
