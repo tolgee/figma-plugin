@@ -30,6 +30,7 @@ import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { KeyInput } from "./KeyInput";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
+import { DeselectNodeButton } from "@/ui/components/DeselectNodeButton/DeselectNodeButton";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
@@ -271,6 +272,8 @@ export const Index = () => {
                     />
                   )}
                 </div>
+
+                <DeselectNodeButton nodeId={node.id} />
               </div>
             );
           }}
