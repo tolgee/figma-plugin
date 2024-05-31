@@ -21,6 +21,7 @@ import styles from "./Pull.css";
 import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
 import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
+import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 
 type Props = RouteParam<"pull">;
 
@@ -50,6 +51,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
   });
 
   const updateNodeLoadable = useUpdateNodesMutation();
+  const setNodesDataMutation = useSetNodesDataMutation();
 
   const { changedNodes, missingKeys } = useMemo(() => {
     return getPullChanges(
@@ -63,6 +65,15 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
     if (changedNodes.length !== 0) {
       await updateNodeLoadable.mutateAsync({ nodes: changedNodes });
     }
+    await setNodesDataMutation.mutateAsync({
+      nodes:
+        selectedNodes.data?.items
+          .filter((n) => !n.connected)
+          .map((n) => ({
+            ...n,
+            connected: true,
+          })) ?? [],
+    });
     setLanguage(lang);
     setRoute("index");
   };
