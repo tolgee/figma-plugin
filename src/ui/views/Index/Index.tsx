@@ -1,5 +1,5 @@
 import { Fragment, h } from "preact";
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import {
   Banner,
   Button,
@@ -10,36 +10,28 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-import { NodeInfo } from "@/types";
-import { Settings, InsertLink } from "@/ui/icons/SvgIcons";
+import { Settings } from "@/ui/icons/SvgIcons";
 import { useApiQuery } from "@/ui/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
-import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
 import {
   COMPACT_SIZE,
   DEFAULT_SIZE,
   useWindowSize,
 } from "@/ui/hooks/useWindowSize";
-import { LocateNodeButton } from "@/ui/components/LocateNodeButton/LocateNodeButton";
 import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
 
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
-import { KeyInput } from "./KeyInput";
-import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
+import { ListItem } from "./ListItem";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
   const selection = selectionLoadable.data?.items || [];
 
   const [error, setError] = useState<string>();
-  const defaultNamespace = useGlobalState((c) => c.config?.namespace);
-  const namespacesDisabled = useGlobalState(
-    (c) => c.config?.namespacesDisabled
-  );
 
   const languagesLoadable = useApiQuery({
     url: "/v2/projects/languages",
@@ -51,21 +43,7 @@ export const Index = () => {
     method: "get",
   });
 
-  const setNodesDataMutation = useSetNodesDataMutation();
-
   const languages = languagesLoadable.data?._embedded?.languages;
-  const namespaces = useMemo(
-    () =>
-      Array.from(
-        new Set([
-          ...(namespacesLoadable.data?._embedded?.namespaces || []).map(
-            (ns) => ns.name || ""
-          ),
-          defaultNamespace || "",
-        ])
-      ),
-    [namespacesLoadable.data, defaultNamespace]
-  );
 
   const language =
     useGlobalState((c) => c.config?.language) || languages?.[0]?.tag || "";
@@ -80,13 +58,13 @@ export const Index = () => {
     }
   };
 
+  const defaultNamespace = useGlobalState((c) => c.config?.namespace);
+
   const handlePush = () => {
-    const subjectNodes = /*nothingSelected ? allNodes :*/ selection.map(
-      (node) => ({
-        ...node,
-        ns: node.ns ?? defaultNamespace,
-      })
-    );
+    const subjectNodes = selection.map((node) => ({
+      ...node,
+      ns: node.ns ?? defaultNamespace,
+    }));
     const conflicts = getConflictingNodes(subjectNodes);
     if (conflicts.length > 0) {
       const keys = Array.from(new Set(conflicts.map((n) => n.key)));
@@ -108,18 +86,6 @@ export const Index = () => {
 
   const handleCopy = () => {
     setRoute("create_copy");
-  };
-
-  const handleConnect = (node: NodeInfo) => {
-    setRoute("connect", { node });
-  };
-
-  const handleKeyChange = (node: NodeInfo) => (value: string) => {
-    setNodesDataMutation.mutate({ nodes: [{ ...node, key: value }] });
-  };
-
-  const handleNsChange = (node: NodeInfo) => (value: string) => {
-    setNodesDataMutation.mutate({ nodes: [{ ...node, ns: value }] });
   };
 
   useEffect(() => {
@@ -223,57 +189,12 @@ export const Index = () => {
       ) : (
         <NodeList
           items={selection}
-          keyComponent={(node) =>
-            !node.connected && (
-              <KeyInput
-                initialValue={node.key || ""}
-                onDebouncedChange={handleKeyChange(node)}
-              />
-            )
-          }
-          nsComponent={(node) =>
-            !node.connected &&
-            !namespacesDisabled && (
-              <div className={styles.nsSelect}>
-                <NamespaceSelect
-                  initialValue={node.ns ?? defaultNamespace ?? ""}
-                  namespaces={namespaces}
-                  onChange={handleNsChange(node)}
-                />
-              </div>
-            )
-          }
-          actionCallback={(node) => {
-            return (
-              <div className={styles.actionsContainer}>
-                <LocateNodeButton nodeId={node.id} />
-
-                <div
-                  data-cy="index_link_button"
-                  role="button"
-                  title={
-                    !node.connected
-                      ? "Connect to existing key"
-                      : "Edit key connection"
-                  }
-                  onClick={() => handleConnect(node)}
-                  className={styles.connectButton}
-                >
-                  {node.connected ? (
-                    <InsertLink width={16} height={16} />
-                  ) : (
-                    <InsertLink
-                      width={16}
-                      height={16}
-                      style={{
-                        color: "var(--figma-color-text-secondary)",
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-            );
-          }}
+          row={(node) => (
+            <ListItem
+              node={node}
+              loadedNamespaces={namespacesLoadable.data?._embedded?.namespaces}
+            />
+          )}
         />
       )}
     </div>

@@ -128,7 +128,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       <div className={styles.namespacesRow}>
         <NamespaceSelect
           key={settings?.namespace || ""}
-          initialValue={settings?.namespace || ""}
+          value={settings?.namespace || ""}
           namespaces={namespaces}
           onChange={(namespace) =>
             setSettings((settings) => ({
