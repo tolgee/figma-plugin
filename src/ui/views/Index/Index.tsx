@@ -15,17 +15,14 @@ import { useApiQuery } from "@/ui/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
-import {
-  COMPACT_SIZE,
-  DEFAULT_SIZE,
-  useWindowSize,
-} from "@/ui/hooks/useWindowSize";
+import { useWindowSize } from "@/ui/hooks/useWindowSize";
 import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
 
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { ListItem } from "./ListItem";
+import { COMPACT_SIZE, DEFAULT_SIZE } from "@/ui/state/sizes";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();

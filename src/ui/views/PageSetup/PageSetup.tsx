@@ -3,7 +3,6 @@ import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { TopBar } from "@/ui/components/TopBar/TopBar";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
-import { COMPACT_SIZE, useWindowSize } from "@/ui/hooks/useWindowSize";
 import { CurrentPageSettings } from "@/types";
 import {
   VerticalSpace,
@@ -45,8 +44,6 @@ export const PageSetup: FunctionComponent = () => {
   };
 
   const validated = Boolean(settings?.language);
-
-  useWindowSize(COMPACT_SIZE);
 
   if (languagesLoadable.isLoading) {
     return <FullPageLoading />;

@@ -1,6 +1,8 @@
 import { ComponentChildren, h } from "preact";
 import { useEffect, useRef } from "preact/hooks";
 import styles from "./Dialog.css";
+import { useWindowSize } from "@/ui/hooks/useWindowSize";
+import { DEFAULT_SIZE } from "@/ui/state/sizes";
 
 type Props = {
   onClose: () => void;
@@ -9,6 +11,8 @@ type Props = {
 
 export const Dialog = ({ children, onClose }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
+
+  useWindowSize(DEFAULT_SIZE);
 
   useEffect(() => {
     const handler = () => onClose();

@@ -10,11 +10,6 @@ import {
 import { useGlobalState } from "@/ui/state/GlobalState";
 import { useApiMutation } from "@/ui/client/useQueryApi";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
-import {
-  COMPACT_SIZE,
-  DEFAULT_SIZE,
-  useWindowSize,
-} from "@/ui/hooks/useWindowSize";
 
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
@@ -62,10 +57,6 @@ export const CopyView = () => {
 
     await updateNodesLoadalbe.mutateAsync({ nodes: changedNodes });
   };
-
-  useWindowSize(
-    !selection || selection.length < 2 ? COMPACT_SIZE : DEFAULT_SIZE
-  );
 
   if (
     translationsLoadable.isLoading ||

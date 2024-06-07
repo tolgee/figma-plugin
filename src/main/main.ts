@@ -24,8 +24,8 @@ import {
   getPluginData,
   setPluginData,
 } from "./utils/settingsTools";
-import { DEFAULT_SIZE } from "@/ui/hooks/useWindowSize";
 import { cleanUp, highlightNodeEndpoint } from "./endpoints/highlightNode";
+import { DEFAULT_SIZE } from "@/ui/state/sizes";
 
 const getAllPages = () => {
   const document = figma.root;

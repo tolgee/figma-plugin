@@ -1,18 +1,36 @@
-import { emit } from "@/utilities";
-import { useEffect } from "preact/hooks";
+import { useEffect, useRef } from "preact/hooks";
 
-import { ResizeHandler } from "@/types";
-export const DEFAULT_SIZE = { width: 500, height: 400 };
-export const COMPACT_SIZE = { width: 500, height: 160 };
+import { useGlobalActions, useGlobalState } from "../state/GlobalState";
 
 type WindowSize = {
   width: number;
   height: number;
 };
 
-export const useWindowSize = (size: WindowSize) => {
+export const useWindowSize = (newSize: WindowSize) => {
+  const lastSize = useRef<WindowSize>();
+  const { setSizeStack } = useGlobalActions();
+  const sizeStack = useGlobalState((c) => c.sizeStack);
   useEffect(() => {
-    emit<ResizeHandler>("RESIZE", size);
-    return () => emit<ResizeHandler>("RESIZE", DEFAULT_SIZE);
-  }, [size]);
+    const addedSize = { ...newSize };
+    if (sizeStack.includes(lastSize.current!)) {
+      setSizeStack((stack) =>
+        stack.map((i) => {
+          if (i === lastSize.current) {
+            return addedSize;
+          }
+          return i;
+        })
+      );
+    } else {
+      setSizeStack((stack) => [...stack, addedSize]);
+    }
+    lastSize.current = addedSize;
+  }, [newSize.width, newSize.height]);
+
+  useEffect(() => {
+    return () => {
+      setSizeStack((stack) => stack.filter((i) => i !== lastSize.current));
+    };
+  }, []);
 };
