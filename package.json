@@ -50,7 +50,6 @@
     "@create-figma-plugin/utilities": "2.1.5",
     "clsx": "^1.2.1",
     "preact": "^10.11.3",
-    "preact-portal": "^1.1.3",
     "react-query": "^3.39.2",
     "use-context-selector": "^1.4.1",
     "use-debounce": "^9.0.3"
