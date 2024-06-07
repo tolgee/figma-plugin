@@ -34,7 +34,6 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     const [sizeStack, setSizeStack] = useState<WindowSize[]>([]);
 
     useEffect(() => {
-      console.log(sizeStack);
       const size = sizeStack[sizeStack.length - 1] ?? DEFAULT_SIZE;
       emit<ResizeHandler>("RESIZE", size);
       return () => emit<ResizeHandler>("RESIZE", DEFAULT_SIZE);
