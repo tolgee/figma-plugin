@@ -18,7 +18,7 @@ export const Dialog = ({ children, onClose }: Props) => {
   }, []);
 
   return (
-    <div ref={ref} tabIndex={0}>
+    <div ref={ref} tabIndex={0} data-cy="dialog">
       <div className={styles.dialogBody}>{children}</div>
     </div>
   );
