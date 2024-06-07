@@ -117,7 +117,6 @@ export const Index = () => {
                     className={styles.languageContainer}
                     value={language}
                     placeholder="Language"
-                    disabled={!nothingSelected}
                     onChange={(e) => {
                       handleLanguageChange(
                         (e.target as HTMLInputElement).value

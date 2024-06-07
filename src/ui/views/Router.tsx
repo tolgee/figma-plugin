@@ -11,12 +11,10 @@ import { Connect } from "./Connect/Connect";
 import { PageSetup } from "./PageSetup/PageSetup";
 import { CreateCopy } from "./CreateCopy/CreateCopy";
 import { CopyView } from "./CopyView/CopyView";
+import { Dialog } from "../components/Dialog/Dialog";
 
-const getPage = ([routeKey, routeData]: Route) => {
+const getDialogPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
-    case "index":
-      return <Index />;
-
     case "settings":
       return <Settings />;
 
@@ -31,7 +29,34 @@ const getPage = ([routeKey, routeData]: Route) => {
 
     case "create_copy":
       return <CreateCopy />;
+
+    default:
+      return null;
   }
+};
+
+type PageProps = {
+  route: Route;
+  setRoute: (...route: Route) => void;
+};
+
+const Page = ({ route: [routeKey, routeData], setRoute }: PageProps) => {
+  if (routeKey === "settings") {
+    return <Settings />;
+  }
+
+  const dialogPage = getDialogPage([routeKey, routeData] as Route);
+
+  return (
+    <Fragment>
+      <div style={{ display: dialogPage ? "none" : "block" }}>
+        <Index />
+      </div>
+      {dialogPage && (
+        <Dialog onClose={() => setRoute("index")}>{dialogPage}</Dialog>
+      )}
+    </Fragment>
+  );
 };
 
 export const Router = () => {
@@ -68,7 +93,7 @@ export const Router = () => {
       ) : !pageInfo ? (
         <PageSetup />
       ) : (
-        getPage(route)
+        <Page route={route} setRoute={setRoute} />
       )}
     </Fragment>
   );
