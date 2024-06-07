@@ -20,6 +20,7 @@ import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Settings.css";
 import { ProjectSettings } from "./ProjectSettings";
 import { useQueryClient } from "react-query";
+import { useWindowSize } from "@/ui/hooks/useWindowSize";
 
 const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 
@@ -45,6 +46,8 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       },
     },
   });
+
+  useWindowSize({ width: 500, height: 500 });
 
   const [validated, setValidated] = useState(false);
 
