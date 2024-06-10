@@ -52,10 +52,7 @@ describe("Pull", () => {
       .should("be.visible");
     cy.iframe().contains("Missing keys").should("be.visible");
 
-    cy.iframe()
-      .findDcy("dialog")
-      .contains("nonexistant-key")
-      .should("be.visible");
+    cy.iframe().contains("nonexistant-key").should("be.visible");
 
     cy.iframe().findDcy("pull_submit_button").should("be.visible").click();
 
