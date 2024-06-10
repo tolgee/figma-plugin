@@ -30,11 +30,6 @@ function main() {
 
   const state = getUrlConfig();
 
-  window.addEventListener("message", (e) => {
-    // print incoming messages
-    console.log(...e.data.pluginMessage);
-  });
-
   function updateNodes(changes: NodeInfo[], notify: boolean) {
     const changed = { allNodesChanged: false, selectionChanged: false };
 

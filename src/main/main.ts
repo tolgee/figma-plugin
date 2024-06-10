@@ -24,13 +24,22 @@ import {
   getPluginData,
   setPluginData,
 } from "./utils/settingsTools";
-import { DEFAULT_SIZE } from "@/ui/hooks/useWindowSize";
-import { highlightNodeEndpoint } from "./endpoints/highlightNode";
+import { cleanUp, highlightNodeEndpoint } from "./endpoints/highlightNode";
+import { DEFAULT_SIZE } from "@/ui/state/sizes";
 
 const getAllPages = () => {
   const document = figma.root;
 
   return document.children.filter((node) => node.type === "PAGE");
+};
+
+const isOnlyProperty = (e: NodeChangeEvent, property: string) => {
+  return e.nodeChanges.every((ch) => {
+    return (
+      ch.type === "PROPERTY_CHANGE" &&
+      ch.properties.every((p) => p === property)
+    );
+  });
 };
 
 export default async function () {
@@ -39,16 +48,15 @@ export default async function () {
   });
 
   figma.currentPage.on("nodechange", (e) => {
-    if (
-      !e.nodeChanges.every((ch) => {
-        return (
-          ch.type === "PROPERTY_CHANGE" &&
-          ch.properties.every((p) => p === "pluginData")
-        );
-      })
-    ) {
-      emit<DocumentChangeHandler>("DOCUMENT_CHANGE");
+    if (isOnlyProperty(e, "pluginData") || isOnlyProperty(e, "fills")) {
+      return;
     }
+
+    emit<DocumentChangeHandler>("DOCUMENT_CHANGE");
+  });
+
+  figma.on("close", () => {
+    cleanUp();
   });
 
   figma.on("currentpagechange", async () => {

@@ -12,7 +12,7 @@ import styles from "./NamespaceSelect.css";
 
 type Props = {
   namespaces: string[];
-  initialValue: string;
+  value: string;
   onChange: (value: string) => void;
   selectProps?: h.JSX.HTMLAttributes<HTMLSelectElement>;
 };
@@ -20,21 +20,19 @@ type Props = {
 const ADD_NEW_VALUE = Number.MAX_VALUE;
 
 export const NamespaceSelect: FunctionComponent<Props> = ({
-  initialValue,
+  value,
   namespaces,
   selectProps,
   onChange,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [nsName, setNsName] = useState<string>("");
-  const [value, _setValue] = useState(initialValue);
 
   const handleModalClose = () => {
     setModalOpen(false);
   };
 
   function setValue(value: string) {
-    _setValue(value);
     onChange(value);
   }
 

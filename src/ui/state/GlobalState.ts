@@ -5,12 +5,15 @@ import {
   ConfigChangeHandler,
   NodeInfo,
   ResetHandler,
+  ResizeHandler,
   SetLanguageHandler,
   SetupHandle,
   TolgeeConfig,
+  WindowSize,
 } from "@/types";
-import { Route } from "../views/routes";
+import type { Route } from "../views/routes";
 import { createProvider } from "@/tools/createProvider";
+import { DEFAULT_SIZE } from "./sizes";
 
 type Props = {
   initialConfig: Partial<TolgeeConfig> | null;
@@ -28,6 +31,13 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     const [globalError, setGlobalError] = useState<string | undefined>(
       undefined
     );
+    const [sizeStack, setSizeStack] = useState<WindowSize[]>([]);
+
+    useEffect(() => {
+      const size = sizeStack[sizeStack.length - 1] ?? DEFAULT_SIZE;
+      emit<ResizeHandler>("RESIZE", size);
+      return () => emit<ResizeHandler>("RESIZE", DEFAULT_SIZE);
+    }, [sizeStack]);
 
     const [editedKeys, setEditedKeys] = useState<Record<string, string>>({});
 
@@ -44,6 +54,7 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
       config,
       globalError,
       editedKeys,
+      sizeStack,
     };
 
     const actions = {
@@ -65,6 +76,7 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
       resetConfig() {
         emit<ResetHandler>("RESET");
       },
+      setSizeStack,
       setGlobalError,
     };
 
@@ -73,3 +85,4 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     return [data, actions];
   }
 );
+export { DEFAULT_SIZE };

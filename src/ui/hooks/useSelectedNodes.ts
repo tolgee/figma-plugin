@@ -8,7 +8,8 @@ import { useQuery } from "react-query";
 export const useSelectedNodes = () => {
   const result = useQuery(
     [getSelectedNodesEndpoint.name],
-    delayed(() => getSelectedNodesEndpoint.call())
+    delayed(() => getSelectedNodesEndpoint.call()),
+    { keepPreviousData: true }
   );
 
   useEffect(() => {

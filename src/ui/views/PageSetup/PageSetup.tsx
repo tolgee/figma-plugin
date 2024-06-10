@@ -3,7 +3,6 @@ import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { TopBar } from "@/ui/components/TopBar/TopBar";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
-import { COMPACT_SIZE, useWindowSize } from "@/ui/hooks/useWindowSize";
 import { CurrentPageSettings } from "@/types";
 import {
   VerticalSpace,
@@ -15,10 +14,14 @@ import {
 } from "@create-figma-plugin/ui";
 import { Fragment, FunctionComponent, h } from "preact";
 import { useState } from "preact/hooks";
+import { useWindowSize } from "@/ui/hooks/useWindowSize";
+import { COMPACT_SIZE } from "@/ui/state/sizes";
 
 export const PageSetup: FunctionComponent = () => {
   const config = useGlobalState((c) => c.config) || {};
   const { setRoute, setConfig } = useGlobalActions();
+
+  useWindowSize(COMPACT_SIZE);
 
   const [settings, setSettings] = useState<
     Partial<CurrentPageSettings> | undefined
@@ -45,8 +48,6 @@ export const PageSetup: FunctionComponent = () => {
   };
 
   const validated = Boolean(settings?.language);
-
-  useWindowSize(COMPACT_SIZE);
 
   if (languagesLoadable.isLoading) {
     return <FullPageLoading />;

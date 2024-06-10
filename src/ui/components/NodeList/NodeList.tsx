@@ -1,4 +1,4 @@
-import { ComponentChildren, h } from "preact";
+import { ComponentChildren, Fragment, h } from "preact";
 
 import styles from "./NodeList.css";
 import { NodeRow } from "./NodeRow";
@@ -11,7 +11,7 @@ type Props<T extends { id: string }> = {
   nsComponent?: (item: T) => ComponentChildren;
   compact?: boolean;
   onClick?: (item: T) => void;
-  onBottomReached?: () => void;
+  row?: (node: T) => ComponentChildren;
 };
 
 export function NodeList<T extends { id: string }>({
@@ -21,22 +21,27 @@ export function NodeList<T extends { id: string }>({
   nsComponent,
   compact,
   onClick,
+  row,
 }: Props<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className={styles.container} ref={containerRef}>
-      {items?.map((item) => (
-        <NodeRow
-          key={item.id}
-          node={item}
-          action={actionCallback?.(item)}
-          keyComponent={keyComponent?.(item)}
-          nsComponent={nsComponent?.(item)}
-          compact={compact}
-          onClick={onClick ? () => onClick?.(item) : undefined}
-        />
-      ))}
+      {items?.map((item) =>
+        row ? (
+          <Fragment key={item.id}>{row(item)}</Fragment>
+        ) : (
+          <NodeRow
+            key={item.id}
+            node={item}
+            action={actionCallback?.(item)}
+            keyComponent={keyComponent?.(item)}
+            nsComponent={nsComponent?.(item)}
+            compact={compact}
+            onClick={onClick ? () => onClick?.(item) : undefined}
+          />
+        )
+      )}
     </div>
   );
 }
