@@ -15,20 +15,8 @@ import { Dialog } from "../components/Dialog/Dialog";
 
 const getDialogPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
-    case "settings":
-      return <Settings />;
-
-    case "push":
-      return <Push />;
-
-    case "pull":
-      return <Pull {...routeData} />;
-
     case "connect":
       return <Connect {...routeData} />;
-
-    case "create_copy":
-      return <CreateCopy />;
 
     default:
       return null;
@@ -41,8 +29,15 @@ type PageProps = {
 };
 
 const Page = ({ route: [routeKey, routeData], setRoute }: PageProps) => {
-  if (routeKey === "settings") {
-    return <Settings />;
+  switch (routeKey) {
+    case "settings":
+      return <Settings />;
+    case "push":
+      return <Push />;
+    case "pull":
+      return <Pull {...routeData} />;
+    case "create_copy":
+      return <CreateCopy />;
   }
 
   const dialogPage = getDialogPage([routeKey, routeData] as Route);

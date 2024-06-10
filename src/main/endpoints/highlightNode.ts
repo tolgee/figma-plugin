@@ -1,5 +1,10 @@
 import { createEndpoint } from "../utils/createEndpoint";
 
+const HIGHLIGHT_COLOR: SolidPaint = {
+  type: "SOLID",
+  color: { r: 1, g: 0.41, b: 0.58 },
+};
+
 export type HighlightNodeProps = {
   id: string;
 };
@@ -16,13 +21,9 @@ export const highlightNodeEndpoint = createEndpoint(
     }
 
     if (node && !highlitedNodes.has(id)) {
-      const paint: SolidPaint = {
-        type: "SOLID",
-        color: { r: 1, g: 0, b: 0 },
-      };
       highlitedNodes.set(id, node.fills);
       const original = node.fills;
-      node.fills = [paint];
+      node.fills = [HIGHLIGHT_COLOR];
 
       setTimeout(() => {
         node.fills = original;
