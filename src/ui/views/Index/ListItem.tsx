@@ -1,5 +1,5 @@
 import { h } from "preact";
-import { useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import { NodeInfo } from "@/types";
 import { NodeRow } from "@/ui/components/NodeList/NodeRow";
 import { KeyInput } from "./KeyInput";
@@ -20,7 +20,8 @@ type Props = {
 
 export const ListItem = ({ node, loadedNamespaces }: Props) => {
   const [keyName, setKeyName] = useState(node.key);
-  const [namespace, setNamespace] = useState(node.ns);
+  const defaultNamespace = useGlobalState((c) => c.config?.namespace);
+  const [namespace, setNamespace] = useState(node.ns ?? defaultNamespace);
 
   const setNodesDataMutation = useSetNodesDataMutation();
 
@@ -29,7 +30,6 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
   const namespacesDisabled = useGlobalState(
     (c) => c.config?.namespacesDisabled
   );
-  const defaultNamespace = useGlobalState((c) => c.config?.namespace);
 
   const handleConnect = (node: NodeInfo) => {
     setRoute("connect", { node });
@@ -53,6 +53,14 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
     });
   };
 
+  useEffect(() => {
+    if (keyName && namespace !== node.ns) {
+      setNodesDataMutation.mutate({
+        nodes: [{ ...node, key: keyName, ns: namespace }],
+      });
+    }
+  }, [namespace]);
+
   const handleNsChange = (node: NodeInfo) => (value: string) => {
     setNamespace(value);
     setNodesDataMutation.mutate({
@@ -73,7 +81,7 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
         !namespacesDisabled && (
           <div className={styles.nsSelect}>
             <NamespaceSelect
-              value={namespace ?? defaultNamespace ?? ""}
+              value={namespace ?? ""}
               namespaces={namespaces}
               onChange={handleNsChange(node)}
             />
