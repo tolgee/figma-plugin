@@ -28,6 +28,15 @@ export const Index = () => {
   const selectionLoadable = useSelectedNodes();
   const selection = selectionLoadable.data?.items || [];
 
+  // index page is not removed on certain routes
+  // refetch when we go back to it
+  const route = useGlobalState((c) => c.route);
+  useEffect(() => {
+    if (route[0] === "index") {
+      selectionLoadable.refetch();
+    }
+  }, [route]);
+
   const [error, setError] = useState<string>();
 
   const languagesLoadable = useApiQuery({
