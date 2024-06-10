@@ -46,8 +46,8 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@create-figma-plugin/ui": "2.1.5",
-    "@create-figma-plugin/utilities": "2.1.5",
+    "@create-figma-plugin/ui": "3.2.0",
+    "@create-figma-plugin/utilities": "3.2.0",
     "clsx": "^1.2.1",
     "preact": "^10.11.3",
     "react-query": "^3.39.2",
