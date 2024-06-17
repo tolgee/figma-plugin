@@ -16,7 +16,6 @@ export const Dialog = ({ children, onClose }: Props) => {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      console.log(e);
       if (e.code === "Escape") {
         onClose();
       }
