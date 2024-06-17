@@ -108,7 +108,7 @@ export const Index = () => {
 
   return (
     <div className={styles.container} style={{ height: size.height }}>
-      {selectionLoadable.isFetching && <FullPageLoading />}
+      {selectionLoadable.isFetching && <FullPageLoading blocking={false} />}
       <div>
         <Container
           space="medium"

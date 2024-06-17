@@ -15,7 +15,11 @@ export const Dialog = ({ children, onClose }: Props) => {
   useWindowSize(DEFAULT_SIZE);
 
   useEffect(() => {
-    const handler = () => onClose();
+    const handler = (e: KeyboardEvent) => {
+      if (e.code === "Escape") {
+        onClose();
+      }
+    };
     ref.current?.focus();
     ref.current?.addEventListener("keydown", handler);
     return () => ref.current?.removeEventListener("keydown", handler);
