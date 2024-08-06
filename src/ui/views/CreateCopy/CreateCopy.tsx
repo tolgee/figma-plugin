@@ -1,4 +1,4 @@
-import { useApiMutation, useApiQuery } from "@/ui/client/useQueryApi";
+import { useApiQuery } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { TopBar } from "@/ui/components/TopBar/TopBar";
@@ -15,9 +15,10 @@ import {
   Checkbox,
 } from "@create-figma-plugin/ui";
 import { Fragment, FunctionComponent, h } from "preact";
-import { useMemo, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
 import { useCopyPage } from "@/ui/hooks/useCopyPage";
 import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
+import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
 
 type CopyType = "language" | "keys";
 
@@ -29,11 +30,6 @@ export const CreateCopy: FunctionComponent = () => {
 
   const connectedNodes = useConnectedNodes({ ignoreSelection: true });
 
-  const keys = useMemo(
-    () => [...new Set(connectedNodes.data?.items.map((n) => n.key))],
-    [connectedNodes.data]
-  );
-
   const languagesLoadable = useApiQuery({
     url: "/v2/projects/languages",
     method: "get",
@@ -43,10 +39,7 @@ export const CreateCopy: FunctionComponent = () => {
     },
   });
 
-  const translationsLoadable = useApiMutation({
-    url: "/v2/projects/translations",
-    method: "get",
-  });
+  const allTranslationsLoadable = useAllTranslations();
 
   const copyPageMutation = useCopyPage();
 
@@ -59,18 +52,14 @@ export const CreateCopy: FunctionComponent = () => {
       });
     } else {
       for (const language of selectedLanguages) {
-        const response = await translationsLoadable.mutateAsync({
-          query: {
-            languages: [language],
-            size: 1000000,
-            filterKeyName: keys,
-          },
+        const response = await allTranslationsLoadable.getData({
+          language,
         });
 
         const { changedNodes } = getPullChanges(
           connectedNodes.data?.items || [],
           language,
-          response._embedded?.keys || []
+          response
         );
 
         copyPageMutation.mutate(

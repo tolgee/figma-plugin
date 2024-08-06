@@ -1,9 +1,5 @@
 import { FrameScreenshot, NodeInfo } from "@/types";
-import { components } from "@/ui/client/apiSchema.generated";
 import { compareNs } from "./compareNs";
-
-type KeyWithTranslationsModel =
-  components["schemas"]["KeyWithTranslationsModel"];
 
 export type KeyChangeValue = {
   key: string;
@@ -22,7 +18,7 @@ export type KeyChanges = {
 
 export const getPushChanges = (
   nodes: NodeInfo[],
-  translations: KeyWithTranslationsModel[],
+  translations: Record<string, Record<string, string>>,
   language: string,
   screenshots: FrameScreenshot[]
 ): KeyChanges => {
@@ -46,21 +42,17 @@ export const getPushChanges = (
   };
 
   nodes.forEach((node) => {
-    const key = translations.find(
-      (t) =>
-        t.keyName === node.key &&
-        compareNs(t.keyNamespace, node.ns) &&
-        t.translations[language]?.text
-    );
+    const oldValue = translations?.[node.ns ?? ""]?.[node.key];
+
     const change: KeyChangeValue = {
       key: node.key,
       ns: node.ns,
-      oldValue: key?.translations[language]?.text,
+      oldValue,
       newValue: node.characters,
       screenshots: getKeyScreenshots(node),
     };
 
-    if (!key) {
+    if (!oldValue) {
       newKeys.push(change);
     } else if (change.oldValue !== change.newValue) {
       changedKeys.push(change);
