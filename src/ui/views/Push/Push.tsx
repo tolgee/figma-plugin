@@ -1,5 +1,5 @@
 import { Fragment, FunctionalComponent, h } from "preact";
-import { useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import {
   Banner,
   Button,
@@ -12,7 +12,7 @@ import {
 } from "@create-figma-plugin/ui";
 
 import { components } from "@/ui/client/apiSchema.generated";
-import { useApiMutation, useApiQuery } from "@/ui/client/useQueryApi";
+import { useApiMutation } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
@@ -28,6 +28,7 @@ import { compareNs } from "@/tools/compareNs";
 import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
 import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
+import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
 
 type ImportKeysResolvableItemDto =
   components["schemas"]["ImportKeysResolvableItemDto"];
@@ -43,8 +44,6 @@ export const Push: FunctionalComponent = () => {
   const selectedNodes = useConnectedNodes({ ignoreSelection: false });
 
   const nodes = selectedNodes.data?.items ?? [];
-
-  const keys = useMemo(() => [...new Set(nodes.map((n) => n.key))], [nodes]);
 
   const [uploadScreenshots, setUploadScreenshots] = useState(true);
 
@@ -62,42 +61,32 @@ export const Push: FunctionalComponent = () => {
     return deduplicatedNodes;
   }, [nodes]);
 
-  const translationsLoadable = useApiQuery({
-    url: "/v2/projects/translations",
-    method: "get",
-    query: {
-      languages: [language],
-      size: 1000000,
-      filterKeyName: keys,
-    },
-    options: {
-      enabled: selectedNodes.isSuccess,
-      cacheTime: 0,
-      staleTime: 0,
-      onSuccess(data) {
-        getScreenshotsEndpoint
-          .call(nodes)
-          .then((screenshots) => {
-            setChanges(
-              getPushChanges(
-                deduplicatedNodes,
-                data?._embedded?.keys || [],
-                language,
-                screenshots
-              )
-            );
-          })
-          .finally(() => {
-            setLoadingStatus(undefined);
-          });
-      },
-    },
-  });
+  const allTranslationsLoadable = useAllTranslations();
+
+  async function computeDiff() {
+    try {
+      const translations = await allTranslationsLoadable.getData({
+        language,
+      });
+
+      const screenshots = await getScreenshotsEndpoint.call(nodes);
+
+      setChanges(
+        getPushChanges(deduplicatedNodes, translations, language, screenshots)
+      );
+    } finally {
+      setLoadingStatus(undefined);
+    }
+  }
+
+  useEffect(() => {
+    computeDiff();
+  }, [nodes.length]);
 
   const setNodesDataMutation = useSetNodesDataMutation();
 
   const loadingStatus =
-    translationsLoadable.isLoading || selectedNodes.isLoading
+    allTranslationsLoadable.isLoading || selectedNodes.isLoading
       ? "Loading data and generating screenshots"
       : _loadingStatus;
 
@@ -265,11 +254,11 @@ export const Push: FunctionalComponent = () => {
   const handleRepeat = () => {
     setError(false);
     setSuccess(false);
-    translationsLoadable.refetch();
+    computeDiff();
   };
 
   const isLoading =
-    translationsLoadable.isFetching ||
+    allTranslationsLoadable.isLoading ||
     updateTranslations.isLoading ||
     uploadImage.isLoading;
 

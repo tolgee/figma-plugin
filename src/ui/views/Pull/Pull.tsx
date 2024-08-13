@@ -1,5 +1,5 @@
 import { Fragment, FunctionalComponent, h } from "preact";
-import { useMemo, useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import clsx from "clsx";
 import {
   Button,
@@ -8,7 +8,6 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-import { useApiQuery } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions } from "@/ui/state/GlobalState";
@@ -22,48 +21,35 @@ import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
 import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
+import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
 
 type Props = RouteParam<"pull">;
 
 export const Pull: FunctionalComponent<Props> = ({ lang }) => {
   const selectedNodes = useConnectedNodes({ ignoreSelection: false });
   const { setRoute, setLanguage } = useGlobalActions();
-  const [success, setSuccess] = useState(false);
-
-  const selectedKeys = useMemo(
-    () => [...new Set(selectedNodes.data?.items.map((n) => n.key))],
-    [selectedNodes.data]
-  );
-
-  const translationsLoadable = useApiQuery({
-    url: "/v2/projects/translations",
-    method: "get",
-    query: {
-      languages: [lang],
-      size: 1000000,
-      filterKeyName: selectedKeys,
-    },
-    options: {
-      enabled: selectedNodes.isSuccess,
-      cacheTime: 0,
-      staleTime: 0,
-    },
-  });
 
   const updateNodeLoadable = useUpdateNodesMutation();
   const setNodesDataMutation = useSetNodesDataMutation();
+  const allTranslationsLoadable = useAllTranslations();
+  const [diffData, setDiffData] = useState<ReturnType<typeof getPullChanges>>();
 
-  const { changedNodes, missingKeys } = useMemo(() => {
-    return getPullChanges(
-      selectedNodes.data?.items || [],
-      lang,
-      translationsLoadable.data?._embedded?.keys || []
+  async function computeDiff() {
+    const translations = await allTranslationsLoadable.getData({
+      language: lang ?? "",
+    });
+    setDiffData(
+      getPullChanges(selectedNodes.data?.items || [], lang, translations)
     );
-  }, [selectedNodes.data, lang, translationsLoadable.data]);
+  }
+
+  useEffect(() => {
+    computeDiff();
+  }, [selectedNodes.data, lang]);
 
   const handleProcess = async () => {
-    if (changedNodes.length !== 0) {
-      await updateNodeLoadable.mutateAsync({ nodes: changedNodes });
+    if (diffData!.changedNodes.length !== 0) {
+      await updateNodeLoadable.mutateAsync({ nodes: diffData!.changedNodes });
     }
     await setNodesDataMutation.mutateAsync({
       nodes:
@@ -83,13 +69,13 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
   };
 
   const handleRepeat = () => {
-    setSuccess(false);
-    translationsLoadable.refetch();
+    computeDiff();
   };
 
   const highlightNode = useHighlightNodeMutation();
 
-  const isLoading = translationsLoadable.isLoading || selectedNodes.isLoading;
+  const isLoading =
+    allTranslationsLoadable.isLoading || selectedNodes.isLoading;
 
   return (
     <Fragment>
@@ -100,37 +86,30 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
-        {isLoading ? (
+        {isLoading || !diffData ? (
           <FullPageLoading text="Searching document for translations" />
-        ) : translationsLoadable.error ? (
+        ) : allTranslationsLoadable.error ? (
           <Fragment>
             <div>
-              {translationsLoadable.error || "Cannot get translation data."}
+              {allTranslationsLoadable.error || "Cannot get translation data."}
             </div>
             <ActionsBottom>
               <Button onClick={handleRepeat}>Try again</Button>
             </ActionsBottom>
           </Fragment>
-        ) : success ? (
-          <Fragment>
-            <div>Success!</div>
-            <ActionsBottom>
-              <Button onClick={handleGoBack}>Continue to home page</Button>
-            </ActionsBottom>
-          </Fragment>
         ) : (
           <Fragment>
             <div>
-              {changedNodes.length === 0
+              {diffData.changedNodes.length === 0
                 ? "Everything up to date"
-                : `This action will replace translations in ${changedNodes.length} text(s).`}
+                : `This action will replace translations in ${diffData.changedNodes.length} text(s).`}
             </div>
-            {missingKeys.length > 0 && (
+            {diffData.missingKeys.length > 0 && (
               <Fragment>
                 <div className={clsx(styles.sectionTitle)}>Missing keys:</div>
                 <div className={clsx(styles.list, styles.missing)}>
                   <NodeList
-                    items={missingKeys}
+                    items={diffData.missingKeys}
                     onClick={(item) => highlightNode.mutate({ id: item.id })}
                     compact
                   />
@@ -138,7 +117,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
               </Fragment>
             )}
             <ActionsBottom>
-              {changedNodes.length === 0 ? (
+              {diffData.changedNodes.length === 0 ? (
                 <Button data-cy="pull_ok_button" onClick={handleProcess}>
                   OK
                 </Button>
