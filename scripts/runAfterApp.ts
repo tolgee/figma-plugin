@@ -23,6 +23,10 @@ const appProcesses = [dockerComposeProcess];
 
 const afterProcesses: ChildProcess[] = [];
 
+dockerComposeProcess.stdout.on("error", (e) => {
+  process.stderr.write(String(e));
+});
+
 dockerComposeProcess.stdout.on("data", (data) => {
   const output = data.toString();
 
