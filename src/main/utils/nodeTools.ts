@@ -30,9 +30,6 @@ function shouldIncludeNode(
   if (node.characters.trim().length === 0) {
     return false;
   }
-  if (!node.visible) {
-    return false;
-  }
   return true;
 }
 
@@ -40,6 +37,10 @@ export const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
   const documentSettings = getDocumentData();
   const result: TextNode[] = [];
   for (const node of nodes) {
+    if (!node.visible) {
+      continue;
+    }
+
     if (node.type === "TEXT") {
       if (shouldIncludeNode(node, documentSettings)) {
         result.push(node);
