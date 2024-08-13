@@ -81,7 +81,7 @@ export const Push: FunctionalComponent = () => {
 
   useEffect(() => {
     computeDiff();
-  }, []);
+  }, [nodes.length]);
 
   const setNodesDataMutation = useSetNodesDataMutation();
 
