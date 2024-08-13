@@ -67,9 +67,6 @@ jobs:
           path: ~/.npm
           key: cache-node-modules-cypress-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Check Docker Compose
-        run: docker-compose --version
-
       - name: Install
         run: npm ci
 
