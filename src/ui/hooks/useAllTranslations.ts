@@ -30,7 +30,7 @@ export const useAllTranslations = () => {
       data[ns] = (
         (await translationsLoadable.mutateAsync({
           path: { languages: [language] },
-          query: { ns },
+          query: { ns, structureDelimiter: "" },
         })) as any
       )?.[language];
     }

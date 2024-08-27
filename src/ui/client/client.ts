@@ -45,7 +45,7 @@ const flattenParams = (
 
 function buildQuery(object: { [key: string]: any }): string {
   return Object.keys(object)
-    .filter((k) => !!object[k])
+    .filter((k) => object[k] !== undefined && object[k] !== null)
     .map((k) => {
       if (Array.isArray(object[k])) {
         return object[k]
