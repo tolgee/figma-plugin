@@ -15,9 +15,18 @@ This repository contains the code for the Tolgee Figma Plugin.
 
 Easily manage translations within your Figma design files by connecting Figma with Tolgee localization platform. With Tolgee’s Figma plugin, the localization team can save time, simplify collaboration, and reduce errors in their localization process.
 
+## Install Plugin
+
+You can download our Figma plugin here: 
+
+[https://www.figma.com/community/plugin/1212381421658754793/tolgee-localization](https://www.figma.com/community/plugin/1212381421658754793/tolgee-localization)
+
+
 ## Additional information
 
 To learn more visit [https://tolgee.io](https://tolgee.io)
+
+Or visit our main GitHub page: [https://github.com/tolgee/tolgee-platform](https://github.com/tolgee/tolgee-platform)
 
 👇 Concider supporting us with your stars ⭐️
 
