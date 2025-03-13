@@ -31,3 +31,6 @@
   align-items: center;
   gap: 4px;
 }
+.emptyState {
+  margin: auto;
+}

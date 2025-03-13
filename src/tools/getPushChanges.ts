@@ -57,10 +57,6 @@ export const getPushChanges = (
       node.isPlural,
       false
     );
-    if (node.key === "test_plural") {
-      console.log("oldTolgeeValue", oldTolgeeValue);
-      console.log("newTolgeeValue", newTolgeeValue);
-    }
 
     const hasChanges =
       oldTolgeeValue &&

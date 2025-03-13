@@ -40,7 +40,9 @@ export const NodeRow = ({
           className={styles.text}
           data-cy="general_node_list_row_text"
         >
-          {node.characters}
+          {/* eslint-disable-next-line react/no-danger */}
+          <span dangerouslySetInnerHTML={{ __html: node.characters ?? "" }} />
+
           {node.isPlural && <Badge>plural</Badge>}
           {Object.keys(node.paramsValues ?? {}).length > 0 && (
             <Badge>parameters</Badge>

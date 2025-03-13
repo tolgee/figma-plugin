@@ -23,6 +23,7 @@ import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
 import { getTolgeeFormat } from "@tginternal/editor";
+import { createFormatIcu } from "../../../createFormatIcu";
 
 type Props = RouteParam<"pull">;
 
@@ -50,10 +51,24 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
 
   const handleProcess = async () => {
     if (diffData!.changedNodes.length !== 0) {
+      const formatter = createFormatIcu();
+
       await updateNodeLoadable.mutateAsync({
-        nodes: diffData!.changedNodes,
-        lang,
-        getTolgeeFormat,
+        nodes: diffData!.changedNodes.map((n) => {
+          const tolgeeValue = getTolgeeFormat(n.translation, n.isPlural, false);
+          const formatted = formatter.format({
+            language: lang ?? "en",
+            translation: n.translation,
+            params: {
+              ...n.paramsValues,
+              [tolgeeValue.parameter ?? ""]: n.pluralParamValue,
+            },
+          });
+          return {
+            ...n,
+            formatted,
+          };
+        }),
       });
     }
 

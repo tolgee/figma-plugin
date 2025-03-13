@@ -32,9 +32,6 @@ export const KeyOptionsButton = ({ node }: Props) => {
     >
       <More width={16} height={16} />
       <Popover
-        onClose={() => {
-          console.log("Closed");
-        }}
         popoverTrigger={moreOptionsRef}
         items={[
           {

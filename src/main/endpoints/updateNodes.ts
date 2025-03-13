@@ -2,22 +2,14 @@ import { NodeInfo, SelectionChangeHandler } from "@/types";
 import { createEndpoint } from "../utils/createEndpoint";
 import { emit, loadFontsAsync } from "@create-figma-plugin/utilities";
 import { formatText } from "./formatText";
-import { createFormatIcu } from "../../createFormatIcu";
-import { type TolgeeFormat } from "@tginternal/editor";
 
 export type UpdateNodeProps = {
-  nodes: NodeInfo[];
-  lang: string;
-  getTolgeeFormat: (
-    input: string,
-    plural: boolean,
-    raw: boolean
-  ) => TolgeeFormat;
+  nodes: (NodeInfo & { formatted: string })[];
 };
 
 export const updateNodesEndpoint = createEndpoint<UpdateNodeProps, void>(
   "UPDATE_NODES",
-  async ({ nodes, lang, getTolgeeFormat }) => {
+  async ({ nodes }) => {
     const textNodes = nodes.map((n) => figma.getNodeById(n.id) as TextNode);
 
     try {
@@ -29,31 +21,15 @@ export const updateNodesEndpoint = createEndpoint<UpdateNodeProps, void>(
       const node = textNodes.find((nod) => nod.id === nodeInfo.id)!;
       if (node.hasMissingFont) {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
-        return new Promise<void>(() => {});
+        return;
       }
 
-      const tolgeeValue = getTolgeeFormat(
-        nodeInfo.translation,
-        nodeInfo.isPlural,
-        false
-      );
-
-      const formatter = createFormatIcu();
-      const formatted = formatter.format({
-        language: lang ?? "en",
-        translation: nodeInfo.translation,
-        params: {
-          ...(nodeInfo.paramsValues ?? {}),
-          [tolgeeValue.parameter ?? ""]: nodeInfo.pluralParamValue ?? "1",
-        },
-      });
-
       return formatText({
-        formatted,
+        formatted: nodeInfo.formatted,
         nodeInfo,
       });
     });
-    await Promise.all(promises);
+    await Promise.allSettled(promises);
     figma.notify("Document translations updated");
 
     // update selection

@@ -48,6 +48,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   const setNodesDataMutation = useSetNodesDataMutation();
 
   const selectedNodes = useSelectedNodes();
+
   const node = useMemo(() => {
     return (
       selectedNodes.data?.items.find((n) => n.id === initialNode.id) ??
@@ -63,6 +64,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   });
 
   const [isPlural, setIsPlural] = useState(node.isPlural ?? false);
+  const [processing, setProcessing] = useState(false);
   const [pluralParamValue, setPluralParamValue] = useState(
     node.pluralParamValue ?? "1"
   );
@@ -78,64 +80,76 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     if (newTranslation !== translation) {
       setTranslation(newTranslation);
     }
+    updateTranslation(node, node.paramsValues || {}, newTranslation, true);
   }, [translationLoadable.translation?.translation, node.translation]);
+
+  /** Used to show empty placeholder */
+  const noSelectedNode = useMemo(
+    () =>
+      !selectedNodes.isLoading &&
+      selectedNodes.data != null &&
+      !selectedNodes.data?.items.find((n) => n.id === initialNode.id) &&
+      !selectedNodes.data?.items[0],
+    [selectedNodes.isLoading, selectedNodes.data?.items, initialNode.id]
+  );
+
+  /** Updates nodes properties with the partial data and mutates the data state within figma */
+  const updateNodeData = (data: Partial<NodeInfo>) => {
+    setNodesDataMutation.mutate({
+      nodes: [{ ...node, ...data }],
+    });
+    Object.entries(data).forEach(([key, value]) => {
+      (node as any)[key] = value;
+    });
+  };
 
   /** The selectedPluralRole based on the pluralParamValue */
   const selectedPluralRole = useMemo(() => {
-    const pluralRole = selectPluralRule(
+    const selectedPluralVariant = selectPluralRule(
       config?.language ?? "en",
       parseInt(pluralParamValue, 10)
     );
+    updateNodeData({
+      selectedPluralVariant,
+    });
 
-    return pluralRole;
+    return selectedPluralVariant;
   }, [pluralParamValue, config?.language]);
-
-  /** The Tolgee format of the current translation */
-  const [editorValue, setEditorValue] = useState(() =>
-    getTolgeeFormat(translation, isPlural, false)
-  );
 
   /** Array of all placeholders within the current tolgeeValue plural variant */
   const [placeholders, setPlaceholders] = useState<Placeholder[]>([]);
 
   /** The Tolgee format of the current translation */
-  const tolgeeValue = useMemo(() => {
-    const tolgeeFormat = getTolgeeFormat(translation, isPlural, false);
-    setPlaceholders(
-      getPlaceholders(
-        tolgeeFormat.variants[selectedPluralRole] ||
-          tolgeeFormat.variants["other"] ||
-          Object.values(tolgeeFormat.variants)[0] ||
-          ""
-      )?.filter((p) => p.type === "variable") ?? []
-    );
-    return tolgeeFormat;
-  }, [translation, selectedPluralRole, isPlural]);
+  const tolgeeValue = useMemo(
+    () => getTolgeeFormat(translation, isPlural, false),
+    [translation, selectedPluralRole, isPlural]
+  );
 
-  useEffect(() => {
-    updateTranslation(node, node.paramsValues || {}, translation, true);
-  }, [node.id]);
-
-  useEffect(() => {
-    node.selectedPluralVariant = selectedPluralRole;
-    updateNodeData({
-      selectedPluralVariant: selectedPluralRole,
-    });
-  }, [selectedPluralRole]);
-
-  const updateNodeData = (data: Partial<NodeInfo>) => {
-    setNodesDataMutation.mutate({
-      nodes: [{ ...node, ...data }],
-    });
-  };
-
+  /** Updates the translation parameters, the preview text and the node, in relevant cases. */
   const updateTranslation = (
     node: NodeInfo,
     paramsValues: Record<string, string>,
     currentTranslation: string,
     updateNode = false
   ) => {
-    const tolgeeValue = getTolgeeFormat(currentTranslation, isPlural, false);
+    if (updateNode) {
+      setProcessing(true);
+    }
+    const tolgeeValue = getTolgeeFormat(
+      currentTranslation,
+      node.isPlural,
+      false
+    );
+
+    const placeholders =
+      getPlaceholders(
+        tolgeeValue.variants[selectedPluralRole] ||
+          tolgeeValue.variants["other"] ||
+          Object.values(tolgeeValue.variants)[0] ||
+          ""
+      )?.filter((p) => p.type === "variable") ?? [];
+
+    setPlaceholders(placeholders);
 
     const formatter = createFormatIcu();
 
@@ -148,40 +162,43 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     });
 
     try {
+      const pluralParam: Record<string, string> = {};
+      if (tolgeeValue.parameter) {
+        pluralParam[tolgeeValue.parameter] = pluralParamValue;
+      }
       const formatted = formatter.format({
         language: config?.language ?? "en",
         translation: currentTranslation,
         params: {
           ...newParamValues,
-          [tolgeeValue.parameter ?? ""]: pluralParamValue,
+          ...pluralParam,
         },
       });
 
+      // To keep things fast, only update the node in relevant cases -> on blur of text-fields
       if (updateNode) {
-        console.log("UPDATING NODE");
         formatText.mutate({
           formatted,
           nodeInfo: node,
         });
-        console.log("UPDATING NODE DONE");
-
-        node.paramsValues = newParamValues;
         updateNodeData({
           characters: formatted,
           paramsValues: newParamValues,
         });
-        setEditorValue(getTolgeeFormat(currentTranslation, isPlural, false));
       }
 
       setPreviewText(formatted);
       setPreviewTextIsError(false);
     } catch (e) {
+      // Add an error message as preview text if the formatting fails
       if ("message" in (e as any)) {
         setPreviewText((e as any).message);
         setPreviewTextIsError(true);
       } else {
         console.error(e);
       }
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -191,7 +208,8 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   if (
     connectedNodesLoadable.isLoading ||
     translationLoadable.isLoading ||
-    formatText.isLoading
+    formatText.isLoading ||
+    processing
   ) {
     return <FullPageLoading text="Updating translations" />;
   }
@@ -220,152 +238,164 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
       </Container>
       <Divider />
       <VerticalSpace space="large" />
-      <Container space="medium">
-        <Text>
-          <Muted>Key name</Muted>
-        </Text>
-        <VerticalSpace space="small" />
-        <Textbox
-          data-cy="string_details_input_key"
-          placeholder="Key name"
-          value={node.key}
-          onChange={() => {
-            // onChange(e.currentTarget.value);
-          }}
-          variant="border"
-        />
-        <VerticalSpace space="medium" />
-        <Checkbox
-          onChange={() => {
-            setEditorValue(getTolgeeFormat(translation, !isPlural, false));
-            setIsPlural(!isPlural);
-          }}
-          value={isPlural}
-        >
-          <Text>is plural</Text>
-        </Checkbox>
-        <VerticalSpace space="medium" />
-        <Muted className={styles.editorHeadline}>
-          Translation ({config?.language ?? "Unknown"})
-          <InfoTooltip>{infoString}</InfoTooltip>
-        </Muted>
-        <VerticalSpace space="small" />
-        <PluralEditor
-          onChange={(value) => {
-            setPreventReturn(true);
-            const generatedIcuString = tolgeeFormatGenerateIcu(value, false);
-            if (generatedIcuString !== translation) {
-              setTranslation(generatedIcuString);
-            }
-            updateTranslation(
-              node,
-              node.paramsValues || {},
-              generatedIcuString,
-              false
-            );
-          }}
-          onBlur={() => {
-            console.log("Setting node.translation to ", translation);
-            node.translation = translation;
-            updateNodeData({
-              translation,
-            });
-            updateTranslation(node, node.paramsValues || {}, translation, true);
-            setPreventReturn(false);
-          }}
-          value={editorValue}
-          locale={config?.language ?? "en"}
-          mode="placeholders"
-        />
-        <VerticalSpace space="medium" />
-        <div className={styles.bottomContainer}>
-          {(placeholders.length > 0 || tolgeeValue.parameter) && (
-            <div className={styles.paramsContainer}>
-              <Muted className={styles.valuesText}>
-                Values for Figma{" "}
-                <InfoTooltip>
-                  The value will be displayed in the Figma design
-                </InfoTooltip>
-              </Muted>
-              {tolgeeValue.parameter && (
-                <Textbox
-                  data-cy="string_details_plural_paramter_value"
-                  placeholder={tolgeeValue.parameter}
-                  value={node.pluralParamValue ?? ""}
-                  onChange={({ currentTarget }) => {
-                    setPreventReturn(true);
-                    node.pluralParamValue = currentTarget.value;
-                    setPluralParamValue(currentTarget.value);
-                    updateNodeData({
-                      pluralParamValue: currentTarget.value,
-                    });
-                  }}
-                  onBlur={() => {
-                    updateTranslation(
-                      node,
-                      node.paramsValues || {},
-                      translation,
-                      true
-                    );
-                    setPreventReturn(false);
-                  }}
-                  variant="border"
+      {noSelectedNode ? (
+        <Container space="medium" style={{ marginTop: 16 }}>
+          <Text>No texts selected</Text>
+        </Container>
+      ) : (
+        <Container space="medium">
+          <Text>
+            <Muted>Key name</Muted>
+          </Text>
+          <VerticalSpace space="small" />
+          <Textbox
+            data-cy="string_details_input_key"
+            placeholder="Key name"
+            value={node.key}
+            onChange={() => {
+              // onChange(e.currentTarget.value);
+            }}
+            variant="border"
+          />
+          <VerticalSpace space="medium" />
+          <Checkbox
+            onChange={() => {
+              updateNodeData({
+                isPlural: !isPlural,
+              });
+              setIsPlural(!isPlural);
+            }}
+            value={isPlural}
+          >
+            <Text>is plural</Text>
+          </Checkbox>
+          <VerticalSpace space="medium" />
+          <Muted className={styles.editorHeadline}>
+            Translation ({config?.language ?? "Unknown"})
+            <InfoTooltip>{infoString}</InfoTooltip>
+          </Muted>
+          <VerticalSpace space="small" />
+          <PluralEditor
+            onChange={(value) => {
+              setPreventReturn(true);
+              const generatedIcuString = tolgeeFormatGenerateIcu(value, false);
+              if (generatedIcuString !== translation) {
+                setTranslation(generatedIcuString);
+              }
+              updateTranslation(
+                node,
+                node.paramsValues || {},
+                generatedIcuString,
+                false
+              );
+            }}
+            onBlur={() => {
+              updateNodeData({
+                translation,
+              });
+              updateTranslation(
+                node,
+                node.paramsValues || {},
+                translation,
+                true
+              );
+              setPreventReturn(false);
+            }}
+            value={tolgeeValue}
+            locale={config?.language ?? "en"}
+            mode="placeholders"
+          />
+          <VerticalSpace space="medium" />
+          <div className={styles.bottomContainer}>
+            {(placeholders.length > 0 || tolgeeValue.parameter) && (
+              <div className={styles.paramsContainer}>
+                <Muted className={styles.valuesText}>
+                  Values for Figma{" "}
+                  <InfoTooltip>
+                    The value will be displayed in the Figma design
+                  </InfoTooltip>
+                </Muted>
+                {tolgeeValue.parameter && (
+                  <Textbox
+                    data-cy="string_details_plural_paramter_value"
+                    placeholder={tolgeeValue.parameter}
+                    value={node.pluralParamValue ?? ""}
+                    onChange={({ currentTarget }) => {
+                      setPreventReturn(true);
+                      setPluralParamValue(currentTarget.value);
+                      updateNodeData({
+                        pluralParamValue: currentTarget.value,
+                      });
+                    }}
+                    onBlur={() => {
+                      updateTranslation(
+                        node,
+                        node.paramsValues || {},
+                        translation,
+                        true
+                      );
+                      setPreventReturn(false);
+                    }}
+                    variant="border"
+                  />
+                )}
+                {placeholders.map((p) => (
+                  <Fragment key={p}>
+                    <div className={styles.paramRow}>
+                      <Text>
+                        <Muted>Variable</Muted> {p.name}
+                      </Text>
+                      <Textbox
+                        style={{ flex: 1 }}
+                        data-cy={`string_details_paramter_value_${p.name}`}
+                        placeholder={p.name}
+                        value={node.paramsValues?.[p.name] ?? ""}
+                        onChange={({ currentTarget }) => {
+                          setPreventReturn(true);
+                          if (node.paramsValues) {
+                            node.paramsValues[p.name] = currentTarget.value;
+                          } else {
+                            node.paramsValues = {
+                              [p.name]: currentTarget.value,
+                            };
+                          }
+                          updateTranslation(
+                            node,
+                            node.paramsValues || {},
+                            translation
+                          );
+                        }}
+                        onBlur={() => {
+                          updateTranslation(
+                            node,
+                            node.paramsValues || {},
+                            translation,
+                            true
+                          );
+                          setPreventReturn(false);
+                        }}
+                        variant="border"
+                      />
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
+            )}
+
+            <div className={styles.previewRow}>
+              <Muted>Preview</Muted>
+              <Muted>
+                <span
+                  style={{ color: previewTextIsError ? "red" : undefined }}
+                  dangerouslySetInnerHTML={{ __html: previewText }}
                 />
-              )}
-              {placeholders.map((p) => (
-                <Fragment key={p}>
-                  <div className={styles.paramRow}>
-                    <Text>
-                      <Muted>Variable</Muted> {p.name}
-                    </Text>
-                    <Textbox
-                      style={{ flex: 1 }}
-                      data-cy={`string_details_paramter_value_${p.name}`}
-                      placeholder={p.name}
-                      value={node.paramsValues?.[p.name] ?? ""}
-                      onChange={({ currentTarget }) => {
-                        setPreventReturn(true);
-                        if (node.paramsValues) {
-                          node.paramsValues[p.name] = currentTarget.value;
-                        } else {
-                          node.paramsValues = { [p.name]: currentTarget.value };
-                        }
-                        updateTranslation(
-                          node,
-                          node.paramsValues || {},
-                          translation
-                        );
-                      }}
-                      onBlur={() => {
-                        updateTranslation(
-                          node,
-                          node.paramsValues || {},
-                          translation,
-                          true
-                        );
-                        setPreventReturn(false);
-                      }}
-                      variant="border"
-                    />
-                  </div>
-                </Fragment>
-              ))}
+              </Muted>
             </div>
-          )}
-
-          <div className={styles.previewRow}>
-            <Muted>Preview</Muted>
-            <Muted>
-              <span
-                style={{ color: previewTextIsError ? "red" : undefined }}
-                dangerouslySetInnerHTML={{ __html: previewText }}
-              />
-            </Muted>
           </div>
-        </div>
 
-        <VerticalSpace space="large" />
-      </Container>
+          <VerticalSpace space="large" />
+        </Container>
+      )}
     </Fragment>
   );
 };

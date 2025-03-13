@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   TolgeeFormat,
   getVariantExample,
@@ -6,6 +5,7 @@ import {
 } from "@tginternal/editor";
 import { Fragment, h, JSX } from "preact";
 import { Muted } from "@create-figma-plugin/ui";
+import { useMemo } from "preact/hooks";
 
 type RenderProps = {
   content: string;

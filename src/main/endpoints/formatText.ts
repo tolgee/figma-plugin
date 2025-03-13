@@ -36,7 +36,7 @@ export const formatText = async ({
 
   const formattedWithoutBreaks = formatted.replace(breaks, "\n");
 
-  const plainText = formatted.replace(/<[^>]*>/g, "");
+  const plainText = formattedWithoutBreaks.replace(/<[^>]*>/g, "");
   textNode.characters = plainText;
 
   const findRanges = (
@@ -69,24 +69,29 @@ export const formatText = async ({
 
   const applyStyles = async (
     ranges: { start: number; end: number }[],
-    style: Partial<Paint & FontName>,
+    style: Partial<Paint & FontName> | undefined,
     decoration?: TextDecoration
   ) => {
     for (const range of ranges) {
-      if (
-        range.start >= range.end ||
-        range.end > textNode.characters.length - 1
-      ) {
+      if (range.start > range.end) {
         continue;
       }
-      if (style.family && style.style) {
-        textNode.setRangeFontName(range.start, range.end, {
-          family: style.family,
-          style: style.style,
-        });
+      if (style && style.family && style.style) {
+        textNode.setRangeFontName(
+          range.start,
+          Math.min(textNode.characters.length, range.end),
+          {
+            family: style.family,
+            style: style.style,
+          }
+        );
       }
       if (decoration) {
-        textNode.setRangeTextDecoration(range.start, range.end, decoration);
+        textNode.setRangeTextDecoration(
+          range.start,
+          Math.min(textNode.characters.length, range.end),
+          decoration
+        );
       }
     }
   };
@@ -101,15 +106,47 @@ export const formatText = async ({
   ];
   const underlineRanges = findRanges(formattedWithoutBreaks, "u");
 
-  // Apply a type of default font to the whole text. Needs to be done before applying bold/italic styles and by
-  // character to avoid issues with different fonts in the same text node
-  for (let i = 0; i <= textNode.characters.length; i++) {
-    applyStyles([{ start: i, end: i + 1 }], {
-      family: fontNames[0].family,
-      style: fontNames.find((f) => f.style !== "Bold")?.style ?? "Regular",
-    });
+  const defaultRanges: { start: number; end: number }[] = [];
+
+  // Track continuous ranges of default text
+  let currentRange: { start: number; end: number } | null = null;
+
+  const formattedRanges = [...boldRanges, ...italicRanges];
+  for (let i = 0; i < textNode.characters.length; i++) {
+    const isBoldOrItalic = formattedRanges.some(
+      (range) => i >= range.start && i <= range.end
+    );
+
+    if (!isBoldOrItalic) {
+      if (currentRange === null) {
+        currentRange = { start: i, end: i + 1 };
+      } else {
+        currentRange.end = i + 1;
+      }
+    } else if (currentRange) {
+      defaultRanges.push(currentRange);
+      currentRange = null;
+    }
   }
 
+  if (currentRange) {
+    defaultRanges.push(currentRange);
+  }
+
+  if (defaultRanges.length > 0) {
+    const font = textNode.getRangeFontName(
+      defaultRanges[0].start,
+      defaultRanges[0].end
+    ) as FontName;
+
+    if (font.family) {
+      await figma.loadFontAsync({ family: font.family, style: "Regular" });
+      await applyStyles(defaultRanges, {
+        family: font.family,
+        style: "Regular",
+      });
+    }
+  }
   for (const range of boldRanges) {
     const font = textNode.getRangeFontName(
       range.start,
@@ -133,8 +170,14 @@ export const formatText = async ({
   }
 
   for (const range of underlineRanges) {
-    await applyStyles([range], {}, "UNDERLINE");
+    await applyStyles([range], undefined, "UNDERLINE");
   }
+
+  // if (nodeInfo.translation !== formatted) {
+  //   textNode.locked = true;
+  // } else {
+  //   textNode.locked = false;
+  // }
 };
 
 export const formatTextEndpoint = createEndpoint<FormatTextEndpointArgs, void>(
