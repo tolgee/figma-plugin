@@ -48,10 +48,14 @@
   "dependencies": {
     "@create-figma-plugin/ui": "3.2.0",
     "@create-figma-plugin/utilities": "3.2.0",
+    "@floating-ui/dom": "^1.6.13",
+    "@tginternal/editor": "^1.15.2",
     "clsx": "^1.2.1",
-    "preact": "^10.11.3",
-    "react-query": "^3.39.2",
-    "use-context-selector": "^1.4.1",
+    "codemirror": "^6.0.1",
+    "intl-messageformat": "^10.7.15",
+    "preact": "^10.25.4",
+    "react-query": "^3.39.3",
+    "use-context-selector": "^2.0.0",
     "use-debounce": "^9.0.3"
   },
   "figma-plugin": {

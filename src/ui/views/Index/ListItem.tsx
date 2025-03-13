@@ -8,8 +8,8 @@ import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect
 import styles from "./Index.css";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { components } from "@/ui/client/apiSchema.generated";
-import { LocateNodeButton } from "@/ui/components/LocateNodeButton/LocateNodeButton";
 import { InsertLink } from "@/ui/icons/SvgIcons";
+import { KeyOptionsButton } from "../../components/KeyOptionsButton/KeyOptionsButton";
 
 type UsedNamespaceModel = components["schemas"]["UsedNamespaceModel"];
 
@@ -90,8 +90,6 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
       }
       action={
         <div className={styles.actionsContainer}>
-          <LocateNodeButton nodeId={node.id} />
-
           <div
             data-cy="index_link_button"
             role="button"
@@ -115,6 +113,7 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
               />
             )}
           </div>
+          <KeyOptionsButton node={node} />
         </div>
       }
     />

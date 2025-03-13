@@ -26,6 +26,7 @@ import {
 } from "./utils/settingsTools";
 import { cleanUp, highlightNodeEndpoint } from "./endpoints/highlightNode";
 import { DEFAULT_SIZE } from "@/ui/state/sizes";
+import { formatTextEndpoint } from "./endpoints/formatText";
 
 const getAllPages = () => {
   const document = figma.root;
@@ -97,6 +98,7 @@ export default async function () {
   getScreenshotsEndpoint.register();
   getSelectedNodesEndpoint.register();
   getConnectedNodesEndpoint.register();
+  formatTextEndpoint.register();
   copyPageEndpoint.register();
   updateNodesEndpoint.register();
   setNodesDataEndpoint.register();

@@ -2,14 +2,28 @@
   "extends": "@create-figma-plugin/tsconfig",
   "compilerOptions": {
     "target": "es2015",
-    "typeRoots": ["node_modules/@figma", "node_modules/@types"],
+    "typeRoots": [
+      "node_modules/@figma",
+      "node_modules/@types"
+    ],
     "skipLibCheck": true,
     "module": "commonjs",
     "noEmit": true,
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]
+      "@/*": [
+        "*"
+      ],
+      "react": [
+        "./node_modules/preact/compat"
+      ],
+      "react-dom": [
+        "./node_modules/preact/compat"
+      ]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ]
 }

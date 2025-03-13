@@ -2,6 +2,7 @@ import { ComponentChildren, h } from "preact";
 
 import { PartialNodeInfo } from "@/types";
 import styles from "./NodeRow.css";
+import { Badge } from "../Badge/Badge";
 
 type Props = {
   node: PartialNodeInfo;
@@ -40,6 +41,10 @@ export const NodeRow = ({
           data-cy="general_node_list_row_text"
         >
           {node.characters}
+          {node.isPlural && <Badge>plural</Badge>}
+          {Object.keys(node.paramsValues ?? {}).length > 0 && (
+            <Badge>parameters</Badge>
+          )}
         </div>
       )}
       <div className={styles.action} data-cy="general_node_list_row_action">

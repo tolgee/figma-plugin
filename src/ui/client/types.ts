@@ -1,4 +1,4 @@
-import { paths } from "./apiSchema.generated";
+import { components, paths } from "./apiSchema.generated";
 
 export type RequestParamsType<
   Url extends keyof Paths,
@@ -18,30 +18,30 @@ export type ResponseContent<
 >["responses"][200] extends NotNullAnyContent
   ? OperationSchema<Url, Method, Paths>["responses"][200]["content"]["*/*"]
   : OperationSchema<
-      Url,
-      Method,
-      Paths
-    >["responses"][200] extends NotNullJsonHalContent
+    Url,
+    Method,
+    Paths
+  >["responses"][200] extends NotNullJsonHalContent
   ? OperationSchema<
-      Url,
-      Method,
-      Paths
-    >["responses"][200]["content"]["application/hal+json"]
+    Url,
+    Method,
+    Paths
+  >["responses"][200]["content"]["application/hal+json"]
   : OperationSchema<
-      Url,
-      Method,
-      Paths
-    >["responses"][200] extends NotNullJsonContent
+    Url,
+    Method,
+    Paths
+  >["responses"][200] extends NotNullJsonContent
   ? OperationSchema<
-      Url,
-      Method,
-      Paths
-    >["responses"][200]["content"]["application/json"]
+    Url,
+    Method,
+    Paths
+  >["responses"][200]["content"]["application/json"]
   : OperationSchema<
-      Url,
-      Method,
-      Paths
-    >["responses"][201] extends NotNullAnyContent
+    Url,
+    Method,
+    Paths
+  >["responses"][201] extends NotNullAnyContent
   ? OperationSchema<Url, Method, Paths>["responses"][201]["content"]["*/*"]
   : void;
 
@@ -65,21 +65,21 @@ type NotNullJsonContent = {
 
 type ResponseType = {
   200?:
-    | {
-        content?: {
-          "*/*"?: any;
-          "application/json"?: any;
-          "application/hal+json"?: any;
-        };
-      }
-    | unknown;
+  | {
+    content?: {
+      "*/*"?: any;
+      "application/json"?: any;
+      "application/hal+json"?: any;
+    };
+  }
+  | unknown;
   201?:
-    | {
-        content?: {
-          "*/*"?: any;
-        };
-      }
-    | unknown;
+  | {
+    content?: {
+      "*/*"?: any;
+    };
+  }
+  | unknown;
 };
 
 type OperationSchemaType = {
@@ -101,3 +101,13 @@ type OperationSchema<
   Method extends keyof Paths[Url],
   Paths = paths
 > = Paths[Url][Method] extends OperationSchemaType ? Paths[Url][Method] : never;
+
+export type TranslationData = Record<
+  string,
+  Record<
+    string,
+    Omit<components["schemas"]["KeyWithTranslationsModel"], "translations"> & {
+      translation: string;
+    }
+  >
+>;

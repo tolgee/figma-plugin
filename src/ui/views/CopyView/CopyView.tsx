@@ -18,6 +18,7 @@ import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 import { LocateNodeButton } from "@/ui/components/LocateNodeButton/LocateNodeButton";
 import { getPullChanges } from "@/tools/getPullChanges";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
+import { getTolgeeFormat } from "@tginternal/editor";
 
 export const CopyView = () => {
   const selectionLoadable = useSelectedNodes();
@@ -30,7 +31,7 @@ export const CopyView = () => {
 
   const nothingSelected = !selectionLoadable.data?.somethingSelected;
 
-  const updateNodesLoadalbe = useUpdateNodesMutation();
+  const updateNodesLoadable = useUpdateNodesMutation();
   const allTranslationsLoadable = useAllTranslations();
 
   const handlePull = async () => {
@@ -46,13 +47,17 @@ export const CopyView = () => {
       translations
     );
 
-    await updateNodesLoadalbe.mutateAsync({ nodes: changedNodes });
+    await updateNodesLoadable.mutateAsync({
+      nodes: changedNodes,
+      lang: language ?? "en",
+      getTolgeeFormat,
+    });
   };
 
   if (
     allTranslationsLoadable.isLoading ||
     connectedNodesLoadable.isLoading ||
-    updateNodesLoadalbe.isLoading
+    updateNodesLoadable.isLoading
   ) {
     return <FullPageLoading text="Updating translations" />;
   }

@@ -15,6 +15,11 @@ export const setNodesDataEndpoint = createEndpoint<SetNodesDataProps, void>(
         TOLGEE_NODE_INFO,
         JSON.stringify({
           key: nodeInfo.key,
+          isPlural: nodeInfo.isPlural,
+          pluralParamValue: nodeInfo.pluralParamValue,
+          selectedPluralVariant: nodeInfo.selectedPluralVariant,
+          translation: nodeInfo.translation,
+          paramsValues: nodeInfo.paramsValues,
           ns: nodeInfo.ns,
           connected: nodeInfo.connected,
         })

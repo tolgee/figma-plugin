@@ -22,6 +22,7 @@ import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
+import { getTolgeeFormat } from "@tginternal/editor";
 
 type Props = RouteParam<"pull">;
 
@@ -49,14 +50,34 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
 
   const handleProcess = async () => {
     if (diffData!.changedNodes.length !== 0) {
-      await updateNodeLoadable.mutateAsync({ nodes: diffData!.changedNodes });
+      await updateNodeLoadable.mutateAsync({
+        nodes: diffData!.changedNodes,
+        lang,
+        getTolgeeFormat,
+      });
     }
+
     await setNodesDataMutation.mutateAsync({
       nodes:
         selectedNodes.data?.items
-          .filter((n) => !n.connected)
+          // .filter((n) => !n.connected)
           .map((n) => ({
             ...n,
+            isPlural:
+              diffData!.changedNodes.find((c) => c.key === n.key)?.isPlural ??
+              n.isPlural,
+            pluralParamValue:
+              diffData!.changedNodes.find((c) => c.key === n.key)
+                ?.pluralParamValue ?? n.pluralParamValue,
+            selectedPluralVariant:
+              diffData!.changedNodes.find((c) => c.key === n.key)
+                ?.selectedPluralVariant ?? n.selectedPluralVariant,
+            translation:
+              diffData!.changedNodes.find((c) => c.key === n.key)
+                ?.translation ?? n.translation,
+            paramsValues:
+              diffData!.changedNodes.find((c) => c.key === n.key)
+                ?.paramsValues ?? n.paramsValues,
             connected: true,
           })) ?? [],
     });

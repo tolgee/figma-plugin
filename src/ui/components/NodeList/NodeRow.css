@@ -20,6 +20,9 @@
   min-height: 16px;
   font-weight: bold;
   cursor: unset;
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }
 
 .action {

@@ -17,7 +17,7 @@ import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { useApiMutation } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { TopBar } from "../../components/TopBar/TopBar";
-import styles from "./Settings.css";
+import * as styles from "./Settings.css";
 import { ProjectSettings } from "./ProjectSettings";
 import { useQueryClient } from "react-query";
 import { useWindowSize } from "@/ui/hooks/useWindowSize";
