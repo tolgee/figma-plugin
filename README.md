@@ -13,7 +13,7 @@ This repository contains the code for the Tolgee Figma Plugin.
 
 ![Screenshot Tolgee Figma Plugin](images/figma-plugin-banner.png)
 
-Easily manage translations within your Figma design files by connecting Figma with Tolgee localization platform. With Tolgee’s Figma plugin, the localization team can save time, simplify collaboration, and reduce errors in their localization process.
+Easily manage translations within your Figma design files by connecting Figma with Tolgee localization platform. With Tolgee's Figma plugin, the localization team can save time, simplify collaboration, and reduce errors in their localization process.
 
 ## Install Plugin
 
@@ -24,11 +24,11 @@ You can download our Figma plugin here:
 
 ## Additional information
 
-To learn more visit [https://tolgee.io](https://tolgee.io)
+To learn more, visit https://tolgee.io
 
-Or visit our main GitHub page: [https://github.com/tolgee/tolgee-platform](https://github.com/tolgee/tolgee-platform)
+Or visit our main GitHub page: https://github.com/tolgee/tolgee-platform
 
-👇 Concider supporting us with your stars ⭐️
+👇 Consider supporting us with your stars ⭐️
 
 [![github stars](https://img.shields.io/github/stars/tolgee/figma-plugin?style=social)](https://github.com/tolgee/figma-plugin) 
 
@@ -44,7 +44,7 @@ Or visit our main GitHub page: [https://github.com/tolgee/tolgee-platform](https
 
 - Clone the repository and link it to your local Figma Desktop app
 - Run the `Setup Tolgee` command and enter the URL of your Tolgee instance as well as well as an API key for the project with the `translations.edit` and `translations.view` scope.
-- Name all nodes that should by synced by their tolgee key, prefixed by `t:``
+- Name all nodes that should be synced by their tolgee key, prefixed by `t:`
 - Run `Sync Tolgee to Figma` or `Sync Figma To Tolgee`
 - Select all translations that should be synced
 - Done 🙌
