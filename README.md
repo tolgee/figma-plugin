@@ -1,15 +1,28 @@
-# Tolgee Figma Plugin for Localization
+<h1 align="center" style="border-bottom: none">
+    <b>
+        <a href="https://www.figma.com/community/plugin/1212381421658754793/tolgee-localization">Tolgee Figma Plugin for Localization</a><br>
+    </b>
+ Manage translations in your Figma files
+</h1>
 
-![test workflow](https://github.com/tolgee/figma-plugin/actions/workflows/test.yml/badge.svg)
-![licence](https://img.shields.io/github/license/tolgee/figma-plugin)
-[![twitter](https://img.shields.io/twitter/follow/Tolgee_i18n?style=social)](https://twitter.com/Tolgee_i18n)
-[![github stars](https://img.shields.io/github/stars/tolgee/figma-plugin?style=social)](https://github.com/tolgee/figma-plugin)
-[![slack](https://img.shields.io/badge/slack-Tolgee%20community-blue)](https://tolg.ee/slack)
+<div align="center"> 
 
 [<img src="https://raw.githubusercontent.com/tolgee/documentation/main/tolgee_logo_text.svg" alt="Tolgee" width="200" />](https://tolgee.io)
 
-
 This repository contains the code for the Tolgee Figma Plugin.
+
+![test workflow](https://github.com/tolgee/figma-plugin/actions/workflows/test.yml/badge.svg)
+![licence](https://img.shields.io/github/license/tolgee/figma-plugin)
+[![github stars](https://img.shields.io/github/stars/tolgee/figma-plugin?style=social)](https://github.com/tolgee/figma-plugin)
+[![github stars](https://img.shields.io/github/stars/tolgee/tolgee-platform?style=social&label=Tolgee%20Platform)](https://github.com/tolgee/tolgee-platform)
+[![Github discussions](https://img.shields.io/github/discussions/tolgee/tolgee-platform)](https://github.com/tolgee/tolgee-platform/discussions)
+[![Read the Docs](https://img.shields.io/badge/Read%20the%20Docs-8CA1AF?logo=readthedocs&logoColor=fff)](https://docs.tolgee.io/)
+[![Slack](https://img.shields.io/badge/Slack-4A154B?logo=slack&logoColor=fff)](https://join.slack.com/t/tolgeecommunity/shared_invite/zt-2zp55d175-_agXTfKKVbf1BYXlKlmwbA)
+[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?logo=YouTube&logoColor=white)](https://www.youtube.com/@tolgee)
+[![LinkedIn](https://custom-icon-badges.demolab.com/badge/LinkedIn-0A66C2?logo=linkedin-white&logoColor=fff)](https://www.linkedin.com/company/tolgee/)
+[![X](https://img.shields.io/badge/X-%23000000.svg?logo=X&logoColor=white)](https://x.com/Tolgee_i18n)
+
+</div>
 
 ![Screenshot Tolgee Figma Plugin](images/figma-plugin-banner.png)
 
