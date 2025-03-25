@@ -1,9 +1,9 @@
 import { Fragment, h, JSX } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import styles from "./Popover.css";
-import { computePosition, offset, flip, autoPlacement } from "@floating-ui/dom";
+import { computePosition, offset, autoPlacement } from "@floating-ui/dom";
 
-interface ActionItem {
+export interface ActionItem {
   label: string;
   icon: JSX.Element;
   onClick: () => void;
@@ -93,9 +93,8 @@ const Dropdown = ({
       ref={dropdownRef}
       class={displayPopover ? styles.popover : styles.popoverHidden}
     >
-      {text ? (
-        <div class={styles.popoverItem}>{text}</div>
-      ) : items != null ? (
+      {text && <div class={styles.popoverItem}>{text}</div>}
+      {items != null &&
         items.map((item, index) => (
           <button
             key={index}
@@ -108,10 +107,8 @@ const Dropdown = ({
             {item.icon}
             {item.label}
           </button>
-        ))
-      ) : (
-        <Fragment />
-      )}
+        ))}
+      {items == null && !text && <Fragment />}
     </div>
   );
 };

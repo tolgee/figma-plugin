@@ -2,14 +2,16 @@ import { h } from "preact";
 
 import styles from "./InfoTooltip.css";
 import { Info } from "../../icons/SvgIcons";
-import Popover from "../Popover/Popover";
+import Popover, { ActionItem } from "../Popover/Popover";
 import { useRef } from "preact/hooks";
 
 type Props = {
   children: string;
+  color?: string;
+  items?: ActionItem[] | undefined;
 };
 
-export const InfoTooltip = ({ children }: Props) => {
+export const InfoTooltip = ({ children, color, items }: Props) => {
   const popoverTrigger = useRef<HTMLDivElement>(null);
 
   return (
@@ -19,8 +21,13 @@ export const InfoTooltip = ({ children }: Props) => {
       title={children}
       className={styles.info}
     >
-      <Info width={16} height={16} />
-      <Popover clampWidth text={children} popoverTrigger={popoverTrigger} />
+      <Info style={{ color }} width={16} height={16} />
+      <Popover
+        clampWidth
+        items={items}
+        text={children}
+        popoverTrigger={popoverTrigger}
+      />
     </div>
   );
 };

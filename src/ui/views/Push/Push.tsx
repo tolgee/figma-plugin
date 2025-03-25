@@ -113,6 +113,10 @@ export const Push: FunctionalComponent = () => {
     setNodesDataMutation.mutate({
       nodes: nodes.map((n) => ({
         ...n,
+        translation:
+          changes?.changedKeys.find(
+            (k) => k.key === n.key && compareNs(k.ns, n.ns)
+          )?.newValue ?? n.translation,
         connected: true,
       })),
     });

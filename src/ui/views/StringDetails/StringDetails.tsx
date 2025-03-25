@@ -13,25 +13,24 @@ import {
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 
-import { TopBar } from "../../components/TopBar/TopBar";
+import { TopBar } from "@/ui/components/TopBar/TopBar";
 import { useConnectedMutation } from "@/ui/hooks/useConnectedMutation";
-import { NodeInfo } from "../../../types";
+import { NodeInfo } from "@/types";
 import { useEffect, useMemo, useState } from "preact/hooks";
-import { PluralEditor } from "../../components/Editor/PluralEditor";
+import { PluralEditor } from "@/ui/components/Editor/PluralEditor";
 import {
-  getPlaceholders,
   getTolgeeFormat,
-  Placeholder,
   selectPluralRule,
   tolgeeFormatGenerateIcu,
 } from "@tginternal/editor";
-import { useTranslation } from "../../hooks/useTranslation";
-import { useSetNodesDataMutation } from "../../hooks/useSetNodesDataMutation";
-import { createFormatIcu } from "../../../createFormatIcu";
-import { useSelectedNodes } from "../../hooks/useSelectedNodes";
-import { useFormatText } from "../../hooks/useFormatText";
-import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
+import { useTranslation } from "@/ui/hooks/useTranslation";
+import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
+import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
+import { useFormatText } from "@/ui/hooks/useFormatText";
+import { InfoTooltip } from "@/ui/components/InfoTooltip/InfoTooltip";
 import styles from "./StringDetails.css";
+import { useInterpolatedTranslation } from "@/ui/hooks/useInterpolatedTranslation";
+import { stringFormatter } from "@/main/utils/textFormattingTools";
 
 type StringDetailsProps = {
   node: NodeInfo;
@@ -49,7 +48,18 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
 
   const selectedNodes = useSelectedNodes();
 
+  // Used to prevent navigation when changes have been made and not saved
+  const [needsSubmission, setNeedsSubmission] = useState(false);
+
+  // When the component is first rendered, we want to check wether the node text has been manually changed
+  const [isInitial, setIsInitial] = useState(true);
+
   const node = useMemo(() => {
+    if (needsSubmission) {
+      // Update previous node before switching to a new one
+      updateTranslationValue(node, translation, true);
+    }
+    setIsInitial(true);
     return (
       selectedNodes.data?.items.find((n) => n.id === initialNode.id) ??
       selectedNodes.data?.items[0] ??
@@ -62,36 +72,17 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     namespace: config?.namespace ?? "default",
     key: node.key,
   });
-
-  const [isPlural, setIsPlural] = useState(node.isPlural ?? false);
-  const [processing, setProcessing] = useState(false);
-  const [pluralParamValue, setPluralParamValue] = useState(
-    node.pluralParamValue ?? "1"
-  );
-  const [previewText, setPreviewText] = useState("");
-  const [previewTextIsError, setPreviewTextIsError] = useState(false);
   const [translation, setTranslation] = useState(
     node.translation || translationLoadable.translation?.translation || ""
   );
 
-  useEffect(() => {
-    const newTranslation =
-      node.translation || translationLoadable.translation?.translation || "";
-    if (newTranslation !== translation) {
-      setTranslation(newTranslation);
-    }
-    updateTranslation(node, node.paramsValues || {}, newTranslation, true);
-  }, [translationLoadable.translation?.translation, node.translation]);
-
-  /** Used to show empty placeholder */
-  const noSelectedNode = useMemo(
-    () =>
-      !selectedNodes.isLoading &&
-      selectedNodes.data != null &&
-      !selectedNodes.data?.items.find((n) => n.id === initialNode.id) &&
-      !selectedNodes.data?.items[0],
-    [selectedNodes.isLoading, selectedNodes.data?.items, initialNode.id]
+  const [isPlural, setIsPlural] = useState(node.isPlural ?? false);
+  const [pluralParamValue, setPluralParamValue] = useState(
+    node.pluralParamValue ?? "1"
   );
+  const [confirmTextChange, setConfirmTextChange] = useState<
+    false | "characters" | "translation"
+  >(false);
 
   /** Updates nodes properties with the partial data and mutates the data state within figma */
   const updateNodeData = (data: Partial<NodeInfo>) => {
@@ -116,8 +107,75 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     return selectedPluralVariant;
   }, [pluralParamValue, config?.language]);
 
-  /** Array of all placeholders within the current tolgeeValue plural variant */
-  const [placeholders, setPlaceholders] = useState<Placeholder[]>([]);
+  const {
+    previewText,
+    previewTextIsError,
+    textHasChanged,
+    placeholders,
+    updateTranslation,
+  } = useInterpolatedTranslation(
+    node.characters != translation &&
+      !node.isPlural &&
+      Object.keys(node.paramsValues ?? {}).length === 0
+      ? node.characters ?? translation ?? ""
+      : translation ?? node.characters ?? "",
+    node.characters,
+    isPlural,
+    pluralParamValue,
+    node.paramsValues ?? {},
+    selectedPluralRole
+  );
+
+  useEffect(() => {
+    if (textHasChanged && !confirmTextChange) {
+      return;
+    }
+    const newTranslation = stringFormatter(
+      node.translation ||
+        translationLoadable.translation?.translation ||
+        node.characters,
+      { replaceHtmlTags: false, replaceNewlines: true }
+    );
+
+    const previousCharacters = stringFormatter(node.characters);
+
+    if (isInitial) {
+      const newCharacters = stringFormatter(
+        updateTranslationValue(node, newTranslation, true) ?? ""
+      );
+
+      if (newCharacters != null && newCharacters !== previousCharacters) {
+        return;
+      }
+      setIsInitial(false);
+    }
+
+    if (confirmTextChange == "characters") {
+      setNodesDataMutation.mutate({
+        nodes: [{ ...node, translation: previousCharacters }],
+      });
+      setTranslation(previousCharacters);
+    } else if (confirmTextChange == "translation" || !textHasChanged) {
+      if (newTranslation !== translation) {
+        setTranslation(newTranslation);
+        updateTranslationValue(node, newTranslation, true);
+      }
+    }
+  }, [
+    translationLoadable.translation?.translation,
+    node.translation,
+    textHasChanged,
+  ]);
+
+  /** Used to show empty placeholder */
+  const noSelectedNode = useMemo(
+    () =>
+      !selectedNodes.isLoading &&
+      selectedNodes.data != null &&
+      !selectedNodes.data?.items.find((n) => n.id === initialNode.id) &&
+      !selectedNodes.data?.items[0],
+    [selectedNodes.isLoading, selectedNodes.data?.items, initialNode.id]
+  );
 
   /** The Tolgee format of the current translation */
   const tolgeeValue = useMemo(
@@ -126,95 +184,41 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   );
 
   /** Updates the translation parameters, the preview text and the node, in relevant cases. */
-  const updateTranslation = (
+  const updateTranslationValue = (
     node: NodeInfo,
-    paramsValues: Record<string, string>,
     currentTranslation: string,
     updateNode = false
-  ) => {
-    if (updateNode) {
-      setProcessing(true);
-    }
-    const tolgeeValue = getTolgeeFormat(
+  ): string | null => {
+    const newTranslation = updateTranslation({
       currentTranslation,
-      node.isPlural,
-      false
-    );
-
-    const placeholders =
-      getPlaceholders(
-        tolgeeValue.variants[selectedPluralRole] ||
-          tolgeeValue.variants["other"] ||
-          Object.values(tolgeeValue.variants)[0] ||
-          ""
-      )?.filter((p) => p.type === "variable") ?? [];
-
-    setPlaceholders(placeholders);
-
-    const formatter = createFormatIcu();
-
-    const newParamValues: typeof paramsValues = {};
-    // remove paramsValues that are not in the current placeholders
-    Object.keys(paramsValues).forEach((key) => {
-      if (placeholders.find((p) => p.name === key)) {
-        newParamValues[key] = paramsValues[key];
-      }
+      paramsValues: node.paramsValues || {},
     });
 
-    try {
-      const pluralParam: Record<string, string> = {};
-      if (tolgeeValue.parameter) {
-        pluralParam[tolgeeValue.parameter] = pluralParamValue;
-      }
-      const formatted = formatter.format({
-        language: config?.language ?? "en",
-        translation: currentTranslation,
-        params: {
-          ...newParamValues,
-          ...pluralParam,
-        },
+    // To keep things fast, only update the node in relevant cases -> on blur of text-fields
+    if (updateNode && newTranslation != null) {
+      formatText.mutate({
+        formatted: newTranslation,
+        nodeInfo: node,
       });
-
-      // To keep things fast, only update the node in relevant cases -> on blur of text-fields
-      if (updateNode) {
-        formatText.mutate({
-          formatted,
-          nodeInfo: node,
-        });
-        updateNodeData({
-          characters: formatted,
-          paramsValues: newParamValues,
-        });
-      }
-
-      setPreviewText(formatted);
-      setPreviewTextIsError(false);
-    } catch (e) {
-      // Add an error message as preview text if the formatting fails
-      if ("message" in (e as any)) {
-        setPreviewText((e as any).message);
-        setPreviewTextIsError(true);
-      } else {
-        console.error(e);
-      }
-    } finally {
-      setProcessing(false);
+      updateNodeData({
+        characters: newTranslation,
+        paramsValues: node.paramsValues,
+      });
     }
+    return newTranslation;
   };
-
-  // Used to prevent navigation when changes have been made and not saved
-  const [preventReturn, setPreventReturn] = useState(false);
 
   if (
     connectedNodesLoadable.isLoading ||
     translationLoadable.isLoading ||
-    formatText.isLoading ||
-    processing
+    formatText.isLoading
   ) {
     return <FullPageLoading text="Updating translations" />;
   }
 
   const infoString = `You can use basic HTML tags such as\n<strong>, <b>, <em>, <i>, <u>, <br>\nand also parameters as {parameter}`;
+
+  const valuesForFigmaString = `These values will be used to preview\nthe translation for figma.\nThey will not be saved.`;
 
   return (
     <Fragment>
@@ -226,7 +230,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
           leftPart={
             <Fragment>
               <IconButton
-                onClick={preventReturn ? undefined : () => setRoute("index")}
+                onClick={needsSubmission ? undefined : () => setRoute("index")}
                 style={{ transform: "rotate(90deg)" }}
               >
                 <IconChevronDown16 />
@@ -277,29 +281,19 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
           <VerticalSpace space="small" />
           <PluralEditor
             onChange={(value) => {
-              setPreventReturn(true);
+              setNeedsSubmission(true);
               const generatedIcuString = tolgeeFormatGenerateIcu(value, false);
               if (generatedIcuString !== translation) {
                 setTranslation(generatedIcuString);
               }
-              updateTranslation(
-                node,
-                node.paramsValues || {},
-                generatedIcuString,
-                false
-              );
+              updateTranslationValue(node, generatedIcuString, false);
             }}
             onBlur={() => {
               updateNodeData({
                 translation,
               });
-              updateTranslation(
-                node,
-                node.paramsValues || {},
-                translation,
-                true
-              );
-              setPreventReturn(false);
+              updateTranslationValue(node, translation, true);
+              setNeedsSubmission(false);
             }}
             value={tolgeeValue}
             locale={config?.language ?? "en"}
@@ -311,9 +305,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
               <div className={styles.paramsContainer}>
                 <Muted className={styles.valuesText}>
                   Values for Figma{" "}
-                  <InfoTooltip>
-                    The value will be displayed in the Figma design
-                  </InfoTooltip>
+                  <InfoTooltip>{valuesForFigmaString}</InfoTooltip>
                 </Muted>
                 {tolgeeValue.parameter && (
                   <Textbox
@@ -321,20 +313,15 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                     placeholder={tolgeeValue.parameter}
                     value={node.pluralParamValue ?? ""}
                     onChange={({ currentTarget }) => {
-                      setPreventReturn(true);
+                      setNeedsSubmission(true);
                       setPluralParamValue(currentTarget.value);
                       updateNodeData({
                         pluralParamValue: currentTarget.value,
                       });
                     }}
                     onBlur={() => {
-                      updateTranslation(
-                        node,
-                        node.paramsValues || {},
-                        translation,
-                        true
-                      );
-                      setPreventReturn(false);
+                      updateTranslationValue(node, translation, true);
+                      setNeedsSubmission(false);
                     }}
                     variant="border"
                   />
@@ -351,7 +338,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                         placeholder={p.name}
                         value={node.paramsValues?.[p.name] ?? ""}
                         onChange={({ currentTarget }) => {
-                          setPreventReturn(true);
+                          setNeedsSubmission(true);
                           if (node.paramsValues) {
                             node.paramsValues[p.name] = currentTarget.value;
                           } else {
@@ -359,20 +346,11 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                               [p.name]: currentTarget.value,
                             };
                           }
-                          updateTranslation(
-                            node,
-                            node.paramsValues || {},
-                            translation
-                          );
+                          updateTranslationValue(node, translation);
                         }}
                         onBlur={() => {
-                          updateTranslation(
-                            node,
-                            node.paramsValues || {},
-                            translation,
-                            true
-                          );
-                          setPreventReturn(false);
+                          updateTranslationValue(node, translation, true);
+                          setNeedsSubmission(false);
                         }}
                         variant="border"
                       />
@@ -386,7 +364,11 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
               <Muted>Preview</Muted>
               <Muted>
                 <span
-                  style={{ color: previewTextIsError ? "red" : undefined }}
+                  style={{
+                    color: previewTextIsError ? "red" : undefined,
+                    whiteSpace: "pre-wrap",
+                  }}
+                  // eslint-disable-next-line react/no-danger
                   dangerouslySetInnerHTML={{ __html: previewText }}
                 />
               </Muted>

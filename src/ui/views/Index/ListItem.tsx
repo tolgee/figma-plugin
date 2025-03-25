@@ -66,6 +66,8 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
     setNodesDataMutation.mutate({
       nodes: [{ ...node, key: keyName, ns: value }],
     });
+    node.key = keyName;
+    node.ns = value;
   };
 
   return (
@@ -113,7 +115,7 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
               />
             )}
           </div>
-          <KeyOptionsButton node={node} />
+          <KeyOptionsButton node={{ ...node, key: keyName ?? node.key }} />
         </div>
       }
     />

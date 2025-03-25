@@ -22,6 +22,8 @@ export const KeyOptionsButton = ({ node }: Props) => {
     highlightMutation.mutate({ id: node.id });
   };
 
+  console.log(node);
+
   return (
     <div
       data-cy="index_highlight_button"
