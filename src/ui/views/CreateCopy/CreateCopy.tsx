@@ -129,7 +129,6 @@ export const CreateCopy: FunctionComponent = () => {
             {languages?.map((language) => (
               <div key={language.id}>
                 <Checkbox
-                  checked={selectedLanguages.includes(language.tag)}
                   value={selectedLanguages.includes(language.tag)}
                   onChange={() => handleToggleLanguage(language.tag)}
                 >

@@ -34,3 +34,24 @@
 .emptyState {
   margin: auto;
 }
+.warningContainer {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  background-color: var(--figma-color-red-bg);
+  margin-top: 8px;
+}
+.warningNoticeContainer {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  background-color: var(--figma-color-teal-bg);
+  margin-top: 8px;
+}
+.warningContainerIcon {
+  color: var(--figma-color-red);
+  transform: rotate(180deg);
+}
+.warningNoticeContainerIcon {
+  color: var(--figma-color-teal);
+}

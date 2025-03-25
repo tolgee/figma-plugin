@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 
 import {
   getPlaceholders,
@@ -109,12 +109,20 @@ export const useInterpolatedTranslation = (
     }
   }, [rawTranslation]);
 
+  const hasChangesOutsideFromTolgee = useMemo(
+    () =>
+      nodeCharacters != interpolatedTranslation.current &&
+      (Object.keys(paramsValues ?? {}).length > 0 || isPlural),
+    [interpolatedTranslation.current, nodeCharacters, paramsValues, isPlural]
+  );
+
   return {
     placeholders,
     textHasChanged,
     interpolatedTranslation,
     previewText,
     previewTextIsError,
+    hasChangesOutsideFromTolgee,
     updateTranslation,
   };
 };

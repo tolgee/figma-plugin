@@ -19,4 +19,17 @@
   --figma-color-bg-brand: #ec407a;
   --figma-color-bg-selected: #ec407a;
   --figma-color-icon-brand: white;
+  --figma-color-teal: rgb(0, 175, 154);
+  --figma-color-teal-bg: rgb(0, 175, 154, 0.08);
+  --figma-color-red: rgb(255, 0, 46);
+  --figma-color-red-bg: rgb(255, 0, 46, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --figma-color-teal: rgb(53, 196, 176);
+    --figma-color-teal-bg: rgb(53, 196, 176, 0.16);
+    --figma-color-red: rgb(255, 46, 83);
+    --figma-color-teal-bg: rgb(255, 46, 83, 0.16);
+  }
 }

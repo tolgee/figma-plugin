@@ -107,6 +107,8 @@ export type CurrentPageSettings = {
   language: string;
   pageInfo: boolean;
   pageCopy: boolean;
+  pageStringDetails: boolean;
+  nodeInfo?: NodeInfo;
 };
 
 export type TolgeeConfig = CurrentDocumentSettings & CurrentPageSettings;

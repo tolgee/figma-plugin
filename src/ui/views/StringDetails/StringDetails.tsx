@@ -1,6 +1,8 @@
 import { Fragment, h } from "preact";
 import {
+  Button,
   Checkbox,
+  Columns,
   Container,
   Divider,
   IconButton,
@@ -16,7 +18,7 @@ import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading
 import { TopBar } from "@/ui/components/TopBar/TopBar";
 import { useConnectedMutation } from "@/ui/hooks/useConnectedMutation";
 import { NodeInfo } from "@/types";
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { PluralEditor } from "@/ui/components/Editor/PluralEditor";
 import {
   getTolgeeFormat,
@@ -31,6 +33,7 @@ import { InfoTooltip } from "@/ui/components/InfoTooltip/InfoTooltip";
 import styles from "./StringDetails.css";
 import { useInterpolatedTranslation } from "@/ui/hooks/useInterpolatedTranslation";
 import { stringFormatter } from "@/main/utils/textFormattingTools";
+import { Info } from "../../icons/SvgIcons";
 
 type StringDetailsProps = {
   node: NodeInfo;
@@ -54,11 +57,34 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   // When the component is first rendered, we want to check wether the node text has been manually changed
   const [isInitial, setIsInitial] = useState(true);
 
-  const node = useMemo(() => {
-    if (needsSubmission) {
-      // Update previous node before switching to a new one
-      updateTranslationValue(node, translation, true);
+  /** Updates the translation parameters, the preview text and the node, in relevant cases. */
+  const updateTranslationValue = (
+    node: NodeInfo,
+    currentTranslation: string,
+    updateNode = false
+  ): string | null => {
+    const newTranslation = updateTranslation({
+      currentTranslation,
+      paramsValues: node.paramsValues || {},
+    });
+
+    // To keep things fast, only update the node in relevant cases -> on blur of text-fields
+    if (updateNode && newTranslation != null) {
+      formatText.mutate({
+        formatted: newTranslation,
+        nodeInfo: node,
+      });
+      updateNodeData({
+        characters: newTranslation,
+        paramsValues: node.paramsValues,
+      });
     }
+    return newTranslation;
+  };
+
+  const currentNode = useRef<NodeInfo | null>(initialNode);
+
+  const node = useMemo(() => {
     setIsInitial(true);
     return (
       selectedNodes.data?.items.find((n) => n.id === initialNode.id) ??
@@ -80,9 +106,26 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   const [pluralParamValue, setPluralParamValue] = useState(
     node.pluralParamValue ?? "1"
   );
-  const [confirmTextChange, setConfirmTextChange] = useState<
-    false | "characters" | "translation"
-  >(false);
+  const [confirmTextChange, setConfirmTextChange] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (
+      needsSubmission &&
+      currentNode.current &&
+      currentNode.current.connected
+    ) {
+      // Update previous node before switching to a new one
+      updateTranslationValue(currentNode.current, translation, true);
+    }
+    currentNode.current = node;
+    // if node changes, reset to defaults
+    setTranslation(
+      node.translation || translationLoadable.translation?.translation || ""
+    );
+    setIsPlural(node.isPlural ?? false);
+    setPluralParamValue(node.pluralParamValue ?? "1");
+    setConfirmTextChange(false);
+  }, [node]);
 
   /** Updates nodes properties with the partial data and mutates the data state within figma */
   const updateNodeData = (data: Partial<NodeInfo>) => {
@@ -111,6 +154,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     previewText,
     previewTextIsError,
     textHasChanged,
+    hasChangesOutsideFromTolgee,
     placeholders,
     updateTranslation,
   } = useInterpolatedTranslation(
@@ -150,16 +194,12 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
       setIsInitial(false);
     }
 
-    if (confirmTextChange == "characters") {
-      setNodesDataMutation.mutate({
-        nodes: [{ ...node, translation: previousCharacters }],
-      });
-      setTranslation(previousCharacters);
-    } else if (confirmTextChange == "translation" || !textHasChanged) {
+    if (confirmTextChange || !textHasChanged) {
       if (newTranslation !== translation) {
         setTranslation(newTranslation);
         updateTranslationValue(node, newTranslation, true);
       }
+      setConfirmTextChange(false);
     }
   }, [
     translationLoadable.translation?.translation,
@@ -182,31 +222,6 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     () => getTolgeeFormat(translation, isPlural, false),
     [translation, selectedPluralRole, isPlural]
   );
-
-  /** Updates the translation parameters, the preview text and the node, in relevant cases. */
-  const updateTranslationValue = (
-    node: NodeInfo,
-    currentTranslation: string,
-    updateNode = false
-  ): string | null => {
-    const newTranslation = updateTranslation({
-      currentTranslation,
-      paramsValues: node.paramsValues || {},
-    });
-
-    // To keep things fast, only update the node in relevant cases -> on blur of text-fields
-    if (updateNode && newTranslation != null) {
-      formatText.mutate({
-        formatted: newTranslation,
-        nodeInfo: node,
-      });
-      updateNodeData({
-        characters: newTranslation,
-        paramsValues: node.paramsValues,
-      });
-    }
-    return newTranslation;
-  };
 
   if (
     connectedNodesLoadable.isLoading ||
@@ -235,19 +250,52 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
               >
                 <IconChevronDown16 />
               </IconButton>
-              <Text>STRING DETAILS</Text>
+              <Text data-cy="string_details_headline">STRING DETAILS</Text>
             </Fragment>
           }
         />
       </Container>
       <Divider />
-      <VerticalSpace space="large" />
       {noSelectedNode ? (
         <Container space="medium" style={{ marginTop: 16 }}>
           <Text>No texts selected</Text>
         </Container>
       ) : (
         <Container space="medium">
+          {(hasChangesOutsideFromTolgee ||
+            isPlural ||
+            placeholders.length > 0) && (
+            <Container
+              className={
+                hasChangesOutsideFromTolgee
+                  ? styles.warningContainer
+                  : styles.warningNoticeContainer
+              }
+              space="small"
+            >
+              <Columns space="small">
+                <Info
+                  width={16}
+                  height={16}
+                  className={
+                    hasChangesOutsideFromTolgee
+                      ? styles.warningContainerIcon
+                      : styles.warningNoticeContainerIcon
+                  }
+                />
+                <Muted>
+                  Advanced text format detected. Edit the string via plugin to
+                  preserve formatting.
+                </Muted>
+              </Columns>
+              {hasChangesOutsideFromTolgee && (
+                <Button secondary onClick={() => setConfirmTextChange(true)}>
+                  Revert string in design
+                </Button>
+              )}
+            </Container>
+          )}
+          <VerticalSpace space="large" />
           <Text>
             <Muted>Key name</Muted>
           </Text>
@@ -256,13 +304,17 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
             data-cy="string_details_input_key"
             placeholder="Key name"
             value={node.key}
-            onChange={() => {
-              // onChange(e.currentTarget.value);
+            onChange={(e) => {
+              node.key = e.currentTarget.value;
+              updateNodeData({
+                key: e.currentTarget.value,
+              });
             }}
             variant="border"
           />
           <VerticalSpace space="medium" />
           <Checkbox
+            disabled={node.connected}
             onChange={() => {
               updateNodeData({
                 isPlural: !isPlural,
@@ -364,6 +416,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
               <Muted>Preview</Muted>
               <Muted>
                 <span
+                  data-cy="string_details_preview_text"
                   style={{
                     color: previewTextIsError ? "red" : undefined,
                     whiteSpace: "pre-wrap",

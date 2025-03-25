@@ -51,6 +51,14 @@ export const PAGE_COPY: Partial<TolgeeConfig> = {
   pageCopy: true,
 };
 
+export const PAGE_STRING_DETAILS: Partial<TolgeeConfig> = {
+  ...DEFAULT_CREDENTIALS,
+  language: "en",
+  namespace: "",
+  documentInfo: true,
+  pageStringDetails: true,
+};
+
 export const PAGE_COPY_LANGUAGE: Partial<TolgeeConfig> = {
   ...PAGE_COPY,
   language: "cs",
@@ -66,6 +74,8 @@ type Props = {
   key?: string;
   ns?: string;
   connected?: boolean;
+  translation?: string;
+  isPlural?: boolean;
   id?: string;
 };
 
@@ -74,6 +84,8 @@ export function createTestNode(props: Props): NodeInfo {
     name: props.text,
     characters: props.text,
     id: Math.random().toString(),
+    translation: props.translation ?? props.text,
+    isPlural: props.isPlural ?? false,
     key: props.key || "",
     ns: props.ns || "",
     connected: Boolean(props.connected),
@@ -135,6 +147,11 @@ export function createLinks() {
       config: PAGE_COPY_LANGUAGE,
       selectedNodes: connectedCzech,
       allNodes: connectedCzech,
+    }),
+    createShortcutLink("String details with selected node", {
+      config: { ...PAGE_STRING_DETAILS, nodeInfo: connectedKeys[0] },
+      selectedNodes: connectedKeys,
+      allNodes: connectedKeys,
     }),
   ].join("\n");
 }

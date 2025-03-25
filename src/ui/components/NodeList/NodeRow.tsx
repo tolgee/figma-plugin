@@ -4,10 +4,7 @@ import { PartialNodeInfo } from "@/types";
 import styles from "./NodeRow.css";
 import { Badge } from "../Badge/Badge";
 import { useInterpolatedTranslation } from "@/ui/hooks/useInterpolatedTranslation";
-import { useEffect, useMemo } from "preact/hooks";
 import { InfoTooltip } from "../InfoTooltip/InfoTooltip";
-import { stringFormatter } from "@/main/utils/textFormattingTools";
-import { Edit, X } from "../../icons/SvgIcons";
 
 type Props = {
   node: PartialNodeInfo;
@@ -28,7 +25,7 @@ export const NodeRow = ({
 }: Props) => {
   const showText = node.characters || !compact || action;
 
-  const { interpolatedTranslation } = useInterpolatedTranslation(
+  const { hasChangesOutsideFromTolgee } = useInterpolatedTranslation(
     node.translation ?? node.characters ?? "",
     node.characters ?? "",
     node.isPlural ?? false,
@@ -36,44 +33,9 @@ export const NodeRow = ({
     node.paramsValues ?? {},
     node.selectedPluralVariant
   );
-  const {
-    previewText,
-    previewTextIsError,
-    interpolatedTranslation: charactersInterpolatedTranslation,
-  } = useInterpolatedTranslation(
-    node.characters ?? "",
-    node.characters ?? "",
-    node.isPlural ?? false,
-    node.pluralParamValue ?? "1",
-    node.paramsValues ?? {},
-    node.selectedPluralVariant
-  );
-
-  const hasChangesOutsideFromTolgee = useMemo(
-    () =>
-      charactersInterpolatedTranslation.current !=
-        interpolatedTranslation.current &&
-      (Object.keys(node.paramsValues ?? {}).length > 0 || node.isPlural),
-    [
-      interpolatedTranslation.current,
-      charactersInterpolatedTranslation.current,
-      node.paramsValues,
-      node.isPlural,
-    ]
-  );
-
-  useEffect(() => {
-    if (hasChangesOutsideFromTolgee) {
-      console.log(
-        node.translation,
-        stringFormatter(node.translation ?? ""),
-        stringFormatter(node.characters ?? "")
-      );
-    }
-  }, [hasChangesOutsideFromTolgee, interpolatedTranslation.current]);
 
   const infoString =
-    "This translation has been changed directly within Figma.\nPlease accept the change to push it to Tolgee or revert it.";
+    "Manual changes have been detected.\nGo to details to see more.";
 
   return (
     <div
@@ -95,35 +57,16 @@ export const NodeRow = ({
           {/* eslint-disable-next-line react/no-danger */}
           <span
             style={{
-              color: previewTextIsError ? "red" : undefined,
               whiteSpace: "pre-wrap",
             }}
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
-              __html: previewText ?? "",
+              __html: node.characters ?? "",
             }}
           />
 
           {hasChangesOutsideFromTolgee && (
-            <InfoTooltip
-              color="var(--figma-color-bg-brand)"
-              items={[
-                {
-                  label: "Accept translation change",
-                  icon: <Edit width={16} height={16} />,
-                  onClick: () => {
-                    console.log("AHHH");
-                  },
-                },
-                {
-                  label: "Revert translation change",
-                  icon: <X width={16} height={16} />,
-                  onClick: () => {
-                    console.log("AHHH");
-                  },
-                },
-              ]}
-            >
+            <InfoTooltip rotated color="var(--figma-color-bg-brand)">
               {infoString}
             </InfoTooltip>
           )}

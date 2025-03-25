@@ -64,6 +64,8 @@ export const Router = () => {
   const documentInfo = useGlobalState((c) => c.config?.documentInfo);
   const pageInfo = useGlobalState((c) => c.config?.pageInfo);
   const pageCopy = useGlobalState((c) => c.config?.pageCopy);
+  const pageStringDetails = useGlobalState((c) => c.config?.pageStringDetails);
+  const pageStringDetailsNodeInfo = useGlobalState((c) => c.config?.nodeInfo);
   const { setRoute } = useGlobalActions();
 
   const forceSettings = !pageCopy && !documentInfo;
@@ -86,6 +88,8 @@ export const Router = () => {
       )}
       {pageCopy ? (
         <CopyView />
+      ) : pageStringDetails && pageStringDetailsNodeInfo ? (
+        <StringDetails node={pageStringDetailsNodeInfo} />
       ) : forceSettings ? (
         <Settings noNavigation />
       ) : !pageInfo ? (

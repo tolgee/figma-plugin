@@ -7,6 +7,7 @@ export interface ActionItem {
   label: string;
   icon: JSX.Element;
   onClick: () => void;
+  cy?: string;
 }
 
 interface DropdownProps {
@@ -90,6 +91,7 @@ const Dropdown = ({
 
   return (
     <div
+      data-cy="dropdown"
       ref={dropdownRef}
       class={displayPopover ? styles.popover : styles.popoverHidden}
     >
@@ -97,6 +99,7 @@ const Dropdown = ({
       {items != null &&
         items.map((item, index) => (
           <button
+            data-cy={item.cy}
             key={index}
             onClick={() => {
               close();

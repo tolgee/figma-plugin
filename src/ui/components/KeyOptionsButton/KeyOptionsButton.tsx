@@ -1,7 +1,7 @@
 import { h } from "preact";
 
 import styles from "./KeyOptionsButton.css";
-import { Edit, More, MyLocation, X } from "@/ui/icons/SvgIcons";
+import { Edit, More, MyLocation } from "@/ui/icons/SvgIcons";
 import { useRef } from "preact/hooks";
 import Popover from "../Popover/Popover";
 import { useHighlightNodeMutation } from "../../hooks/useHighlightNodeMutation";
@@ -22,11 +22,9 @@ export const KeyOptionsButton = ({ node }: Props) => {
     highlightMutation.mutate({ id: node.id });
   };
 
-  console.log(node);
-
   return (
     <div
-      data-cy="index_highlight_button"
+      data-cy="key_options_button"
       role="button"
       title="Locate on the page"
       ref={moreOptionsRef}
@@ -37,6 +35,7 @@ export const KeyOptionsButton = ({ node }: Props) => {
         popoverTrigger={moreOptionsRef}
         items={[
           {
+            cy: "string_details_cy",
             label: "String details",
             icon: <Edit width={16} height={16} />,
             onClick: () => {
@@ -50,13 +49,14 @@ export const KeyOptionsButton = ({ node }: Props) => {
               handleHighlight();
             },
           },
-          {
-            label: "Ignore String",
-            icon: <X width={16} height={16} />,
-            onClick: () => {
-              console.log("Ignore String");
-            },
-          },
+          // TODO: implement ignore string
+          // {
+          //   label: "Ignore String",
+          //   icon: <X width={16} height={16} />,
+          //   onClick: () => {
+          //     console.log("Ignore String");
+          //   },
+          // },
         ]}
       />
     </div>

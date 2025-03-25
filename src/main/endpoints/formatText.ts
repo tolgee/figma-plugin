@@ -172,12 +172,6 @@ export const formatText = async ({
   for (const range of underlineRanges) {
     await applyStyles([range], undefined, "UNDERLINE");
   }
-
-  // if (nodeInfo.translation !== formatted) {
-  //   textNode.locked = true;
-  // } else {
-  //   textNode.locked = false;
-  // }
 };
 
 export const formatTextEndpoint = createEndpoint<FormatTextEndpointArgs, void>(

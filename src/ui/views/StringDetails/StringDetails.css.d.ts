@@ -6,6 +6,10 @@ declare const styles: {
   readonly "paramsContainer": string;
   readonly "previewRow": string;
   readonly "valuesText": string;
+  readonly "warningContainer": string;
+  readonly "warningContainerIcon": string;
+  readonly "warningNoticeContainer": string;
+  readonly "warningNoticeContainerIcon": string;
 };
 export = styles;
 

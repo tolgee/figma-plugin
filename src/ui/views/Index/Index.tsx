@@ -122,7 +122,6 @@ export const Index = () => {
                     data-cy="index_language_select"
                     className={styles.languageContainer}
                     value={language}
-                    placeholder="Language"
                     onChange={(e) => {
                       handleLanguageChange(
                         (e.target as HTMLInputElement).value

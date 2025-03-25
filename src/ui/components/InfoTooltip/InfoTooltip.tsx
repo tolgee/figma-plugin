@@ -9,9 +9,10 @@ type Props = {
   children: string;
   color?: string;
   items?: ActionItem[] | undefined;
+  rotated?: boolean;
 };
 
-export const InfoTooltip = ({ children, color, items }: Props) => {
+export const InfoTooltip = ({ children, color, items, rotated }: Props) => {
   const popoverTrigger = useRef<HTMLDivElement>(null);
 
   return (
@@ -21,7 +22,11 @@ export const InfoTooltip = ({ children, color, items }: Props) => {
       title={children}
       className={styles.info}
     >
-      <Info style={{ color }} width={16} height={16} />
+      <Info
+        style={{ color, transform: rotated ? "rotate(180deg)" : "" }}
+        width={16}
+        height={16}
+      />
       <Popover
         clampWidth
         items={items}
