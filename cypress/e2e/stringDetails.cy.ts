@@ -56,7 +56,7 @@ describe("String details", () => {
     cy.iframe().findDcy("dropdown").should("be.visible");
 
     // Wait for animation
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 500));
 
     cy.iframe().findDcy("string_details_cy").should("be.visible");
   });
@@ -83,7 +83,7 @@ describe("String details", () => {
       .contains("Test node");
   });
 
-  it("should react to key changes", () => {
+  it("should react to key changes", async () => {
     const nodes = [
       createTestNode({
         text: "Test node",
@@ -109,9 +109,17 @@ describe("String details", () => {
     getIframeBody()
       .find('[data-cy="string_details_input_key"]')
       .should("have.value", "new_key");
+
+    getIframeBody().find('[data-cy="tooltip"]').click();
+
+    getIframeBody()
+      .contains("You can use basic HTML tags")
+      .should("be.visible");
+
+    await new Promise((r) => setTimeout(r, 500));
   });
 
-  it("should show warning on missmatched translation", () => {
+  it("should show negative warning on missmatched translation", () => {
     const nodes = [
       createTestNode({
         text: "Test node",
@@ -129,5 +137,53 @@ describe("String details", () => {
     });
 
     cy.iframe().contains("Advanced text format detected").should("be.visible");
+
+    cy.iframe().find('[class^="_warningContainer_"]').should("be.visible");
+  });
+
+  it("should show positive warning on plural keys", () => {
+    const nodes = [
+      createTestNode({
+        text: "Test node",
+        key: "test_key",
+        ns: "test_ns",
+        isPlural: true,
+        translation: "Test node",
+        connected: true,
+      }),
+    ];
+    visitWithState({
+      config: { ...PAGE_STRING_DETAILS, nodeInfo: nodes[0] },
+      selectedNodes: nodes,
+      allNodes: nodes,
+    });
+
+    cy.iframe().contains("Advanced text format detected").should("be.visible");
+
+    cy.iframe()
+      .find('[class^="_warningNoticeContainer_"]')
+      .should("be.visible");
+  });
+
+  it("should not show warning on simple keys", () => {
+    const nodes = [
+      createTestNode({
+        text: "Test node",
+        key: "test_key",
+        ns: "test_ns",
+        isPlural: false,
+        translation: "Test",
+        connected: true,
+      }),
+    ];
+    visitWithState({
+      config: { ...PAGE_STRING_DETAILS, nodeInfo: nodes[0] },
+      selectedNodes: nodes,
+      allNodes: nodes,
+    });
+
+    getIframeBody()
+      .contains("Advanced text format detected")
+      .should("not.exist");
   });
 });
