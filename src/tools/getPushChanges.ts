@@ -52,8 +52,7 @@ export const getPushChanges = (
     const hasChangesOutsideFromTolgee =
       stringFormatter(node.translation ?? "") !=
         stringFormatter(node.characters ?? "") &&
-      Object.keys(node.paramsValues ?? {}).length === 0 &&
-      !node.isPlural;
+      (Object.keys(node.paramsValues ?? {}).length > 0 || node.isPlural);
 
     const oldTolgeeValue = oldValue
       ? getTolgeeFormat(oldValue.translation, oldValue.keyIsPlural, false)
