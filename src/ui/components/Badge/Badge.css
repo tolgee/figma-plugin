@@ -1,6 +1,6 @@
 .badge {
   background-color: var(--figma-color-bg-disabled);
-  color: rgba(0,0,0, 0.7);
+  color: rgba(0, 0, 0, 0.7);
   font-weight: 400;
   display: flex;
   align-items: center;

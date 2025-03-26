@@ -55,12 +55,14 @@
   overflow: hidden;
 }
 
-.editor .placeholder-variable, .editor .placeholder-hash {
+.editor .placeholder-variable,
+.editor .placeholder-hash {
   background-color: var(--figma-color-bg-editor-variable, #008371);
 }
 
 @media (prefers-color-scheme: light) {
-  .editor .placeholder-variable, .editor .placeholder-hash {
+  .editor .placeholder-variable,
+  .editor .placeholder-hash {
     color: white;
   }
 }
