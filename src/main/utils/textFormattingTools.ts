@@ -16,7 +16,7 @@ export const stringFormatter = (
     newString = newString.replace(/<[^>]*>/g, "");
   }
   if (args.replaceNewlines) {
-    newString = newString.replace(/\u2028|\u8233/g, "\n\n");
+    newString = newString.replace(/\u2028|\u2029/g, "\n\n");
   }
   return newString;
 };

@@ -1,4 +1,5 @@
 import { Fragment, h } from "preact";
+import DOMPurify from "dompurify";
 import {
   Button,
   Checkbox,
@@ -425,7 +426,9 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                     whiteSpace: "pre-wrap",
                   }}
                   // eslint-disable-next-line react/no-danger
-                  dangerouslySetInnerHTML={{ __html: previewText }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(previewText),
+                  }}
                 />
               </Muted>
             </div>

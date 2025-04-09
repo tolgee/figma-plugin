@@ -5,6 +5,7 @@ import styles from "./NodeRow.css";
 import { Badge } from "../Badge/Badge";
 import { useInterpolatedTranslation } from "@/ui/hooks/useInterpolatedTranslation";
 import { InfoTooltip } from "../InfoTooltip/InfoTooltip";
+import DOMPurify from "dompurify";
 
 type Props = {
   node: PartialNodeInfo;
@@ -54,7 +55,7 @@ export const NodeRow = ({
             }}
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
-              __html: node.characters ?? "",
+              __html: DOMPurify.sanitize(node.characters ?? ""),
             }}
           />
 
