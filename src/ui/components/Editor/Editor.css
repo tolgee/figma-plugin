@@ -135,3 +135,15 @@
 .plural-editor-wrapper .styled-variant-content {
   display: block;
 }
+
+:root {
+  --syntax-color-function: #007300;
+  --syntax-color-other: #002bff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --syntax-color-function: #9ac99a;
+    --syntax-color-other: #99aaff;
+  }
+}

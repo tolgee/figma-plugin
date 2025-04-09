@@ -11,8 +11,8 @@ import {
 import "!./Editor.css";
 
 const editorSyntaxColors = {
-  function: "#007300",
-  other: "#002bff",
+  function: "var(--syntax-color-function)",
+  other: "var(--syntax-color-other)",
   main: "var(--figma-color-text)",
 };
 

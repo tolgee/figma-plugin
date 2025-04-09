@@ -8,3 +8,9 @@
   padding: 2px 6px;
   border-radius: 16px;
 }
+
+@media (prefers-color-scheme: dark) {
+  .badge {
+    background-color: var(--figma-color-bg-disabled-secondary);
+  }
+}
