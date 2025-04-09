@@ -90,7 +90,6 @@ function main() {
   setNodesDataEndpoint.mock(({ nodes }) => updateNodes(nodes, false));
   formatTextEndpoint.mock(({ formatted, nodeInfo }) => {
     nodeInfo.characters = formatted;
-    console.log("Something happened here");
     emit<SelectionChangeHandler>("SELECTION_CHANGE");
   });
 }

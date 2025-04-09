@@ -25,8 +25,6 @@ export const PluralEditor = ({
     onChange?.({ ...value, variants: { ...value.variants, [variant]: text } });
   }
 
-  const editorMode = mode;
-
   return (
     <TranslationPlurals
       value={value}
@@ -39,7 +37,7 @@ export const PluralEditor = ({
           <div data-cy="translation-editor" data-cy-variant={variant}>
             <Editor
               onBlur={onBlur}
-              mode={editorMode}
+              mode={mode}
               value={content}
               onChange={(value) => handleChange(value, variantOrOther)}
               minHeight={value.parameter ? "unset" : "50px"}

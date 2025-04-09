@@ -29,7 +29,18 @@ export const TranslationPlurals = ({
   value,
   showEmpty,
 }: Props) => {
-  const variants = useMemo(() => getForms(locale, value), [locale, value]);
+  const variants = useMemo(() => {
+    const existing = new Set(Object.keys(value.variants));
+    const required = getPluralVariants(locale);
+    required.forEach((val) => existing.delete(val));
+    const result = Array.from(existing).map((value) => {
+      return [value, getVariantExample(locale, value)] as const;
+    });
+    required.forEach((value) => {
+      result.push([value, getVariantExample(locale, value)]);
+    });
+    return result;
+  }, [locale]);
 
   if (value.parameter) {
     return (
@@ -71,27 +82,3 @@ export const TranslationPlurals = ({
     </div>
   );
 };
-
-function getForms(locale: string, value: TolgeeFormat, exactForms?: number[]) {
-  const forms: Set<string> = new Set();
-  getPluralVariants(locale).forEach((value) => forms.add(value));
-  Object.keys(value.variants).forEach((value) => forms.add(value));
-  (exactForms || [])
-    .map((value) => `=${value.toString()}`)
-    .forEach((value) => forms.add(value));
-
-  const formsArray = sortExactForms(forms);
-
-  return formsArray.map((value) => {
-    return [value, getVariantExample(locale, value)] as const;
-  });
-}
-
-function sortExactForms(forms: Set<string>) {
-  return [...forms].sort((a, b) => {
-    if (a.startsWith("=") && b.startsWith("=")) {
-      return Number(a.substring(1)) - Number(b.substring(1));
-    }
-    return 0;
-  });
-}

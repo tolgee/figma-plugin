@@ -20,11 +20,7 @@ import { useConnectedMutation } from "@/ui/hooks/useConnectedMutation";
 import { NodeInfo } from "@/types";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { PluralEditor } from "@/ui/components/Editor/PluralEditor";
-import {
-  getTolgeeFormat,
-  selectPluralRule,
-  tolgeeFormatGenerateIcu,
-} from "@tginternal/editor";
+import { tolgeeFormatGenerateIcu } from "@tginternal/editor";
 import { useTranslation } from "@/ui/hooks/useTranslation";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
@@ -65,6 +61,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   ): string | null => {
     const newTranslation = updateTranslation({
       currentTranslation,
+      pluralParamValue: node.pluralParamValue,
       paramsValues: node.paramsValues || {},
     });
 
@@ -76,7 +73,10 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
       });
       updateNodeData({
         characters: newTranslation,
+        translation: currentTranslation,
         paramsValues: node.paramsValues,
+        pluralParamValue: node.pluralParamValue,
+        isPlural: node.isPlural,
       });
     }
     return newTranslation;
@@ -84,13 +84,15 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
 
   const currentNode = useRef<NodeInfo | null>(initialNode);
 
-  const node = useMemo(() => {
+  const [node, setNode] = useState<NodeInfo>(initialNode);
+
+  useEffect(() => {
     setIsInitial(true);
-    return (
-      selectedNodes.data?.items.find((n) => n.id === initialNode.id) ??
-      selectedNodes.data?.items[0] ??
-      initialNode
-    );
+    setNode({
+      ...(selectedNodes.data?.items.find((n) => n.id === initialNode.id) ??
+        selectedNodes.data?.items[0] ??
+        initialNode),
+    });
   }, [selectedNodes.data?.items, initialNode.id]);
 
   const translationLoadable = useTranslation({
@@ -99,10 +101,14 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     key: node.key,
   });
   const [translation, setTranslation] = useState(
-    node.translation || translationLoadable.translation?.translation || ""
+    node.translation ||
+      translationLoadable.translation?.translation ||
+      node.characters
   );
 
   const [confirmTextChange, setConfirmTextChange] = useState<boolean>(false);
+  const [hasChangesOutsideFromTolgee, setHasChangesOutsideFromTolgee] =
+    useState<boolean | null>(null);
 
   useEffect(() => {
     if (
@@ -126,30 +132,24 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     setNodesDataMutation.mutate({
       nodes: [{ ...node, ...data }],
     });
-    Object.entries(data).forEach(([key, value]) => {
-      (node as any)[key] = value;
-    });
+    setNode({ ...node, ...data });
   };
 
   const {
     previewText,
     previewTextIsError,
     textHasChanged,
-    hasChangesOutsideFromTolgee,
+    translationDiffersFromNode,
     placeholders,
+    tolgeeValue,
     updateTranslation,
-  } = useInterpolatedTranslation(
-    node.characters != translation &&
-      !node.isPlural &&
-      Object.keys(node.paramsValues ?? {}).length === 0
-      ? node.characters ?? translation ?? ""
-      : translation ?? node.characters ?? "",
-    node.characters,
-    isPlural,
-    pluralParamValue,
-    node.paramsValues ?? {},
-    selectedPluralRole
-  );
+  } = useInterpolatedTranslation(node);
+
+  useEffect(() => {
+    setHasChangesOutsideFromTolgee(
+      translationDiffersFromNode && node.connected
+    );
+  }, [node]);
 
   useEffect(() => {
     if (textHasChanged && !confirmTextChange) {
@@ -198,12 +198,6 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     [selectedNodes.isLoading, selectedNodes.data?.items, initialNode.id]
   );
 
-  /** The Tolgee format of the current translation */
-  const tolgeeValue = useMemo(
-    () => getTolgeeFormat(translation, isPlural, false),
-    [translation, selectedPluralRole, isPlural]
-  );
-
   if (
     connectedNodesLoadable.isLoading ||
     translationLoadable.isLoading ||
@@ -226,13 +220,28 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
           leftPart={
             <Fragment>
               <IconButton
-                onClick={needsSubmission ? undefined : () => setRoute("index")}
+                onClick={() => setRoute("index")}
                 style={{ transform: "rotate(90deg)" }}
               >
                 <IconChevronDown16 />
               </IconButton>
               <Text data-cy="string_details_headline">STRING DETAILS</Text>
             </Fragment>
+          }
+          rightPart={
+            needsSubmission ? (
+              <Button
+                onClick={() => {
+                  updateNodeData({
+                    translation,
+                  });
+                  updateTranslationValue(node, translation, true);
+                  setNeedsSubmission(false);
+                }}
+              >
+                {needsSubmission ? "Save changes" : "Back to list"}
+              </Button>
+            ) : undefined
           }
         />
       </Container>
@@ -244,7 +253,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
       ) : (
         <Container space="medium">
           {(hasChangesOutsideFromTolgee ||
-            isPlural ||
+            node.isPlural ||
             placeholders.length > 0) && (
             <Container
               className={
@@ -270,7 +279,13 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                 </Muted>
               </Columns>
               {hasChangesOutsideFromTolgee && (
-                <Button secondary onClick={() => setConfirmTextChange(true)}>
+                <Button
+                  secondary
+                  onClick={() => {
+                    updateTranslationValue(node, translation, true);
+                    setHasChangesOutsideFromTolgee(false);
+                  }}
+                >
                   Revert string in design
                 </Button>
               )}
@@ -297,12 +312,28 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
           <Checkbox
             disabled={node.connected}
             onChange={() => {
+              const newPlural = !node.isPlural;
               updateNodeData({
-                isPlural: !isPlural,
+                isPlural: newPlural,
+                pluralParamValue: newPlural ? "value" : undefined,
               });
-              setIsPlural(!isPlural);
+              updateTranslationValue(
+                {
+                  ...node,
+                  isPlural: newPlural,
+                  pluralParamValue: newPlural ? "value" : undefined,
+                },
+                tolgeeFormatGenerateIcu(
+                  {
+                    ...tolgeeValue,
+                    parameter: newPlural ? "value" : undefined,
+                  },
+                  false
+                ),
+                true
+              );
             }}
-            value={isPlural}
+            value={node.isPlural}
           >
             <Text>is plural</Text>
           </Checkbox>
@@ -321,14 +352,10 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
               }
               updateTranslationValue(node, generatedIcuString, false);
             }}
-            onBlur={() => {
-              updateNodeData({
-                translation,
-              });
-              updateTranslationValue(node, translation, true);
-              setNeedsSubmission(false);
+            value={{
+              ...tolgeeValue,
+              parameter: node.isPlural ? node.pluralParamValue : undefined,
             }}
-            value={tolgeeValue}
             locale={config?.language ?? "en"}
             mode="placeholders"
           />
@@ -347,13 +374,13 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                     value={node.pluralParamValue ?? ""}
                     onChange={({ currentTarget }) => {
                       setNeedsSubmission(true);
+                      updateTranslationValue(
+                        { ...node, pluralParamValue: currentTarget.value },
+                        translation
+                      );
                       updateNodeData({
                         pluralParamValue: currentTarget.value,
                       });
-                    }}
-                    onBlur={() => {
-                      updateTranslationValue(node, translation, true);
-                      setNeedsSubmission(false);
                     }}
                     variant="border"
                   />
@@ -379,10 +406,6 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                             };
                           }
                           updateTranslationValue(node, translation);
-                        }}
-                        onBlur={() => {
-                          updateTranslationValue(node, translation, true);
-                          setNeedsSubmission(false);
                         }}
                         variant="border"
                       />

@@ -4,19 +4,29 @@ import {
   getPlaceholders,
   getTolgeeFormat,
   Placeholder,
+  selectPluralRule,
+  TolgeeFormat,
 } from "@tginternal/editor";
 import { createFormatIcu } from "../../createFormatIcu";
 import { useGlobalState } from "../state/GlobalState";
+import { PartialNodeInfo } from "../../types";
 
-export const useInterpolatedTranslation = (
-  rawTranslation: string,
-  nodeCharacters: string,
-  isPlural: boolean,
-  pluralParamValue: string,
-  paramsValues: Record<string, string>,
-  selectedPluralVariant?: Intl.LDMLPluralRule
-) => {
+export const useInterpolatedTranslation = (node: PartialNodeInfo) => {
   const config = useGlobalState((c) => c.config);
+  const nodeCharacters = node.characters ?? "";
+  const rawTranslation = (node.translation || node.characters) ?? "";
+  const paramsValues = node.paramsValues ?? {};
+
+  const isPlural = node.isPlural ?? false;
+  const selectedPluralVariant = useMemo(() => {
+    if (!node.isPlural) {
+      return "other";
+    }
+    return selectPluralRule(
+      config?.language ?? "en",
+      parseInt(node.pluralParamValue || "1", 10)
+    );
+  }, [node, node.pluralParamValue, config?.language]);
 
   const interpolatedTranslation = useRef<string>(nodeCharacters);
   const textHasChanged = useRef<boolean>(false);
@@ -24,13 +34,18 @@ export const useInterpolatedTranslation = (
   const [previewTextIsError, setPreviewTextIsError] = useState<boolean>(false);
   /** Array of all placeholders within the current tolgeeValue plural variant */
   const [placeholders, setPlaceholders] = useState<Placeholder[]>([]);
+  const [tolgeeValue, setTolgeeValue] = useState<TolgeeFormat>({
+    variants: {},
+  });
 
   const updateTranslation = (args: {
     paramsValues: Record<string, string>;
+    pluralParamValue?: string;
     currentTranslation: string;
   }): string | null => {
     const { paramsValues, currentTranslation } = args;
     const tolgeeValue = getTolgeeFormat(currentTranslation, isPlural, false);
+    setTolgeeValue(tolgeeValue);
 
     const newPlaceholders =
       getPlaceholders(
@@ -66,7 +81,8 @@ export const useInterpolatedTranslation = (
     try {
       const pluralParam: Record<string, string> = {};
       if (tolgeeValue.parameter) {
-        pluralParam[tolgeeValue.parameter] = pluralParamValue ?? "1";
+        pluralParam[tolgeeValue.parameter] =
+          args.pluralParamValue ?? (node.pluralParamValue || "1");
       }
       const newInterpolatedTranslation: string = formatter.format({
         language: config?.language ?? "en",
@@ -97,6 +113,12 @@ export const useInterpolatedTranslation = (
   const previousCharacters = nodeCharacters.replace(/\u2028|\u8233/g, "\n\n");
 
   useEffect(() => {
+    previousCharacters != newTranslation &&
+    !isPlural &&
+    placeholders.length === 0
+      ? previousCharacters ?? newTranslation ?? ""
+      : newTranslation ?? previousCharacters ?? "";
+
     const newCharacters = updateTranslation({
       paramsValues: paramsValues || {},
       currentTranslation: newTranslation,
@@ -107,14 +129,22 @@ export const useInterpolatedTranslation = (
       textHasChanged.current = true;
       return;
     }
-  }, [rawTranslation]);
+  }, [rawTranslation, node.isPlural]);
 
-  const hasChangesOutsideFromTolgee = useMemo(
-    () =>
+  const translationDiffersFromNode = useMemo(() => {
+    const res =
       nodeCharacters != interpolatedTranslation.current &&
-      (Object.keys(paramsValues ?? {}).length > 0 || isPlural),
-    [interpolatedTranslation.current, nodeCharacters, paramsValues, isPlural]
-  );
+      (Object.keys(paramsValues ?? {}).length > 0 || isPlural);
+    return res;
+  }, [
+    interpolatedTranslation.current,
+    newTranslation,
+    nodeCharacters,
+    paramsValues,
+    isPlural,
+    selectedPluralVariant,
+    node,
+  ]);
 
   return {
     placeholders,
@@ -122,7 +152,8 @@ export const useInterpolatedTranslation = (
     interpolatedTranslation,
     previewText,
     previewTextIsError,
-    hasChangesOutsideFromTolgee,
+    translationDiffersFromNode,
+    tolgeeValue,
     updateTranslation,
   };
 };

@@ -25,14 +25,7 @@ export const NodeRow = ({
 }: Props) => {
   const showText = node.characters || !compact || action;
 
-  const { hasChangesOutsideFromTolgee } = useInterpolatedTranslation(
-    node.translation ?? node.characters ?? "",
-    node.characters ?? "",
-    node.isPlural ?? false,
-    node.pluralParamValue ?? "1",
-    node.paramsValues ?? {},
-    node.selectedPluralVariant
-  );
+  const { translationDiffersFromNode } = useInterpolatedTranslation(node);
 
   const infoString =
     "Manual changes have been detected.\nGo to details to see more.";
@@ -65,7 +58,7 @@ export const NodeRow = ({
             }}
           />
 
-          {hasChangesOutsideFromTolgee && (
+          {translationDiffersFromNode && (
             <InfoTooltip rotated color="var(--figma-color-bg-brand)">
               {infoString}
             </InfoTooltip>

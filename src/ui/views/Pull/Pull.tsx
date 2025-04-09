@@ -22,7 +22,7 @@ import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
-import { getTolgeeFormat } from "@tginternal/editor";
+import { getPlaceholders, getTolgeeFormat } from "@tginternal/editor";
 import { createFormatIcu } from "../../../createFormatIcu";
 
 type Props = RouteParam<"pull">;
@@ -56,18 +56,34 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
       await updateNodeLoadable.mutateAsync({
         nodes: diffData!.changedNodes.map((n) => {
           const tolgeeValue = getTolgeeFormat(n.translation, n.isPlural, false);
-          const formatted = formatter.format({
-            language: lang ?? "en",
-            translation: n.translation,
-            params: {
-              ...n.paramsValues,
-              [tolgeeValue.parameter ?? ""]: n.pluralParamValue,
-            },
-          });
-          return {
-            ...n,
-            formatted,
-          };
+          const paramValues = { ...(n.paramsValues ?? {}) };
+          const placeholders = getPlaceholders(n.translation);
+
+          for (const placeholder of placeholders ?? []) {
+            if (paramValues[placeholder.name] == null) {
+              paramValues[placeholder.name] = placeholder.name;
+            }
+          }
+
+          try {
+            const formatted = formatter.format({
+              language: lang ?? "en",
+              translation: n.translation,
+              params: {
+                ...paramValues,
+                [tolgeeValue.parameter ?? ""]: n.pluralParamValue ?? "1",
+              },
+            });
+            return {
+              ...n,
+              formatted,
+            };
+          } catch (e) {
+            return {
+              ...n,
+              formatted: n.characters,
+            };
+          }
         }),
       });
     }
@@ -84,9 +100,6 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
             pluralParamValue:
               diffData!.changedNodes.find((c) => c.key === n.key)
                 ?.pluralParamValue ?? n.pluralParamValue,
-            selectedPluralVariant:
-              diffData!.changedNodes.find((c) => c.key === n.key)
-                ?.selectedPluralVariant ?? n.selectedPluralVariant,
             translation:
               diffData!.changedNodes.find((c) => c.key === n.key)
                 ?.translation ?? n.translation,
