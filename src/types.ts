@@ -72,7 +72,6 @@ export type FrameScreenshot = {
 };
 
 export interface NodeInfo {
-  selectedPluralVariant?: Intl.LDMLPluralRule;
   pluralParamValue?: string;
   paramsValues?: Record<string, string>;
   name: string;

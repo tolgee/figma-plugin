@@ -13,7 +13,6 @@ export const getNodeInfo = (node: TextNode): NodeInfo => {
     key: pluginData.key || "",
     isPlural: Boolean(pluginData.isPlural),
     pluralParamValue: pluginData.pluralParamValue,
-    selectedPluralVariant: pluginData.selectedPluralVariant,
     translation: pluginData.translation || "",
     paramsValues: pluginData.paramsValues,
     ns: pluginData.ns,

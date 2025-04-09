@@ -102,10 +102,6 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     node.translation || translationLoadable.translation?.translation || ""
   );
 
-  const [isPlural, setIsPlural] = useState(node.isPlural ?? false);
-  const [pluralParamValue, setPluralParamValue] = useState(
-    node.pluralParamValue ?? "1"
-  );
   const [confirmTextChange, setConfirmTextChange] = useState<boolean>(false);
 
   useEffect(() => {
@@ -122,8 +118,6 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     setTranslation(
       node.translation || translationLoadable.translation?.translation || ""
     );
-    setIsPlural(node.isPlural ?? false);
-    setPluralParamValue(node.pluralParamValue ?? "1");
     setConfirmTextChange(false);
   }, [node]);
 
@@ -136,19 +130,6 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
       (node as any)[key] = value;
     });
   };
-
-  /** The selectedPluralRole based on the pluralParamValue */
-  const selectedPluralRole = useMemo(() => {
-    const selectedPluralVariant = selectPluralRule(
-      config?.language ?? "en",
-      parseInt(pluralParamValue, 10)
-    );
-    updateNodeData({
-      selectedPluralVariant,
-    });
-
-    return selectedPluralVariant;
-  }, [pluralParamValue, config?.language]);
 
   const {
     previewText,
@@ -366,7 +347,6 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                     value={node.pluralParamValue ?? ""}
                     onChange={({ currentTarget }) => {
                       setNeedsSubmission(true);
-                      setPluralParamValue(currentTarget.value);
                       updateNodeData({
                         pluralParamValue: currentTarget.value,
                       });
