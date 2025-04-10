@@ -55,6 +55,10 @@ Or visit our main GitHub page: https://github.com/tolgee/tolgee-platform
 
 ## Usage Guide
 
+To learn how to use it, you can refer to the Tolgee Docs pages for the plugin: [Figma Plugin Setup](https://docs.tolgee.io/platform/integrations/figma_plugin/setup) and [Figma Plugin Usage](https://docs.tolgee.io/platform/integrations/figma_plugin/usage)
+
+Here is a quick guide on how to set it up:
+
 - Clone the repository and link it to your local Figma Desktop app
 - Run the `Setup Tolgee` command and enter the URL of your Tolgee instance as well as well as an API key for the project with the `translations.edit` and `translations.view` scope.
 - Name all nodes that should be synced by their tolgee key, prefixed by `t:`
