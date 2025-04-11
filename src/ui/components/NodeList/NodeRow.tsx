@@ -29,7 +29,7 @@ export const NodeRow = ({
   const { translationDiffersFromNode } = useInterpolatedTranslation(node);
 
   const infoString =
-    "Manual changes have been detected.\nGo to details to see more.";
+    "Manual changes have been detected.\nGo to details to resolve conflict.";
 
   return (
     <div

@@ -2,6 +2,7 @@ import { Fragment, h, JSX } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import styles from "./Popover.css";
 import { computePosition, offset, autoPlacement } from "@floating-ui/dom";
+import DOMPurify from "dompurify";
 
 export interface ActionItem {
   label: string;
@@ -95,7 +96,13 @@ const Dropdown = ({
       ref={dropdownRef}
       class={displayPopover ? styles.popover : styles.popoverHidden}
     >
-      {text && <div class={styles.popoverItem}>{text}</div>}
+      {text && (
+        <div
+          class={styles.popoverItem}
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text) }}
+        />
+      )}
       {items != null &&
         items.map((item, index) => (
           <button
