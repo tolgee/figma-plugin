@@ -220,7 +220,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     return <FullPageLoading text="Updating translations" />;
   }
 
-  const infoString = `You can use basic HTML tags such as\n<strong>, <b>, <em>, <i>, <u>, <br>\nand also parameters as {parameter}\nand # as plural placeholder\n<a href="https://docs.tolgee.io/platform/projects_and_organizations/editing_translations">Read the docs</a>`;
+  const infoString = `You can use basic HTML tags such as\n&lt;strong&gt;, &lt;b&gt;, &lt;em&gt;, &lt;i&gt;, &lt;u&gt;, &lt;br&gt;\nand also parameters as {parameter}\nand # as plural placeholder\n<a style="display:contents;" href="https://docs.tolgee.io/platform/projects_and_organizations/editing_translations">Read the docs</a>`;
 
   const valuesForFigmaString = `These values will be used to preview\nthe translation for figma.\nThey will not be saved.`;
 

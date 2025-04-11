@@ -12,7 +12,7 @@ export interface ActionItem {
 }
 
 interface DropdownProps {
-  popoverTrigger: React.RefObject<HTMLElement | null>;
+  popoverTrigger: preact.RefObject<HTMLElement | null>;
   items?: ActionItem[];
   text?: string;
   clampWidth?: boolean;
@@ -88,7 +88,7 @@ const Dropdown = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [popoverTrigger, close]);
+  }, [popoverTrigger]);
 
   return (
     <div
