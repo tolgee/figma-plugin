@@ -21,7 +21,11 @@ import { useConnectedMutation } from "@/ui/hooks/useConnectedMutation";
 import { NodeInfo } from "@/types";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { PluralEditor } from "@/ui/components/Editor/PluralEditor";
-import { tolgeeFormatGenerateIcu } from "@tginternal/editor";
+import {
+  getTolgeeFormat,
+  TolgeeFormat,
+  tolgeeFormatGenerateIcu,
+} from "@tginternal/editor";
 import { useTranslation } from "@/ui/hooks/useTranslation";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
@@ -54,6 +58,20 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   // When the component is first rendered, we want to check wether the node text has been manually changed
   const [isInitial, setIsInitial] = useState(true);
 
+  const currentNode = useRef<NodeInfo | null>(initialNode);
+  const [editorValue, setEditorValue] = useState<TolgeeFormat>();
+
+  const [node, setNode] = useState<NodeInfo>(initialNode);
+
+  useEffect(() => {
+    setIsInitial(true);
+    setNode({
+      ...(selectedNodes.data?.items.find((n) => n.id === initialNode.id) ??
+        selectedNodes.data?.items[0] ??
+        initialNode),
+    });
+  }, [selectedNodes.data?.items, initialNode.id]);
+
   /** Updates the translation parameters, the preview text and the node, in relevant cases. */
   const updateTranslationValue = (
     node: NodeInfo,
@@ -79,22 +97,15 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
         pluralParamValue: node.pluralParamValue,
         isPlural: node.isPlural,
       });
+    } else if (newTranslation != null) {
+      setNode({
+        ...node,
+        translation: currentTranslation,
+        characters: newTranslation,
+      });
     }
     return newTranslation;
   };
-
-  const currentNode = useRef<NodeInfo | null>(initialNode);
-
-  const [node, setNode] = useState<NodeInfo>(initialNode);
-
-  useEffect(() => {
-    setIsInitial(true);
-    setNode({
-      ...(selectedNodes.data?.items.find((n) => n.id === initialNode.id) ??
-        selectedNodes.data?.items[0] ??
-        initialNode),
-    });
-  }, [selectedNodes.data?.items, initialNode.id]);
 
   const translationLoadable = useTranslation({
     language: config?.language ?? "en",
@@ -147,10 +158,12 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   } = useInterpolatedTranslation(node);
 
   useEffect(() => {
-    setHasChangesOutsideFromTolgee(
-      translationDiffersFromNode && node.connected
-    );
-  }, [node]);
+    setEditorValue(tolgeeValue);
+  }, [node.id]);
+
+  useEffect(() => {
+    setHasChangesOutsideFromTolgee(translationDiffersFromNode);
+  }, [node.key]);
 
   useEffect(() => {
     if (textHasChanged && !confirmTextChange) {
@@ -314,20 +327,19 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
             disabled={node.connected}
             onChange={() => {
               const newPlural = !node.isPlural;
-              updateNodeData({
+              const newNode: NodeInfo = {
+                ...node,
                 isPlural: newPlural,
-                pluralParamValue: newPlural ? "value" : undefined,
-              });
+                pluralParamValue: newPlural ? "10" : undefined,
+              };
+              setNode(newNode);
+              setNeedsSubmission(true);
               updateTranslationValue(
-                {
-                  ...node,
-                  isPlural: newPlural,
-                  pluralParamValue: newPlural ? "value" : undefined,
-                },
+                newNode,
                 tolgeeFormatGenerateIcu(
                   {
                     ...tolgeeValue,
-                    parameter: newPlural ? "value" : undefined,
+                    parameter: newPlural ? "10" : undefined,
                   },
                   false
                 ),
@@ -346,16 +358,34 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
           <VerticalSpace space="small" />
           <PluralEditor
             onChange={(value) => {
-              setNeedsSubmission(true);
+              setEditorValue(value);
               const generatedIcuString = tolgeeFormatGenerateIcu(value, false);
+
+              if (generatedIcuString !== translation) {
+                setNeedsSubmission(true);
+              }
+            }}
+            onBlur={() => {
+              if (!editorValue) {
+                return;
+              }
+
+              const generatedIcuString = tolgeeFormatGenerateIcu(
+                editorValue,
+                false
+              );
+
               if (generatedIcuString !== translation) {
                 setTranslation(generatedIcuString);
+                updateTranslationValue(node, generatedIcuString);
               }
-              updateTranslationValue(node, generatedIcuString, false);
             }}
             value={{
-              ...tolgeeValue,
-              parameter: node.isPlural ? node.pluralParamValue : undefined,
+              ...getTolgeeFormat(translation, node.isPlural, false),
+              parameter:
+                node.isPlural && tolgeeValue.parameter == null
+                  ? "value"
+                  : tolgeeValue.parameter,
             }}
             locale={config?.language ?? "en"}
             mode="placeholders"
@@ -375,44 +405,57 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                     value={node.pluralParamValue ?? ""}
                     onChange={({ currentTarget }) => {
                       setNeedsSubmission(true);
-                      updateTranslationValue(
-                        { ...node, pluralParamValue: currentTarget.value },
-                        translation
-                      );
-                      updateNodeData({
-                        pluralParamValue: currentTarget.value,
-                      });
+                      if (currentTarget.value !== "") {
+                        const newNode: NodeInfo = {
+                          ...node,
+                          pluralParamValue: currentTarget.value,
+                        };
+                        setNode(newNode);
+
+                        updateTranslationValue(newNode, translation);
+                        updateNodeData({
+                          pluralParamValue: currentTarget.value,
+                          translation,
+                        });
+                      }
                     }}
                     variant="border"
                   />
                 )}
-                {placeholders.map((p) => (
-                  <Fragment key={p}>
-                    <div className={styles.paramRow}>
-                      <Text>
-                        <Muted>Variable</Muted> {p.name}
-                      </Text>
-                      <Textbox
-                        style={{ flex: 1 }}
-                        data-cy={`string_details_paramter_value_${p.name}`}
-                        placeholder={p.name}
-                        value={node.paramsValues?.[p.name] ?? ""}
-                        onChange={({ currentTarget }) => {
-                          setNeedsSubmission(true);
-                          if (node.paramsValues) {
-                            node.paramsValues[p.name] = currentTarget.value;
-                          } else {
-                            node.paramsValues = {
-                              [p.name]: currentTarget.value,
+                {placeholders
+                  .filter(
+                    (p) =>
+                      tolgeeValue.parameter == null ||
+                      p.name != tolgeeValue.parameter
+                  )
+                  .map((p) => (
+                    <Fragment key={p}>
+                      <div className={styles.paramRow}>
+                        <Text>
+                          <Muted>Variable</Muted> {p.name}
+                        </Text>
+                        <Textbox
+                          style={{ flex: 1 }}
+                          data-cy={`string_details_paramter_value_${p.name}`}
+                          placeholder={p.name}
+                          value={node.paramsValues?.[p.name] ?? ""}
+                          onChange={({ currentTarget }) => {
+                            setNeedsSubmission(true);
+                            const newNode: NodeInfo = {
+                              ...node,
+                              paramsValues: {
+                                ...node.paramsValues,
+                                [p.name]: currentTarget.value,
+                              },
                             };
-                          }
-                          updateTranslationValue(node, translation);
-                        }}
-                        variant="border"
-                      />
-                    </div>
-                  </Fragment>
-                ))}
+                            setNode(newNode);
+                            updateTranslationValue(newNode, translation);
+                          }}
+                          variant="border"
+                        />
+                      </div>
+                    </Fragment>
+                  ))}
               </div>
             )}
 
