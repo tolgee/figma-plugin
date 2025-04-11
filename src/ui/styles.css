@@ -18,6 +18,7 @@
 :root {
   --figma-color-bg-brand: #ec407a;
   --figma-color-bg-selected: #ec407a;
+  --figma-color-bg-brand-contrast: #ffffff;
   --figma-color-icon-brand: white;
   --figma-color-teal: rgb(0, 175, 154);
   --figma-color-teal-bg: rgb(0, 175, 154, 0.08);

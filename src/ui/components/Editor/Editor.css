@@ -76,7 +76,7 @@
 .editor .placeholder-tagOpen {
   border: 1px solid var(--figma-color-border);
   background-color: var(--figma-color-bg-brand);
-  color: var(--figma-color-text);
+  color: var(--figma-color-bg-brand-contrast);
   border-radius: 10px 0px 0px 10px;
   padding-right: 6px;
 }
@@ -84,7 +84,7 @@
 .editor .placeholder-tagClose {
   border: 1px solid var(--figma-color-border);
   background-color: var(--figma-color-bg-brand);
-  color: var(--figma-color-text);
+  color: var(--figma-color-bg-brand-contrast);
   border-radius: 0px 10px 10px 0px;
   padding-left: 6px;
 }
@@ -92,7 +92,7 @@
 .editor .placeholder-tagSelfClosed {
   border: 1px solid var(--figma-color-border);
   background-color: var(--figma-color-bg-brand);
-  color: var(--figma-color-text);
+  color: var(--figma-color-bg-brand-contrast);
 }
 
 .editor [dir="rtl"] .placeholder-tagOpen {
