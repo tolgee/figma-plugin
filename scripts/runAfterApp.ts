@@ -2,14 +2,13 @@ import { ChildProcess, spawn } from "child_process";
 import path from "path";
 import colors from "colors";
 import terminate from "terminate";
+import http from "http";
 
 function systemColor(text: string) {
   return colors.grey(text);
 }
 
 const afterArgs = process.argv.slice(2);
-
-const SEARCHED_TEXTS = ["Tomcat started on port(s):"];
 
 const dockerComposeProcess = spawn(
   "docker",
@@ -24,30 +23,54 @@ const appProcesses = [dockerComposeProcess];
 const afterProcesses: ChildProcess[] = [];
 
 dockerComposeProcess.stdout.on("data", (data) => {
-  const output = data.toString();
-
   process.stdout.write(data);
-
-  const searchedText = SEARCHED_TEXTS.find((text) => output.includes(text));
-  if (searchedText) {
-    console.log(systemColor(`"${searchedText}" found, container is running`));
-
-    if (afterArgs.length) {
-      afterArgs.forEach((command) => {
-        const afterProcess = spawn(command, [], {
-          stdio: "inherit",
-          shell: true,
-        });
-        afterProcess.on("close", (code) =>
-          onChildFinish(getProcessName(afterProcess), code || 0)
-        );
-        afterProcesses.push(afterProcess);
-      });
-    }
-  }
 });
 
 dockerComposeProcess.stderr.pipe(process.stderr);
+
+function checkServerStatus(callback: () => void) {
+  const options = {
+    host: "localhost",
+    port: 8080,
+    path: "/", // Or any other endpoint
+    timeout: 2000,
+  };
+
+  const req = http.get(options, (res) => {
+    if (res.statusCode === 200) {
+      console.log(systemColor("Server is up and running!"));
+      callback();
+    } else {
+      setTimeout(() => checkServerStatus(callback), 1000);
+    }
+    req.end();
+  });
+
+  req.on("error", () => {
+    console.log(systemColor("Waiting for server to start..."));
+    setTimeout(() => checkServerStatus(callback), 1000);
+    req.end();
+  });
+}
+
+function runAfterProcesses() {
+  if (afterArgs.length) {
+    afterArgs.forEach((command) => {
+      const afterProcess = spawn(command, [], {
+        stdio: "inherit",
+        shell: true,
+      });
+      afterProcess.on("close", (code) =>
+        onChildFinish(getProcessName(afterProcess), code || 0)
+      );
+      afterProcesses.push(afterProcess);
+    });
+  }
+}
+
+checkServerStatus(() => {
+  runAfterProcesses();
+});
 
 let isFinishing = false;
 async function finish(code: number) {
