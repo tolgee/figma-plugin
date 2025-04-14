@@ -128,11 +128,7 @@ export const StringDetails = () => {
         translationLoadable.translation?.translation ||
         "";
 
-    if (currentTranslation !== selectedNode.translation) {
-      setNeedsSubmission(true);
-    } else {
-      setNeedsSubmission(false);
-    }
+    setNeedsSubmission(currentTranslation !== selectedNode.translation);
 
     setTranslation(currentTranslation);
   }, [selectedNode, translationLoadable.translation?.translation]);
@@ -245,7 +241,12 @@ export const StringDetails = () => {
       <Divider />
       {currentNode == null ? (
         <Container space="medium" style={{ marginTop: 16 }}>
-          <Text>Please select 1 text</Text>
+          {selectedNodes.data?.items.length === 0 && (
+            <Text>Please select a node to edit the translation.</Text>
+          )}
+          {(selectedNodes.data?.items.length ?? 0) > 1 && (
+            <Text>Please select only one node to edit the translation.</Text>
+          )}
         </Container>
       ) : (
         <Container space="medium">
@@ -342,6 +343,20 @@ export const StringDetails = () => {
           {editorValue && (
             <PluralEditor
               onChange={(value) => {
+                const currentVariants = Object.entries(editorValue.variants);
+                const newVariants = Object.entries(value.variants);
+                if (
+                  value.parameter === editorValue.parameter &&
+                  currentVariants.length === newVariants.length &&
+                  currentVariants.every(
+                    ([key, value], index) =>
+                      key === newVariants[index][0] &&
+                      value === newVariants[index][1]
+                  )
+                ) {
+                  return;
+                }
+
                 setEditorValue(value);
                 const generatedIcuString = tolgeeFormatGenerateIcu(
                   value,
