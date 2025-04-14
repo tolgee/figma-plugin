@@ -34,7 +34,7 @@ const getIframeBody = () => {
 };
 
 describe("String details", () => {
-  it("should get there from index page", async () => {
+  it("should get there from index page", () => {
     const nodes = [
       createTestNode({
         text: "Test node",
@@ -54,9 +54,6 @@ describe("String details", () => {
     cy.iframe().findDcy("key_options_button").should("be.visible").click();
 
     cy.iframe().findDcy("dropdown").should("be.visible");
-
-    // Wait for animation
-    await new Promise((r) => setTimeout(r, 500));
 
     cy.iframe().findDcy("string_details_cy").should("be.visible");
   });
