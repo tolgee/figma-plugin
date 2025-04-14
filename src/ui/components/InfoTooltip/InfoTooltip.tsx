@@ -16,12 +16,7 @@ export const InfoTooltip = ({ children, color, items, rotated }: Props) => {
   const popoverTrigger = useRef<HTMLDivElement>(null);
 
   return (
-    <div
-      ref={popoverTrigger}
-      data-cy="tooltip"
-      title={children}
-      className={styles.info}
-    >
+    <div ref={popoverTrigger} data-cy="tooltip" className={styles.info}>
       <Info
         style={{ color, transform: rotated ? "rotate(180deg)" : "" }}
         width={16}

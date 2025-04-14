@@ -4,7 +4,7 @@ type Props = {
   language: string;
   namespace?: string;
   /** Key to get as translation value */
-  key: string;
+  key?: string;
 };
 
 export const useTranslation = (props: Props) => {
@@ -23,9 +23,11 @@ export const useTranslation = (props: Props) => {
   return {
     getData: translationsLoadable.getData,
     translation:
-      translationsLoadable.translationsData?.[props.namespace ?? "default"]?.[
-        props.key
-      ] ?? null,
+      props.key != null
+        ? translationsLoadable.translationsData?.[
+            props.namespace ?? "default"
+          ]?.[props.key] ?? null
+        : null,
     isLoading: translationsLoadable.isLoading,
     error: translationsLoadable.error,
   };

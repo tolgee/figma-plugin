@@ -4,7 +4,7 @@ export type Route =
   | ["index"]
   | ["settings"]
   | ["push"]
-  | ["string_details", { node: NodeInfo }]
+  | ["string_details"]
   | ["pull", { lang: string }]
   | ["connect", { node: NodeInfo }]
   | ["create_copy"];

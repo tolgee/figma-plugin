@@ -29,7 +29,7 @@ const Dropdown = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [displayPopover, setDisplayPopover] = useState(false);
 
-  const handleClick = () => {
+  const open = () => {
     if (!popoverTrigger.current || !dropdownRef.current) {
       return;
     }
@@ -62,11 +62,11 @@ const Dropdown = ({
       return;
     }
 
-    popoverTrigger.current.addEventListener("click", handleClick);
+    popoverTrigger.current.addEventListener("click", open);
     window.addEventListener("resize", computePositionAndSet);
 
     return () => {
-      popoverTrigger.current?.removeEventListener("click", handleClick);
+      popoverTrigger.current?.removeEventListener("click", open);
       window.removeEventListener("resize", computePositionAndSet);
     };
   }, [popoverTrigger]);

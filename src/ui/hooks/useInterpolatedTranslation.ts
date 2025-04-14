@@ -11,25 +11,30 @@ import { createFormatIcu } from "../../createFormatIcu";
 import { useGlobalState } from "../state/GlobalState";
 import { PartialNodeInfo } from "../../types";
 
-export const useInterpolatedTranslation = (node: PartialNodeInfo) => {
+export const useInterpolatedTranslation = (node?: PartialNodeInfo) => {
   const config = useGlobalState((c) => c.config);
-  const nodeCharacters = node.characters ?? "";
-  const rawTranslation = (node.translation || node.characters) ?? "";
-  const paramsValues = node.paramsValues ?? {};
+  const nodeCharacters = node?.characters ?? "";
+  const isSimpleNode =
+    node &&
+    !node.isPlural &&
+    Object.keys(node.paramsValues ?? {}).length === 0 &&
+    !/<[^>]*>/g.test(node.translation ?? "");
+  const rawTranslation = isSimpleNode
+    ? (node?.characters || node?.translation) ?? ""
+    : (node?.translation || node?.characters) ?? "";
+  const paramsValues = node?.paramsValues ?? {};
 
-  const isPlural = node.isPlural ?? false;
   const selectedPluralVariant = useMemo(() => {
-    if (!node.isPlural) {
+    if (!node?.isPlural) {
       return "other";
     }
     return selectPluralRule(
       config?.language ?? "en",
-      parseInt(node.pluralParamValue || "1", 10)
+      parseInt(node?.pluralParamValue || "1", 10)
     );
-  }, [node, node.pluralParamValue, config?.language]);
+  }, [node, node?.pluralParamValue, config?.language]);
 
   const interpolatedTranslation = useRef<string>(nodeCharacters);
-  const textHasChanged = useRef<boolean>(false);
   const [previewText, setPreviewText] = useState<string>("");
   const [previewTextIsError, setPreviewTextIsError] = useState<boolean>(false);
   /** Array of all placeholders within the current tolgeeValue plural variant */
@@ -38,14 +43,24 @@ export const useInterpolatedTranslation = (node: PartialNodeInfo) => {
     variants: {},
   });
 
-  const updateTranslation = (args: {
-    paramsValues: Record<string, string>;
-    pluralParamValue?: string;
-    currentTranslation: string;
-  }): string | null => {
+  const getOrUpdateInterpolatedTranslation = (
+    args: {
+      paramsValues: Record<string, string>;
+      pluralParamValue?: string;
+      currentTranslation: string;
+    },
+    updateState = false
+  ): string | null => {
     const { paramsValues, currentTranslation } = args;
-    const tolgeeValue = getTolgeeFormat(currentTranslation, isPlural, false);
-    setTolgeeValue(tolgeeValue);
+    const tolgeeValue = getTolgeeFormat(
+      currentTranslation,
+      node?.isPlural ?? false,
+      false
+    );
+
+    if (updateState) {
+      setTolgeeValue(tolgeeValue);
+    }
 
     const newPlaceholders =
       getPlaceholders(
@@ -58,12 +73,13 @@ export const useInterpolatedTranslation = (node: PartialNodeInfo) => {
       )?.filter((p) => p.type === "variable") ?? [];
 
     if (
-      newPlaceholders.some(
+      (newPlaceholders.some(
         (p) => placeholders.find((p2) => p2.name === p.name) == null
       ) ||
-      placeholders.some(
-        (p) => newPlaceholders.find((p2) => p2.name === p.name) == null
-      )
+        placeholders.some(
+          (p) => newPlaceholders.find((p2) => p2.name === p.name) == null
+        )) &&
+      updateState
     ) {
       setPlaceholders(newPlaceholders);
     }
@@ -82,7 +98,7 @@ export const useInterpolatedTranslation = (node: PartialNodeInfo) => {
       const pluralParam: Record<string, string> = {};
       if (tolgeeValue.parameter) {
         pluralParam[tolgeeValue.parameter] =
-          args.pluralParamValue ?? (node.pluralParamValue || "1");
+          args.pluralParamValue ?? (node?.pluralParamValue || "1");
       }
       const newInterpolatedTranslation: string = formatter.format({
         language: config?.language ?? "en",
@@ -93,9 +109,13 @@ export const useInterpolatedTranslation = (node: PartialNodeInfo) => {
         },
       });
 
-      setPreviewText(newInterpolatedTranslation);
-      setPreviewTextIsError(false);
-      interpolatedTranslation.current = newInterpolatedTranslation;
+      if (updateState) {
+        setPreviewText(newInterpolatedTranslation);
+        setPreviewTextIsError(false);
+      }
+      if (updateState) {
+        interpolatedTranslation.current = newInterpolatedTranslation;
+      }
       return newInterpolatedTranslation;
     } catch (e) {
       // Add an error message as preview text if the formatting fails
@@ -108,52 +128,64 @@ export const useInterpolatedTranslation = (node: PartialNodeInfo) => {
     }
     return null;
   };
+
+  const getInterpolatedTranslation = (args: {
+    paramsValues: Record<string, string>;
+    pluralParamValue?: string;
+    currentTranslation: string;
+  }) => getOrUpdateInterpolatedTranslation(args, false);
+
+  const updateInterpolatedTranslation = (args: {
+    paramsValues: Record<string, string>;
+    pluralParamValue?: string;
+    currentTranslation: string;
+  }) => {
+    getOrUpdateInterpolatedTranslation(args, true);
+  };
   const newTranslation = rawTranslation.replace(/\u2028|\u8233/g, "\n\n");
 
   const previousCharacters = nodeCharacters.replace(/\u2028|\u8233/g, "\n\n");
 
   useEffect(() => {
     previousCharacters != newTranslation &&
-    !isPlural &&
+    !node?.isPlural &&
     placeholders.length === 0
       ? previousCharacters ?? newTranslation ?? ""
       : newTranslation ?? previousCharacters ?? "";
 
-    const newCharacters = updateTranslation({
+    const newCharacters = getOrUpdateInterpolatedTranslation({
       paramsValues: paramsValues || {},
       currentTranslation: newTranslation,
     })?.replace(/<[^>]*>/g, "");
 
     if (newCharacters != null && newCharacters !== previousCharacters) {
       interpolatedTranslation.current = newCharacters;
-      textHasChanged.current = true;
-      return;
     }
-  }, [rawTranslation, node.isPlural]);
+  }, [rawTranslation, node?.isPlural]);
 
   const translationDiffersFromNode = useMemo(() => {
     const res =
-      nodeCharacters != interpolatedTranslation.current &&
-      (Object.keys(paramsValues ?? {}).length > 0 || isPlural);
+      !isSimpleNode &&
+      nodeCharacters !==
+        interpolatedTranslation.current?.replace(/<[^>]*>/g, "");
     return res;
   }, [
     interpolatedTranslation.current,
     newTranslation,
     nodeCharacters,
     paramsValues,
-    isPlural,
     selectedPluralVariant,
     node,
   ]);
 
   return {
     placeholders,
-    textHasChanged,
     interpolatedTranslation,
     previewText,
     previewTextIsError,
     translationDiffersFromNode,
     tolgeeValue,
-    updateTranslation,
+    getInterpolatedTranslation,
+    updateInterpolatedTranslation,
   };
 };
