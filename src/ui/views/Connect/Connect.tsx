@@ -20,11 +20,13 @@ import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { RouteParam } from "../routes";
 import styles from "./Connect.css";
 import { SearchRow } from "./SearchRow";
+import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
 
 type Props = RouteParam<"connect">;
 
 export const Connect = ({ node }: Props) => {
   const { setRoute } = useGlobalActions();
+  const config = useGlobalState((c) => c.config);
 
   const language = useGlobalState((c) => c.config?.language);
 
@@ -46,16 +48,51 @@ export const Connect = ({ node }: Props) => {
   });
 
   const setNodesDataMutation = useSetNodesDataMutation();
+  const allTranslationsLoadable = useAllTranslations();
 
   const handleGoBack = () => {
     setRoute("index");
   };
 
-  const handleConnect = async (key: string, ns: string | undefined) => {
+  const handleConnect = async (
+    key: string,
+    ns: string | undefined,
+    translation: string | undefined
+  ) => {
+    if (
+      !allTranslationsLoadable.isLoading &&
+      allTranslationsLoadable.translationsData == null
+    ) {
+      const translationData = await allTranslationsLoadable.getData({
+        language: config?.language ?? "en",
+        namespaces: [config?.namespace ?? "default"],
+      });
+      const tolgeeTranslation =
+        translationData?.[config?.namespace ?? "default"]?.[key];
+      if (tolgeeTranslation) {
+        translation = tolgeeTranslation.translation;
+        await setNodesDataMutation.mutateAsync({
+          nodes: [
+            {
+              ...node,
+              translation: tolgeeTranslation.translation || node.characters,
+              isPlural: tolgeeTranslation.keyIsPlural,
+              pluralParamValue: tolgeeTranslation.keyPluralArgName,
+              key,
+              ns: ns || "",
+              connected: true,
+            },
+          ],
+        });
+        setRoute("index");
+        return;
+      }
+    }
     await setNodesDataMutation.mutateAsync({
       nodes: [
         {
           ...node,
+          translation: translation || node.characters,
           key,
           ns: ns || "",
           connected: true,
@@ -114,7 +151,9 @@ export const Connect = ({ node }: Props) => {
             <SearchRow
               key={key.id}
               data={key}
-              onClick={() => handleConnect(key.name, key.namespace)}
+              onClick={() =>
+                handleConnect(key.name, key.namespace, key.translation)
+              }
             />
           ))}
       </div>
