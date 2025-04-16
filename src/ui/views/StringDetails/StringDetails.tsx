@@ -34,7 +34,11 @@ import styles from "./StringDetails.css";
 import { useInterpolatedTranslation } from "@/ui/hooks/useInterpolatedTranslation";
 import { Info } from "@/ui/icons/SvgIcons";
 
-export const StringDetails = () => {
+interface StringDetailsProps {
+  node: NodeInfo | undefined;
+}
+
+export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   const { setRoute } = useGlobalActions();
   const config = useGlobalState((c) => c.config);
 
@@ -50,7 +54,9 @@ export const StringDetails = () => {
     if ((selectedNodes.data?.items.length ?? 0) === 1) {
       return { ...selectedNodes.data!.items[0] } as NodeInfo;
     }
-    return undefined;
+    return (
+      selectedNodes.data?.items.find((i) => i.id === initialNode?.id) ?? null
+    );
   }, [selectedNodes.data?.items]);
 
   const [currentNode, setCurrentNode] = useState<NodeInfo>();

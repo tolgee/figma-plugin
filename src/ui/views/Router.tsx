@@ -40,7 +40,7 @@ const Page = ({ route: [routeKey, routeData], setRoute }: PageProps) => {
     case "create_copy":
       return <CreateCopy />;
     case "string_details":
-      return <StringDetails />;
+      return <StringDetails {...routeData} />;
   }
 
   const dialogPage = getDialogPage([routeKey, routeData] as Route);
@@ -89,7 +89,7 @@ export const Router = () => {
       {pageCopy ? (
         <CopyView />
       ) : pageStringDetails ? (
-        <StringDetails />
+        <StringDetails node={pageStringDetailsNodeInfo} />
       ) : forceSettings ? (
         <Settings noNavigation />
       ) : !pageInfo ? (

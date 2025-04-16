@@ -39,7 +39,7 @@ export const KeyOptionsButton = ({ node }: Props) => {
             label: "String details",
             icon: <Edit width={16} height={16} />,
             onClick: () => {
-              setRoute("string_details");
+              setRoute("string_details", { node });
             },
           },
           {
