@@ -370,6 +370,10 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                 );
 
                 if (generatedIcuString !== translation) {
+                  setTranslation(generatedIcuString);
+                }
+
+                if (generatedIcuString !== translation) {
                   setNeedsSubmission(true);
                 }
               }}
