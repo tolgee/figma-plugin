@@ -6,7 +6,7 @@ import Popover, { ActionItem } from "../Popover/Popover";
 import { useRef } from "preact/hooks";
 
 type Props = {
-  children: string;
+  children: unknown;
   color?: string;
   items?: ActionItem[] | undefined;
   rotated?: boolean;

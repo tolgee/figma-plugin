@@ -14,7 +14,7 @@ export interface ActionItem {
 interface DropdownProps {
   popoverTrigger: preact.RefObject<HTMLElement | null>;
   items?: ActionItem[];
-  text?: string;
+  text?: unknown;
   clampWidth?: boolean;
   onClose?: () => void;
 }
@@ -96,12 +96,15 @@ const Dropdown = ({
       ref={dropdownRef}
       class={displayPopover ? styles.popover : styles.popoverHidden}
     >
-      {text && (
+      {text && typeof text === "string" && (
         <div
           class={styles.popoverItem}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(text) }}
         />
+      )}
+      {text && typeof text !== "string" && (
+        <div class={styles.popoverItem}>{text}</div>
       )}
       {items != null &&
         items.map((item, index) => (
