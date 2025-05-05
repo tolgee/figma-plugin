@@ -90,24 +90,22 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
 
     await setNodesDataMutation.mutateAsync({
       nodes:
-        selectedNodes.data?.items
-          // .filter((n) => !n.connected)
-          .map((n) => ({
-            ...n,
-            isPlural:
-              diffData!.changedNodes.find((c) => c.key === n.key)?.isPlural ??
-              n.isPlural,
-            pluralParamValue:
-              diffData!.changedNodes.find((c) => c.key === n.key)
-                ?.pluralParamValue ?? n.pluralParamValue,
-            translation:
-              diffData!.changedNodes.find((c) => c.key === n.key)
-                ?.translation ?? n.translation,
-            paramsValues:
-              diffData!.changedNodes.find((c) => c.key === n.key)
-                ?.paramsValues ?? n.paramsValues,
-            connected: true,
-          })) ?? [],
+        selectedNodes.data?.items.map((n) => ({
+          ...n,
+          isPlural:
+            diffData!.changedNodes.find((c) => c.key === n.key)?.isPlural ??
+            n.isPlural,
+          pluralParamValue:
+            diffData!.changedNodes.find((c) => c.key === n.key)
+              ?.pluralParamValue ?? n.pluralParamValue,
+          translation:
+            diffData!.changedNodes.find((c) => c.key === n.key)?.translation ??
+            n.translation,
+          paramsValues:
+            diffData!.changedNodes.find((c) => c.key === n.key)?.paramsValues ??
+            n.paramsValues,
+          connected: true,
+        })) ?? [],
     });
     setLanguage(lang);
     setRoute("index");

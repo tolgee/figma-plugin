@@ -29,6 +29,8 @@ dockerComposeProcess.stdout.on("data", (data) => {
 dockerComposeProcess.stderr.pipe(process.stderr);
 
 function checkServerStatus(callback: () => void) {
+  const MAX_RETRIES = 300; // 300 seconds timeout
+  let retryCount = 0;
   const options = {
     host: "localhost",
     port: 8080,
@@ -41,6 +43,15 @@ function checkServerStatus(callback: () => void) {
       console.log(systemColor("Server is up and running!"));
       callback();
     } else {
+      if (retryCount++ >= MAX_RETRIES) {
+        console.log(
+          systemColor(
+            "Server failed to start after maximum retries. Exiting..."
+          )
+        );
+        finish(1);
+        return;
+      }
       setTimeout(() => checkServerStatus(callback), 1000);
     }
     req.end();
@@ -48,6 +59,13 @@ function checkServerStatus(callback: () => void) {
 
   req.on("error", () => {
     console.log(systemColor("Waiting for server to start..."));
+    if (retryCount++ >= MAX_RETRIES) {
+      console.log(
+        systemColor("Server failed to start after maximum retries. Exiting...")
+      );
+      finish(1);
+      return;
+    }
     setTimeout(() => checkServerStatus(callback), 1000);
     req.end();
   });
