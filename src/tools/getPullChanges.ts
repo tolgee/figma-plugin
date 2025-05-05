@@ -48,6 +48,17 @@ export const getPullChanges = (
             translation: value.translation,
           });
         }
+      } else if (
+        node.characters !== value.translation &&
+        !node.isPlural &&
+        (!node.paramsValues || Object.keys(node.paramsValues).length === 0)
+      ) {
+        changedNodes.push({
+          ...node,
+          isPlural: value.keyIsPlural,
+          characters: value.translation,
+          translation: value.translation,
+        });
       }
     } else {
       missingKeys.push({ id: node.id, key: node.key, ns: node.ns });
