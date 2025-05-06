@@ -33,6 +33,7 @@ import { InfoTooltip } from "@/ui/components/InfoTooltip/InfoTooltip";
 import styles from "./StringDetails.css";
 import { useInterpolatedTranslation } from "@/ui/hooks/useInterpolatedTranslation";
 import { Info } from "@/ui/icons/SvgIcons";
+import { HtmlText } from "../../components/Shared/HtmlText";
 
 interface StringDetailsProps {
   node: NodeInfo | undefined;
@@ -494,16 +495,13 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
             <div className={styles.previewRow}>
               <Muted>Preview</Muted>
               <Muted>
-                <span
-                  data-cy="string_details_preview_text"
+                <HtmlText
+                  dataCy="string_details_preview_text"
                   style={{
                     color: previewTextIsError ? "red" : undefined,
                     whiteSpace: "pre-wrap",
                   }}
-                  // eslint-disable-next-line react/no-danger
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(previewText),
-                  }}
+                  text={previewText}
                 />
               </Muted>
             </div>

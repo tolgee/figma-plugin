@@ -5,7 +5,7 @@ import styles from "./NodeRow.css";
 import { Badge } from "../Badge/Badge";
 import { useInterpolatedTranslation } from "@/ui/hooks/useInterpolatedTranslation";
 import { InfoTooltip } from "../InfoTooltip/InfoTooltip";
-import DOMPurify from "dompurify";
+import { HtmlText } from "../Shared/HtmlText";
 
 type Props = {
   node: PartialNodeInfo;
@@ -48,15 +48,11 @@ export const NodeRow = ({
           className={styles.text}
           data-cy="general_node_list_row_text"
         >
-          {/* eslint-disable-next-line react/no-danger */}
-          <span
+          <HtmlText
             style={{
               whiteSpace: "pre-wrap",
             }}
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(node.characters ?? ""),
-            }}
+            text={node.characters ?? ""}
           />
 
           {translationDiffersFromNode && (
