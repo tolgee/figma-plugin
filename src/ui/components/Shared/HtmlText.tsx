@@ -3,7 +3,7 @@ import DOMPurify from "dompurify";
 import { CSSProperties } from "preact/compat";
 
 interface HtmlTextProps {
-  text: string;
+  text?: string;
   style: CSSProperties | string | undefined;
   dataCy?: string;
 }

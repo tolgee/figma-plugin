@@ -105,21 +105,20 @@ const Dropdown = ({
       {text && typeof text !== "string" && (
         <div class={styles.popoverItem}>{text}</div>
       )}
-      {items != null &&
-        items.map((item, index) => (
-          <button
-            data-cy={item.cy}
-            key={index}
-            onClick={() => {
-              close();
-              item.onClick();
-            }}
-            class={`${styles.popoverItem} ${styles.popoverItemAction}`}
-          >
-            {item.icon}
-            {item.label}
-          </button>
-        ))}
+      {items?.map((item, index) => (
+        <button
+          data-cy={item.cy}
+          key={index}
+          onClick={() => {
+            close();
+            item.onClick();
+          }}
+          class={`${styles.popoverItem} ${styles.popoverItemAction}`}
+        >
+          {item.icon}
+          {item.label}
+        </button>
+      ))}
       {items == null && !text && <Fragment />}
     </div>
   );
