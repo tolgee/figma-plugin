@@ -5,34 +5,6 @@ import {
 } from "@/web/urlConfig";
 import { visitWithState } from "../common/tools";
 
-const getIframeDocument = () => {
-  return (
-    cy
-      .get('iframe[data-cy="plugin_iframe"]')
-      // Cypress yields jQuery element, which has the real
-      // DOM element under property "0".
-      // From the real DOM iframe element we can get
-      // the "document" element, it is stored in "contentDocument" property
-      // Cypress "its" command can access deep properties using dot notation
-      // https://on.cypress.io/its
-      .its("0.contentDocument")
-      .should("exist")
-  );
-};
-
-const getIframeBody = () => {
-  // get the document
-  return (
-    getIframeDocument()
-      // automatically retries until body is loaded
-      .its("body")
-      .should("not.be.undefined")
-      // wraps "body" DOM element to allow
-      // chaining more Cypress commands, like ".find(...)"
-      .then(cy.wrap)
-  );
-};
-
 describe("String details", () => {
   it("should get there from index page", () => {
     const nodes = [
@@ -95,21 +67,21 @@ describe("String details", () => {
       allNodes: nodes,
     });
 
-    getIframeBody()
+    cy.iframeBody()
       .find('[data-cy="string_details_input_key"]')
       .should("have.value", "test_key");
 
-    getIframeBody()
+    cy.iframeBody()
       .find('[data-cy="string_details_input_key"]')
       .type("new_key");
 
-    getIframeBody()
+    cy.iframeBody()
       .find('[data-cy="string_details_input_key"]')
       .should("have.value", "new_key");
 
-    getIframeBody().find('[data-cy="tooltip"]').click();
+    cy.iframeBody().find('[data-cy="tooltip"]').click();
 
-    getIframeBody()
+    cy.iframeBody()
       .contains("You can use basic HTML tags")
       .should("be.visible");
 
@@ -179,7 +151,7 @@ describe("String details", () => {
       allNodes: nodes,
     });
 
-    getIframeBody()
+    cy.iframeBody()
       .contains("Advanced text format detected")
       .should("not.exist");
   });
