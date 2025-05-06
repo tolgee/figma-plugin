@@ -1,4 +1,3 @@
-import DOMPurify from "dompurify";
 import { Fragment, h } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import {
@@ -123,6 +122,13 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
           ? "value"
           : tolgeeValue.parameter,
     });
+
+    if (currentNode) {
+      refreshTranslation(
+        currentNode,
+        currentNode.translation ?? currentNode.characters
+      );
+    }
   }, [currentNode]);
 
   useEffect(() => {
@@ -139,16 +145,6 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
 
     setTranslation(currentTranslation);
   }, [selectedNode, translationLoadable.translation?.translation]);
-
-  useEffect(() => {
-    if (!currentNode) {
-      return;
-    }
-    refreshTranslation(
-      currentNode,
-      currentNode.translation ?? currentNode.characters
-    );
-  }, [currentNode]);
 
   const refreshTranslation = (node: NodeInfo, currentTranslation: string) => {
     updateInterpolatedTranslation({
@@ -336,35 +332,35 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
           />
           <VerticalSpace space="medium" />
           <div className={styles.checkboxWrapper}>
-          <Checkbox
-            disabled={currentNode.connected}
-            onChange={() => {
-              const newPlural = !currentNode.isPlural;
-              const newTranslation = tolgeeFormatGenerateIcu(
-                {
-                  ...tolgeeValue,
-                  parameter:
-                    newPlural && tolgeeValue.parameter == null
-                      ? "value"
-                      : newPlural
-                      ? tolgeeValue.parameter
-                      : undefined,
-                },
-                false
-              );
-              const newNode: NodeInfo = {
-                ...currentNode,
-                isPlural: newPlural,
-                pluralParamValue: newPlural ? "10" : undefined,
-                translation: newTranslation,
-              };
-              setNeedsSubmission(true);
-              setCurrentNode(newNode);
-            }}
-            value={currentNode.isPlural}
-          >
-            <Text>is plural</Text>
-          </Checkbox>
+            <Checkbox
+              disabled={currentNode.connected}
+              onChange={() => {
+                const newPlural = !currentNode.isPlural;
+                const newTranslation = tolgeeFormatGenerateIcu(
+                  {
+                    ...tolgeeValue,
+                    parameter:
+                      newPlural && tolgeeValue.parameter == null
+                        ? "value"
+                        : newPlural
+                        ? tolgeeValue.parameter
+                        : undefined,
+                  },
+                  false
+                );
+                const newNode: NodeInfo = {
+                  ...currentNode,
+                  isPlural: newPlural,
+                  pluralParamValue: newPlural ? "10" : undefined,
+                  translation: newTranslation,
+                };
+                setNeedsSubmission(true);
+                setCurrentNode(newNode);
+              }}
+              value={currentNode.isPlural}
+            >
+              <Text>is plural</Text>
+            </Checkbox>
             {currentNode.connected && (
               <InfoTooltip>
                 You cannot change this setting here.
@@ -404,9 +400,6 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
 
                 if (generatedIcuString !== translation) {
                   setTranslation(generatedIcuString);
-                }
-
-                if (generatedIcuString !== translation) {
                   setNeedsSubmission(true);
                 }
               }}
@@ -420,7 +413,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                   false
                 );
 
-                if (generatedIcuString !== translation) {
+                if (generatedIcuString !== currentNode.translation) {
                   setTranslation(generatedIcuString);
                   setCurrentNode({
                     ...currentNode,
