@@ -38,7 +38,10 @@ const Dropdown = ({
   };
 
   const computePositionAndSet = () => {
-    computePosition(popoverTrigger.current!, dropdownRef.current!, {
+    if (!popoverTrigger.current || !dropdownRef.current) {
+      return;
+    }
+    computePosition(popoverTrigger.current, dropdownRef.current, {
       placement: "bottom-start",
       middleware: [offset(10), autoPlacement()],
     }).then(({ x, y }) => {
