@@ -60,3 +60,8 @@
   text-decoration: underline;
   cursor: pointer;
 }
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

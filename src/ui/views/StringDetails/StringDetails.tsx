@@ -335,6 +335,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
             variant="border"
           />
           <VerticalSpace space="medium" />
+          <div className={styles.checkboxWrapper}>
           <Checkbox
             disabled={currentNode.connected}
             onChange={() => {
@@ -364,6 +365,14 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
           >
             <Text>is plural</Text>
           </Checkbox>
+            {currentNode.connected && (
+              <InfoTooltip>
+                You cannot change this setting here.
+                <br />
+                Head over to you Tolgee platform and change it there.
+              </InfoTooltip>
+            )}
+          </div>
           <VerticalSpace space="medium" />
           <Muted className={styles.editorHeadline}>
             Translation ({config?.language ?? "Unknown"})

@@ -1,5 +1,6 @@
 declare const styles: {
   readonly "bottomContainer": string;
+  readonly "checkboxWrapper": string;
   readonly "editorHeadline": string;
   readonly "emptyState": string;
   readonly "infoLink": string;
