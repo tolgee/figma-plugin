@@ -85,7 +85,7 @@ describe("String details", () => {
       .contains("You can use basic HTML tags")
       .should("be.visible");
 
-    await new Promise((r) => setTimeout(r, 500));
+    cy.wait(500);
   });
 
   it("should show negative warning on missmatched translation", () => {
