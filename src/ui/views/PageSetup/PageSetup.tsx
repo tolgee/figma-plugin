@@ -31,7 +31,7 @@ export const PageSetup: FunctionComponent = () => {
     url: "/v2/projects/languages",
     method: "get",
     query: {
-      size: 1000
+      size: 1000,
     },
     options: {
       cacheTime: 0,
