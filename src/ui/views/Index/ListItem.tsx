@@ -106,7 +106,7 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
             onClick={() => handleConnect(node)}
             className={styles.connectButton}
           >
-            {editorMode.data === "figma" &&
+            {editorMode.data !== "dev" &&
               (node.connected ? (
                 <InsertLink width={16} height={16} />
               ) : (

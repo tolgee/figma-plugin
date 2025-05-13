@@ -120,7 +120,7 @@ export const Index = () => {
           space="medium"
           style={{ paddingBlock: "var(--space-extra-small)" }}
         >
-          {editorMode.data === "figma" && (
+          {editorMode.data !== "dev" && (
             <TopBar
               leftPart={
                 <Fragment>
@@ -201,7 +201,7 @@ export const Index = () => {
       ) : (
         <NodeList
           items={
-            editorMode.data === "figma"
+            editorMode.data !== "dev"
               ? selection
               : selection.filter((n) => n.connected)
           }
