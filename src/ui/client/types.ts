@@ -1,4 +1,4 @@
-import { paths } from "./apiSchema.generated";
+import { components, paths } from "./apiSchema.generated";
 
 export type RequestParamsType<
   Url extends keyof Paths,
@@ -101,3 +101,13 @@ type OperationSchema<
   Method extends keyof Paths[Url],
   Paths = paths
 > = Paths[Url][Method] extends OperationSchemaType ? Paths[Url][Method] : never;
+
+export type TranslationData = Record<
+  string,
+  Record<
+    string,
+    Omit<components["schemas"]["KeyWithTranslationsModel"], "translations"> & {
+      translation: string;
+    }
+  >
+>;

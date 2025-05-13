@@ -30,10 +30,9 @@ Easily manage translations within your Figma design files by connecting Figma wi
 
 ## Install Plugin
 
-You can download our Figma plugin here: 
+You can download our Figma plugin here:
 
 [https://www.figma.com/community/plugin/1212381421658754793/tolgee-localization](https://www.figma.com/community/plugin/1212381421658754793/tolgee-localization)
-
 
 ## Additional information
 
@@ -43,7 +42,7 @@ Or visit our main GitHub page: https://github.com/tolgee/tolgee-platform
 
 👇 Consider supporting us with your stars ⭐️
 
-[![github stars](https://img.shields.io/github/stars/tolgee/figma-plugin?style=social)](https://github.com/tolgee/figma-plugin) 
+[![github stars](https://img.shields.io/github/stars/tolgee/figma-plugin?style=social)](https://github.com/tolgee/figma-plugin)
 
 ## Features
 

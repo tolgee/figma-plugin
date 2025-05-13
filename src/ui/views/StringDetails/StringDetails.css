@@ -1,0 +1,67 @@
+.valuesText {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.bottomContainer {
+  display: flex;
+  gap: 12px;
+}
+.paramsContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 12px;
+}
+.paramRow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+}
+.previewRow {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+}
+.editorHeadline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.emptyState {
+  margin: auto;
+}
+.warningContainer {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  background-color: var(--figma-color-red-bg);
+  margin-top: 8px;
+}
+.warningNoticeContainer {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  background-color: var(--figma-color-teal-bg);
+  margin-top: 8px;
+}
+.warningContainerIcon {
+  color: var(--figma-color-red);
+  transform: rotate(180deg);
+}
+.warningNoticeContainerIcon {
+  color: var(--figma-color-teal);
+}
+.infoLink, .infoLink * {
+  color: var(--figma-color-text-brand);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

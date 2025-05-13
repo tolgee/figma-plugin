@@ -17,6 +17,7 @@ import { setNodesDataEndpoint } from "@/main/endpoints/setNodesData";
 import { getSelectedNodesEndpoint } from "@/main/endpoints/getSelectedNodes";
 import { getConnectedNodesEndpoint } from "@/main/endpoints/getConnectedNodes";
 import { copyPageEndpoint } from "@/main/endpoints/copyPage";
+import { formatTextEndpoint } from "../main/endpoints/formatText";
 
 const iframe = document.getElementById("plugin_iframe") as HTMLIFrameElement;
 const shortcuts = document.getElementById("shortcuts") as HTMLDivElement;
@@ -87,6 +88,10 @@ function main() {
   });
   updateNodesEndpoint.mock(({ nodes }) => updateNodes(nodes, true));
   setNodesDataEndpoint.mock(({ nodes }) => updateNodes(nodes, false));
+  formatTextEndpoint.mock(({ formatted, nodeInfo }) => {
+    nodeInfo.characters = formatted;
+    updateNodes([nodeInfo], false);
+  });
 }
 
 main();

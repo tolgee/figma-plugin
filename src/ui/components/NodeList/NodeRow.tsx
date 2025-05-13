@@ -2,6 +2,10 @@ import { ComponentChildren, h } from "preact";
 
 import { PartialNodeInfo } from "@/types";
 import styles from "./NodeRow.css";
+import { Badge } from "../Badge/Badge";
+import { useInterpolatedTranslation } from "@/ui/hooks/useInterpolatedTranslation";
+import { InfoTooltip } from "../InfoTooltip/InfoTooltip";
+import { HtmlText } from "../Shared/HtmlText";
 
 type Props = {
   node: PartialNodeInfo;
@@ -22,6 +26,11 @@ export const NodeRow = ({
 }: Props) => {
   const showText = node.characters || !compact || action;
 
+  const { translationDiffersFromNode } = useInterpolatedTranslation(node);
+
+  const infoString =
+    "Manual changes have been detected.\nGo to details to resolve conflict.";
+
   return (
     <div
       data-cy="general_node_list_row"
@@ -39,7 +48,22 @@ export const NodeRow = ({
           className={styles.text}
           data-cy="general_node_list_row_text"
         >
-          {node.characters}
+          <HtmlText
+            style={{
+              whiteSpace: "pre-wrap",
+            }}
+            text={node.characters ?? ""}
+          />
+
+          {translationDiffersFromNode && (
+            <InfoTooltip rotated color="var(--figma-color-bg-brand)">
+              {infoString}
+            </InfoTooltip>
+          )}
+          {node.isPlural && <Badge>plural</Badge>}
+          {Object.keys(node.paramsValues ?? {}).length > 0 && (
+            <Badge>parameters</Badge>
+          )}
         </div>
       )}
       <div className={styles.action} data-cy="general_node_list_row_action">

@@ -1,0 +1,16 @@
+.badge {
+  background-color: var(--figma-color-bg-disabled);
+  color: rgba(0, 0, 0, 0.7);
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .badge {
+    background-color: var(--figma-color-bg-disabled-secondary);
+  }
+}

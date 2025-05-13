@@ -18,6 +18,8 @@ import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 import { LocateNodeButton } from "@/ui/components/LocateNodeButton/LocateNodeButton";
 import { getPullChanges } from "@/tools/getPullChanges";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
+import { getTolgeeFormat } from "@tginternal/editor";
+import { createFormatIcu } from "../../../createFormatIcu";
 
 export const CopyView = () => {
   const selectionLoadable = useSelectedNodes();
@@ -30,7 +32,7 @@ export const CopyView = () => {
 
   const nothingSelected = !selectionLoadable.data?.somethingSelected;
 
-  const updateNodesLoadalbe = useUpdateNodesMutation();
+  const updateNodesLoadable = useUpdateNodesMutation();
   const allTranslationsLoadable = useAllTranslations();
 
   const handlePull = async () => {
@@ -46,13 +48,31 @@ export const CopyView = () => {
       translations
     );
 
-    await updateNodesLoadalbe.mutateAsync({ nodes: changedNodes });
+    const formatter = createFormatIcu();
+
+    await updateNodesLoadable.mutateAsync({
+      nodes: changedNodes.map((n) => {
+        const tolgeeValue = getTolgeeFormat(n.translation, n.isPlural, false);
+        const formatted = formatter.format({
+          language: language ?? "en",
+          translation: n.translation,
+          params: {
+            ...n.paramsValues,
+            [tolgeeValue.parameter ?? ""]: n.pluralParamValue,
+          },
+        });
+        return {
+          ...n,
+          formatted,
+        };
+      }),
+    });
   };
 
   if (
     allTranslationsLoadable.isLoading ||
     connectedNodesLoadable.isLoading ||
-    updateNodesLoadalbe.isLoading
+    updateNodesLoadable.isLoading
   ) {
     return <FullPageLoading text="Updating translations" />;
   }

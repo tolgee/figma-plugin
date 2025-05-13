@@ -72,9 +72,13 @@ export type FrameScreenshot = {
 };
 
 export interface NodeInfo {
+  pluralParamValue?: string;
+  paramsValues?: Record<string, string>;
   name: string;
   characters: string;
+  translation: string;
   id: string;
+  isPlural: boolean;
   key: string;
   ns: string | undefined;
   connected: boolean;
@@ -102,6 +106,8 @@ export type CurrentPageSettings = {
   language: string;
   pageInfo: boolean;
   pageCopy: boolean;
+  pageStringDetails: boolean;
+  nodeInfo?: NodeInfo;
 };
 
 export type TolgeeConfig = CurrentDocumentSettings & CurrentPageSettings;

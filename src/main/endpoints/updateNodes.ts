@@ -1,9 +1,10 @@
 import { NodeInfo, SelectionChangeHandler } from "@/types";
 import { createEndpoint } from "../utils/createEndpoint";
 import { emit, loadFontsAsync } from "@create-figma-plugin/utilities";
+import { formatText } from "./formatText";
 
 export type UpdateNodeProps = {
-  nodes: NodeInfo[];
+  nodes: (NodeInfo & { formatted: string })[];
 };
 
 export const updateNodesEndpoint = createEndpoint<UpdateNodeProps, void>(
@@ -16,14 +17,19 @@ export const updateNodesEndpoint = createEndpoint<UpdateNodeProps, void>(
     } catch (e) {
       console.error(e);
     }
-    nodes.forEach((n) => {
-      const node = textNodes.find((nod) => nod.id === n.id)!;
+    const promises = nodes.map((nodeInfo) => {
+      const node = textNodes.find((nod) => nod.id === nodeInfo.id)!;
       if (node.hasMissingFont) {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         return;
       }
-      node.autoRename = false;
-      node.characters = n.characters;
+
+      return formatText({
+        formatted: nodeInfo.formatted,
+        nodeInfo,
+      });
     });
+    await Promise.allSettled(promises);
     figma.notify("Document translations updated");
 
     // update selection

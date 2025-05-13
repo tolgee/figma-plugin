@@ -12,6 +12,7 @@ import { PageSetup } from "./PageSetup/PageSetup";
 import { CreateCopy } from "./CreateCopy/CreateCopy";
 import { CopyView } from "./CopyView/CopyView";
 import { Dialog } from "../components/Dialog/Dialog";
+import { StringDetails } from "./StringDetails/StringDetails";
 
 const getDialogPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
@@ -38,6 +39,8 @@ const Page = ({ route: [routeKey, routeData], setRoute }: PageProps) => {
       return <Pull {...routeData} />;
     case "create_copy":
       return <CreateCopy />;
+    case "string_details":
+      return <StringDetails {...routeData} />;
   }
 
   const dialogPage = getDialogPage([routeKey, routeData] as Route);
@@ -61,6 +64,8 @@ export const Router = () => {
   const documentInfo = useGlobalState((c) => c.config?.documentInfo);
   const pageInfo = useGlobalState((c) => c.config?.pageInfo);
   const pageCopy = useGlobalState((c) => c.config?.pageCopy);
+  const pageStringDetails = useGlobalState((c) => c.config?.pageStringDetails);
+  const pageStringDetailsNodeInfo = useGlobalState((c) => c.config?.nodeInfo);
   const { setRoute } = useGlobalActions();
 
   const forceSettings = !pageCopy && !documentInfo;
@@ -83,6 +88,8 @@ export const Router = () => {
       )}
       {pageCopy ? (
         <CopyView />
+      ) : pageStringDetails ? (
+        <StringDetails node={pageStringDetailsNodeInfo} />
       ) : forceSettings ? (
         <Settings noNavigation />
       ) : !pageInfo ? (

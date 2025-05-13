@@ -22,6 +22,8 @@ import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
+import { getPlaceholders, getTolgeeFormat } from "@tginternal/editor";
+import { createFormatIcu } from "../../../createFormatIcu";
 
 type Props = RouteParam<"pull">;
 
@@ -49,14 +51,61 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
 
   const handleProcess = async () => {
     if (diffData!.changedNodes.length !== 0) {
-      await updateNodeLoadable.mutateAsync({ nodes: diffData!.changedNodes });
+      const formatter = createFormatIcu();
+
+      await updateNodeLoadable.mutateAsync({
+        nodes: diffData!.changedNodes.map((n) => {
+          const tolgeeValue = getTolgeeFormat(n.translation, n.isPlural, false);
+          const paramValues = { ...(n.paramsValues ?? {}) };
+          const placeholders = getPlaceholders(n.translation);
+
+          for (const placeholder of placeholders ?? []) {
+            if (paramValues[placeholder.name] == null) {
+              paramValues[placeholder.name] = placeholder.name;
+            }
+          }
+
+          try {
+            const formatted = formatter.format({
+              language: lang ?? "en",
+              translation: n.translation,
+              params: {
+                ...paramValues,
+                [tolgeeValue.parameter ?? ""]: n.pluralParamValue ?? "1",
+              },
+            });
+            return {
+              ...n,
+              formatted,
+            };
+          } catch (e) {
+            return {
+              ...n,
+              formatted: n.characters,
+            };
+          }
+        }),
+      });
     }
+
     await setNodesDataMutation.mutateAsync({
       nodes:
         selectedNodes.data?.items
-          .filter((n) => !n.connected)
+          .filter((i) => !i.connected)
           .map((n) => ({
             ...n,
+            isPlural:
+              diffData!.changedNodes.find((c) => c.key === n.key)?.isPlural ??
+              n.isPlural,
+            pluralParamValue:
+              diffData!.changedNodes.find((c) => c.key === n.key)
+                ?.pluralParamValue ?? n.pluralParamValue,
+            translation:
+              diffData!.changedNodes.find((c) => c.key === n.key)
+                ?.translation ?? n.translation,
+            paramsValues:
+              diffData!.changedNodes.find((c) => c.key === n.key)
+                ?.paramsValues ?? n.paramsValues,
             connected: true,
           })) ?? [],
     });
