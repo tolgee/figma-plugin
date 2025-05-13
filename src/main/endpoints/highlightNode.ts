@@ -20,7 +20,7 @@ export const highlightNodeEndpoint = createEndpoint(
       figma.viewport.scrollAndZoomIntoView([node]);
     }
 
-    if (node && !highlitedNodes.has(id)) {
+    if (node && !highlitedNodes.has(id) && figma.editorType === "figma") {
       highlitedNodes.set(id, node.fills);
       const original = node.fills;
       node.fills = [HIGHLIGHT_COLOR];

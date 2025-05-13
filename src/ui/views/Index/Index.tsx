@@ -23,6 +23,7 @@ import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { ListItem } from "./ListItem";
 import { COMPACT_SIZE, DEFAULT_SIZE } from "@/ui/state/sizes";
+import { useEditorMode } from "../../hooks/useEditorMode";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
@@ -105,6 +106,8 @@ export const Index = () => {
 
   useWindowSize(size);
 
+  const editorMode = useEditorMode();
+
   if (languagesLoadable.isLoading || namespacesLoadable.isLoading) {
     return <FullPageLoading />;
   }
@@ -117,60 +120,62 @@ export const Index = () => {
           space="medium"
           style={{ paddingBlock: "var(--space-extra-small)" }}
         >
-          <TopBar
-            leftPart={
-              <Fragment>
-                {languages && (
-                  <select
-                    data-cy="index_language_select"
-                    className={styles.languageContainer}
-                    value={language}
-                    onChange={(e) => {
-                      handleLanguageChange(
-                        (e.target as HTMLInputElement).value
-                      );
-                    }}
+          {editorMode.data !== "dev" && (
+            <TopBar
+              leftPart={
+                <Fragment>
+                  {languages && (
+                    <select
+                      data-cy="index_language_select"
+                      className={styles.languageContainer}
+                      value={language}
+                      onChange={(e) => {
+                        handleLanguageChange(
+                          (e.target as HTMLInputElement).value
+                        );
+                      }}
+                    >
+                      {languages.map((l) => (
+                        <option key={l.tag} value={l.tag}>
+                          {l.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+
+                  <Button data-cy="index_push_button" onClick={handlePush}>
+                    {nothingSelected ? "Push all" : "Push"}
+                  </Button>
+
+                  <Button
+                    data-cy="index_pull_button"
+                    onClick={handlePull}
+                    secondary
                   >
-                    {languages.map((l) => (
-                      <option key={l.tag} value={l.tag}>
-                        {l.name}
-                      </option>
-                    ))}
-                  </select>
-                )}
+                    {nothingSelected ? "Pull all" : "Pull"}
+                  </Button>
 
-                <Button data-cy="index_push_button" onClick={handlePush}>
-                  {nothingSelected ? "Push all" : "Push"}
-                </Button>
-
-                <Button
-                  data-cy="index_pull_button"
-                  onClick={handlePull}
-                  secondary
+                  <Button
+                    data-cy="index_create_copy_button"
+                    onClick={handleCopy}
+                    secondary
+                  >
+                    Create a copy
+                  </Button>
+                </Fragment>
+              }
+              rightPart={
+                <div
+                  data-cy="index_settings_button"
+                  className={styles.settingsButton}
+                  onClick={() => setRoute("settings")}
+                  role="button"
                 >
-                  {nothingSelected ? "Pull all" : "Pull"}
-                </Button>
-
-                <Button
-                  data-cy="index_create_copy_button"
-                  onClick={handleCopy}
-                  secondary
-                >
-                  Create a copy
-                </Button>
-              </Fragment>
-            }
-            rightPart={
-              <div
-                data-cy="index_settings_button"
-                className={styles.settingsButton}
-                onClick={() => setRoute("settings")}
-                role="button"
-              >
-                <Settings width={15} height={15} />
-              </div>
-            }
-          />
+                  <Settings width={15} height={15} />
+                </div>
+              }
+            />
+          )}
         </Container>
         <Divider />
         <Container space="medium">
@@ -195,7 +200,11 @@ export const Index = () => {
         </Container>
       ) : (
         <NodeList
-          items={selection}
+          items={
+            editorMode.data !== "dev"
+              ? selection
+              : selection.filter((n) => n.connected)
+          }
           row={(node) => (
             <ListItem
               node={node}

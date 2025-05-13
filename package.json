@@ -65,8 +65,10 @@
     "main": "src/main/main.ts",
     "ui": "src/ui/ui.tsx",
     "editorType": [
-      "figma"
+      "figma",
+      "dev"
     ],
+    "capabilities": ["inspect", "vscode"],
     "networkAccess": {
       "allowedDomains": [
         "*"
