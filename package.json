@@ -28,7 +28,7 @@
     "@typescript-eslint/parser": "^5.48.1",
     "colors": "^1.4.0",
     "concurrently": "^7.6.0",
-    "cypress": "^12.5.1",
+    "cypress": "^14.3.3",
     "cypress-iframe": "^1.0.1",
     "esbuild": "^0.17.8",
     "eslint": "^8.31.0",
