@@ -30,6 +30,9 @@ export const PageSetup: FunctionComponent = () => {
   const languagesLoadable = useApiQuery({
     url: "/v2/projects/languages",
     method: "get",
+    query: {
+      size: 1000,
+    },
     options: {
       cacheTime: 0,
       staleTime: 0,

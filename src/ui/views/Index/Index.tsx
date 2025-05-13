@@ -43,6 +43,9 @@ export const Index = () => {
   const languagesLoadable = useApiQuery({
     url: "/v2/projects/languages",
     method: "get",
+    query: {
+      size: 1000,
+    },
   });
 
   const namespacesLoadable = useApiQuery({
