@@ -10,6 +10,7 @@ import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { components } from "@/ui/client/apiSchema.generated";
 import { InsertLink } from "@/ui/icons/SvgIcons";
 import { KeyOptionsButton } from "../../components/KeyOptionsButton/KeyOptionsButton";
+import { useEditorMode } from "../../hooks/useEditorMode";
 
 type UsedNamespaceModel = components["schemas"]["UsedNamespaceModel"];
 
@@ -70,6 +71,8 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
     node.ns = value;
   };
 
+  const editorMode = useEditorMode();
+
   return (
     <NodeRow
       node={node}
@@ -103,17 +106,18 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
             onClick={() => handleConnect(node)}
             className={styles.connectButton}
           >
-            {node.connected ? (
-              <InsertLink width={16} height={16} />
-            ) : (
-              <InsertLink
-                width={16}
-                height={16}
-                style={{
-                  color: "var(--figma-color-text-secondary)",
-                }}
-              />
-            )}
+            {editorMode.data === "figma" &&
+              (node.connected ? (
+                <InsertLink width={16} height={16} />
+              ) : (
+                <InsertLink
+                  width={16}
+                  height={16}
+                  style={{
+                    color: "var(--figma-color-text-secondary)",
+                  }}
+                />
+              ))}
           </div>
           <KeyOptionsButton node={{ ...node, key: keyName ?? node.key }} />
         </div>
