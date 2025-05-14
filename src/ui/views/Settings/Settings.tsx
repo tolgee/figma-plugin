@@ -85,7 +85,11 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       await validateTolgeeCredentials();
       setValidated(true);
     } catch (e: any) {
-      setError(e.message || e);
+      setError(
+        (e === "invalid_project_api_key"
+          ? "Invalid project API key"
+          : e.message) || e
+      );
     }
   };
 
@@ -100,7 +104,11 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       setConfig(tolgeeConfig);
       setRoute("index");
     } catch (e: any) {
-      setError(e.message || e);
+      setError(
+        (e === "invalid_project_api_key"
+          ? "Invalid project API key"
+          : e.message) || e
+      );
     }
     queryClient.clear();
   };

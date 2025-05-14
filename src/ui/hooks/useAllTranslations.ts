@@ -2,6 +2,7 @@ import { useState } from "preact/hooks";
 import { useApiMutation } from "../client/useQueryApi";
 import { components } from "../client/apiSchema.generated";
 import { TranslationData } from "../client/types";
+import { useFigmaNotify } from "./useFigmaNotify";
 
 type Props = {
   language: string;
@@ -21,6 +22,8 @@ export const useAllTranslations = () => {
     url: "/v2/projects/translations",
     method: "get",
   });
+
+  const notifier = useFigmaNotify();
 
   const [translationsData, setTranslationsData] =
     useState<TranslationData | null>(null);
@@ -79,6 +82,12 @@ export const useAllTranslations = () => {
       setIsLoading(true);
       try {
         return await loadData(props);
+      } catch (e) {
+        if (e === "invalid_project_api_key") {
+          notifier.mutate("Invalid project API key");
+        }
+
+        throw e;
       } finally {
         setIsLoading(false);
       }

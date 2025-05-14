@@ -28,6 +28,7 @@ import { cleanUp, highlightNodeEndpoint } from "./endpoints/highlightNode";
 import { DEFAULT_SIZE } from "@/ui/state/sizes";
 import { formatTextEndpoint } from "./endpoints/formatText";
 import { editorTypeEndpoint } from "./endpoints/editorType";
+import { notifyEndpoint } from "./endpoints/notify";
 
 const getAllPages = () => {
   const document = figma.root;
@@ -105,6 +106,7 @@ export default async function () {
   setNodesDataEndpoint.register();
   highlightNodeEndpoint.register();
   editorTypeEndpoint.register();
+  notifyEndpoint.register();
 
   const config = await getPluginData();
 
