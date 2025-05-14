@@ -38,6 +38,7 @@ export const Push: FunctionalComponent = () => {
   const language = useGlobalState((c) => c.config!.language!);
   const { setRoute } = useGlobalActions();
   const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>();
   const [success, setSuccess] = useState(false);
   const [_loadingStatus, setLoadingStatus] = useState<string | undefined>();
   const [changes, setChanges] = useState<KeyChanges>();
@@ -74,6 +75,12 @@ export const Push: FunctionalComponent = () => {
       setChanges(
         getPushChanges(deduplicatedNodes, translations, language, screenshots)
       );
+    } catch (e) {
+      if (e === "invalid_project_api_key") {
+        setErrorMessage("Invalid API key");
+      } else {
+        setErrorMessage(`Cannot get translation data. ${e}`);
+      }
     } finally {
       setLoadingStatus(undefined);
     }
@@ -249,6 +256,11 @@ export const Push: FunctionalComponent = () => {
       setSuccess(true);
     } catch (e) {
       setError(true);
+      if (e === "invalid_project_api_key") {
+        setErrorMessage("Invalid project API key");
+      } else {
+        setErrorMessage(`Cannot get translation data. ${e}`);
+      }
       console.error(e);
     } finally {
       setLoadingStatus(undefined);
@@ -283,13 +295,16 @@ export const Push: FunctionalComponent = () => {
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
-        {isLoading || !changes ? (
+        {errorMessage && !error ? (
+          <Banner icon={<IconWarning32 />}>{errorMessage}</Banner>
+        ) : isLoading || !changes ? (
           <FullPageLoading text={loadingStatus} />
         ) : error ? (
           <Fragment>
             <div>
               <Banner icon={<IconWarning32 />}>
-                {updateTranslations.error ||
+                {errorMessage ||
+                  updateTranslations.error ||
                   "An error has occurred during push."}
               </Banner>
             </div>

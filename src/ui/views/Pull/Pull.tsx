@@ -2,9 +2,11 @@ import { Fragment, FunctionalComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import clsx from "clsx";
 import {
+  Banner,
   Button,
   Container,
   Divider,
+  IconWarning32,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
@@ -36,13 +38,24 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
   const allTranslationsLoadable = useAllTranslations();
   const [diffData, setDiffData] = useState<ReturnType<typeof getPullChanges>>();
 
+  const [error, setError] = useState<string>();
+
   async function computeDiff() {
-    const translations = await allTranslationsLoadable.getData({
-      language: lang ?? "",
-    });
-    setDiffData(
-      getPullChanges(selectedNodes.data?.items || [], lang, translations)
-    );
+    try {
+      const translations = await allTranslationsLoadable.getData({
+        language: lang ?? "",
+      });
+      setDiffData(
+        getPullChanges(selectedNodes.data?.items || [], lang, translations)
+      );
+      setError(undefined);
+    } catch (e) {
+      if (e === "invalid_project_api_key") {
+        setError("Invalid project API key");
+      } else {
+        setError(`Cannot get translation data. ${e}`);
+      }
+    }
   }
 
   useEffect(() => {
@@ -135,7 +148,9 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
-        {isLoading || !diffData ? (
+        {error ? (
+          <Banner icon={<IconWarning32 />}>{error}</Banner>
+        ) : isLoading || !diffData ? (
           <FullPageLoading text="Searching document for translations" />
         ) : allTranslationsLoadable.error ? (
           <Fragment>

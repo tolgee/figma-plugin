@@ -1,3 +1,4 @@
+import { useState } from "preact/hooks";
 import { useAllTranslations } from "./useAllTranslations";
 
 type Props = {
@@ -9,15 +10,22 @@ type Props = {
 
 export const useTranslation = (props: Props) => {
   const translationsLoadable = useAllTranslations();
+  const [error, setError] = useState<any | null>(null);
 
   if (
     !translationsLoadable.isLoading &&
-    translationsLoadable.translationsData == null
+    translationsLoadable.translationsData == null &&
+    translationsLoadable.error == null &&
+    error == null
   ) {
-    translationsLoadable.getData({
-      language: props.language,
-      namespaces: [props.namespace ?? "default"],
-    });
+    translationsLoadable
+      .getData({
+        language: props.language,
+        namespaces: [props.namespace ?? "default"],
+      })
+      .catch((e) => {
+        setError(e);
+      });
   }
 
   return {
@@ -29,6 +37,6 @@ export const useTranslation = (props: Props) => {
           ]?.[props.key] ?? null
         : null,
     isLoading: translationsLoadable.isLoading,
-    error: translationsLoadable.error,
+    error,
   };
 };
