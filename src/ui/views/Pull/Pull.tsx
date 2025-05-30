@@ -1,5 +1,5 @@
 import { Fragment, FunctionalComponent, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import clsx from "clsx";
 import {
   Banner,
@@ -63,7 +63,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
     computeDiff();
   }, [selectedNodes.data, lang]);
 
-  const formatter = createFormatIcu();
+  const formatter = useMemo(() => createFormatIcu(), [lang]);
 
   const getFormattedForNode = (n: NodeInfo) => {
     const tolgeeValue = getTolgeeFormat(n.translation, n.isPlural, false);
