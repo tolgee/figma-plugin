@@ -26,6 +26,7 @@ import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
 import { getPlaceholders, getTolgeeFormat } from "@tginternal/editor";
 import { createFormatIcu } from "../../../createFormatIcu";
+import { NodeInfo } from "../../../types";
 
 type Props = RouteParam<"pull">;
 
@@ -62,65 +63,71 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
     computeDiff();
   }, [selectedNodes.data, lang]);
 
+  const formatter = createFormatIcu();
+
+  const getFormattedForNode = (n: NodeInfo) => {
+    const tolgeeValue = getTolgeeFormat(n.translation, n.isPlural, false);
+    const paramValues = { ...(n.paramsValues ?? {}) };
+    const placeholders = getPlaceholders(n.translation);
+
+    for (const placeholder of placeholders ?? []) {
+      if (paramValues[placeholder.name] == null) {
+        paramValues[placeholder.name] = placeholder.name;
+      }
+    }
+
+    try {
+      const formatted = formatter.format({
+        language: lang ?? "en",
+        translation: n.translation,
+        params: {
+          ...paramValues,
+          [tolgeeValue.parameter ?? ""]: n.pluralParamValue ?? "1",
+        },
+      });
+      return {
+        ...n,
+        formatted,
+      } as NodeInfo & { formatted: string };
+    } catch (e) {
+      return {
+        ...n,
+        formatted: n.characters,
+      } as NodeInfo & { formatted: string };
+    }
+  };
+
   const handleProcess = async () => {
     if (diffData!.changedNodes.length !== 0) {
-      const formatter = createFormatIcu();
-
       await updateNodeLoadable.mutateAsync({
-        nodes: diffData!.changedNodes.map((n) => {
-          const tolgeeValue = getTolgeeFormat(n.translation, n.isPlural, false);
-          const paramValues = { ...(n.paramsValues ?? {}) };
-          const placeholders = getPlaceholders(n.translation);
-
-          for (const placeholder of placeholders ?? []) {
-            if (paramValues[placeholder.name] == null) {
-              paramValues[placeholder.name] = placeholder.name;
-            }
-          }
-
-          try {
-            const formatted = formatter.format({
-              language: lang ?? "en",
-              translation: n.translation,
-              params: {
-                ...paramValues,
-                [tolgeeValue.parameter ?? ""]: n.pluralParamValue ?? "1",
-              },
-            });
-            return {
-              ...n,
-              formatted,
-            };
-          } catch (e) {
-            return {
-              ...n,
-              formatted: n.characters,
-            };
-          }
-        }),
+        nodes: diffData!.changedNodes.map(getFormattedForNode),
       });
     }
 
     await setNodesDataMutation.mutateAsync({
       nodes:
         selectedNodes.data?.items
-          .filter((i) => !i.connected)
-          .map((n) => ({
-            ...n,
-            isPlural:
-              diffData!.changedNodes.find((c) => c.key === n.key)?.isPlural ??
-              n.isPlural,
-            pluralParamValue:
-              diffData!.changedNodes.find((c) => c.key === n.key)
-                ?.pluralParamValue ?? n.pluralParamValue,
-            translation:
-              diffData!.changedNodes.find((c) => c.key === n.key)
-                ?.translation ?? n.translation,
-            paramsValues:
-              diffData!.changedNodes.find((c) => c.key === n.key)
-                ?.paramsValues ?? n.paramsValues,
-            connected: true,
-          })) ?? [],
+          .filter((i) => i.connected)
+          .map((n) => {
+            const changedNode = diffData!.changedNodes.find(
+              (c) => c.key === n.key
+            );
+            if (!changedNode) {
+              return n;
+            }
+            const characters = getFormattedForNode(changedNode).formatted;
+            const changed = {
+              ...n,
+              characters,
+              isPlural: changedNode?.isPlural ?? n.isPlural,
+              pluralParamValue:
+                changedNode?.pluralParamValue ?? n.pluralParamValue,
+              translation: changedNode?.translation ?? n.translation,
+              paramsValues: changedNode?.paramsValues ?? n.paramsValues,
+              connected: true,
+            };
+            return changed;
+          }) ?? [],
     });
     setLanguage(lang);
     setRoute("index");
