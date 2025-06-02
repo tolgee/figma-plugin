@@ -7,6 +7,21 @@ export type FormatTextEndpointArgs = {
   nodeInfo: NodeInfo;
 };
 
+const mapWightToStyle: Record<number, string> = {
+  100: "Thin",
+  200: "Extra Light",
+  300: "Light",
+  400: "Regular",
+  500: "Medium",
+  600: "Semi Bold",
+  700: "Bold",
+  800: "Extra Bold",
+  900: "Black",
+  1000: "Heavy",
+  1100: "Extra Black",
+  1200: "Ultra Black",
+};
+
 /**
  * Takes a node and the formatted (meaning parameters and plural values have been interpolated) text for this node
  * and replaces the text in the node with the formatted text. It also applies bold, italic and underline styles to the text
@@ -24,6 +39,14 @@ export const formatText = async ({
     0,
     textNode.characters.length
   );
+
+  const weights = textNode.getRangeFontWeight(0, textNode.characters.length);
+
+  let singleWeight = true;
+
+  if (typeof weights === "number") {
+    singleWeight = true;
+  }
 
   for (const font of fontNames) {
     await figma.loadFontAsync(font);
@@ -140,10 +163,13 @@ export const formatText = async ({
     ) as FontName;
 
     if (font.family) {
-      await figma.loadFontAsync({ family: font.family, style: "Regular" });
+      await figma.loadFontAsync({
+        family: font.family,
+        style: singleWeight ? mapWightToStyle[weights as number] : "Regular",
+      });
       await applyStyles(defaultRanges, {
         family: font.family,
-        style: "Regular",
+        style: singleWeight ? mapWightToStyle[weights as number] : "Regular",
       });
     }
   }
