@@ -7,6 +7,7 @@ export type FormatTextEndpointArgs = {
   nodeInfo: NodeInfo;
 };
 
+// Taken from figma ui - could not represent all fonts
 const mapWightToStyle: Record<number, string> = {
   100: "Thin",
   200: "Extra Light",
@@ -16,10 +17,7 @@ const mapWightToStyle: Record<number, string> = {
   600: "Semi Bold",
   700: "Bold",
   800: "Extra Bold",
-  900: "Black",
-  1000: "Heavy",
-  1100: "Extra Black",
-  1200: "Ultra Black",
+  900: "Black"
 };
 
 /**
