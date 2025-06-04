@@ -95,7 +95,7 @@ export const formatText = async ({
           await figma.loadFontAsync({ family, style });
           return style;
         } catch (error) {
-          continue;
+          console.log(`Failed to load font: ${error}`);
         }
       }
     }
@@ -143,7 +143,7 @@ export const formatText = async ({
           await figma.loadFontAsync({ family, style });
           return style;
         } catch (error) {
-          continue;
+          console.error(`Failed to load font: ${error}`);
         }
       }
     }
@@ -197,8 +197,8 @@ export const formatText = async ({
 
   const getFontForRange = (range: { start: number; end: number }) => {
     const font = textNode.getRangeFontName(
-      defaultRanges[0].start,
-      Math.min(textNode.characters.length, defaultRanges[0].end)
+      range.start,
+      Math.min(textNode.characters.length, range.end)
     );
 
     if (font === figma.mixed) {
