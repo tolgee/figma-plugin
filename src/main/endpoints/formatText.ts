@@ -195,6 +195,21 @@ export const formatText = async ({
     }
   };
 
+  const getFontForRange = (range: { start: number; end: number }) => {
+    const font = textNode.getRangeFontName(
+      defaultRanges[0].start,
+      Math.min(textNode.characters.length, defaultRanges[0].end)
+    );
+
+    if (font === figma.mixed) {
+      return textNode.getRangeFontName(
+        range.start,
+        range.start + 1
+      ) as FontName;
+    }
+    return font as FontName;
+  };
+
   const boldRanges = [
     ...findRanges(formattedWithoutBreaks, "strong"),
     ...findRanges(formattedWithoutBreaks, "b"),
@@ -232,28 +247,23 @@ export const formatText = async ({
     defaultRanges.push(currentRange);
   }
 
-  if (defaultRanges.length > 0) {
-    const font = textNode.getRangeFontName(
-      defaultRanges[0].start,
-      defaultRanges[0].end
-    ) as FontName;
+  for (const range of defaultRanges) {
+    const font = getFontForRange(range);
 
     if (font.family) {
       await figma.loadFontAsync({
         family: font.family,
         style: font.style,
       });
-      await applyStyles(defaultRanges, {
+      await applyStyles([range], {
         family: font.family,
         style: font.style,
       });
     }
   }
+
   for (const range of boldRanges) {
-    const font = textNode.getRangeFontName(
-      range.start,
-      Math.min(textNode.characters.length, range.end)
-    ) as FontName;
+    const font = getFontForRange(range);
 
     if (font.family) {
       const availableFonts = await getFontsOfFamily(font);
@@ -270,10 +280,7 @@ export const formatText = async ({
   }
 
   for (const range of italicRanges) {
-    const font = textNode.getRangeFontName(
-      range.start,
-      Math.min(textNode.characters.length, range.end)
-    ) as FontName;
+    const font = getFontForRange(range);
 
     if (font.family) {
       const availableFonts = await getFontsOfFamily(font);
