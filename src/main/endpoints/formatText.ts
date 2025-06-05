@@ -7,19 +7,6 @@ export type FormatTextEndpointArgs = {
   nodeInfo: NodeInfo;
 };
 
-// Taken from figma ui - could not represent all fonts
-const mapWightToStyle: Record<number, string> = {
-  100: "Thin",
-  200: "Extra Light",
-  300: "Light",
-  400: "Regular",
-  500: "Medium",
-  600: "Semi Bold",
-  700: "Bold",
-  800: "Extra Bold",
-  900: "Black",
-};
-
 /**
  * Takes a node and the formatted (meaning parameters and plural values have been interpolated) text for this node
  * and replaces the text in the node with the formatted text. It also applies bold, italic and underline styles to the text
@@ -38,19 +25,8 @@ export const formatText = async ({
     textNode.characters.length
   );
 
-  const weights = textNode.getRangeFontWeight(0, textNode.characters.length);
-
-  let singleWeight = true;
-
-  if (typeof weights === "number") {
-    singleWeight = true;
-  }
-
   for (const font of fontNames) {
     await figma.loadFontAsync(font);
-    if (font.family) {
-      await figma.loadFontAsync({ family: font.family, style: "Regular" });
-    }
   }
 
   const breaks = /<br\s*\/?>\s*<\/br>|<br\s*\/?>|<\/br>/gi;
@@ -88,6 +64,108 @@ export const formatText = async ({
     return ranges;
   };
 
+  const getFontsOfFamily = async (font: FontName) =>
+    (await figma.listAvailableFontsAsync()).filter(
+      (f) => f.fontName.family === font.family
+    );
+
+  const findBestBoldStyle = async (
+    family: string,
+    availableFonts: Font[]
+  ): Promise<string | null> => {
+    /** Some common names for bold styles */
+    const boldStyles = [
+      "Bold",
+      "Semibold",
+      "Semi Bold",
+      "Medium",
+      "Extra Bold",
+      "Heavy",
+      "Black",
+      "Ultra Bold",
+    ];
+
+    for (const style of boldStyles) {
+      const fontExists = availableFonts.some(
+        (font) =>
+          font.fontName.family === family && font.fontName.style === style
+      );
+      if (fontExists) {
+        try {
+          await figma.loadFontAsync({ family, style });
+          return style;
+        } catch (error) {
+          console.log(`Failed to load font: ${error}`);
+        }
+      }
+    }
+
+    /** First font where "bold" is included */
+    const fallbackFont = availableFonts.find((f) =>
+      f.fontName.style.toLowerCase().includes("bold")
+    );
+
+    if (fallbackFont) {
+      try {
+        await figma.loadFontAsync(fallbackFont.fontName);
+        return fallbackFont.fontName.style;
+      } catch (error) {
+        console.error(`Failed to load fallback font: ${error}`);
+      }
+    }
+    return null;
+  };
+
+  const findBestItalicStyle = async (
+    family: string,
+    availableFonts: Font[]
+  ): Promise<string | null> => {
+    /** List of common italic styles */
+    const italicStyles = [
+      "Italic",
+      "Regular Italic",
+      "Medium Italic",
+      "Light Italic",
+      "Semi Bold Italic",
+      "Semibold Italic",
+      "Bold Italic",
+      "Oblique",
+      "Regular Oblique",
+    ];
+
+    for (const style of italicStyles) {
+      const fontExists = availableFonts.some(
+        (font) =>
+          font.fontName.family === family && font.fontName.style === style
+      );
+      if (fontExists) {
+        try {
+          await figma.loadFontAsync({ family, style });
+          return style;
+        } catch (error) {
+          console.error(`Failed to load font: ${error}`);
+        }
+      }
+    }
+
+    /** First font with italic/oblique in it's name */
+    const fallbackFont = availableFonts.find(
+      (f) =>
+        f.fontName.style.toLowerCase().includes("italic") ||
+        f.fontName.style.toLowerCase().includes("oblique")
+    );
+
+    if (fallbackFont) {
+      try {
+        await figma.loadFontAsync(fallbackFont.fontName);
+        return fallbackFont.fontName.style;
+      } catch (error) {
+        console.error(`Failed to load fallback font: ${error}`);
+      }
+    }
+    return null;
+  };
+
   const applyStyles = async (
     ranges: { start: number; end: number }[],
     style: Partial<Paint & FontName> | undefined,
@@ -115,6 +193,21 @@ export const formatText = async ({
         );
       }
     }
+  };
+
+  const getFontForRange = (range: { start: number; end: number }) => {
+    const font = textNode.getRangeFontName(
+      range.start,
+      Math.min(textNode.characters.length, range.end)
+    );
+
+    if (font === figma.mixed) {
+      return textNode.getRangeFontName(
+        range.start,
+        range.start + 1
+      ) as FontName;
+    }
+    return font as FontName;
   };
 
   const boldRanges = [
@@ -154,42 +247,55 @@ export const formatText = async ({
     defaultRanges.push(currentRange);
   }
 
-  if (defaultRanges.length > 0) {
-    const font = textNode.getRangeFontName(
-      defaultRanges[0].start,
-      defaultRanges[0].end
-    ) as FontName;
+  for (const range of defaultRanges) {
+    const font = getFontForRange(range);
 
     if (font.family) {
       await figma.loadFontAsync({
         family: font.family,
-        style: singleWeight ? mapWightToStyle[weights as number] : "Regular",
+        style: font.style,
       });
-      await applyStyles(defaultRanges, {
+      await applyStyles([range], {
         family: font.family,
-        style: singleWeight ? mapWightToStyle[weights as number] : "Regular",
+        style: font.style,
       });
     }
   }
+
   for (const range of boldRanges) {
-    const font = textNode.getRangeFontName(
-      range.start,
-      Math.min(textNode.characters.length, range.end)
-    ) as FontName;
+    const font = getFontForRange(range);
+
     if (font.family) {
-      await figma.loadFontAsync({ family: font.family, style: "Bold" });
-      await applyStyles([range], { family: font.family, style: "Bold" });
+      const availableFonts = await getFontsOfFamily(font);
+      const boldStyle = await findBestBoldStyle(font.family, availableFonts);
+
+      if (boldStyle) {
+        await applyStyles([range], { family: font.family, style: boldStyle });
+      } else {
+        // Fallback to original style if no bold variant found
+        await figma.loadFontAsync({ family: font.family, style: font.style });
+        await applyStyles([range], { family: font.family, style: font.style });
+      }
     }
   }
 
   for (const range of italicRanges) {
-    const font = textNode.getRangeFontName(
-      range.start,
-      Math.min(textNode.characters.length, range.end)
-    ) as FontName;
+    const font = getFontForRange(range);
+
     if (font.family) {
-      await figma.loadFontAsync({ family: font.family, style: "Italic" });
-      await applyStyles([range], { family: font.family, style: "Italic" });
+      const availableFonts = await getFontsOfFamily(font);
+      const italicStyle = await findBestItalicStyle(
+        font.family,
+        availableFonts
+      );
+
+      if (italicStyle) {
+        await applyStyles([range], { family: font.family, style: italicStyle });
+      } else {
+        // Fallback to original style if no italic variant found
+        await figma.loadFontAsync({ family: font.family, style: font.style });
+        await applyStyles([range], { family: font.family, style: font.style });
+      }
     }
   }
 
