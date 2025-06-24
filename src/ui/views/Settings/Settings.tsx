@@ -18,7 +18,6 @@ import { useQueryClient } from "react-query";
 import { useWindowSize } from "@/ui/hooks/useWindowSize";
 import { Expandable } from "./Expandable";
 import { ProjectSection } from "./ProjectSection";
-import { StringsSection } from "./StringsSection";
 import { PushSection } from "./PushSection";
 
 const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";

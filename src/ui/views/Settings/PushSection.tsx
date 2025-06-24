@@ -1,13 +1,14 @@
 import { h, FunctionComponent } from "preact";
 import { useEffect, useRef, useState, useLayoutEffect } from "preact/hooks";
 import { Checkbox, Text } from "@create-figma-plugin/ui";
+import { TolgeeConfig } from "@/types";
 import { Badge } from "../../components/Badge/Badge";
 import styles from "./Settings.css";
 import { useAllTags } from "../../hooks/useAllTags";
 
 export interface PushSectionProps {
-  tolgeeConfig: any;
-  setTolgeeConfig: (c: any) => void;
+  tolgeeConfig: Partial<TolgeeConfig>;
+  setTolgeeConfig: (c: Partial<TolgeeConfig>) => void;
   onTagsChange?: (tags: string[]) => void;
 }
 
@@ -113,6 +114,10 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
                   if (e.key === "Enter") handleAddTag();
                 }}
                 className={styles.tagInput}
+                role="combobox"  
+                aria-expanded={!!tagInput}  
+                aria-autocomplete="list"  
+                aria-describedby="tag-dropdown"  
               />
               {tagInput && (
                 <div
