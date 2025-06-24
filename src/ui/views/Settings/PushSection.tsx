@@ -7,8 +7,8 @@ import styles from "./Settings.css";
 import { useAllTags } from "../../hooks/useAllTags";
 
 export interface PushSectionProps {
-  tolgeeConfig: Partial<TolgeeConfig>;
-  setTolgeeConfig: (c: Partial<TolgeeConfig>) => void;
+  tolgeeConfig: Partial<TolgeeConfig> & { apiUrl: string };
+  setTolgeeConfig: (c: Partial<TolgeeConfig> & { apiUrl: string }) => void;
   onTagsChange?: (tags: string[]) => void;
 }
 
@@ -39,7 +39,9 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
 
   const allTags = useAllTags();
   useEffect(() => {
-    allTags.getData();
+    allTags.getData().catch((e) => {
+      console.error("Error loading tags", e);
+    });
   }, []);
 
   useEffect(() => {
@@ -114,10 +116,10 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
                   if (e.key === "Enter") handleAddTag();
                 }}
                 className={styles.tagInput}
-                role="combobox"  
-                aria-expanded={!!tagInput}  
-                aria-autocomplete="list"  
-                aria-describedby="tag-dropdown"  
+                role="combobox"
+                aria-expanded={!!tagInput}
+                aria-autocomplete="list"
+                aria-describedby="tag-dropdown"
               />
               {tagInput && (
                 <div

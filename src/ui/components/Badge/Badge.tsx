@@ -14,7 +14,7 @@ export const Badge = ({ children, title, onRemove }: Props) => {
     <div data-cy="badge" title={title} className={styles.badge}>
       {children}
       {onRemove && (
-        <button onClick={onRemove}>
+        <button onClick={onRemove} aria-label="remove-tag">
           <X width={16} height={16} />
         </button>
       )}

@@ -30,6 +30,10 @@ export const useAllTags = () => {
     let allTags: Tag[] = [];
 
     while (hasMore) {
+      if (page > 100) {
+        console.warn("Too many pages, stopping pagination");
+        break;
+      }
       try {
         const response = await tagsLoadable.mutateAsync({
           query: {
@@ -45,7 +49,7 @@ export const useAllTags = () => {
         page++;
       } catch (e) {
         setError(e);
-        notifier.mutate("Fehler beim Laden der Tags");
+        notifier.mutate("Error loading tags");
         throw e;
       }
     }
