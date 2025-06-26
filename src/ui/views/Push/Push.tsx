@@ -71,9 +71,10 @@ export const Push: FunctionalComponent = () => {
         language,
       });
 
-      const screenshots = tolgeeConfig?.updateScreenshots
-        ? await getScreenshotsEndpoint.call(nodes)
-        : [];
+      const screenshots =
+        tolgeeConfig?.updateScreenshots ?? true
+          ? await getScreenshotsEndpoint.call(nodes)
+          : [];
 
       setChanges(
         getPushChanges(deduplicatedNodes, translations, language, screenshots)
