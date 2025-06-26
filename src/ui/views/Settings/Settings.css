@@ -32,6 +32,10 @@
 }
 
 .tagAutocompleteDropdownHeader {
+  padding: 12px 12px 0 12px;
+  font-size: 10px;
+}
+.tagAutocompleteDropdownHeaderEmpty {
   padding: 12px;
   font-size: 10px;
 }
