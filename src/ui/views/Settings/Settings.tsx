@@ -135,7 +135,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
-        <Expandable title="Project" defaultOpen>
+        <Expandable title="Project">
           <ProjectSection
             tolgeeConfig={tolgeeConfig}
             setTolgeeConfig={setTolgeeConfig}
@@ -148,7 +148,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
         {/* <Expandable title="Strings and Keys">
           <StringsSection />
         </Expandable> */}
-        <Expandable title="Push" defaultOpen>
+        <Expandable title="Push">
           <PushSection
             tolgeeConfig={tolgeeConfig}
             setTolgeeConfig={setTolgeeConfig}
