@@ -34,7 +34,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   const [format, setFormat] = useState(
     tolgeeConfig.keyFormat || "[%page].[%frame].[%element]"
   );
-  const [prefill, setPrefill] = useState(tolgeeConfig.prefillKeyName ?? true);
+  const [prefill, setPrefill] = useState(tolgeeConfig.prefillKeyFormat ?? true);
   const [ignoreNumbers, setIgnoreNumbers] = useState(
     tolgeeConfig.ignoreNumbers ?? false
   );
@@ -54,7 +54,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   const handlePrefillChange = (e: any) => {
     const checked = e.currentTarget.checked;
     setPrefill(checked);
-    setTolgeeConfig({ ...tolgeeConfig, prefillKeyName: checked });
+    setTolgeeConfig({ ...tolgeeConfig, prefillKeyFormat: checked });
   };
 
   const handleResetPlaceholder = () => {

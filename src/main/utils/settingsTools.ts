@@ -77,6 +77,11 @@ export const setPluginData = async (data: Partial<TolgeeConfig>) => {
     ignorePrefix,
     ignoreNumbers,
     addTags,
+    keyFormat,
+    prefillKeyFormat,
+    ignoreHiddenLayers,
+    ignoreTextLayers,
+    textLayersPrefix,
     tags,
     updateScreenshots,
   } = data;
@@ -91,6 +96,11 @@ export const setPluginData = async (data: Partial<TolgeeConfig>) => {
     addTags,
     tags,
     updateScreenshots,
+    keyFormat,
+    prefillKeyFormat,
+    ignoreHiddenLayers,
+    ignoreTextLayers,
+    textLayersPrefix,
     documentInfo: true,
   });
   setPageData({ language, pageInfo: true });

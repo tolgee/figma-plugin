@@ -28,6 +28,16 @@ function shouldIncludeNode(
   if (settings.ignoreNumbers && /^\d+$/.test(node.characters)) {
     return false;
   }
+  if (settings.ignoreHiddenLayers && !node.visible) {
+    return false;
+  }
+  if (
+    settings.ignoreTextLayers &&
+    settings.textLayersPrefix &&
+    node.name.startsWith(settings.textLayersPrefix)
+  ) {
+    return false;
+  }
   if (settings.ignorePrefix && node.name.startsWith(settings.ignorePrefix)) {
     return false;
   }

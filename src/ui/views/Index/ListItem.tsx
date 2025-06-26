@@ -11,6 +11,7 @@ import { components } from "@/ui/client/apiSchema.generated";
 import { InsertLink } from "@/ui/icons/SvgIcons";
 import { KeyOptionsButton } from "../../components/KeyOptionsButton/KeyOptionsButton";
 import { useEditorMode } from "../../hooks/useEditorMode";
+import { usePrefilledKey } from "../../hooks/usePrefilledKey";
 
 type UsedNamespaceModel = components["schemas"]["UsedNamespaceModel"];
 
@@ -20,7 +21,12 @@ type Props = {
 };
 
 export const ListItem = ({ node, loadedNamespaces }: Props) => {
-  const [keyName, setKeyName] = useState(node.key);
+  const nodeId = node?.id ?? "";
+  const tolgeeConfig = useGlobalState((c) => c.config);
+
+  const prefilledKey = usePrefilledKey(nodeId, tolgeeConfig?.keyFormat ?? "");
+
+  const [keyName, setKeyName] = useState((node.key || prefilledKey.key) ?? "");
   const defaultNamespace = useGlobalState((c) => c.config?.namespace);
   const [namespace, setNamespace] = useState(node.ns ?? defaultNamespace);
 
@@ -31,6 +37,12 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
   const namespacesDisabled = useGlobalState(
     (c) => c.config?.namespacesDisabled
   );
+
+  useEffect(() => {
+    if (prefilledKey.key) {
+      handleKeyChange(node)(prefilledKey.key);
+    }
+  }, [prefilledKey.key]);
 
   const handleConnect = (node: NodeInfo) => {
     setRoute("connect", { node });
