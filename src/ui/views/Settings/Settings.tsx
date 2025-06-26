@@ -19,6 +19,7 @@ import { useWindowSize } from "@/ui/hooks/useWindowSize";
 import { Expandable } from "./Expandable";
 import { ProjectSection } from "./ProjectSection";
 import { PushSection } from "./PushSection";
+import { StringsSection } from "./StringsSection";
 
 const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 
@@ -135,7 +136,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
-        <Expandable title="Project" defaultOpen>
+        <Expandable title="Project">
           <ProjectSection
             tolgeeConfig={tolgeeConfig}
             setTolgeeConfig={setTolgeeConfig}
@@ -144,11 +145,13 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
             handleValidate={handleValidate}
           />
         </Expandable>
-        {/* TODO: Add strings and keys section */}
-        {/* <Expandable title="Strings and Keys">
-          <StringsSection />
-        </Expandable> */}
-        <Expandable title="Push" defaultOpen>
+        <Expandable title="Strings and Keys">
+          <StringsSection
+            tolgeeConfig={tolgeeConfig}
+            setTolgeeConfig={setTolgeeConfig}
+          />
+        </Expandable>
+        <Expandable title="Push">
           <PushSection
             tolgeeConfig={tolgeeConfig}
             setTolgeeConfig={setTolgeeConfig}

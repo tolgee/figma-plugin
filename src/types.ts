@@ -103,6 +103,11 @@ export type CurrentDocumentSettings = GlobalSettings & {
   updateScreenshots?: boolean;
   addTags?: boolean;
   tags?: string[];
+  prefillKeyName?: boolean;
+  keyFormat?: string;
+  ignoreHiddenLayers?: boolean;
+  ignoreTextLayers?: boolean;
+  textLayersPrefix?: string;
 };
 
 export type CurrentPageSettings = {

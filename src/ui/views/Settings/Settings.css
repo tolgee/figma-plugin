@@ -65,3 +65,24 @@
   color: var(--figma-color-bg-brand);
   font-weight: 400;
 }
+
+.keyFormat {
+  display: flex;
+  gap: 12px;
+  justify-content: start;
+}
+
+.keyFormat > * {
+  flex: 1;
+}
+.textLayers {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+}

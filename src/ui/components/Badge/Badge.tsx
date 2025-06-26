@@ -6,12 +6,18 @@ import { X } from "../../icons/SvgIcons";
 type Props = {
   children: string;
   title?: string;
+  onClick?: () => void;
   onRemove?: () => void;
 };
 
-export const Badge = ({ children, title, onRemove }: Props) => {
+export const Badge = ({ onClick, children, title, onRemove }: Props) => {
   return (
-    <div data-cy="badge" title={title} className={styles.badge}>
+    <div
+      data-cy="badge"
+      title={title}
+      onClick={onClick}
+      className={styles.badge}
+    >
       {children}
       {onRemove && (
         <button onClick={onRemove} aria-label="remove-tag">
