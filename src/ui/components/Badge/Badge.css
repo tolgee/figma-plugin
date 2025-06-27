@@ -9,6 +9,16 @@
   border-radius: 16px;
 }
 
+.badge button {
+  color: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
+.badge.bold {
+  font-weight: 600;
+  padding: 4px 8px;
+}
+
 @media (prefers-color-scheme: dark) {
   .badge {
     background-color: var(--figma-color-bg-disabled-secondary);

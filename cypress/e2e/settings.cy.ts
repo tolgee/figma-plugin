@@ -13,6 +13,10 @@ describe("Settings", () => {
 
   it("works when filling empty", () => {
     visitWithState({});
+
+    cy.iframe().findDcy("settings_section_project").should("be.visible");
+    cy.iframe().findDcy("settings_section_project").click();
+
     cy.iframe()
       .findDcy("settings_input_api_url")
       .type(DEFAULT_CREDENTIALS.apiUrl);
@@ -49,6 +53,9 @@ describe("Settings", () => {
 
     cy.iframe().findDcy("index_settings_button").should("be.visible").click();
     cy.iframe().contains("Settings").should("be.visible");
+
+    cy.iframe().findDcy("settings_section_project").should("be.visible");
+    cy.iframe().findDcy("settings_section_project").click();
 
     cy.iframe()
       .findDcy("settings_input_api_url")

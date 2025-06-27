@@ -100,6 +100,9 @@ export type CurrentDocumentSettings = GlobalSettings & {
   namespace: string;
   namespacesDisabled: boolean;
   documentInfo: true;
+  updateScreenshots?: boolean;
+  addTags?: boolean;
+  tags?: string[];
 };
 
 export type CurrentPageSettings = {

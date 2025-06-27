@@ -43,6 +43,7 @@ export const Push: FunctionalComponent = () => {
   const [_loadingStatus, setLoadingStatus] = useState<string | undefined>();
   const [changes, setChanges] = useState<KeyChanges>();
   const selectedNodes = useConnectedNodes({ ignoreSelection: false });
+  const tolgeeConfig = useGlobalState((c) => c.config);
 
   const nodes = selectedNodes.data?.items ?? [];
 
@@ -70,7 +71,10 @@ export const Push: FunctionalComponent = () => {
         language,
       });
 
-      const screenshots = await getScreenshotsEndpoint.call(nodes);
+      const screenshots =
+        tolgeeConfig?.updateScreenshots ?? true
+          ? await getScreenshotsEndpoint.call(nodes)
+          : [];
 
       setChanges(
         getPushChanges(deduplicatedNodes, translations, language, screenshots)
@@ -99,6 +103,11 @@ export const Push: FunctionalComponent = () => {
 
   const updateTranslations = useApiMutation({
     url: "/v2/projects/keys/import-resolvable",
+    method: "post",
+  });
+
+  const addNewTranslations = useApiMutation({
+    url: "/v2/projects/keys/import",
     method: "post",
   });
 
@@ -223,10 +232,32 @@ export const Push: FunctionalComponent = () => {
           namespace: item.ns || undefined,
           screenshots: mapScreenshots(item),
           translations: {
-            [language]: { text: item.newValue, resolution: "NEW" },
+            [language]: { text: item.newValue, resolution: "OVERRIDE" },
           },
         });
       });
+
+      if (
+        (tolgeeConfig?.addTags ?? false) &&
+        tolgeeConfig?.tags &&
+        tolgeeConfig.tags.length > 0
+      ) {
+        await addNewTranslations.mutateAsync({
+          content: {
+            "application/json": {
+              keys: changes.newKeys.map((item) => ({
+                name: item.key,
+                namespace: item.ns || undefined,
+                screenshots: mapScreenshots(item),
+                translations: {
+                  [language]: item.newValue,
+                },
+                tags: tolgeeConfig?.tags ?? [],
+              })),
+            },
+          },
+        });
+      }
 
       await updateTranslations.mutateAsync({
         content: {
@@ -236,20 +267,22 @@ export const Push: FunctionalComponent = () => {
         },
       });
 
-      for (const screenshot of changes.screenshots.values()) {
-        const relatedKeys = screenshot.keys
-          .map((data) => ({
-            keyName: data.key,
-            namespace: data.ns || undefined,
-          }))
-          .slice(0, 100);
-        await bigMeta.mutateAsync({
-          content: {
-            "application/json": {
-              relatedKeysInOrder: relatedKeys,
+      if (tolgeeConfig?.updateScreenshots ?? true) {
+        for (const screenshot of changes.screenshots.values()) {
+          const relatedKeys = screenshot.keys
+            .map((data) => ({
+              keyName: data.key,
+              namespace: data.ns || undefined,
+            }))
+            .slice(0, 100);
+          await bigMeta.mutateAsync({
+            content: {
+              "application/json": {
+                relatedKeysInOrder: relatedKeys,
+              },
             },
-          },
-        });
+          });
+        }
       }
 
       connectNodes();
