@@ -4,12 +4,14 @@ import { ChevronDown } from "../../icons/SvgIcons";
 
 export const Expandable: FunctionComponent<{
   title: string;
+  dataCy?: string;
   defaultOpen?: boolean;
-}> = ({ title, defaultOpen = false, children }) => {
+}> = ({ title, defaultOpen = false, dataCy, children }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div style={{ marginBottom: 16 }}>
       <div
+        data-cy={dataCy}
         style={{
           cursor: "pointer",
           fontWeight: 700,

@@ -135,7 +135,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
-        <Expandable title="Project">
+        <Expandable dataCy="settings_section_project" title="Project">
           <ProjectSection
             tolgeeConfig={tolgeeConfig}
             setTolgeeConfig={setTolgeeConfig}
