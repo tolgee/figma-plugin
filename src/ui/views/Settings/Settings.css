@@ -1,3 +1,89 @@
 .success {
   color: var(--figma-color-text-success);
 }
+
+.tagInput {
+  border: 1px solid var(--figma-color-primary);
+  border-radius: 12px;
+  padding: 4px 12px;
+  outline: none;
+  min-width: 80px;
+  width: 100%;
+}
+
+.tagAutocompleteDropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--figma-color-bg);
+  border: 1px solid var(--figma-color-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  z-index: 10;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.tagAutocompleteDropdown.down {
+  top: 110%;
+}
+.tagAutocompleteDropdown.up {
+  bottom: 110%;
+}
+
+.tagAutocompleteDropdownHeader {
+  padding: 12px;
+  font-size: 10px;
+}
+
+.tagAutocompleteDropdownItem {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 500;
+  background: none;
+  border: none;
+  color: var(--figma-color-text);
+}
+.tagAutocompleteDropdownItem:hover {
+  background: var(--figma-color-bg-hover);
+}
+
+.tagAutocompleteDropdownAdd {
+  padding: 12px 12px 12px 12px;
+  color: var(--figma-color-bg-brand);
+  font-weight: 500;
+  cursor: pointer;
+  border-top: 1px solid var(--figma-color-border);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tagAutocompleteDropdownAddHint {
+  font-style: italic;
+  color: var(--figma-color-bg-brand);
+  font-weight: 400;
+}
+
+.keyFormat {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  justify-content: start;
+}
+
+.keyFormat > * {
+  flex: 1;
+}
+.textLayers {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.sectionTitle {
+  font-size: 14px;
+}

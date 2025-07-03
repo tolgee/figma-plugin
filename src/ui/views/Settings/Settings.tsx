@@ -7,9 +7,6 @@ import {
   Divider,
   IconWarning32,
   LoadingIndicator,
-  Muted,
-  Text,
-  Textbox,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
@@ -17,10 +14,12 @@ import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { useApiMutation } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { TopBar } from "../../components/TopBar/TopBar";
-import * as styles from "./Settings.css";
-import { ProjectSettings } from "./ProjectSettings";
 import { useQueryClient } from "react-query";
 import { useWindowSize } from "@/ui/hooks/useWindowSize";
+import { Expandable } from "./Expandable";
+import { ProjectSection } from "./ProjectSection";
+import { PushSection } from "./PushSection";
+import { StringsSection } from "./StringsSection";
 
 const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 
@@ -137,53 +136,28 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       <Divider />
       <VerticalSpace space="large" />
       <Container space="medium">
-        <Text>
-          <Muted>Tolgee URL</Muted>
-        </Text>
-        <VerticalSpace space="small" />
-        <Textbox
-          data-cy="settings_input_api_url"
-          onValueInput={(apiUrl) => {
-            setValidated(false);
-            setTolgeeConfig({ ...tolgeeConfig, apiUrl });
-          }}
-          value={tolgeeConfig.apiUrl}
-          variant="border"
-        />
-        <VerticalSpace space="medium" />
-        <Text>
-          <Muted>Tolgee API key</Muted>
-        </Text>
-        <VerticalSpace space="small" />
-        <Textbox
-          data-cy="settings_input_api_key"
-          onValueInput={(apiKey) => {
-            setValidated(false);
-            setTolgeeConfig({ ...tolgeeConfig, apiKey });
-          }}
-          value={tolgeeConfig.apiKey ?? ""}
-          variant="border"
-        />
-        <VerticalSpace space="small" />
-
-        {validated ? (
-          <Text className={styles.success}>Credentials valid</Text>
-        ) : (
-          <Button data-cy="settings_button_validate" onClick={handleValidate}>
-            Validate
-          </Button>
-        )}
-
-        {validated && (
-          <ProjectSettings
-            apiUrl={tolgeeConfig.apiUrl}
-            apiKey={tolgeeConfig.apiKey || ""}
-            onChange={(data) => setTolgeeConfig({ ...tolgeeConfig, ...data })}
-            initialData={tolgeeConfig}
+        <Expandable title="Project">
+          <ProjectSection
+            tolgeeConfig={tolgeeConfig}
+            setTolgeeConfig={setTolgeeConfig}
+            validated={validated}
+            setValidated={setValidated}
+            handleValidate={handleValidate}
           />
-        )}
-
-        <VerticalSpace space="medium" />
+        </Expandable>
+        <Expandable title="Strings and Keys">
+          <StringsSection
+            tolgeeConfig={tolgeeConfig}
+            setTolgeeConfig={setTolgeeConfig}
+          />
+        </Expandable>
+        <Expandable title="Push">
+          <PushSection
+            tolgeeConfig={tolgeeConfig}
+            setTolgeeConfig={setTolgeeConfig}
+          />
+        </Expandable>
+        <VerticalSpace space="extraLarge" />
         {isLoading ? (
           <LoadingIndicator />
         ) : error ? (
