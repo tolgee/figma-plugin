@@ -16,6 +16,7 @@ import { TolgeeConfig } from "@/types";
 import { formatString } from "@/utilities";
 import { StringsEditor } from "./StringsEditor";
 import { TOLGEE_KEY_FORMAT_PLACEHOLDERS } from "@/constants";
+import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
 
 function getPreview(
   format: string,
@@ -27,8 +28,11 @@ function getPreview(
     | undefined
 ) {
   let newFormat = format;
-  for (const [key, value] of Object.entries(TOLGEE_KEY_FORMAT_PLACEHOLDERS)) {
-    newFormat = newFormat.replace(value, formatString(key, variableCasing));
+  for (const key of Object.keys(TOLGEE_KEY_FORMAT_PLACEHOLDERS)) {
+    newFormat = newFormat.replace(
+      new RegExp(`\\${key}\\}`, "g"),
+      formatString(key, variableCasing)
+    );
   }
   return newFormat;
 }
@@ -43,7 +47,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   setTolgeeConfig,
 }) => {
   const [format, setFormat] = useState(
-    tolgeeConfig.keyFormat || "[%page].[%frame].[%element]"
+    tolgeeConfig.keyFormat || "{page}.{frame}.{element}"
   );
   const [prefill, setPrefill] = useState(tolgeeConfig.prefillKeyFormat ?? true);
   const [ignoreNumbers, setIgnoreNumbers] = useState(
@@ -127,7 +131,15 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
           <VerticalSpace space="extraSmall" />
 
           <div>
-            <Muted>Key format</Muted>
+            <Muted
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
+            >
+              Key format{" "}
+              <InfoTooltip>
+                Start typing or type <strong>ctrl + space</strong> for all
+                available placeholders.
+              </InfoTooltip>
+            </Muted>
             <VerticalSpace space="extraSmall" />
 
             <StringsEditor

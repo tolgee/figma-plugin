@@ -92,39 +92,78 @@ export const StringsEditor = ({
         options: [
           {
             label: "page",
-            type: "variable",
+            detail: "(nearest page)",
+            type: "keyword",
+            apply(view, completion, from, to) {
+              view.dispatch({
+                changes: { from, to, insert: "{page}" },
+              });
+            },
           },
           {
             label: "frame",
-            type: "variable",
+            detail: "(nearest frame)",
+            type: "keyword",
+            apply(view, completion, from, to) {
+              view.dispatch({
+                changes: { from, to, insert: "{frame}" },
+              });
+            },
           },
           {
             label: "element",
-            type: "variable",
+            detail: "(nearest frame/component/section)",
+            type: "keyword",
+            apply(view, completion, from, to) {
+              view.dispatch({
+                changes: { from, to, insert: "{element}" },
+              });
+            },
           },
           {
             label: "component",
-            type: "variable",
+            detail: "(nearest component)",
+            type: "keyword",
+            apply(view, completion, from, to) {
+              view.dispatch({
+                changes: { from, to, insert: "{component}" },
+              });
+            },
           },
           {
             label: "section",
-            type: "variable",
+            detail: "(nearest section)",
+            type: "keyword",
+            apply(view, completion, from, to) {
+              view.dispatch({
+                changes: { from, to, insert: "{section}" },
+              });
+            },
           },
         ],
         commitCharacters: ["}"],
       };
     }
 
-    const openAutocompleteOnBrace = EditorView.inputHandler.of(
+    const openAutoComplete = EditorView.inputHandler.of(
       (view, from, to, text) => {
-        if (text === "{") {
-          startCompletion(view);
+        startCompletion(view);
+        return false;
+      }
+    );
+
+    // Blockiere das manuelle Tippen von { und }
+    const blockCurlyBraces = EditorView.inputHandler.of(
+      (view, from, to, text) => {
+        if (text === "{" || text === "}") {
+          return true; // block
         }
         return false;
       }
     );
 
     const extensions = [
+      blockCurlyBraces,
       minimalSetup,
       Prec.highest(keymap.of(shortcutsUptoDate ?? [])),
       EditorView.lineWrapping,
@@ -154,10 +193,12 @@ export const StringsEditor = ({
       extensions.push(
         autocompletion({
           override: [completions],
+          aboveCursor: true,
+          icons: false,
           activateOnTyping: true,
           activateOnTypingDelay: 0,
         }),
-        openAutocompleteOnBrace
+        openAutoComplete
       );
     }
 
