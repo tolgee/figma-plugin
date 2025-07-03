@@ -117,6 +117,7 @@ export type GlobalSettings = {
   ignoreHiddenLayers?: boolean;
   ignoreTextLayers?: boolean;
   textLayersPrefix?: string;
+  variableCasing?: "snake_case" | "camelCase" | "PascalCase" | "noSpaces";
 };
 
 export type CurrentDocumentSettings = GlobalSettings & {

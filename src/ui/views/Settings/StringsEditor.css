@@ -1,0 +1,159 @@
+.editor-wrapper {
+  border: 1px solid var(--figma-color-border);
+  overflow: hidden;
+  border-radius: var(--border-radius-2);
+  cursor: text;
+  background: var(--figma-color-bg);
+  padding: 1px;
+}
+
+.editor-wrapper:focus-within {
+  border: 1px solid var(--figma-color-border-brand-strong);
+  outline: 1px solid var(--figma-color-border-brand-strong);
+}
+
+.editor-wrapper > * {
+  padding: 8px 10px;
+}
+
+.editor {
+  display: grid;
+}
+
+.editor .cm-editor {
+  outline: none !important;
+  white-space: pre-wrap;
+}
+
+.editor .cm-line {
+  padding: 0px 1px !important;
+}
+
+.editor .cm-content {
+  padding: 0px !important;
+}
+
+.editor .cm-cursor {
+  border-color: var(--figma-color-border-primary) !important;
+}
+
+.editor .placeholder-widget {
+  display: inline-flex;
+  vertical-align: text-top;
+  align-items: center;
+  justify-content: center;
+  min-width: 15px;
+  border: 1px solid var(--figma-color-border);
+  background-color: var(--figma-color-bg);
+  color: var(--figma-color-text);
+  border-radius: 10px;
+  padding: 0px 7px;
+  font-size: 0.8em;
+  user-select: none;
+  margin: 0px 1px;
+  overflow: hidden;
+}
+
+.editor .placeholder-variable,
+.editor .placeholder-hash {
+  background-color: var(--figma-color-bg-editor-variable, #008371);
+}
+
+@media (prefers-color-scheme: light) {
+  .editor .placeholder-variable,
+  .editor .placeholder-hash {
+    color: white;
+  }
+}
+.editor > * {
+  display: grid;
+}
+.editor .placeholder-error {
+  background: #ff000054;
+}
+
+.editor .placeholder-tagOpen {
+  border: 1px solid var(--figma-color-border);
+  background-color: var(--figma-color-bg-brand);
+  color: var(--figma-color-bg-brand-contrast);
+  border-radius: 10px 0px 0px 10px;
+  padding-right: 6px;
+}
+
+.editor .placeholder-tagClose {
+  border: 1px solid var(--figma-color-border);
+  background-color: var(--figma-color-bg-brand);
+  color: var(--figma-color-bg-brand-contrast);
+  border-radius: 0px 10px 10px 0px;
+  padding-left: 6px;
+}
+
+.editor .placeholder-tagSelfClosed {
+  border: 1px solid var(--figma-color-border);
+  background-color: var(--figma-color-bg-brand);
+  color: var(--figma-color-bg-brand-contrast);
+}
+
+.editor [dir="rtl"] .placeholder-tagOpen {
+  border-radius: 0px 10px 10px 0px;
+  padding-left: 6px;
+}
+.editor [dir="rtl"] .placeholder-tagClose {
+  border-radius: 10px 0px 0px 10px;
+  padding-right: 6px;
+}
+
+.editor .cm-tooltip {
+  background-color: var(--figma-color-bg);
+  color: var(--figma-color-bg-contrast);
+  border-radius: 10px;
+  padding: 2px 9px;
+  user-select: none;
+  margin: 0px 1px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.plural-editor-wrapper {
+  display: grid;
+  gap: 2px;
+}
+.plural-editor-wrapper .styled-variants {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.plural-editor-wrapper .styled-parameters {
+  color: var(--figma-color-text-brand-secondary);
+}
+.plural-editor-wrapper .styled-variant-label {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--figma-color-border);
+  background-color: var(--figma-color-bg);
+  color: var(--figma-color-text);
+  border-radius: 12px;
+  padding: 2px 9px;
+  user-select: none;
+  margin: 0px 1px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.plural-editor-wrapper .styled-variant-content {
+  display: block;
+}
+
+:root {
+  --syntax-color-function: #007300;
+  --syntax-color-other: #002bff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --syntax-color-function: #9ac99a;
+    --syntax-color-other: #99aaff;
+  }
+}

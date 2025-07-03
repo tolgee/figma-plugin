@@ -24,9 +24,14 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
   const nodeId = node?.id ?? "";
   const tolgeeConfig = useGlobalState((c) => c.config);
 
-  const prefilledKey = usePrefilledKey(nodeId, tolgeeConfig?.keyFormat ?? "");
+  const prefilledKey = usePrefilledKey(
+    nodeId,
+    tolgeeConfig?.keyFormat ?? "",
+    tolgeeConfig?.variableCasing
+  );
 
   const [keyName, setKeyName] = useState((node.key || prefilledKey.key) ?? "");
+
   const defaultNamespace = useGlobalState((c) => c.config?.namespace);
   const [namespace, setNamespace] = useState(node.ns ?? defaultNamespace);
 
@@ -39,7 +44,7 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
   );
 
   useEffect(() => {
-    if (prefilledKey.key) {
+    if (prefilledKey.key && !node.connected) {
       handleKeyChange(node)(prefilledKey.key);
     }
   }, [prefilledKey.key]);

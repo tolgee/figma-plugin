@@ -8,18 +8,29 @@ import {
   Checkbox,
   Bold,
   Button,
+  RadioButtons,
 } from "@create-figma-plugin/ui";
 import styles from "./Settings.css";
 import { TargetedEvent } from "preact/compat";
 import { TolgeeConfig } from "@/types";
+import { formatString } from "@/utilities";
+import { StringsEditor } from "./StringsEditor";
+import { TOLGEE_KEY_FORMAT_PLACEHOLDERS } from "@/constants";
 
-function getPreview(format: string) {
-  return format
-    .replace(/\[%page\]/g, "Registration")
-    .replace(/\[%frame\]/g, "frame")
-    .replace(/\[%element\]/g, "button")
-    .replace(/\[%component\]/g, "component")
-    .replace(/\[%section\]/g, "section");
+function getPreview(
+  format: string,
+  variableCasing:
+    | "snake_case"
+    | "camelCase"
+    | "PascalCase"
+    | "noSpaces"
+    | undefined
+) {
+  let newFormat = format;
+  for (const [key, value] of Object.entries(TOLGEE_KEY_FORMAT_PLACEHOLDERS)) {
+    newFormat = newFormat.replace(value, formatString(key, variableCasing));
+  }
+  return newFormat;
 }
 
 export interface StringsSectionProps {
@@ -58,10 +69,11 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   };
 
   const handleResetPlaceholder = () => {
-    handleFormatChange("[%page].[%frame].[%element]");
+    handleFormatChange("{page}.{frame}.{element}");
     setTolgeeConfig({
       ...tolgeeConfig,
-      keyFormat: "[%page].[%frame].[%element]",
+      variableCasing: "camelCase",
+      keyFormat: "{page}.{frame}.{element}",
     });
   };
 
@@ -113,29 +125,59 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
       {prefill && (
         <Fragment>
           <VerticalSpace space="extraSmall" />
-          <div className={styles.keyFormat}>
-            <div>
-              <Muted>Key format</Muted>
-              <VerticalSpace space="extraSmall" />
 
-              <Textbox
-                value={format}
-                onValueInput={handleFormatChange}
-                variant="border"
-                style={{ cursor: "text" }}
-                placeholder="[%page].[%frame].[%element]"
+          <div>
+            <Muted>Key format</Muted>
+            <VerticalSpace space="extraSmall" />
+
+            <StringsEditor
+              mode="placeholders"
+              value={format}
+              onChange={handleFormatChange}
+            />
+          </div>
+          <VerticalSpace space="small" />
+          <div>
+            <Muted>Preview</Muted>
+            <VerticalSpace space="extraSmall" />
+
+            <Muted>
+              <Bold>{getPreview(format, tolgeeConfig.variableCasing)}</Bold>
+            </Muted>
+          </div>
+          <VerticalSpace space="small" />
+          <div>
+            <Muted>Variable formatting (optional)</Muted>
+            <VerticalSpace space="extraSmall" />
+            <div style={{ marginLeft: 16 }}>
+              <RadioButtons
+                value={tolgeeConfig.variableCasing ?? ""}
+                options={[
+                  { value: "", children: <Text>none</Text> },
+                  { value: "snake_case", children: <Text>snake_case</Text> },
+                  { value: "camelCase", children: <Text>camelCase</Text> },
+                  { value: "PascalCase", children: <Text>PascalCase</Text> },
+                  { value: "noSpaces", children: <Text>nospaces</Text> },
+                ]}
+                onValueChange={(value) => {
+                  if (value === tolgeeConfig.variableCasing) {
+                    setTolgeeConfig({
+                      ...tolgeeConfig,
+                      variableCasing: undefined,
+                    });
+                  } else {
+                    setTolgeeConfig({
+                      ...tolgeeConfig,
+                      variableCasing:
+                        value as (typeof tolgeeConfig)["variableCasing"],
+                    });
+                  }
+                }}
               />
             </div>
-            <div>
-              <Muted>Preview</Muted>
-              <VerticalSpace space="extraSmall" />
-
-              <Muted>
-                <Bold>{getPreview(format)}</Bold>
-              </Muted>
-            </div>
           </div>
-          <VerticalSpace space="extraSmall" />
+
+          <VerticalSpace space="medium" />
           <Button secondary onClick={() => handleResetPlaceholder()}>
             <Text>Default</Text>
           </Button>
