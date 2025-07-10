@@ -24,6 +24,8 @@
   --figma-color-teal-bg: rgb(0, 175, 154, 0.08);
   --figma-color-red: rgb(255, 0, 46);
   --figma-color-red-bg: rgb(255, 0, 46, 0.08);
+  --figma-color-bg-grey: #E6E6E6;
+  --figma-color-text-grey: #000000;
 }
 
 @media (prefers-color-scheme: dark) {

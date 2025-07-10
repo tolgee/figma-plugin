@@ -2,13 +2,7 @@ import { useApiQuery } from "@/ui/client/useQueryApi";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
 import { TolgeeConfig } from "@/types";
-import {
-  VerticalSpace,
-  Text,
-  Muted,
-  Checkbox,
-  Textbox,
-} from "@create-figma-plugin/ui";
+import { VerticalSpace, Text, Muted, Checkbox } from "@create-figma-plugin/ui";
 import { Fragment, FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import styles from "./ProjectSettings.css";
@@ -84,8 +78,6 @@ export const ProjectSettings: FunctionComponent<Props> = ({
         namespace: initialData?.namespace ?? namespaces?.[0] ?? "",
         namespacesDisabled:
           initialData?.namespacesDisabled ?? namespacesNotPresent,
-        ignoreNumbers: initialData?.ignoreNumbers ?? true,
-        ignorePrefix: initialData?.ignorePrefix ?? "_",
       });
     }
   }, [languages, namespaces]);
@@ -152,35 +144,6 @@ export const ProjectSettings: FunctionComponent<Props> = ({
           <Text>Hide namespace selectors</Text>
         </Checkbox>
       </div>
-      <VerticalSpace space="extraLarge" />
-      <Text>
-        <Muted>Ignore text nodes prefixed with:</Muted>
-      </Text>
-      <VerticalSpace space="small" />
-      <Textbox
-        data-cy="settings_input_ignore_prefix"
-        onValueInput={(ignorePrefix) => {
-          setSettings((settings) => ({
-            ...settings,
-            ignorePrefix,
-          }));
-        }}
-        value={settings?.ignorePrefix ?? "_"}
-        variant="border"
-      />
-      <VerticalSpace space="small" />
-      <VerticalSpace space="small" />
-      <Checkbox
-        value={Boolean(settings?.ignoreNumbers)}
-        onChange={(e) =>
-          setSettings((settings) => ({
-            ...settings!,
-            ignoreNumbers: Boolean(e.currentTarget.checked),
-          }))
-        }
-      >
-        <Text>Ignore nodes with numbers</Text>
-      </Checkbox>
     </Fragment>
   );
 };

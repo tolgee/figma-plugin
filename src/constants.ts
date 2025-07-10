@@ -9,3 +9,11 @@ export const TOLGEE_KEY_FORMAT_PLACEHOLDERS = {
   component: "{component}",
   section: "{section}",
 } as const;
+
+export const TOLGEE_KEY_FORMAT_PLACEHOLDERS_EXAMPLES = {
+  page: "My page",
+  frame: "My frame",
+  element: "My element",
+  component: "My Component",
+  section: "My Section",
+} as const;

@@ -4,7 +4,6 @@ declare const styles: {
   readonly "cm-editor": string;
   readonly "cm-line": string;
   readonly "cm-tooltip": string;
-  readonly "editor": string;
   readonly "editor-wrapper": string;
   readonly "placeholder-error": string;
   readonly "placeholder-hash": string;
@@ -14,6 +13,7 @@ declare const styles: {
   readonly "placeholder-variable": string;
   readonly "placeholder-widget": string;
   readonly "plural-editor-wrapper": string;
+  readonly "strings-editor": string;
   readonly "styled-parameters": string;
   readonly "styled-variant-content": string;
   readonly "styled-variant-label": string;

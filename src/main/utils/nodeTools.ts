@@ -33,12 +33,9 @@ function shouldIncludeNode(
   }
   if (
     settings.ignoreTextLayers &&
-    settings.textLayersPrefix &&
-    node.name.startsWith(settings.textLayersPrefix)
+    settings.ignorePrefix &&
+    node.name.startsWith(settings.ignorePrefix)
   ) {
-    return false;
-  }
-  if (settings.ignorePrefix && node.name.startsWith(settings.ignorePrefix)) {
     return false;
   }
   if (node.characters.trim().length === 0) {

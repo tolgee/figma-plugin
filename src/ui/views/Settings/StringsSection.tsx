@@ -8,32 +8,38 @@ import {
   Checkbox,
   Bold,
   Button,
-  RadioButtons,
+  DropdownOption,
+  Dropdown,
 } from "@create-figma-plugin/ui";
 import styles from "./Settings.css";
 import { TargetedEvent } from "preact/compat";
 import { TolgeeConfig } from "@/types";
 import { formatString } from "@/utilities";
 import { StringsEditor } from "./StringsEditor";
-import { TOLGEE_KEY_FORMAT_PLACEHOLDERS } from "@/constants";
+import {
+  TOLGEE_KEY_FORMAT_PLACEHOLDERS,
+  TOLGEE_KEY_FORMAT_PLACEHOLDERS_EXAMPLES,
+} from "@/constants";
 import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
 
 function getPreview(
   format: string,
-  variableCasing:
-    | "snake_case"
-    | "camelCase"
-    | "PascalCase"
-    | "noSpaces"
-    | undefined
+  variableCasing: TolgeeConfig["variableCasing"]
 ) {
   let newFormat = format;
+  console.log(newFormat, variableCasing);
   for (const key of Object.keys(TOLGEE_KEY_FORMAT_PLACEHOLDERS)) {
     newFormat = newFormat.replace(
-      new RegExp(`\\${key}\\}`, "g"),
-      formatString(key, variableCasing)
+      new RegExp(`\\{${key}\\}`, "g"),
+      formatString(
+        TOLGEE_KEY_FORMAT_PLACEHOLDERS_EXAMPLES[
+          key as keyof typeof TOLGEE_KEY_FORMAT_PLACEHOLDERS
+        ],
+        variableCasing
+      )
     );
   }
+  console.log(newFormat);
   return newFormat;
 }
 
@@ -41,6 +47,58 @@ export interface StringsSectionProps {
   tolgeeConfig: Partial<TolgeeConfig> & { apiUrl: string };
   setTolgeeConfig: (c: Partial<TolgeeConfig> & { apiUrl: string }) => void;
 }
+
+const keyFormatHelpText = (
+  <Fragment>
+    <div>
+      Define your key format to be consistent and fast.
+      <br />
+      You can use variables, text and separators.
+      <br />
+      Variables will allow you to use names (values) of Figma structure:
+      <br />
+      <ul>
+        <li>element name (name of the string)</li>
+        <li>...</li>
+        <li>section (nearest section)</li>
+        <li>separtators can be “.” “:” “_” “-” etc.</li>
+      </ul>
+      <br />
+      Read more in our guide{" "}
+      <a
+        href="https://docs.tolgee.io/key-formatting"
+        target="_blank"
+        rel="noreferrer"
+      >
+        How to name translation keys
+      </a>
+      .
+    </div>
+  </Fragment>
+);
+
+const formattingStyleHelpText = (
+  <Fragment>
+    <div>
+      This will help you preserve the same format style.
+      <br />
+      Your style will be automatically applied to the variables.
+      <br />
+      <br />
+      E.g. style "element_name"
+      <br />
+      "My cool button"→"my_cool_button"
+    </div>
+  </Fragment>
+);
+
+const variableCasingOptions: Array<DropdownOption> = [
+  { value: "", text: "none" },
+  { value: "snake_case", text: "snake_case" },
+  { value: "camelCase", text: "camelCase" },
+  { value: "PascalCase", text: "PascalCase" },
+  { value: "noSpaces", text: "nospaces" },
+];
 
 export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   tolgeeConfig,
@@ -59,7 +117,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   const [ignoreTextLayers, setIgnoreTextLayers] = useState(
     tolgeeConfig.ignoreTextLayers ?? false
   );
-  const [textLayersPrefix, setTextLayersPrefix] = useState("");
+  const [ignorePrefix, setIgnorePrefix] = useState("");
 
   const handleFormatChange = (val: string) => {
     setFormat(val);
@@ -76,14 +134,21 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
     handleFormatChange("{page}.{frame}.{element}");
     setTolgeeConfig({
       ...tolgeeConfig,
-      variableCasing: "camelCase",
+      variableCasing: "snake_case",
       keyFormat: "{page}.{frame}.{element}",
     });
   };
 
-  function handleTextLayersPrefixChange(value: string): void {
-    setTextLayersPrefix(value);
-    setTolgeeConfig({ ...tolgeeConfig, textLayersPrefix: value });
+  const handleVariableCasingChange = (value: string) => {
+    setTolgeeConfig({
+      ...tolgeeConfig,
+      variableCasing: value as (typeof tolgeeConfig)["variableCasing"],
+    });
+  };
+
+  function handleIgnorePrefixChange(value: string): void {
+    setIgnorePrefix(value);
+    setTolgeeConfig({ ...tolgeeConfig, ignorePrefix: value });
   }
 
   function handleIgnoreNumbersChange(
@@ -134,18 +199,28 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
             <Muted
               style={{ display: "flex", alignItems: "center", gap: "8px" }}
             >
-              Key format{" "}
-              <InfoTooltip>
-                Start typing or type <strong>ctrl + space</strong> for all
-                available placeholders.
-              </InfoTooltip>
+              Key format <InfoTooltip>{keyFormatHelpText}</InfoTooltip>
             </Muted>
             <VerticalSpace space="extraSmall" />
 
-            <StringsEditor
-              mode="placeholders"
-              value={format}
-              onChange={handleFormatChange}
+            <StringsEditor value={format} onChange={handleFormatChange} />
+          </div>
+          <VerticalSpace space="small" />
+          <div>
+            <Muted
+              style={{ display: "flex", alignItems: "center", gap: "8px" }}
+            >
+              Formatting style{" "}
+              <InfoTooltip>{formattingStyleHelpText}</InfoTooltip>
+            </Muted>
+            <VerticalSpace space="extraSmall" />
+
+            <Dropdown
+              style={{ justifyContent: "space-between" }}
+              options={variableCasingOptions}
+              value={tolgeeConfig.variableCasing ?? ""}
+              onValueChange={handleVariableCasingChange}
+              variant="border"
             />
           </div>
           <VerticalSpace space="small" />
@@ -157,38 +232,6 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
               <Bold>{getPreview(format, tolgeeConfig.variableCasing)}</Bold>
             </Muted>
           </div>
-          <VerticalSpace space="small" />
-          <div>
-            <Muted>Variable formatting (optional)</Muted>
-            <VerticalSpace space="extraSmall" />
-            <div style={{ marginLeft: 16 }}>
-              <RadioButtons
-                value={tolgeeConfig.variableCasing ?? ""}
-                options={[
-                  { value: "", children: <Text>none</Text> },
-                  { value: "snake_case", children: <Text>snake_case</Text> },
-                  { value: "camelCase", children: <Text>camelCase</Text> },
-                  { value: "PascalCase", children: <Text>PascalCase</Text> },
-                  { value: "noSpaces", children: <Text>nospaces</Text> },
-                ]}
-                onValueChange={(value) => {
-                  if (value === tolgeeConfig.variableCasing) {
-                    setTolgeeConfig({
-                      ...tolgeeConfig,
-                      variableCasing: undefined,
-                    });
-                  } else {
-                    setTolgeeConfig({
-                      ...tolgeeConfig,
-                      variableCasing:
-                        value as (typeof tolgeeConfig)["variableCasing"],
-                    });
-                  }
-                }}
-              />
-            </div>
-          </div>
-
           <VerticalSpace space="medium" />
           <Button secondary onClick={() => handleResetPlaceholder()}>
             <Text>Default</Text>
@@ -225,8 +268,8 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
         <Textbox
           style={{ flex: 1, cursor: "text" }}
           variant="border"
-          value={textLayersPrefix}
-          onValueInput={handleTextLayersPrefixChange}
+          value={ignorePrefix}
+          onValueInput={handleIgnorePrefixChange}
         />
       </div>
     </Fragment>

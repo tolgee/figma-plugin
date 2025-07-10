@@ -82,7 +82,6 @@ export const setPluginData = async (data: Partial<TolgeeConfig>) => {
     namespacesDisabled,
     prefillKeyFormat,
     tags,
-    textLayersPrefix,
     updateScreenshots,
     variableCasing,
   } = data;
@@ -101,7 +100,6 @@ export const setPluginData = async (data: Partial<TolgeeConfig>) => {
     namespacesDisabled,
     prefillKeyFormat,
     tags,
-    textLayersPrefix,
     updateScreenshots,
     variableCasing,
   });

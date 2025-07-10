@@ -116,7 +116,6 @@ export type GlobalSettings = {
   keyFormat?: string;
   ignoreHiddenLayers?: boolean;
   ignoreTextLayers?: boolean;
-  textLayersPrefix?: string;
   variableCasing?: "snake_case" | "camelCase" | "PascalCase" | "noSpaces";
 };
 

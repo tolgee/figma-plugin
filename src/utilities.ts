@@ -21,7 +21,7 @@ export const emit = <Handler extends EventHandler>(
  * Formats a string based on the format option by replacing all spaces with the matching
  */
 export const formatString = (
-  str: string,
+  str = "",
   formatOption: TolgeeConfig["variableCasing"]
 ) => {
   switch (formatOption) {
