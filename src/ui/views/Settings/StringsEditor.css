@@ -154,3 +154,7 @@
     --syntax-color-other: #99aaff;
   }
 }
+
+.strings-editor .tolgee-completion-option {
+  text-transform: none;
+}

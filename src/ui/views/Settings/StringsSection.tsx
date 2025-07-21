@@ -27,19 +27,22 @@ function getPreview(
   variableCasing: TolgeeConfig["variableCasing"]
 ) {
   let newFormat = format;
-  console.log(newFormat, variableCasing);
   for (const key of Object.keys(TOLGEE_KEY_FORMAT_PLACEHOLDERS)) {
-    newFormat = newFormat.replace(
-      new RegExp(`\\{${key}\\}`, "g"),
-      formatString(
-        TOLGEE_KEY_FORMAT_PLACEHOLDERS_EXAMPLES[
-          key as keyof typeof TOLGEE_KEY_FORMAT_PLACEHOLDERS
-        ],
-        variableCasing
-      )
+    const replaceString = formatString(
+      TOLGEE_KEY_FORMAT_PLACEHOLDERS_EXAMPLES[
+        key as keyof typeof TOLGEE_KEY_FORMAT_PLACEHOLDERS
+      ],
+      variableCasing
     );
+    if (replaceString === "") {
+      newFormat = newFormat.replace(new RegExp(`{${key}}[^{]*`, "g"), "");
+    } else {
+      newFormat = newFormat.replace(
+        new RegExp(`\\{${key}\\}`, "g"),
+        replaceString
+      );
+    }
   }
-  console.log(newFormat);
   return newFormat;
 }
 
@@ -66,7 +69,7 @@ const keyFormatHelpText = (
       <br />
       Read more in our guide{" "}
       <a
-        href="https://docs.tolgee.io/key-formatting"
+        href="https://docs.tolgee.io/blog/naming-translation-keys"
         target="_blank"
         rel="noreferrer"
       >
@@ -93,7 +96,7 @@ const formattingStyleHelpText = (
 );
 
 const variableCasingOptions: Array<DropdownOption> = [
-  { value: "", text: "none" },
+  { value: "", text: "Keep original format" },
   { value: "snake_case", text: "snake_case" },
   { value: "camelCase", text: "camelCase" },
   { value: "PascalCase", text: "PascalCase" },
@@ -105,7 +108,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   setTolgeeConfig,
 }) => {
   const [format, setFormat] = useState(
-    tolgeeConfig.keyFormat || "{page}.{frame}.{element}"
+    tolgeeConfig.keyFormat || "{page}.{frame}.{elementName}"
   );
   const [prefill, setPrefill] = useState(tolgeeConfig.prefillKeyFormat ?? true);
   const [ignoreNumbers, setIgnoreNumbers] = useState(

@@ -50,7 +50,7 @@ export const StringsEditor = ({
   });
 
   function completions(context: CompletionContext): CompletionResult | null {
-    const word = context.matchBefore(/\w*/);
+    const word = context.matchBefore(/[A-Za-z0-9]*/);
     if (!word || (word.from == word.to && !context.explicit)) {
       return null;
     }
@@ -58,32 +58,32 @@ export const StringsEditor = ({
       from: word.from,
       options: [
         {
-          label: "page",
-          detail: "(nearest page)",
+          label: "element name",
+          detail: "(name of the string)",
           type: "keyword",
-          apply(view, completion, from, to) {
+          apply(view, _, from, to) {
             view.dispatch({
-              changes: { from, to, insert: "{page}" },
+              changes: { from, to, insert: "{elementName}" },
             });
           },
         },
         {
-          label: "frame",
-          detail: "(nearest frame)",
+          label: "element text",
+          detail: "(displayed text of the string)",
           type: "keyword",
-          apply(view, completion, from, to) {
+          apply(view, _, from, to) {
             view.dispatch({
-              changes: { from, to, insert: "{frame}" },
+              changes: { from, to, insert: "{elementText}" },
             });
           },
         },
         {
-          label: "element",
-          detail: "(nearest frame/component/section)",
+          label: "group",
+          detail: "(nearest group)",
           type: "keyword",
-          apply(view, completion, from, to) {
+          apply(view, _, from, to) {
             view.dispatch({
-              changes: { from, to, insert: "{element}" },
+              changes: { from, to, insert: "{group}" },
             });
           },
         },
@@ -91,9 +91,29 @@ export const StringsEditor = ({
           label: "component",
           detail: "(nearest component)",
           type: "keyword",
-          apply(view, completion, from, to) {
+          apply(view, _, from, to) {
             view.dispatch({
               changes: { from, to, insert: "{component}" },
+            });
+          },
+        },
+        {
+          label: "frame",
+          detail: "(nearest frame)",
+          type: "keyword",
+          apply(view, _, from, to) {
+            view.dispatch({
+              changes: { from, to, insert: "{frame}" },
+            });
+          },
+        },
+        {
+          label: "artboard",
+          detail: "(artboard frame)",
+          type: "keyword",
+          apply(view, _, from, to) {
+            view.dispatch({
+              changes: { from, to, insert: "{artboard}" },
             });
           },
         },
@@ -101,7 +121,7 @@ export const StringsEditor = ({
           label: "section",
           detail: "(nearest section)",
           type: "keyword",
-          apply(view, completion, from, to) {
+          apply(view, _, from, to) {
             view.dispatch({
               changes: { from, to, insert: "{section}" },
             });
@@ -136,6 +156,9 @@ export const StringsEditor = ({
       ),
       autocompletion({
         override: [completions],
+        optionClass: () => {
+          return "tolgee-completion-option";
+        },
         aboveCursor: true,
         icons: false,
       }),
@@ -177,6 +200,9 @@ export const StringsEditor = ({
     <div class="editor-wrapper">
       <div
         onClick={() => {
+          startCompletion(editor.current!);
+        }}
+        onKeyDown={() => {
           startCompletion(editor.current!);
         }}
         class="strings-editor"

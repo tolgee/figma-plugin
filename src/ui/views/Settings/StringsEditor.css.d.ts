@@ -18,6 +18,7 @@ declare const styles: {
   readonly "styled-variant-content": string;
   readonly "styled-variant-label": string;
   readonly "styled-variants": string;
+  readonly "tolgee-completion-option": string;
 };
 export = styles;
 

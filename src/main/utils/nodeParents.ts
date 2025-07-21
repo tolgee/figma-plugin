@@ -18,18 +18,20 @@ export function getFrame(nodeId: string): FrameNode | undefined {
 /**
  * Returns the page name for the node.
  */
-export function getPage(nodeId: string): PageNode | undefined {
+export function getArtboard(nodeId: string): FrameNode | undefined {
   const realNode: BaseNode | null = figma.getNodeById(
     nodeId
   ) as BaseNode | null;
   if (!realNode) return undefined;
   let parent = realNode.parent;
+  let latestFrame: FrameNode | undefined;
   while (parent) {
-    if (parent.type === "PAGE") {
-      return parent as PageNode;
+    if (parent.type === "FRAME") {
+      latestFrame = parent as FrameNode;
     }
     parent = parent.parent;
   }
+  return latestFrame;
 }
 
 /**
@@ -68,6 +70,22 @@ export function getSection(nodeId: string): FrameNode | GroupNode | undefined {
       (parent.name.toLowerCase().startsWith("section") ||
         parent.name.includes("/"))
     ) {
+      return parent;
+    }
+    parent = parent.parent;
+  }
+  return undefined;
+}
+
+export function getGroup(nodeId: string): GroupNode | undefined {
+  const realNode: BaseNode | null = figma.getNodeById(
+    nodeId
+  ) as BaseNode | null;
+  if (!realNode) return undefined;
+  let parent = realNode.parent;
+  while (parent) {
+    // Consider groups or frames with names starting with "section" or containing "/"
+    if (parent.type === "GROUP") {
       return parent;
     }
     parent = parent.parent;
