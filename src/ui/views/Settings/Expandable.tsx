@@ -5,7 +5,8 @@ import { ChevronDown } from "../../icons/SvgIcons";
 export const Expandable: FunctionComponent<{
   title: string;
   defaultOpen?: boolean;
-}> = ({ title, defaultOpen = false, children }) => {
+  dataCy?: string;
+}> = ({ title, defaultOpen = false, children, dataCy }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div style={{ marginBottom: 16 }}>
@@ -20,6 +21,7 @@ export const Expandable: FunctionComponent<{
           marginBottom: 16,
         }}
         onClick={() => setOpen((v) => !v)}
+        data-cy={dataCy}
       >
         {title}
         <ChevronDown

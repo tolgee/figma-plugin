@@ -215,6 +215,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
             <VerticalSpace space="extraSmall" />
 
             <Dropdown
+              data-cy="settings_dropdown_variable_casing"
               style={{ justifyContent: "space-between" }}
               options={variableCasingOptions}
               value={tolgeeConfig.variableCasing ?? ""}
@@ -227,7 +228,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
             <Muted>Preview</Muted>
             <VerticalSpace space="extraSmall" />
 
-            <Muted>
+            <Muted data-cy="settings_text_preview">
               <Bold>{getPreview(format, tolgeeConfig.variableCasing)}</Bold>
             </Muted>
           </div>
@@ -252,6 +253,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
       </Checkbox>
       <div class={styles.textLayers}>
         <Checkbox
+          data-cy="settings_checkbox_ignore_text_layers"
           style={{ flex: 0 }}
           value={ignoreTextLayers}
           onChange={handleTextLayersChange}
@@ -261,6 +263,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
           </Text>
         </Checkbox>
         <Textbox
+          data-cy="settings_input_ignore_prefix"
           style={{ flex: 1, cursor: "text" }}
           variant="border"
           value={ignorePrefix}

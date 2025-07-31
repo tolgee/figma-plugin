@@ -20,7 +20,11 @@ export const Badge = ({ onClick, children, title, onRemove }: Props) => {
     >
       {children}
       {onRemove && (
-        <button onClick={onRemove} aria-label="remove-tag">
+        <button
+          data-cy="badge-remove"
+          onClick={onRemove}
+          aria-label="remove-tag"
+        >
           <X width={16} height={16} />
         </button>
       )}

@@ -155,7 +155,11 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       <VerticalSpace space="large" />
       {setupStep == null ? (
         <Container space="medium">
-          <Expandable title="Project">
+          <Expandable
+            dataCy="settings_expandable_project"
+            title="Project"
+            defaultOpen={!tolgeeConfig.apiKey}
+          >
             <ProjectSection
               projectName={projectName}
               tolgeeConfig={tolgeeConfig}
@@ -165,13 +169,16 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
               handleValidate={handleValidate}
             />
           </Expandable>
-          <Expandable title="Strings and Keys">
+          <Expandable
+            dataCy="settings_expandable_strings"
+            title="Strings and Keys"
+          >
             <StringsSection
               tolgeeConfig={tolgeeConfig}
               setTolgeeConfig={setTolgeeConfig}
             />
           </Expandable>
-          <Expandable title="Push">
+          <Expandable dataCy="settings_expandable_push" title="Push">
             <PushSection
               tolgeeConfig={tolgeeConfig}
               setTolgeeConfig={setTolgeeConfig}

@@ -64,6 +64,7 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <Checkbox
+        data-cy="settings_checkbox_update_screenshots"
         value={tolgeeConfig.updateScreenshots ?? true}
         checked={tolgeeConfig.updateScreenshots ?? true}
         onChange={(e) =>
@@ -76,6 +77,7 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
         <Text>Update screenshots</Text>
       </Checkbox>
       <Checkbox
+        data-cy="settings_checkbox_add_tags"
         value={tolgeeConfig.addTags ?? false}
         checked={tolgeeConfig.addTags ?? false}
         onChange={(e) => {
@@ -107,6 +109,7 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
             ))}
             <div style={{ position: "relative", flex: 1, minWidth: 120 }}>
               <input
+                data-cy="settings_input_tag"
                 ref={inputRef}
                 type="text"
                 placeholder="Add tag..."
