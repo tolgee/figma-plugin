@@ -267,7 +267,10 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
               {setupStep !== "project" && (
                 <Button
                   data-cy="settings_button_close"
-                  onClick={() => setSetupStep("project")}
+                  onClick={() => {
+                    if (setupStep === "strings") setSetupStep("project");
+                    else if (setupStep === "push")   setSetupStep("strings");
+                  }}
                   secondary
                 >
                   Back
