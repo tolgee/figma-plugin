@@ -5,7 +5,7 @@
  Manage translations in your Figma files
 </h1>
 
-<div align="center"> 
+<div align="center">
 
 [<img src="https://raw.githubusercontent.com/tolgee/documentation/main/tolgee_logo_text.svg" alt="Tolgee" width="200" />](https://tolgee.io)
 

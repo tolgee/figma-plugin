@@ -22,7 +22,7 @@ export const Expandable: FunctionComponent<{
         }}
         onClick={() => setOpen((v) => !v)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             setOpen((v) => !v);
           }
@@ -30,7 +30,9 @@ export const Expandable: FunctionComponent<{
         tabIndex={0}
         role="button"
         aria-expanded={open}
-        aria-controls={`expandable-content-${title.replace(/\s+/g, '-').toLowerCase()}`}
+        aria-controls={`expandable-content-${title
+          .replace(/\s+/g, "-")
+          .toLowerCase()}`}
         data-cy={dataCy}
       >
         {title}
@@ -45,13 +47,12 @@ export const Expandable: FunctionComponent<{
         />
       </div>
       {open && (
-        <div id={`expandable-content-${title.replace(/\s+/g, '-').toLowerCase()}`}>
+        <div
+          id={`expandable-content-${title.replace(/\s+/g, "-").toLowerCase()}`}
+        >
           {children}
         </div>
       )}
-    </div>
-  );
-      {open && <div>{children}</div>}
     </div>
   );
 };

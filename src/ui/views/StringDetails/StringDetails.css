@@ -55,7 +55,8 @@
 .warningNoticeContainerIcon {
   color: var(--figma-color-teal);
 }
-.infoLink, .infoLink * {
+.infoLink,
+.infoLink * {
   color: var(--figma-color-text-brand);
   text-decoration: underline;
   cursor: pointer;

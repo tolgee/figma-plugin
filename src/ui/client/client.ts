@@ -79,7 +79,7 @@ async function customFetch(
   };
 
   if (options.apiTimeout) {
-    if (typeof AbortSignal.timeout === 'function') {
+    if (typeof AbortSignal.timeout === "function") {
       init.signal = AbortSignal.timeout(options.apiTimeout);
     } else {
       const controller = new AbortController();
