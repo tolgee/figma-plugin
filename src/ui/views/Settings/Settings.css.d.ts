@@ -1,4 +1,5 @@
 declare const styles: {
+  readonly "casingContainer": string;
   readonly "down": string;
   readonly "headerRow": string;
   readonly "keyFormat": string;

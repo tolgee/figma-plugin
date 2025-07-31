@@ -7,8 +7,6 @@ import {
   Textbox,
   Checkbox,
   Bold,
-  DropdownOption,
-  Dropdown,
   Inline,
 } from "@create-figma-plugin/ui";
 import styles from "./Settings.css";
@@ -95,7 +93,7 @@ const formattingStyleHelpText = (
   </Fragment>
 );
 
-const variableCasingOptions: Array<DropdownOption> = [
+const variableCasingOptions: Array<{ value: string; text: string }> = [
   { value: "", text: "keep original format" },
   { value: "snake_case", text: "element_name" },
   { value: "snake_case_capitalized", text: "Element_name" },
@@ -214,14 +212,22 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
             </Inline>
             <VerticalSpace space="extraSmall" />
 
-            <Dropdown
+            <select
               data-cy="settings_dropdown_variable_casing"
-              style={{ justifyContent: "space-between" }}
-              options={variableCasingOptions}
+              className={styles.casingContainer}
               value={tolgeeConfig.variableCasing ?? ""}
-              onValueChange={handleVariableCasingChange}
-              variant="border"
-            />
+              onChange={(e) => {
+                handleVariableCasingChange(
+                  (e.target as HTMLInputElement).value
+                );
+              }}
+            >
+              {variableCasingOptions.map((l) => (
+                <option key={l.value} value={l.value}>
+                  {l.text}
+                </option>
+              ))}
+            </select>
           </div>
           <VerticalSpace space="small" />
           <div>
