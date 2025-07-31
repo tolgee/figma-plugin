@@ -153,9 +153,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       <VerticalSpace space="medium" />
       <div className={styles.namespaceShowRow}>
         <Checkbox value={showNamespaces} onChange={handleShowNamespaces}>
-          <Text>
-            <Bold>Show namespaces</Bold>
-          </Text>
+          <Text>Show namespaces</Text>
         </Checkbox>
 
         <InfoTooltip>{namespaceHelpText}</InfoTooltip>

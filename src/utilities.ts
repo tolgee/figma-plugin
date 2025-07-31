@@ -30,7 +30,9 @@ export const formatString = (
         .split(" ")
         .filter(Boolean)
         .map((word, index) =>
-          index > 0 ? word.charAt(0).toUpperCase() + word.slice(1) : word
+          index > 0
+            ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            : word.toLowerCase()
         )
         .join("");
     case "PascalCase":
@@ -44,6 +46,12 @@ export const formatString = (
         .split(" ")
         .filter(Boolean)
         .map((word) => word.toLowerCase())
+        .join("_");
+    case "snake_case_capitalized":
+      return str
+        .split(" ")
+        .filter(Boolean)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join("_");
     case "noSpaces":
       return str.replace(/\s/g, "");

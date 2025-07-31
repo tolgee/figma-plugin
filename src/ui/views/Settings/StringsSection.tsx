@@ -7,9 +7,9 @@ import {
   Textbox,
   Checkbox,
   Bold,
-  Button,
   DropdownOption,
   Dropdown,
+  Inline,
 } from "@create-figma-plugin/ui";
 import styles from "./Settings.css";
 import { TargetedEvent } from "preact/compat";
@@ -96,11 +96,12 @@ const formattingStyleHelpText = (
 );
 
 const variableCasingOptions: Array<DropdownOption> = [
-  { value: "", text: "Keep original format" },
-  { value: "snake_case", text: "snake_case" },
-  { value: "camelCase", text: "camelCase" },
-  { value: "PascalCase", text: "PascalCase" },
-  { value: "noSpaces", text: "nospaces" },
+  { value: "", text: "keep original format" },
+  { value: "snake_case", text: "element_name" },
+  { value: "snake_case_capitalized", text: "Element_name" },
+  { value: "camelCase", text: "elementName" },
+  { value: "PascalCase", text: "ElementName" },
+  { value: "noSpaces", text: "elementname" },
 ];
 
 export const StringsSection: FunctionComponent<StringsSectionProps> = ({
@@ -131,15 +132,6 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
     const checked = e.currentTarget.checked;
     setPrefill(checked);
     setTolgeeConfig({ ...tolgeeConfig, prefillKeyFormat: checked });
-  };
-
-  const handleResetPlaceholder = () => {
-    handleFormatChange("{page}.{frame}.{element}");
-    setTolgeeConfig({
-      ...tolgeeConfig,
-      variableCasing: "snake_case",
-      keyFormat: "{page}.{frame}.{element}",
-    });
   };
 
   const handleVariableCasingChange = (value: string) => {
@@ -199,23 +191,27 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
           <VerticalSpace space="extraSmall" />
 
           <div>
-            <Muted
-              style={{ display: "flex", alignItems: "center", gap: "8px" }}
-            >
-              Key format <InfoTooltip>{keyFormatHelpText}</InfoTooltip>
-            </Muted>
+            <Inline className={styles.headerRow}>
+              <Muted
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                Key format
+              </Muted>
+              <InfoTooltip>{keyFormatHelpText}</InfoTooltip>
+            </Inline>
             <VerticalSpace space="extraSmall" />
-
             <StringsEditor value={format} onChange={handleFormatChange} />
           </div>
           <VerticalSpace space="small" />
           <div>
-            <Muted
-              style={{ display: "flex", alignItems: "center", gap: "8px" }}
-            >
-              Formatting style{" "}
+            <Inline className={styles.headerRow}>
+              <Muted
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                Formatting style
+              </Muted>
               <InfoTooltip>{formattingStyleHelpText}</InfoTooltip>
-            </Muted>
+            </Inline>
             <VerticalSpace space="extraSmall" />
 
             <Dropdown
@@ -235,10 +231,6 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
               <Bold>{getPreview(format, tolgeeConfig.variableCasing)}</Bold>
             </Muted>
           </div>
-          <VerticalSpace space="medium" />
-          <Button secondary onClick={() => handleResetPlaceholder()}>
-            <Text>Default</Text>
-          </Button>
         </Fragment>
       )}
       <VerticalSpace space="medium" />

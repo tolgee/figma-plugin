@@ -12,8 +12,8 @@
   outline: 1px solid var(--figma-color-border-brand-strong);
 }
 
-.editor-wrapper > * {
-  padding: 8px 10px;
+.cm-scroller {
+  padding: 2px 0px;
 }
 
 .strings-editor {
@@ -56,12 +56,6 @@
   overflow: hidden;
 }
 
-@media (prefers-color-scheme: light) {
-  .strings-editor .placeholder-variable,
-  .strings-editor .placeholder-hash {
-    color: white;
-  }
-}
 .strings-editor > * {
   display: grid;
 }
@@ -157,4 +151,11 @@
 
 .strings-editor .tolgee-completion-option {
   text-transform: none;
+}
+
+/* Placeholder text styling */
+.strings-editor .cm-placeholder {
+  color: var(--figma-color-text-grey) !important;
+  pointer-events: none;
+  opacity: 0.5;
 }

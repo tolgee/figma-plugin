@@ -34,6 +34,9 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
     apiUrl: DEFAULT_TOLGEE_URL,
     ...config,
   });
+  const [setupStep, setSetupStep] = useState<
+    "project" | "strings" | "push" | null
+  >(noNavigation ? "project" : null);
 
   const { mutateAsync, isLoading } = useApiMutation({
     url: "/v2/api-keys/current",
@@ -42,6 +45,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       config: {
         apiKey: tolgeeConfig.apiKey,
         apiUrl: tolgeeConfig.apiUrl,
+        apiTimeout: 3000,
       },
     },
   });
@@ -58,14 +62,18 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
     setError(undefined);
   }, [tolgeeConfig]);
 
+  const [projectName, setProjectName] = useState<string | undefined>();
+
   const validateTolgeeCredentials = async () => {
     try {
+      setError(undefined);
       const res = await mutateAsync({});
       if (
         res &&
         res.scopes?.includes("translations.view") &&
         res.scopes?.includes("translations.edit")
       ) {
+        setProjectName(res.projectName);
         return true;
       }
       throw new Error(
@@ -124,6 +132,16 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
     });
   };
 
+  const handleNextStep = () => {
+    if (setupStep === "project") {
+      setSetupStep("strings");
+    } else if (setupStep === "strings") {
+      setSetupStep("push");
+    } else if (setupStep === "push") {
+      handleSubmit();
+    }
+  };
+
   return (
     <Fragment>
       {noNavigation ? (
@@ -135,66 +153,131 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       )}
       <Divider />
       <VerticalSpace space="large" />
-      <Container space="medium">
-        <Expandable title="Project">
-          <ProjectSection
-            tolgeeConfig={tolgeeConfig}
-            setTolgeeConfig={setTolgeeConfig}
-            validated={validated}
-            setValidated={setValidated}
-            handleValidate={handleValidate}
-          />
-        </Expandable>
-        <Expandable title="Strings and Keys">
-          <StringsSection
-            tolgeeConfig={tolgeeConfig}
-            setTolgeeConfig={setTolgeeConfig}
-          />
-        </Expandable>
-        <Expandable title="Push">
-          <PushSection
-            tolgeeConfig={tolgeeConfig}
-            setTolgeeConfig={setTolgeeConfig}
-          />
-        </Expandable>
-        <VerticalSpace space="extraLarge" />
-        {isLoading ? (
-          <LoadingIndicator />
-        ) : error ? (
-          <Banner icon={<IconWarning32 />}>{error}</Banner>
-        ) : null}
-        <VerticalSpace space="extraLarge" />
-        {!isLoading && (
-          <ActionsBottom>
-            {config.documentInfo && (
+      {setupStep == null ? (
+        <Container space="medium">
+          <Expandable title="Project">
+            <ProjectSection
+              projectName={projectName}
+              tolgeeConfig={tolgeeConfig}
+              setTolgeeConfig={setTolgeeConfig}
+              validated={validated}
+              setValidated={setValidated}
+              handleValidate={handleValidate}
+            />
+          </Expandable>
+          <Expandable title="Strings and Keys">
+            <StringsSection
+              tolgeeConfig={tolgeeConfig}
+              setTolgeeConfig={setTolgeeConfig}
+            />
+          </Expandable>
+          <Expandable title="Push">
+            <PushSection
+              tolgeeConfig={tolgeeConfig}
+              setTolgeeConfig={setTolgeeConfig}
+            />
+          </Expandable>
+          <VerticalSpace space="extraLarge" />
+          {isLoading ? (
+            <LoadingIndicator />
+          ) : error ? (
+            <Banner icon={<IconWarning32 />}>{error}</Banner>
+          ) : null}
+          <VerticalSpace space="extraLarge" />
+          {!isLoading && (
+            <ActionsBottom>
+              {config.documentInfo && (
+                <Button
+                  data-cy="settings_button_forget"
+                  onClick={handleForget}
+                  secondary
+                >
+                  Forget credentials
+                </Button>
+              )}
+              {!noNavigation && (
+                <Button
+                  data-cy="settings_button_close"
+                  onClick={handleGoBack}
+                  secondary
+                >
+                  Close
+                </Button>
+              )}
               <Button
-                data-cy="settings_button_forget"
-                onClick={handleForget}
-                secondary
+                data-cy="settings_button_save"
+                onClick={handleSubmit}
+                disabled={!validated}
               >
-                Forget credentials
+                Save
               </Button>
-            )}
-            {!noNavigation && (
+            </ActionsBottom>
+          )}
+          <VerticalSpace space="small" />
+        </Container>
+      ) : (
+        <Container space="medium">
+          {setupStep === "project" && (
+            <ProjectSection
+              projectName={projectName}
+              tolgeeConfig={tolgeeConfig}
+              setTolgeeConfig={setTolgeeConfig}
+              validated={validated}
+              setValidated={setValidated}
+              handleValidate={handleValidate}
+            />
+          )}
+          {setupStep === "strings" && (
+            <StringsSection
+              tolgeeConfig={tolgeeConfig}
+              setTolgeeConfig={setTolgeeConfig}
+            />
+          )}
+          {setupStep === "push" && (
+            <PushSection
+              tolgeeConfig={tolgeeConfig}
+              setTolgeeConfig={setTolgeeConfig}
+            />
+          )}
+          <VerticalSpace space="extraLarge" />
+          {isLoading ? (
+            <LoadingIndicator />
+          ) : error ? (
+            <Banner icon={<IconWarning32 />}>{error}</Banner>
+          ) : null}
+          <VerticalSpace space="extraLarge" />
+          {!isLoading && (
+            <ActionsBottom>
+              {config.documentInfo && (
+                <Button
+                  data-cy="settings_button_forget"
+                  onClick={handleForget}
+                  secondary
+                >
+                  Forget credentials
+                </Button>
+              )}
+              {setupStep !== "project" && (
+                <Button
+                  data-cy="settings_button_close"
+                  onClick={() => setSetupStep("project")}
+                  secondary
+                >
+                  Back
+                </Button>
+              )}
               <Button
-                data-cy="settings_button_close"
-                onClick={handleGoBack}
-                secondary
+                data-cy="settings_button_save"
+                onClick={handleNextStep}
+                disabled={!validated}
               >
-                Close
+                {setupStep !== "push" ? "Next" : "Save"}
               </Button>
-            )}
-            <Button
-              data-cy="settings_button_save"
-              onClick={handleSubmit}
-              disabled={!validated}
-            >
-              Save
-            </Button>
-          </ActionsBottom>
-        )}
-        <VerticalSpace space="small" />
-      </Container>
+            </ActionsBottom>
+          )}
+          <VerticalSpace space="small" />
+        </Container>
+      )}
     </Fragment>
   );
 };

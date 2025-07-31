@@ -1,5 +1,6 @@
 declare const styles: {
   readonly "down": string;
+  readonly "headerRow": string;
   readonly "keyFormat": string;
   readonly "sectionTitle": string;
   readonly "success": string;

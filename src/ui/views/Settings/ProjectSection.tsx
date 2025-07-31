@@ -8,11 +8,13 @@ import {
 } from "@create-figma-plugin/ui";
 import { ProjectSettings } from "./ProjectSettings";
 import styles from "./Settings.css";
+import { CheckCircle } from "@/ui/icons/SvgIcons";
 
 export interface ProjectSectionProps {
   tolgeeConfig: any;
   setTolgeeConfig: (c: any) => void;
   validated: boolean;
+  projectName: string | undefined;
   setValidated: (v: boolean) => void;
   handleValidate: () => void;
   error?: string;
@@ -22,6 +24,7 @@ export const ProjectSection: FunctionComponent<ProjectSectionProps> = ({
   tolgeeConfig,
   setTolgeeConfig,
   validated,
+  projectName,
   setValidated,
   handleValidate,
 }) => (
@@ -55,7 +58,10 @@ export const ProjectSection: FunctionComponent<ProjectSectionProps> = ({
     />
     <VerticalSpace space="small" />
     {validated ? (
-      <Text className={styles.success}>Credentials valid</Text>
+      <Text className={styles.success}>
+        <CheckCircle height={16} width={16} /> {projectName}{" "}
+        <Muted>was successfully connected</Muted>
+      </Text>
     ) : (
       <Button data-cy="settings_button_validate" onClick={handleValidate}>
         Validate

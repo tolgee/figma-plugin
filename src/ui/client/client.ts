@@ -7,6 +7,7 @@ import { errorToText } from "./errorCodes";
 type GlobalOptions = {
   apiUrl?: string;
   apiKey?: string;
+  apiTimeout?: number;
 };
 
 export type ClientOptions =
@@ -77,6 +78,10 @@ async function customFetch(
     ...init.headers,
   };
 
+  if (options.apiTimeout) {
+    init.signal = AbortSignal.timeout(options.apiTimeout);
+  }
+
   return fetch(options.apiUrl + input, init)
     .then(async (r) => {
       if (!r.ok) {
@@ -92,6 +97,9 @@ async function customFetch(
       return await getResObject(r);
     })
     .catch((e) => {
+      if (e instanceof Error && e.name === "TimeoutError") {
+        throw new Error("Connection timeout");
+      }
       if (!e.message || e.message === "Failed to fetch") {
         const message = "Could not connect to server";
         globalState.actions.setGlobalError(message);

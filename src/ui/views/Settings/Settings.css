@@ -1,5 +1,8 @@
 .success {
-  color: var(--figma-color-text-success);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--figma-color-bg-brand);
 }
 
 .tagInput {
@@ -75,6 +78,11 @@
 
 .keyFormat > * {
   flex: 1;
+}
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .textLayers {
   display: flex;

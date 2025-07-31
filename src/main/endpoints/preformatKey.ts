@@ -18,6 +18,7 @@ export type PreformatKeyEndpointArgs = {
 };
 
 function replacePlaceholder(
+  originalFormat: string,
   result: string,
   placeholder: string,
   value: string,
@@ -25,10 +26,24 @@ function replacePlaceholder(
 ) {
   let newFormat = result;
   const replaceString = formatString(value, variableCasing);
-  console.log(replaceString, placeholder);
+
   if (replaceString === "") {
-    newFormat = newFormat.replace(new RegExp(`[^}]*${placeholder}`, "g"), "");
+    // If the value is empty, we need to remove the placeholder and the separator before it
+    const textBeforePlaceholder = originalFormat.slice(
+      0,
+      originalFormat.indexOf(placeholder)
+    );
+
+    const separatorBeforePlaceholder = textBeforePlaceholder.slice(
+      textBeforePlaceholder.lastIndexOf("}") + 1
+    );
+
+    newFormat = newFormat.replace(
+      new RegExp(`${separatorBeforePlaceholder}${placeholder}`, "g"),
+      ""
+    );
   } else {
+    // If the value is not empty, we need to replace the placeholder with the value
     newFormat = newFormat.replace(
       new RegExp(`${placeholder}`, "g"),
       replaceString
@@ -46,6 +61,7 @@ export const preformatKeyEndpoint = createEndpoint<
     switch (placeholder) {
       case "{artboard}":
         result = replacePlaceholder(
+          keyFormat,
           result,
           placeholder,
           getArtboard(nodeId)?.name ?? "",
@@ -54,6 +70,7 @@ export const preformatKeyEndpoint = createEndpoint<
         break;
       case "{frame}":
         result = replacePlaceholder(
+          keyFormat,
           result,
           placeholder,
           getFrame(nodeId)?.name ?? "",
@@ -62,6 +79,7 @@ export const preformatKeyEndpoint = createEndpoint<
         break;
       case "{elementName}":
         result = replacePlaceholder(
+          keyFormat,
           result,
           placeholder,
           getElement(nodeId)?.name ?? "",
@@ -71,6 +89,7 @@ export const preformatKeyEndpoint = createEndpoint<
       case "{elementText}": {
         const element = getElement(nodeId);
         result = replacePlaceholder(
+          keyFormat,
           result,
           placeholder,
           element?.type === "TEXT" ? element.characters : "",
@@ -80,6 +99,7 @@ export const preformatKeyEndpoint = createEndpoint<
       }
       case "{component}":
         result = replacePlaceholder(
+          keyFormat,
           result,
           placeholder,
           getComponent(nodeId)?.name ?? "",
@@ -88,6 +108,7 @@ export const preformatKeyEndpoint = createEndpoint<
         break;
       case "{section}":
         result = replacePlaceholder(
+          keyFormat,
           result,
           placeholder,
           getSection(nodeId)?.name ?? "",
@@ -96,6 +117,7 @@ export const preformatKeyEndpoint = createEndpoint<
         break;
       case "{group}":
         result = replacePlaceholder(
+          keyFormat,
           result,
           placeholder,
           getGroup(nodeId)?.name ?? "",

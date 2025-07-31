@@ -46,7 +46,7 @@ export function getComponent(
   if (!realNode) return undefined;
   let parent = realNode.parent;
   while (parent) {
-    if (parent.type === "COMPONENT" || parent.type === "COMPONENT_SET") {
+    if (parent.type === "COMPONENT") {
       return parent;
     }
     parent = parent.parent;

@@ -2,7 +2,13 @@ import { h, RefObject } from "preact";
 import { useEffect, useRef } from "preact/hooks";
 import { minimalSetup } from "codemirror";
 import { Compartment, EditorState } from "@codemirror/state";
-import { ViewUpdate, EditorView, KeyBinding } from "@codemirror/view";
+import {
+  ViewUpdate,
+  EditorView,
+  KeyBinding,
+  Decoration,
+  WidgetType,
+} from "@codemirror/view";
 import { PlaceholderPlugin } from "@tginternal/editor";
 import "!./StringsEditor.css";
 import {
@@ -11,6 +17,41 @@ import {
   CompletionResult,
   startCompletion,
 } from "@codemirror/autocomplete";
+
+// Custom placeholder widget
+class PlaceholderWidget extends WidgetType {
+  constructor(private placeholder: string) {
+    super();
+  }
+
+  toDOM() {
+    const span = document.createElement("span");
+    span.textContent = this.placeholder;
+    span.className = "cm-placeholder";
+    return span;
+  }
+
+  ignoreEvent() {
+    return false;
+  }
+}
+
+// Custom placeholder extension
+function placeholderExtension(placeholder: string) {
+  return EditorView.decorations.compute(["doc"], (state) => {
+    const doc = state.doc;
+    if (doc.length > 0) {
+      return Decoration.none;
+    }
+
+    const decoration = Decoration.widget({
+      widget: new PlaceholderWidget(placeholder),
+      side: 1,
+    });
+
+    return Decoration.set([decoration.range(0)]);
+  });
+}
 
 export type EditorProps = {
   value: string;
@@ -162,6 +203,7 @@ export const StringsEditor = ({
         aboveCursor: true,
         icons: false,
       }),
+      placeholderExtension("artboard.element"),
     ];
 
     const instance = new EditorView({
@@ -199,6 +241,7 @@ export const StringsEditor = ({
   return (
     <div class="editor-wrapper">
       <div
+        placeholder="artboard.element"
         onClick={() => {
           startCompletion(editor.current!);
         }}

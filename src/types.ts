@@ -116,7 +116,12 @@ export type GlobalSettings = {
   keyFormat?: string;
   ignoreHiddenLayers?: boolean;
   ignoreTextLayers?: boolean;
-  variableCasing?: "snake_case" | "camelCase" | "PascalCase" | "noSpaces";
+  variableCasing?:
+    | "snake_case"
+    | "snake_case_capitalized"
+    | "camelCase"
+    | "PascalCase"
+    | "noSpaces";
 };
 
 export type CurrentDocumentSettings = GlobalSettings & {

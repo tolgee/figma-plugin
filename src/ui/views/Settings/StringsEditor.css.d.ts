@@ -3,14 +3,14 @@ declare const styles: {
   readonly "cm-cursor": string;
   readonly "cm-editor": string;
   readonly "cm-line": string;
+  readonly "cm-placeholder": string;
+  readonly "cm-scroller": string;
   readonly "cm-tooltip": string;
   readonly "editor-wrapper": string;
   readonly "placeholder-error": string;
-  readonly "placeholder-hash": string;
   readonly "placeholder-tagClose": string;
   readonly "placeholder-tagOpen": string;
   readonly "placeholder-tagSelfClosed": string;
-  readonly "placeholder-variable": string;
   readonly "placeholder-widget": string;
   readonly "plural-editor-wrapper": string;
   readonly "strings-editor": string;

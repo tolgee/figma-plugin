@@ -17,6 +17,8 @@
 }
 :root {
   --figma-color-bg-brand: #ec407a;
+  --figma-color-text-brand: #ec407a;
+  --figma-color-text-primary: #1F2D40DE;
   --figma-color-bg-selected: #ec407a;
   --figma-color-bg-brand-contrast: #ffffff;
   --figma-color-icon-brand: white;
@@ -35,4 +37,8 @@
     --figma-color-red: rgb(255, 46, 83);
     --figma-color-red-bg: rgb(255, 46, 83, 0.16);
   }
+}
+
+a {
+  color: var(--figma-color-text-brand);
 }
