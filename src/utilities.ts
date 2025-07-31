@@ -27,7 +27,7 @@ export const formatString = (
   switch (formatOption) {
     case "camelCase":
       return str
-        .split(" ")
+        .split(/\s+/)
         .filter(Boolean)
         .map((word, index) =>
           index > 0
@@ -37,19 +37,21 @@ export const formatString = (
         .join("");
     case "PascalCase":
       return str
-        .split(" ")
+        .split(/\s+/)
         .filter(Boolean)
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word) =>
+          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
         .join("");
     case "snake_case":
       return str
-        .split(" ")
+        .split(/\s+/)
         .filter(Boolean)
         .map((word) => word.toLowerCase())
         .join("_");
     case "snake_case_capitalized":
       return str
-        .split(" ")
+        .split(/\s+/)
         .filter(Boolean)
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join("_");
