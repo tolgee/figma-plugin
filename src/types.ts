@@ -103,15 +103,15 @@ export type GlobalSettings = {
    * A string that can contain some of the following placeholders and custom separators
    * in order to generate a key name for the node.
    *
-   * `[%page]`
+   * `{artboard}`
    *
-   * `[%frame]`
+   * `{frame}`
    *
-   * `[%element]`
+   * `{elementName}` or `{elementText}`
    *
-   * `[%component]`
+   * `{component}`
    *
-   * `[%section]`
+   * `{section}` or `{group}`
    */
   keyFormat?: string;
   ignoreHiddenLayers?: boolean;
