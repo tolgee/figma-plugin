@@ -142,6 +142,40 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
     }
   };
 
+  const renderSection = (
+    step: "project" | "strings" | "push" | null = setupStep
+  ) => {
+    switch (step) {
+      case "project":
+        return (
+          <ProjectSection
+            projectName={projectName}
+            tolgeeConfig={tolgeeConfig}
+            setTolgeeConfig={setTolgeeConfig}
+            validated={validated}
+            setValidated={setValidated}
+            handleValidate={handleValidate}
+          />
+        );
+      case "strings":
+        return (
+          <StringsSection
+            tolgeeConfig={tolgeeConfig}
+            setTolgeeConfig={setTolgeeConfig}
+          />
+        );
+      case "push":
+        return (
+          <PushSection
+            tolgeeConfig={tolgeeConfig}
+            setTolgeeConfig={setTolgeeConfig}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <Fragment>
       {noNavigation ? (
@@ -160,29 +194,16 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
             title="Project"
             defaultOpen={!tolgeeConfig.apiKey}
           >
-            <ProjectSection
-              projectName={projectName}
-              tolgeeConfig={tolgeeConfig}
-              setTolgeeConfig={setTolgeeConfig}
-              validated={validated}
-              setValidated={setValidated}
-              handleValidate={handleValidate}
-            />
+            {renderSection("project")}
           </Expandable>
           <Expandable
             dataCy="settings_expandable_strings"
             title="Strings and Keys"
           >
-            <StringsSection
-              tolgeeConfig={tolgeeConfig}
-              setTolgeeConfig={setTolgeeConfig}
-            />
+            {renderSection("strings")}
           </Expandable>
           <Expandable dataCy="settings_expandable_push" title="Push">
-            <PushSection
-              tolgeeConfig={tolgeeConfig}
-              setTolgeeConfig={setTolgeeConfig}
-            />
+            {renderSection("push")}
           </Expandable>
           <VerticalSpace space="extraLarge" />
           {isLoading ? (
@@ -224,28 +245,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
         </Container>
       ) : (
         <Container space="medium">
-          {setupStep === "project" && (
-            <ProjectSection
-              projectName={projectName}
-              tolgeeConfig={tolgeeConfig}
-              setTolgeeConfig={setTolgeeConfig}
-              validated={validated}
-              setValidated={setValidated}
-              handleValidate={handleValidate}
-            />
-          )}
-          {setupStep === "strings" && (
-            <StringsSection
-              tolgeeConfig={tolgeeConfig}
-              setTolgeeConfig={setTolgeeConfig}
-            />
-          )}
-          {setupStep === "push" && (
-            <PushSection
-              tolgeeConfig={tolgeeConfig}
-              setTolgeeConfig={setTolgeeConfig}
-            />
-          )}
+          {renderSection()}
           <VerticalSpace space="extraLarge" />
           {isLoading ? (
             <LoadingIndicator />
@@ -269,7 +269,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
                   data-cy="settings_button_close"
                   onClick={() => {
                     if (setupStep === "strings") setSetupStep("project");
-                    else if (setupStep === "push")   setSetupStep("strings");
+                    else if (setupStep === "push") setSetupStep("strings");
                   }}
                   secondary
                 >
