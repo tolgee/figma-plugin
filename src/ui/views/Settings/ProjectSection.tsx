@@ -5,12 +5,14 @@ import {
   VerticalSpace,
   Textbox,
   Button,
+  Bold,
 } from "@create-figma-plugin/ui";
 import { ProjectSettings } from "./ProjectSettings";
 import styles from "./Settings.css";
 import { CheckCircle } from "@/ui/icons/SvgIcons";
 
 export interface ProjectSectionProps {
+  showHeadline: boolean;
   tolgeeConfig: any;
   setTolgeeConfig: (c: any) => void;
   validated: boolean;
@@ -22,6 +24,7 @@ export interface ProjectSectionProps {
 }
 
 export const ProjectSection: FunctionComponent<ProjectSectionProps> = ({
+  showHeadline,
   tolgeeConfig,
   setTolgeeConfig,
   validated,
@@ -31,6 +34,14 @@ export const ProjectSection: FunctionComponent<ProjectSectionProps> = ({
   handleValidate,
 }) => (
   <Fragment>
+    {showHeadline && (
+      <Fragment>
+        <Text style={{ fontSize: "16px" }}>
+          <Bold>Project</Bold>
+        </Text>
+        <VerticalSpace space="small" />
+      </Fragment>
+    )}
     <Text>
       <Muted>Tolgee URL</Muted>
     </Text>

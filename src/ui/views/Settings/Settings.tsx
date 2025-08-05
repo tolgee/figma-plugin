@@ -74,7 +74,6 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
         res.scopes?.includes("translations.view") &&
         res.scopes?.includes("translations.edit")
       ) {
-        console.log(res);
         setProjectName(res.projectName);
         setProjectId(res.projectId);
         return true;
@@ -146,12 +145,14 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
   };
 
   const renderSection = (
-    step: "project" | "strings" | "push" | null = setupStep
+    step: "project" | "strings" | "push" | null = setupStep,
+    isSetup = false
   ) => {
     switch (step) {
       case "project":
         return (
           <ProjectSection
+            showHeadline={isSetup}
             projectName={projectName}
             projectId={projectId}
             tolgeeConfig={tolgeeConfig}
@@ -164,6 +165,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       case "strings":
         return (
           <StringsSection
+            showHeadline={isSetup}
             tolgeeConfig={tolgeeConfig}
             setTolgeeConfig={setTolgeeConfig}
           />
@@ -171,6 +173,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       case "push":
         return (
           <PushSection
+            showHeadline={isSetup}
             tolgeeConfig={tolgeeConfig}
             setTolgeeConfig={setTolgeeConfig}
           />
@@ -249,7 +252,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
         </Container>
       ) : (
         <Container space="medium">
-          {renderSection()}
+          {renderSection(setupStep, true)}
           <VerticalSpace space="extraLarge" />
           {isLoading ? (
             <LoadingIndicator />

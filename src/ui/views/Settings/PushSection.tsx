@@ -1,4 +1,4 @@
-import { h, FunctionComponent } from "preact";
+import { h, FunctionComponent, Fragment } from "preact";
 import {
   useEffect,
   useRef,
@@ -7,6 +7,7 @@ import {
   useMemo,
 } from "preact/hooks";
 import {
+  Bold,
   Checkbox,
   Muted,
   Text,
@@ -19,12 +20,14 @@ import styles from "./Settings.css";
 import { useAllTags } from "../../hooks/useAllTags";
 
 export interface PushSectionProps {
+  showHeadline: boolean;
   tolgeeConfig: Partial<TolgeeConfig> & { apiUrl: string };
   setTolgeeConfig: (c: Partial<TolgeeConfig> & { apiUrl: string }) => void;
   onTagsChange?: (tags: string[]) => void;
 }
 
 export const PushSection: FunctionComponent<PushSectionProps> = ({
+  showHeadline,
   tolgeeConfig,
   setTolgeeConfig,
   onTagsChange,
@@ -85,6 +88,14 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {showHeadline && (
+        <Fragment>
+          <Text style={{ fontSize: "16px" }}>
+            <Bold>Push</Bold>
+          </Text>
+          <VerticalSpace space="small" />
+        </Fragment>
+      )}
       <Checkbox
         data-cy="settings_checkbox_update_screenshots"
         value={tolgeeConfig.updateScreenshots ?? true}

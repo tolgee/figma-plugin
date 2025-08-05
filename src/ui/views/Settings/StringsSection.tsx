@@ -45,6 +45,7 @@ function getPreview(
 }
 
 export interface StringsSectionProps {
+  showHeadline: boolean;
   tolgeeConfig: Partial<TolgeeConfig> & { apiUrl: string };
   setTolgeeConfig: (c: Partial<TolgeeConfig> & { apiUrl: string }) => void;
 }
@@ -103,6 +104,7 @@ const variableCasingOptions: Array<{ value: string; text: string }> = [
 ];
 
 export const StringsSection: FunctionComponent<StringsSectionProps> = ({
+  showHeadline,
   tolgeeConfig,
   setTolgeeConfig,
 }) => {
@@ -180,9 +182,21 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
 
   return (
     <Fragment>
+      {showHeadline && (
+        <Fragment>
+          <Text style={{ fontSize: "16px" }}>
+            <Bold>Strings and keys</Bold>
+          </Text>
+          <VerticalSpace space="small" />
+        </Fragment>
+      )}
       <Text className={styles.sectionTitle}>Key name</Text>
       <VerticalSpace space="medium" />
-      <Checkbox value={prefill} onChange={handlePrefillChange}>
+      <Checkbox
+        value={prefill}
+        data-cy="settings_checkbox_prefill_key_name"
+        onChange={handlePrefillChange}
+      >
         <Text>
           <Bold>prefill key name</Bold>
         </Text>

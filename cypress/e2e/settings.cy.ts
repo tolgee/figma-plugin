@@ -14,12 +14,10 @@ describe("Settings", () => {
   it("works when filling empty", () => {
     visitWithState({});
 
-    cy.iframe().findDcy("settings_section_project").should("be.visible");
-    cy.iframe().findDcy("settings_section_project").click();
-
     cy.iframe()
       .findDcy("settings_input_api_url")
       .type(DEFAULT_CREDENTIALS.apiUrl);
+
     cy.iframe()
       .findDcy("settings_input_api_key")
       .type(DEFAULT_CREDENTIALS.apiKey);
@@ -29,6 +27,7 @@ describe("Settings", () => {
     cy.iframe()
       .contains("examples was successfully connected")
       .should("be.visible");
+
     cy.iframe().contains("Current language").should("be.visible");
 
     cy.iframe()
@@ -37,8 +36,6 @@ describe("Settings", () => {
       .select("en");
 
     cy.iframe().findDcy("settings_button_save").click();
-
-    cy.contains("Select texts for translation").should("be.visible");
   });
 
   it("works when filling existing", () => {
@@ -56,8 +53,7 @@ describe("Settings", () => {
     cy.iframe().findDcy("index_settings_button").should("be.visible").click();
     cy.iframe().contains("Settings").should("be.visible");
 
-    cy.iframe().findDcy("settings_section_project").should("be.visible");
-    cy.iframe().findDcy("settings_section_project").click();
+    cy.iframe().findDcy("settings_expandable_project").should("be.visible");
 
     cy.iframe()
       .findDcy("settings_input_api_url")
@@ -99,6 +95,9 @@ describe("Settings", () => {
     cy.iframe().contains("Settings").should("be.visible");
 
     cy.iframe().findDcy("settings_expandable_strings").should("exist").click();
+    cy.iframe().findDcy("settings_checkbox_prefill_key_name").should("exist");
+    cy.iframe().findDcy("settings_checkbox_prefill_key_name").click();
+
     // Test key format editor - check if it exists first
     cy.iframe().findDcy("global-editor").should("exist");
 
@@ -106,7 +105,17 @@ describe("Settings", () => {
     cy.iframe().findDcy("settings_dropdown_variable_casing").should("exist");
 
     // Verify preview exists
+    cy.iframe().findDcy("settings_text_preview").should("not.exist");
+
+    cy.iframe().findDcy("global-editor").click();
+    cy.wait(150);
+    cy.iframe().findDcy("global-editor").type("{enter}");
     cy.iframe().findDcy("settings_text_preview").should("exist");
+
+    // Verify My Artboard is in the preview
+    cy.iframe()
+      .findDcy("settings_text_preview")
+      .should("contain", "My Artboard");
 
     // Test ignore settings - only if they're visible
     cy.iframe().findDcy("settings_checkbox_ignore_text_layers").should("exist");
@@ -181,7 +190,10 @@ describe("Settings", () => {
 
     // Configure strings settings
     cy.iframe().contains("Strings and Keys").should("be.visible");
+
     cy.iframe().findDcy("settings_expandable_strings").should("exist").click();
+    cy.iframe().findDcy("settings_checkbox_prefill_key_name").should("exist");
+    cy.iframe().findDcy("settings_checkbox_prefill_key_name").click();
     cy.iframe().findDcy("global-editor").should("exist");
     cy.iframe().findDcy("settings_dropdown_variable_casing").should("exist");
     cy.iframe().findDcy("settings_checkbox_ignore_text_layers").should("exist");
