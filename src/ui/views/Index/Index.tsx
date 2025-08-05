@@ -10,7 +10,7 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-import { Settings, Minimize, Maximize } from "@/ui/icons/SvgIcons";
+import { Settings } from "@/ui/icons/SvgIcons";
 import { useApiQuery } from "@/ui/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
@@ -22,7 +22,7 @@ import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { ListItem } from "./ListItem";
-import { DEFAULT_SIZE, EXPANDED_SIZE } from "@/ui/state/sizes";
+import { DEFAULT_SIZE } from "@/ui/state/sizes";
 import { useEditorMode } from "../../hooks/useEditorMode";
 
 export const Index = () => {
@@ -102,10 +102,7 @@ export const Index = () => {
     setError(undefined);
   }, [selection]);
 
-  const [expanded, setExpanded] = useState(false);
-
-  const size = expanded ? EXPANDED_SIZE : DEFAULT_SIZE;
-  useWindowSize(size);
+  useWindowSize(DEFAULT_SIZE);
 
   const editorMode = useEditorMode();
 
@@ -114,7 +111,7 @@ export const Index = () => {
   }
 
   return (
-    <div className={styles.container} style={{ height: size.height }}>
+    <div className={styles.container}>
       {selectionLoadable.isFetching && <FullPageLoading blocking={false} />}
       <div>
         <Container
@@ -167,19 +164,6 @@ export const Index = () => {
               }
               rightPart={
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div
-                    data-cy="index_expand_shrink_button"
-                    className={styles.settingsButton}
-                    onClick={() => setExpanded((v) => !v)}
-                    role="button"
-                    title={expanded ? "Shrink" : "Expand"}
-                  >
-                    {expanded ? (
-                      <Minimize width={15} height={15} />
-                    ) : (
-                      <Maximize width={15} height={15} />
-                    )}
-                  </div>
                   <div
                     data-cy="index_settings_button"
                     className={styles.settingsButton}

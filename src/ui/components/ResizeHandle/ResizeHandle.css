@@ -1,0 +1,32 @@
+.resizeHandle {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  cursor: nw-resize;
+  padding: 4px;
+  z-index: 1000;
+  border-radius: 8px 0 0 0;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.resizeHandle:hover {
+  opacity: 1;
+  background-color: var(--figma-color-bg-brand);
+  color: white;
+}
+
+.resizeHandle:active {
+  background-color: var(--figma-color-bg-brand);
+  color: white;
+
+  opacity: 1;
+}
+
+.resizeHandle:focus {
+  outline: 2px solid var(--figma-color-bg-brand);
+  outline-offset: 2px;
+  opacity: 1;
+}
