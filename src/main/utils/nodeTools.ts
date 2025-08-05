@@ -69,6 +69,7 @@ export const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
 };
 
 export const findTextNodesInfo = (nodes: readonly SceneNode[]): NodeInfo[] => {
+  console.log("findTextNodesInfo", nodes);
   return findTextNodes(nodes).map(getNodeInfo);
 };
 

@@ -57,7 +57,7 @@ export function getComponent(
 /**
  * Returns the section name based on parent group/frame naming.
  */
-export function getSection(nodeId: string): FrameNode | GroupNode | undefined {
+export function getSection(nodeId: string): SectionNode | undefined {
   const realNode: BaseNode | null = figma.getNodeById(
     nodeId
   ) as BaseNode | null;
@@ -65,11 +65,7 @@ export function getSection(nodeId: string): FrameNode | GroupNode | undefined {
   let parent = realNode.parent;
   while (parent) {
     // Consider groups or frames with names starting with "section" or containing "/"
-    if (
-      (parent.type === "GROUP" || parent.type === "FRAME") &&
-      (parent.name.toLowerCase().startsWith("section") ||
-        parent.name.includes("/"))
-    ) {
+    if (parent.type === "SECTION") {
       return parent;
     }
     parent = parent.parent;

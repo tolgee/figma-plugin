@@ -5,15 +5,6 @@
   color: var(--figma-color-bg-brand);
 }
 
-.tagInput {
-  border: 1px solid var(--figma-color-primary);
-  border-radius: 12px;
-  padding: 4px 12px;
-  outline: none;
-  min-width: 80px;
-  width: 100%;
-}
-
 .tagAutocompleteDropdown {
   position: absolute;
   left: 0;
