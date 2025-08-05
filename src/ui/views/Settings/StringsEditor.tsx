@@ -103,8 +103,10 @@ export const StringsEditor = ({
           detail: "(name of the string)",
           type: "keyword",
           apply(view, _, from, to) {
+            const insert = "{elementName}";
             view.dispatch({
-              changes: { from, to, insert: "{elementName}" },
+              changes: { from, to, insert },
+              selection: { anchor: from + insert.length },
             });
           },
         },
@@ -113,8 +115,10 @@ export const StringsEditor = ({
           detail: "(displayed text of the string)",
           type: "keyword",
           apply(view, _, from, to) {
+            const insert = "{elementText}";
             view.dispatch({
-              changes: { from, to, insert: "{elementText}" },
+              changes: { from, to, insert },
+              selection: { anchor: from + insert.length },
             });
           },
         },
@@ -123,8 +127,10 @@ export const StringsEditor = ({
           detail: "(nearest group)",
           type: "keyword",
           apply(view, _, from, to) {
+            const insert = "{group}";
             view.dispatch({
-              changes: { from, to, insert: "{group}" },
+              changes: { from, to, insert },
+              selection: { anchor: from + insert.length },
             });
           },
         },
@@ -133,8 +139,10 @@ export const StringsEditor = ({
           detail: "(nearest component)",
           type: "keyword",
           apply(view, _, from, to) {
+            const insert = "{component}";
             view.dispatch({
-              changes: { from, to, insert: "{component}" },
+              changes: { from, to, insert },
+              selection: { anchor: from + insert.length },
             });
           },
         },
@@ -143,8 +151,10 @@ export const StringsEditor = ({
           detail: "(nearest frame)",
           type: "keyword",
           apply(view, _, from, to) {
+            const insert = "{frame}";
             view.dispatch({
-              changes: { from, to, insert: "{frame}" },
+              changes: { from, to, insert },
+              selection: { anchor: from + insert.length },
             });
           },
         },
@@ -153,8 +163,10 @@ export const StringsEditor = ({
           detail: "(artboard frame)",
           type: "keyword",
           apply(view, _, from, to) {
+            const insert = "{artboard}";
             view.dispatch({
-              changes: { from, to, insert: "{artboard}" },
+              changes: { from, to, insert },
+              selection: { anchor: from + insert.length },
             });
           },
         },
@@ -163,8 +175,10 @@ export const StringsEditor = ({
           detail: "(nearest section)",
           type: "keyword",
           apply(view, _, from, to) {
+            const insert = "{section}";
             view.dispatch({
-              changes: { from, to, insert: "{section}" },
+              changes: { from, to, insert },
+              selection: { anchor: from + insert.length },
             });
           },
         },

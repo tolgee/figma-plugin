@@ -63,6 +63,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
   }, [tolgeeConfig]);
 
   const [projectName, setProjectName] = useState<string | undefined>();
+  const [projectId, setProjectId] = useState<number | undefined>();
 
   const validateTolgeeCredentials = async () => {
     try {
@@ -73,7 +74,9 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
         res.scopes?.includes("translations.view") &&
         res.scopes?.includes("translations.edit")
       ) {
+        console.log(res);
         setProjectName(res.projectName);
+        setProjectId(res.projectId);
         return true;
       }
       throw new Error(
@@ -150,6 +153,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
         return (
           <ProjectSection
             projectName={projectName}
+            projectId={projectId}
             tolgeeConfig={tolgeeConfig}
             setTolgeeConfig={setTolgeeConfig}
             validated={validated}

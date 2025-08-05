@@ -38,7 +38,7 @@ describe("Settings", () => {
 
     cy.iframe().findDcy("settings_button_save").click();
 
-    cy.contains("No texts selected").should("be.visible");
+    cy.contains("Select texts for translation").should("be.visible");
   });
 
   it("works when filling existing", () => {
@@ -80,7 +80,7 @@ describe("Settings", () => {
 
     cy.iframe().findDcy("settings_button_save").click();
 
-    cy.contains("No texts selected").should("be.visible");
+    cy.contains("Select texts for translation").should("be.visible");
   });
 
   it("tests strings settings configuration", () => {
@@ -116,7 +116,7 @@ describe("Settings", () => {
 
     // Save settings
     cy.iframe().findDcy("settings_button_save").click();
-    cy.contains("No texts selected").should("be.visible");
+    cy.contains("Select texts for translation").should("be.visible");
   });
 
   it("tests push settings configuration", () => {
@@ -143,7 +143,7 @@ describe("Settings", () => {
 
     // Save settings
     cy.iframe().findDcy("settings_button_save").click();
-    cy.contains("No texts selected").should("be.visible");
+    cy.contains("Select texts for translation").should("be.visible");
   });
 
   it("tests complete settings workflow with all sections", () => {
@@ -193,6 +193,6 @@ describe("Settings", () => {
     cy.iframe().findDcy("settings_button_save").click();
 
     // Verify we're back to the main view
-    cy.contains("No texts selected").should("be.visible");
+    cy.contains("Select texts for translation").should("be.visible");
   });
 });

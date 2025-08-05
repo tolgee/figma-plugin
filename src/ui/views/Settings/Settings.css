@@ -90,17 +90,3 @@
 .sectionTitle {
   font-size: 14px;
 }
-.casingContainer {
-  border: 1px solid var(--figma-color-border);
-  overflow: hidden;
-  border-radius: var(--border-radius-2);
-  cursor: text;
-  background: var(--figma-color-bg);
-  padding: 1px;
-  width: 100%;
-  padding: 6px 8px;
-}
-
-.casingContainer:disabled {
-  border: 1px solid var(--figma-color-border-disabled-strong);
-}

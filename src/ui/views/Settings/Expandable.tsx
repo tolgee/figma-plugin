@@ -34,7 +34,6 @@ export const Expandable: FunctionComponent<{
         aria-controls={`expandable-content-${title
           .replace(/\s+/g, "-")
           .toLowerCase()}`}
-        data-cy={dataCy}
       >
         {title}
         <ChevronDown

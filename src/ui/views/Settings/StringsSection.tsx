@@ -1,5 +1,5 @@
 import { h, FunctionComponent, Fragment } from "preact";
-import { useState } from "preact/hooks";
+import { useMemo, useState } from "preact/hooks";
 import {
   Text,
   Muted,
@@ -106,10 +106,10 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   tolgeeConfig,
   setTolgeeConfig,
 }) => {
-  const [format, setFormat] = useState(
-    tolgeeConfig.keyFormat || "{page}.{frame}.{elementName}"
+  const [format, setFormat] = useState(tolgeeConfig.keyFormat || "");
+  const [prefill, setPrefill] = useState(
+    tolgeeConfig.prefillKeyFormat ?? false
   );
-  const [prefill, setPrefill] = useState(tolgeeConfig.prefillKeyFormat ?? true);
   const [ignoreNumbers, setIgnoreNumbers] = useState(
     tolgeeConfig.ignoreNumbers ?? false
   );
@@ -120,6 +120,10 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
     tolgeeConfig.ignoreTextLayers ?? false
   );
   const [ignorePrefix, setIgnorePrefix] = useState("");
+
+  const preview = useMemo(() => {
+    return getPreview(format, tolgeeConfig.variableCasing);
+  }, [format, tolgeeConfig.variableCasing]);
 
   const handleFormatChange = (val: string) => {
     setFormat(val);
@@ -214,7 +218,6 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
 
             <select
               data-cy="settings_dropdown_variable_casing"
-              className={styles.casingContainer}
               value={tolgeeConfig.variableCasing ?? ""}
               onChange={(e) => {
                 handleVariableCasingChange(
@@ -230,14 +233,16 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
             </select>
           </div>
           <VerticalSpace space="small" />
-          <div>
-            <Muted>Preview</Muted>
-            <VerticalSpace space="extraSmall" />
+          {preview && (
+            <div>
+              <Muted>Preview</Muted>
+              <VerticalSpace space="extraSmall" />
 
-            <Muted data-cy="settings_text_preview">
-              <Bold>{getPreview(format, tolgeeConfig.variableCasing)}</Bold>
-            </Muted>
-          </div>
+              <Muted data-cy="settings_text_preview">
+                <Bold>{preview}</Bold>
+              </Muted>
+            </div>
+          )}
         </Fragment>
       )}
       <VerticalSpace space="medium" />

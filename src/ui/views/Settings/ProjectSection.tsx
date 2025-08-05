@@ -15,6 +15,7 @@ export interface ProjectSectionProps {
   setTolgeeConfig: (c: any) => void;
   validated: boolean;
   projectName: string | undefined;
+  projectId: number | undefined;
   setValidated: (v: boolean) => void;
   handleValidate: () => void;
   error?: string;
@@ -25,6 +26,7 @@ export const ProjectSection: FunctionComponent<ProjectSectionProps> = ({
   setTolgeeConfig,
   validated,
   projectName,
+  projectId,
   setValidated,
   handleValidate,
 }) => (
@@ -44,7 +46,7 @@ export const ProjectSection: FunctionComponent<ProjectSectionProps> = ({
     />
     <VerticalSpace space="medium" />
     <Text>
-      <Muted>Tolgee API key</Muted>
+      <Muted>Tolgee Project API key</Muted>
     </Text>
     <VerticalSpace space="small" />
     <Textbox
@@ -59,7 +61,14 @@ export const ProjectSection: FunctionComponent<ProjectSectionProps> = ({
     <VerticalSpace space="small" />
     {validated ? (
       <Text className={styles.success}>
-        <CheckCircle height={16} width={16} /> {projectName}{" "}
+        <CheckCircle height={16} width={16} />{" "}
+        <a
+          href={`${tolgeeConfig.apiUrl}/projects/${projectId}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {projectName}
+        </a>{" "}
         <Muted>was successfully connected</Muted>
       </Text>
     ) : (
