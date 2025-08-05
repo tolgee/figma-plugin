@@ -9,6 +9,7 @@ declare const styles: {
   readonly "tagAutocompleteDropdownAdd": string;
   readonly "tagAutocompleteDropdownAddHint": string;
   readonly "tagAutocompleteDropdownHeader": string;
+  readonly "tagAutocompleteDropdownHeaderEmpty": string;
   readonly "tagAutocompleteDropdownItem": string;
   readonly "textLayers": string;
   readonly "up": string;
