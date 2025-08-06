@@ -90,6 +90,25 @@ export const StringsEditor = ({
     onBlur,
   });
 
+  function createCompletionOption(
+    label: string,
+    detail: string,
+    insertText: string
+  ) {
+    return {
+      label,
+      detail,
+      type: "keyword" as const,
+      apply(view: EditorView, _: any, from: number, to: number) {
+        const insert = insertText;
+        view.dispatch({
+          changes: { from, to, insert },
+          selection: { anchor: from + insert.length },
+        });
+      },
+    };
+  }
+
   function completions(context: CompletionContext): CompletionResult | null {
     const word = context.matchBefore(/[A-Za-z0-9]*/);
     if (!word || (word.from == word.to && !context.explicit)) {
@@ -98,90 +117,25 @@ export const StringsEditor = ({
     return {
       from: word.from,
       options: [
-        {
-          label: "element name",
-          detail: "(name of the string)",
-          type: "keyword",
-          apply(view, _, from, to) {
-            const insert = "{elementName}";
-            view.dispatch({
-              changes: { from, to, insert },
-              selection: { anchor: from + insert.length },
-            });
-          },
-        },
-        {
-          label: "element text",
-          detail: "(displayed text of the string)",
-          type: "keyword",
-          apply(view, _, from, to) {
-            const insert = "{elementText}";
-            view.dispatch({
-              changes: { from, to, insert },
-              selection: { anchor: from + insert.length },
-            });
-          },
-        },
-        {
-          label: "group",
-          detail: "(nearest group)",
-          type: "keyword",
-          apply(view, _, from, to) {
-            const insert = "{group}";
-            view.dispatch({
-              changes: { from, to, insert },
-              selection: { anchor: from + insert.length },
-            });
-          },
-        },
-        {
-          label: "component",
-          detail: "(nearest component)",
-          type: "keyword",
-          apply(view, _, from, to) {
-            const insert = "{component}";
-            view.dispatch({
-              changes: { from, to, insert },
-              selection: { anchor: from + insert.length },
-            });
-          },
-        },
-        {
-          label: "frame",
-          detail: "(nearest frame)",
-          type: "keyword",
-          apply(view, _, from, to) {
-            const insert = "{frame}";
-            view.dispatch({
-              changes: { from, to, insert },
-              selection: { anchor: from + insert.length },
-            });
-          },
-        },
-        {
-          label: "artboard",
-          detail: "(artboard frame)",
-          type: "keyword",
-          apply(view, _, from, to) {
-            const insert = "{artboard}";
-            view.dispatch({
-              changes: { from, to, insert },
-              selection: { anchor: from + insert.length },
-            });
-          },
-        },
-        {
-          label: "section",
-          detail: "(nearest section)",
-          type: "keyword",
-          apply(view, _, from, to) {
-            const insert = "{section}";
-            view.dispatch({
-              changes: { from, to, insert },
-              selection: { anchor: from + insert.length },
-            });
-          },
-        },
+        createCompletionOption(
+          "element name",
+          "(name of the string)",
+          "{elementName}"
+        ),
+        createCompletionOption(
+          "element text",
+          "(displayed text of the string)",
+          "{elementText}"
+        ),
+        createCompletionOption("group", "(nearest group)", "{group}"),
+        createCompletionOption(
+          "component",
+          "(nearest component)",
+          "{component}"
+        ),
+        createCompletionOption("frame", "(nearest frame)", "{frame}"),
+        createCompletionOption("artboard", "(artboard frame)", "{artboard}"),
+        createCompletionOption("section", "(nearest section)", "{section}"),
       ],
       commitCharacters: ["}"],
     };
@@ -229,6 +183,13 @@ export const StringsEditor = ({
     });
 
     editor.current = instance;
+    // set cursor to the end of document
+    const length = editor.current!.state.doc.length;
+    editor.current!.dispatch({ selection: { anchor: length } });
+
+    return () => {
+      editor.current!.destroy();
+    };
   }, []);
 
   useEffect(() => {
@@ -241,16 +202,6 @@ export const StringsEditor = ({
       editor.current?.update([transaction]);
     }
   }, [value]);
-
-  useEffect(() => {
-    // set cursor to the end of document
-    const length = editor.current!.state.doc.length;
-    editor.current!.dispatch({ selection: { anchor: length } });
-
-    return () => {
-      editor.current!.destroy();
-    };
-  }, []);
 
   return (
     <div class="editor-wrapper">

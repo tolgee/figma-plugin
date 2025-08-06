@@ -87,109 +87,146 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {showHeadline && (
-        <Fragment>
-          <Text style={{ fontSize: "16px" }}>
-            <Bold>Push</Bold>
-          </Text>
-          <VerticalSpace space="small" />
-        </Fragment>
-      )}
-      <Checkbox
-        data-cy="settings_checkbox_update_screenshots"
-        value={tolgeeConfig.updateScreenshots ?? true}
-        checked={tolgeeConfig.updateScreenshots ?? true}
-        onChange={(e) =>
-          setTolgeeConfig({
-            ...tolgeeConfig,
-            updateScreenshots: e.currentTarget.checked,
-          })
-        }
-      >
-        <Text>Update screenshots</Text>
-      </Checkbox>
-      <Checkbox
-        data-cy="settings_checkbox_add_tags"
-        value={tolgeeConfig.addTags ?? false}
-        checked={tolgeeConfig.addTags ?? false}
-        onChange={(e) => {
-          setTolgeeConfig({
-            ...tolgeeConfig,
-            addTags: e.currentTarget.checked,
-          });
-          allTags.getData();
-        }}
-      >
-        <Text>Add tags</Text>
-      </Checkbox>
-      {(tolgeeConfig.addTags ?? false) && (
-        <div>
-          <VerticalSpace space="small" />
-          <Text style={{ fontSize: "14px" }}>Tags</Text>
-          <VerticalSpace space="extraSmall" />
+    <Fragment>
+      <VerticalSpace space="extraSmall" />
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {showHeadline && (
+          <Fragment>
+            <Text style={{ fontSize: "16px" }}>
+              <Bold>Push</Bold>
+            </Text>
+            <VerticalSpace space="small" />
+          </Fragment>
+        )}
+        <Checkbox
+          data-cy="settings_checkbox_update_screenshots"
+          value={tolgeeConfig.updateScreenshots ?? true}
+          checked={tolgeeConfig.updateScreenshots ?? true}
+          onChange={(e) =>
+            setTolgeeConfig({
+              ...tolgeeConfig,
+              updateScreenshots: e.currentTarget.checked,
+            })
+          }
+        >
+          <Text>Update screenshots</Text>
+        </Checkbox>
+        <Checkbox
+          data-cy="settings_checkbox_add_tags"
+          value={tolgeeConfig.addTags ?? false}
+          checked={tolgeeConfig.addTags ?? false}
+          onChange={(e) => {
+            setTolgeeConfig({
+              ...tolgeeConfig,
+              addTags: e.currentTarget.checked,
+            });
+            allTags.getData();
+          }}
+        >
+          <Text>Add tags</Text>
+        </Checkbox>
+        {(tolgeeConfig.addTags ?? false) && (
+          <div>
+            <VerticalSpace space="small" />
+            <Text style={{ fontSize: "14px" }}>Tags</Text>
+            <VerticalSpace space="extraSmall" />
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              flexWrap: "wrap",
-              margin: "8px 0",
-            }}
-          >
-            {tags.map((tag) => (
-              <Badge
-                bold={true}
-                onRemove={() => handleRemoveTag(tag)}
-                key={tag}
-              >
-                {tag}
-              </Badge>
-            ))}
-            <div style={{ position: "relative", flex: 1, minWidth: 120 }}>
-              <Textbox
-                data-cy="settings_input_tag"
-                ref={inputRef}
-                placeholder="Add tag..."
-                value={tagInput}
-                variant="border"
-                role="combobox"
-                aria-expanded={!!tagInput}
-                aria-autocomplete="list"
-                aria-describedby="tag-dropdown"
-                onFocus={() => {
-                  setShowTagDropDown(true);
-                }}
-                onBlur={() => {
-                  setShowTagDropDown(false);
-                }}
-                onChange={(e) => setTagInput(e.currentTarget.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleAddTag();
-                }}
-              />
-              {showTagDropDown && (
-                <div
-                  ref={dropdownRef}
-                  className={`${styles.tagAutocompleteDropdown} ${styles[dropdownDirection]}`}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                flexWrap: "wrap",
+                margin: "8px 0",
+              }}
+            >
+              {tags.map((tag) => (
+                <Badge
+                  bold={true}
+                  onRemove={() => handleRemoveTag(tag)}
+                  key={tag}
                 >
-                  {filteredTags.length > 0 ? (
-                    <div className={styles.tagAutocompleteDropdownHeader}>
-                      Tags existing in project
-                    </div>
-                  ) : (
-                    <div className={styles.tagAutocompleteDropdownHeaderEmpty}>
-                      <Muted>No tags found</Muted>
-                    </div>
-                  )}
-                  {filteredTags.map((t) => {
-                    const matchIndex = t.name
-                      .toLowerCase()
-                      .indexOf(tagInput.toLowerCase());
-                    const isExact =
-                      t.name.toLowerCase() === tagInput.trim().toLowerCase();
-                    if (matchIndex === -1) {
+                  {tag}
+                </Badge>
+              ))}
+              <div style={{ position: "relative", flex: 1, minWidth: 120 }}>
+                <Textbox
+                  data-cy="settings_input_tag"
+                  ref={inputRef}
+                  placeholder="Add tag..."
+                  value={tagInput}
+                  variant="border"
+                  role="combobox"
+                  aria-expanded={!!tagInput}
+                  aria-autocomplete="list"
+                  aria-describedby="tag-dropdown"
+                  onFocus={() => {
+                    setShowTagDropDown(true);
+                  }}
+                  onBlur={() => {
+                    setShowTagDropDown(false);
+                  }}
+                  onChange={(e) => setTagInput(e.currentTarget.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleAddTag();
+                  }}
+                />
+                {showTagDropDown && (
+                  <div
+                    ref={dropdownRef}
+                    className={`${styles.tagAutocompleteDropdown} ${styles[dropdownDirection]}`}
+                  >
+                    {filteredTags.length > 0 ? (
+                      <div className={styles.tagAutocompleteDropdownHeader}>
+                        Tags existing in project
+                      </div>
+                    ) : (
+                      <div
+                        className={styles.tagAutocompleteDropdownHeaderEmpty}
+                      >
+                        <Muted>No tags found</Muted>
+                      </div>
+                    )}
+                    {filteredTags.map((t) => {
+                      const matchIndex = t.name
+                        .toLowerCase()
+                        .indexOf(tagInput.toLowerCase());
+                      const isExact =
+                        t.name.toLowerCase() === tagInput.trim().toLowerCase();
+                      if (matchIndex === -1) {
+                        return (
+                          <div
+                            key={t.id}
+                            className={styles.tagAutocompleteDropdownItem}
+                            onMouseDown={() => {
+                              setTags([...tags, t.name]);
+                              setTagInput("");
+                            }}
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <span>{t.name}</span>
+                            {isExact && (
+                              <span
+                                className={
+                                  styles.tagAutocompleteDropdownAddHint
+                                }
+                              >
+                                Enter
+                              </span>
+                            )}
+                          </div>
+                        );
+                      }
+                      const before = t.name.slice(0, matchIndex);
+                      const match = t.name.slice(
+                        matchIndex,
+                        matchIndex + tagInput.length
+                      );
+                      const after = t.name.slice(matchIndex + tagInput.length);
                       return (
                         <div
                           key={t.id}
@@ -204,7 +241,11 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
                             alignItems: "center",
                           }}
                         >
-                          <span>{t.name}</span>
+                          <span>
+                            {before}
+                            <b>{match}</b>
+                            {after}
+                          </span>
                           {isExact && (
                             <span
                               className={styles.tagAutocompleteDropdownAddHint}
@@ -214,76 +255,45 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
                           )}
                         </div>
                       );
-                    }
-                    const before = t.name.slice(0, matchIndex);
-                    const match = t.name.slice(
-                      matchIndex,
-                      matchIndex + tagInput.length
-                    );
-                    const after = t.name.slice(matchIndex + tagInput.length);
-                    return (
-                      <div
-                        key={t.id}
-                        className={styles.tagAutocompleteDropdownItem}
-                        onMouseDown={() => {
-                          setTags([...tags, t.name]);
-                          setTagInput("");
-                        }}
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <span>
-                          {before}
-                          <b>{match}</b>
-                          {after}
-                        </span>
-                        {isExact && (
+                    })}
+                    {(() => {
+                      const alreadyExists =
+                        tags.includes(tagInput.trim()) ||
+                        allTags.tagsData.some(
+                          (t) =>
+                            t.name.toLowerCase() ===
+                            tagInput.trim().toLowerCase()
+                        );
+                      if (!tagInput.trim() || alreadyExists) return null;
+                      return (
+                        <div
+                          className={styles.tagAutocompleteDropdownAdd}
+                          onMouseDown={() => {
+                            if (!alreadyExists) handleAddTag();
+                          }}
+                          style={{
+                            opacity: alreadyExists ? 0.5 : 1,
+                            pointerEvents: alreadyExists ? "none" : "auto",
+                          }}
+                        >
+                          <span>
+                            Add <b>"{tagInput}"</b>
+                          </span>
                           <span
                             className={styles.tagAutocompleteDropdownAddHint}
                           >
                             Enter
                           </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                  {(() => {
-                    const alreadyExists =
-                      tags.includes(tagInput.trim()) ||
-                      allTags.tagsData.some(
-                        (t) =>
-                          t.name.toLowerCase() === tagInput.trim().toLowerCase()
+                        </div>
                       );
-                    if (!tagInput.trim() || alreadyExists) return null;
-                    return (
-                      <div
-                        className={styles.tagAutocompleteDropdownAdd}
-                        onMouseDown={() => {
-                          if (!alreadyExists) handleAddTag();
-                        }}
-                        style={{
-                          opacity: alreadyExists ? 0.5 : 1,
-                          pointerEvents: alreadyExists ? "none" : "auto",
-                        }}
-                      >
-                        <span>
-                          Add <b>"{tagInput}"</b>
-                        </span>
-                        <span className={styles.tagAutocompleteDropdownAddHint}>
-                          Enter
-                        </span>
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
+                    })()}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </Fragment>
   );
 };

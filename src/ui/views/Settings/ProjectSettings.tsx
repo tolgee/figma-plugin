@@ -107,13 +107,13 @@ export const ProjectSettings: FunctionComponent<Props> = ({
     }
   }, [settings]);
 
-  const [showNamespaces, setShowNamespaces] = useState(
-    !initialData?.namespacesDisabled
+  const [namespacesDisabled, setNamespacesDisabled] = useState(
+    initialData?.namespacesDisabled ?? false
   );
 
-  const handleShowNamespaces = (e: any) => {
+  const handleDisableNamespaces = (e: any) => {
     const checked = e.currentTarget.checked;
-    setShowNamespaces(checked);
+    setNamespacesDisabled(!checked);
     setSettings({ ...settings!, namespacesDisabled: !checked });
   };
 
@@ -146,14 +146,17 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       </select>
       <VerticalSpace space="medium" />
       <div className={styles.namespaceShowRow}>
-        <Checkbox value={showNamespaces} onChange={handleShowNamespaces}>
+        <Checkbox
+          value={!namespacesDisabled}
+          onChange={handleDisableNamespaces}
+        >
           <Text>Use namespaces</Text>
         </Checkbox>
 
         <InfoTooltip>{namespaceHelpText}</InfoTooltip>
       </div>
       <VerticalSpace space="small" />
-      {showNamespaces && (
+      {!namespacesDisabled && (
         <Fragment>
           <VerticalSpace space="extraSmall" />
           <Text>

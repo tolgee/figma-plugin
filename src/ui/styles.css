@@ -49,7 +49,6 @@ select {
   border-radius: var(--border-radius-2);
   cursor: text;
   background: var(--figma-color-bg);
-  padding: 1px;
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   background-repeat: no-repeat;

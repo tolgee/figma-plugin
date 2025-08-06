@@ -25,10 +25,17 @@ function shouldIncludeNode(
   node: TextNode,
   settings: Partial<CurrentDocumentSettings>
 ) {
-  if (settings.ignoreNumbers && /^\d+$/.test(node.characters)) {
+  if (
+    (settings.ignoreNumbers || typeof settings.ignoreNumbers === "undefined") &&
+    /^\d+$/.test(node.characters)
+  ) {
     return false;
   }
-  if (settings.ignoreHiddenLayers && !node.visible) {
+  if (
+    (settings.ignoreHiddenLayers ||
+      typeof settings.ignoreHiddenLayers === "undefined") &&
+    !node.visible
+  ) {
     return false;
   }
   if (
@@ -48,10 +55,6 @@ export const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
   const documentSettings = getDocumentData();
   const result: TextNode[] = [];
   for (const node of nodes) {
-    if (!node.visible) {
-      continue;
-    }
-
     if (node.type === "TEXT") {
       if (shouldIncludeNode(node, documentSettings)) {
         result.push(node);

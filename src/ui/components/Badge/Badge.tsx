@@ -23,7 +23,10 @@ export const Badge = ({ onClick, children, title, bold, onRemove }: Props) => {
       {onRemove && (
         <button
           data-cy="badge-remove"
-          onClick={onRemove}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
           aria-label="remove-tag"
         >
           <X width={16} height={16} />

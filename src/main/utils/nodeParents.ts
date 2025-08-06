@@ -2,9 +2,7 @@
  * Returns the nearest frame to the node.
  */
 export function getFrame(nodeId: string): FrameNode | undefined {
-  const realNode: BaseNode | null = figma.getNodeById(
-    nodeId
-  ) as BaseNode | null;
+  const realNode = figma.getNodeById(nodeId);
   if (!realNode) return undefined;
   let parent = realNode.parent;
   while (parent) {
@@ -16,12 +14,10 @@ export function getFrame(nodeId: string): FrameNode | undefined {
   return undefined;
 }
 /**
- * Returns the page name for the node.
+ * Returns the topmost frame in the node's hierarchy.
  */
 export function getArtboard(nodeId: string): FrameNode | undefined {
-  const realNode: BaseNode | null = figma.getNodeById(
-    nodeId
-  ) as BaseNode | null;
+  const realNode = figma.getNodeById(nodeId);
   if (!realNode) return undefined;
   let parent = realNode.parent;
   let latestFrame: FrameNode | undefined;
@@ -40,13 +36,11 @@ export function getArtboard(nodeId: string): FrameNode | undefined {
 export function getComponent(
   nodeId: string
 ): ComponentNode | ComponentSetNode | undefined {
-  const realNode: BaseNode | null = figma.getNodeById(
-    nodeId
-  ) as BaseNode | null;
+  const realNode = figma.getNodeById(nodeId);
   if (!realNode) return undefined;
   let parent = realNode.parent;
   while (parent) {
-    if (parent.type === "COMPONENT") {
+    if (parent.type === "COMPONENT" || parent.type === "COMPONENT_SET") {
       return parent;
     }
     parent = parent.parent;
@@ -58,13 +52,10 @@ export function getComponent(
  * Returns the section name based on parent group/frame naming.
  */
 export function getSection(nodeId: string): SectionNode | undefined {
-  const realNode: BaseNode | null = figma.getNodeById(
-    nodeId
-  ) as BaseNode | null;
+  const realNode = figma.getNodeById(nodeId);
   if (!realNode) return undefined;
   let parent = realNode.parent;
   while (parent) {
-    // Consider groups or frames with names starting with "section" or containing "/"
     if (parent.type === "SECTION") {
       return parent;
     }
@@ -74,13 +65,10 @@ export function getSection(nodeId: string): SectionNode | undefined {
 }
 
 export function getGroup(nodeId: string): GroupNode | undefined {
-  const realNode: BaseNode | null = figma.getNodeById(
-    nodeId
-  ) as BaseNode | null;
+  const realNode = figma.getNodeById(nodeId);
   if (!realNode) return undefined;
   let parent = realNode.parent;
   while (parent) {
-    // Consider groups or frames with names starting with "section" or containing "/"
     if (parent.type === "GROUP") {
       return parent;
     }
@@ -90,9 +78,7 @@ export function getGroup(nodeId: string): GroupNode | undefined {
 }
 
 export function getElement(nodeId: string): BaseNode | undefined {
-  const realNode: BaseNode | null = figma.getNodeById(
-    nodeId
-  ) as BaseNode | null;
+  const realNode = figma.getNodeById(nodeId);
   if (!realNode) return undefined;
   return realNode;
 }

@@ -83,19 +83,72 @@ export const ResizeHandle = () => {
       ref={handleRef}
       className={classes.resizeHandle}
       onMouseDown={handleMouseDown}
-      title="Drag to resize"
+      title="Drag to resize or use arrow keys"
       role="button"
-      aria-label="Resize window"
+      aria-label="Resize window. Use arrow keys to resize, Shift+arrow for larger steps"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           // Focus the handle to show it's interactive
           handleRef.current?.focus();
+          return;
+        }
+
+        // Handle arrow key resizing
+        const currentSize = sizeStack[sizeStack.length - 1] || DEFAULT_SIZE;
+        const stepSize = e.shiftKey ? 20 : 10; // Larger step with Shift key
+        let newSize: WindowSize | null = null;
+
+        switch (e.key) {
+          case "ArrowRight":
+            e.preventDefault();
+            newSize = {
+              width: Math.min(MAX_WIDTH, currentSize.width + stepSize),
+              height: currentSize.height,
+            };
+            break;
+          case "ArrowLeft":
+            e.preventDefault();
+            newSize = {
+              width: Math.max(MIN_WIDTH, currentSize.width - stepSize),
+              height: currentSize.height,
+            };
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            newSize = {
+              width: currentSize.width,
+              height: Math.min(MAX_HEIGHT, currentSize.height + stepSize),
+            };
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            newSize = {
+              width: currentSize.width,
+              height: Math.max(MIN_HEIGHT, currentSize.height - stepSize),
+            };
+            break;
+        }
+
+        if (newSize) {
+          // Emit resize event
+          emit<ResizeHandler>("RESIZE", newSize);
+
+          // Update the global size stack
+          setSizeStack((stack) => {
+            const newStack = [...stack];
+            if (newStack.length > 0) {
+              newStack[newStack.length - 1] = newSize!;
+            } else {
+              newStack.push(newSize!);
+            }
+            return newStack;
+          });
         }
       }}
     >
-      <ResizeHandleIcon style={{ transform: "rotate(45deg)" }} />
+      <ResizeHandleIcon />
     </div>
   );
 };

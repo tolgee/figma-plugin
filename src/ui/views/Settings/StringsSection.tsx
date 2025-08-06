@@ -113,15 +113,17 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
     tolgeeConfig.prefillKeyFormat ?? false
   );
   const [ignoreNumbers, setIgnoreNumbers] = useState(
-    tolgeeConfig.ignoreNumbers ?? false
+    tolgeeConfig.ignoreNumbers ?? true
   );
   const [ignoreHiddenLayers, setIgnoreHiddenLayers] = useState(
-    tolgeeConfig.ignoreHiddenLayers ?? false
+    tolgeeConfig.ignoreHiddenLayers ?? true
   );
   const [ignoreTextLayers, setIgnoreTextLayers] = useState(
     tolgeeConfig.ignoreTextLayers ?? false
   );
-  const [ignorePrefix, setIgnorePrefix] = useState("");
+  const [ignorePrefix, setIgnorePrefix] = useState(
+    tolgeeConfig.ignorePrefix ?? ""
+  );
 
   const preview = useMemo(() => {
     return getPreview(format, tolgeeConfig.variableCasing);
@@ -182,6 +184,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
 
   return (
     <Fragment>
+      <VerticalSpace space="extraSmall" />
       {showHeadline && (
         <Fragment>
           <Text style={{ fontSize: "16px" }}>

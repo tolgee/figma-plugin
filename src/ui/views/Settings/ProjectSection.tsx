@@ -34,6 +34,7 @@ export const ProjectSection: FunctionComponent<ProjectSectionProps> = ({
   handleValidate,
 }) => (
   <Fragment>
+    <VerticalSpace space="extraSmall" />
     {showHeadline && (
       <Fragment>
         <Text style={{ fontSize: "16px" }}>
