@@ -88,7 +88,6 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
 
   return (
     <Fragment>
-      <VerticalSpace space="extraSmall" />
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {showHeadline && (
           <Fragment>

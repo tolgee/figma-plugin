@@ -19,7 +19,7 @@ export const Expandable: FunctionComponent<{
           display: "flex",
           alignItems: "center",
           gap: 8,
-          marginBottom: 8,
+          marginBottom: 12,
         }}
         onClick={() => setOpen((v) => !v)}
         onKeyDown={(e) => {
