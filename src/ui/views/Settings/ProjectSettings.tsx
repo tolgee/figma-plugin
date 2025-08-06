@@ -108,7 +108,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   }, [settings]);
 
   const [namespacesDisabled, setNamespacesDisabled] = useState(
-    initialData?.namespacesDisabled ?? false
+    initialData?.namespacesDisabled ?? true
   );
 
   const handleDisableNamespaces = (e: any) => {
