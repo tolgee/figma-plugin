@@ -57,6 +57,9 @@
   align-items: center;
   justify-content: space-between;
 }
+.tagAutocompleteDropdownAdd > * {
+  cursor: pointer;
+}
 
 .tagAutocompleteDropdownAddHint {
   font-style: italic;

@@ -77,7 +77,13 @@ export const Push: FunctionalComponent = () => {
           : [];
 
       setChanges(
-        getPushChanges(deduplicatedNodes, translations, language, screenshots)
+        getPushChanges(
+          deduplicatedNodes,
+          translations,
+          language,
+          screenshots,
+          tolgeeConfig
+        )
       );
     } catch (e) {
       if (e === "invalid_project_api_key") {
@@ -109,6 +115,11 @@ export const Push: FunctionalComponent = () => {
   const addNewTranslations = useApiMutation({
     url: "/v2/projects/keys/import",
     method: "post",
+  });
+
+  const addTagsToKeys = useApiMutation({
+    url: "/v2/projects/tag-complex",
+    method: "put",
   });
 
   const uploadImage = useApiMutation({
@@ -232,32 +243,10 @@ export const Push: FunctionalComponent = () => {
           namespace: item.ns || undefined,
           screenshots: mapScreenshots(item),
           translations: {
-            [language]: { text: item.newValue, resolution: "OVERRIDE" },
+            [language]: { text: item.newValue, resolution: "NEW" },
           },
         });
       });
-
-      if (
-        (tolgeeConfig?.addTags ?? false) &&
-        tolgeeConfig?.tags &&
-        tolgeeConfig.tags.length > 0
-      ) {
-        await addNewTranslations.mutateAsync({
-          content: {
-            "application/json": {
-              keys: changes.newKeys.map((item) => ({
-                name: item.key,
-                namespace: item.ns || undefined,
-                screenshots: mapScreenshots(item),
-                translations: {
-                  [language]: item.newValue,
-                },
-                tags: tolgeeConfig?.tags ?? [],
-              })),
-            },
-          },
-        });
-      }
 
       await updateTranslations.mutateAsync({
         content: {
@@ -266,6 +255,29 @@ export const Push: FunctionalComponent = () => {
           },
         },
       });
+
+      // Add tags to keys
+      if (
+        (tolgeeConfig?.addTags ?? false) &&
+        tolgeeConfig?.tags &&
+        tolgeeConfig.tags.length > 0
+      ) {
+        await addTagsToKeys.mutateAsync({
+          content: {
+            "application/json": {
+              tagFiltered: tolgeeConfig?.tags ?? [],
+              filterKeys: [
+                ...changes.newKeys,
+                ...changes.unchangedKeys,
+                ...changes.changedKeys,
+              ].map((k) => ({
+                name: k.key,
+                namespace: k.ns || undefined,
+              })),
+            },
+          },
+        });
+      }
 
       if (tolgeeConfig?.updateScreenshots ?? true) {
         for (const screenshot of changes.screenshots.values()) {

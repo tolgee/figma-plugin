@@ -1,4 +1,4 @@
-import { FrameScreenshot, NodeInfo } from "@/types";
+import { FrameScreenshot, NodeInfo, TolgeeConfig } from "@/types";
 import { compareNs } from "./compareNs";
 import { TranslationData } from "../ui/client/types";
 import { getTolgeeFormat } from "@tginternal/editor";
@@ -25,7 +25,8 @@ export const getPushChanges = (
   nodes: NodeInfo[],
   translations: TranslationData,
   language: string,
-  screenshots: FrameScreenshot[]
+  screenshots: FrameScreenshot[],
+  tolgeeConfig: Partial<TolgeeConfig> | null
 ): KeyChanges => {
   const newKeys: KeyChangeValue[] = [];
   const changedKeys: KeyChangeValue[] = [];
@@ -45,9 +46,12 @@ export const getPushChanges = (
 
     return result;
   };
+  const newTags = tolgeeConfig?.tags;
 
   nodes.forEach((node) => {
     const oldValue = translations?.[node.ns ?? ""]?.[node.key];
+
+    const oldTags = oldValue?.keyTags.map((tag) => tag.name) ?? [];
 
     const hasChangesOutsideFromTolgee =
       stringFormatter(node.translation ?? "") !=
@@ -73,7 +77,8 @@ export const getPushChanges = (
       oldTolgeeValue == null ||
       (oldTolgeeValue &&
         (JSON.stringify(oldTolgeeValue) !== JSON.stringify(newTolgeeValue) ||
-          oldValue.keyIsPlural !== node.isPlural));
+          oldValue.keyIsPlural !== node.isPlural)) ||
+      newTags?.some((tag) => !oldTags.includes(tag));
 
     const change: KeyChangeValue = {
       key: node.key,
