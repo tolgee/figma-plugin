@@ -76,8 +76,7 @@ export const ResizeHandle = () => {
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [isResizing, startPos, startSize]);
-
+  }, [isResizing]);
   return (
     <div
       ref={handleRef}
