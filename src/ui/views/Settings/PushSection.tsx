@@ -32,7 +32,7 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
   setTolgeeConfig,
   onTagsChange,
 }) => {
-  const [tags, setTags] = useState<string[]>(tolgeeConfig.tags || ["figma"]);
+  const [tags, setTags] = useState<string[]>(tolgeeConfig.tags || []);
   const [tagInput, setTagInput] = useState("");
   const [showTagDropDown, setShowTagDropDown] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -88,15 +88,15 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
 
   return (
     <Fragment>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "flex", flexDirection: "column" }}>
         {showHeadline && (
           <Fragment>
-            <Text style={{ fontSize: "16px" }}>
+            <Text style={{ fontSize: "14px" }}>
               <Bold>Push</Bold>
             </Text>
-            <VerticalSpace space="small" />
           </Fragment>
         )}
+        <VerticalSpace space="medium" />
         <Checkbox
           data-cy="settings_checkbox_update_screenshots"
           value={tolgeeConfig.updateScreenshots ?? true}
@@ -110,6 +110,7 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
         >
           <Text>Update screenshots</Text>
         </Checkbox>
+        <VerticalSpace space="small" />
         <Checkbox
           data-cy="settings_checkbox_add_tags"
           value={tolgeeConfig.addTags ?? false}

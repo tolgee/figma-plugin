@@ -184,15 +184,14 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
 
   return (
     <Fragment>
-      <VerticalSpace space="extraSmall" />
       {showHeadline && (
         <Fragment>
-          <Text style={{ fontSize: "16px" }}>
+          <Text style={{ fontSize: "14px" }}>
             <Bold>Strings and keys</Bold>
           </Text>
-          <VerticalSpace space="small" />
         </Fragment>
       )}
+      <VerticalSpace space="medium" />
       <Text className={styles.sectionTitle}>Key name</Text>
       <VerticalSpace space="medium" />
       <Checkbox
@@ -204,10 +203,9 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
           <Bold>prefill key name</Bold>
         </Text>
       </Checkbox>
-      <VerticalSpace space="small" />
       {prefill && (
         <Fragment>
-          <VerticalSpace space="extraSmall" />
+          <VerticalSpace space="small" />
 
           <div>
             <Inline className={styles.headerRow}>
@@ -249,9 +247,9 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
               ))}
             </select>
           </div>
-          <VerticalSpace space="small" />
           {preview && (
             <div>
+              <VerticalSpace space="small" />
               <Muted>Preview</Muted>
               <VerticalSpace space="extraSmall" />
 

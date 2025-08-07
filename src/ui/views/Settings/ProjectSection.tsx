@@ -36,12 +36,12 @@ export const ProjectSection: FunctionComponent<ProjectSectionProps> = ({
   <Fragment>
     {showHeadline && (
       <Fragment>
-        <Text style={{ fontSize: "16px" }}>
+        <Text style={{ fontSize: "14px" }}>
           <Bold>Project</Bold>
         </Text>
-        <VerticalSpace space="small" />
       </Fragment>
     )}
+    <VerticalSpace space="medium" />
     <Text>
       <Muted>Tolgee URL</Muted>
     </Text>
