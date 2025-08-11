@@ -127,15 +127,26 @@ export const StringsEditor = ({
           "(displayed text of the string)",
           "{elementText}"
         ),
-        createCompletionOption("group", "(nearest group)", "{group}"),
+        createCompletionOption(
+          "group",
+          "(name of the nearest group)",
+          "{group}"
+        ),
         createCompletionOption(
           "component",
-          "(nearest component)",
+          "(name of the nearest component)",
           "{component}"
         ),
-        createCompletionOption("frame", "(nearest frame)", "{frame}"),
-        createCompletionOption("artboard", "(artboard frame)", "{artboard}"),
-        createCompletionOption("section", "(nearest section)", "{section}"),
+        createCompletionOption(
+          "frame",
+          "(name of the nearest frame)",
+          "{frame}"
+        ),
+        createCompletionOption(
+          "artboard",
+          "(name of the artboard frame)",
+          "{artboard}"
+        ),
       ],
       commitCharacters: ["}"],
     };

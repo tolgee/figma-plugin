@@ -58,6 +58,9 @@ select {
   width: 100%;
   padding: 6px 8px;
 }
+button, button > * {
+  cursor: pointer;
+}
 
 @media (prefers-color-scheme: dark) {
   select {

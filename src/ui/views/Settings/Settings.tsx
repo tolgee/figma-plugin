@@ -7,6 +7,7 @@ import {
   Divider,
   IconWarning32,
   LoadingIndicator,
+  Modal,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
@@ -64,6 +65,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
 
   const [projectName, setProjectName] = useState<string | undefined>();
   const [projectId, setProjectId] = useState<number | undefined>();
+  const [forgetDialogOpen, setForgetDialogOpen] = useState(false);
 
   const validateTolgeeCredentials = async () => {
     try {
@@ -132,7 +134,12 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
     setTolgeeConfig({
       apiUrl: DEFAULT_TOLGEE_URL,
     });
+    setForgetDialogOpen(false);
   };
+
+  function handleOpenButtonClick() {
+    setForgetDialogOpen(true);
+  }
 
   const handleNextStep = () => {
     if (setupStep === "project") {
@@ -222,13 +229,15 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
           {!isLoading && (
             <ActionsBottom>
               {config.documentInfo && (
-                <Button
-                  data-cy="settings_button_forget"
-                  onClick={handleForget}
-                  secondary
-                >
-                  Forget credentials
-                </Button>
+                <div style={{ marginRight: "auto" }}>
+                  <Button
+                    data-cy="settings_button_forget"
+                    onClick={handleOpenButtonClick}
+                    secondary
+                  >
+                    Forget credentials
+                  </Button>
+                </div>
               )}
               {!noNavigation && (
                 <Button
@@ -263,13 +272,15 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
           {!isLoading && (
             <ActionsBottom>
               {config.documentInfo && (
-                <Button
-                  data-cy="settings_button_forget"
-                  onClick={handleForget}
-                  secondary
-                >
-                  Forget credentials
-                </Button>
+                <div style={{ marginRight: "auto" }}>
+                  <Button
+                    data-cy="settings_button_forget"
+                    onClick={handleOpenButtonClick}
+                    secondary
+                  >
+                    Forget credentials
+                  </Button>
+                </div>
               )}
               {setupStep !== "project" && (
                 <Button
@@ -295,6 +306,30 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
           <VerticalSpace space="small" />
         </Container>
       )}
+      <Modal
+        open={forgetDialogOpen}
+        title="Forget credentials for this project?"
+        onCloseButtonClick={() => setForgetDialogOpen(false)}
+      >
+        <div style={{ padding: "16px" }}>
+          <p>
+            Project "{projectName}" will be disconnected from the Figma plugin.
+          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              justifyContent: "flex-end",
+              marginTop: "16px",
+            }}
+          >
+            <Button onClick={() => setForgetDialogOpen(false)} secondary>
+              Cancel
+            </Button>
+            <Button onClick={handleForget}>Continue</Button>
+          </div>
+        </div>
+      </Modal>
     </Fragment>
   );
 };
