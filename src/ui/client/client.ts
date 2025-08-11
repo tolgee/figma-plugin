@@ -4,6 +4,8 @@ import { RequestParamsType, ResponseContent } from "./types";
 import { globalState } from "../state/GlobalState";
 import { errorToText } from "./errorCodes";
 
+export let API_VERSION: string | undefined;
+
 type GlobalOptions = {
   apiUrl?: string;
   apiKey?: string;
@@ -100,6 +102,8 @@ async function customFetch(
 
         throw new Error(message);
       }
+      const apiVersion = r.headers.get("x-tolgee-version");
+      API_VERSION = apiVersion && apiVersion !== "??" ? apiVersion : undefined;
       return await getResObject(r);
     })
     .catch((e) => {

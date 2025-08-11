@@ -11,28 +11,21 @@ import {
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
-import { components } from "@/ui/client/apiSchema.generated";
 import { useApiMutation } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
-import {
-  getPushChanges,
-  KeyChanges,
-  KeyChangeValue,
-} from "@/tools/getPushChanges";
+import { getPushChanges, KeyChanges } from "@/tools/getPushChanges";
 import { TopBar } from "../../components/TopBar/TopBar";
 import { Changes } from "./Changes";
-import { FrameScreenshot, NodeInfo } from "@/types";
+import { NodeInfo } from "@/types";
 import { compareNs } from "@/tools/compareNs";
 import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
 import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
-
-type ImportKeysResolvableItemDto =
-  components["schemas"]["ImportKeysResolvableItemDto"];
-type KeyScreenshotDto = components["schemas"]["KeyScreenshotDto"];
+import { usePush } from "./usePush";
+import { UnresolvedConflicts } from "./UnresolvedConflicts";
 
 export const Push: FunctionalComponent = () => {
   const language = useGlobalState((c) => c.config!.language!);
@@ -112,23 +105,8 @@ export const Push: FunctionalComponent = () => {
     method: "post",
   });
 
-  const addNewTranslations = useApiMutation({
-    url: "/v2/projects/keys/import",
-    method: "post",
-  });
-
-  const addTagsToKeys = useApiMutation({
-    url: "/v2/projects/tag-complex",
-    method: "put",
-  });
-
   const uploadImage = useApiMutation({
     url: "/v2/image-upload",
-    method: "post",
-  });
-
-  const bigMeta = useApiMutation({
-    url: "/v2/projects/big-meta",
     method: "post",
   });
 
@@ -154,149 +132,16 @@ export const Push: FunctionalComponent = () => {
     setRoute("index");
   };
 
-  const handleSubmit = async () => {
-    const keys: ImportKeysResolvableItemDto[] = [];
+  const { push, unresolvedConflicts } = usePush(setLoadingStatus);
+  const unresolvedConflictsSize = unresolvedConflicts?.length ?? 0;
 
+  const handleSubmit = async () => {
     if (!changes) {
       return;
     }
 
     try {
-      const screenshotsMap = new Map<FrameScreenshot, number>();
-      const requiredScreenshots = uploadScreenshots ? changes.screenshots : [];
-
-      for (const [i, screenshot] of requiredScreenshots.entries()) {
-        setLoadingStatus(
-          `Uploading images (${i + 1}/${requiredScreenshots.length})`
-        );
-        const imageBlob = new Blob([screenshot.image.buffer], {
-          type: "image/png",
-        });
-        const location = `figma-${screenshot.info.id}`;
-        const infoBlob = new Blob([JSON.stringify({ location })], {
-          type: "application/json",
-        });
-        const data = await uploadImage.mutateAsync({
-          content: {
-            "multipart/form-data": {
-              image: imageBlob as any,
-              info: infoBlob as any,
-            },
-          },
-        });
-        screenshotsMap.set(screenshot, data.id);
-      }
-
-      const mapScreenshots = (item: KeyChangeValue): KeyScreenshotDto[] => {
-        const result: KeyScreenshotDto[] = [];
-        if (uploadScreenshots) {
-          item.screenshots.forEach((screenshot) => {
-            const relevantNodes = screenshot.keys.filter(
-              ({ key, ns }) => key === item.key && compareNs(ns, item.ns)
-            );
-
-            result.push({
-              text: item.newValue,
-              uploadedImageId: screenshotsMap.get(screenshot)!,
-              positions: relevantNodes.map(({ x, y, width, height }) => {
-                return {
-                  x,
-                  y,
-                  width,
-                  height,
-                };
-              }),
-            });
-          });
-        }
-        return result;
-      };
-
-      setLoadingStatus("Updating keys");
-
-      changes.unchangedKeys.forEach((item) => {
-        keys.push({
-          name: item.key,
-          namespace: item.ns || undefined,
-          screenshots: mapScreenshots(item),
-          translations: {},
-        });
-      });
-
-      changes.changedKeys.forEach((item) => {
-        keys.push({
-          name: item.key,
-          namespace: item.ns || undefined,
-          screenshots: mapScreenshots(item),
-          translations: {
-            [language]: {
-              text: item.newValue,
-              resolution: "OVERRIDE",
-            },
-          },
-        });
-      });
-
-      changes.newKeys.forEach((item) => {
-        keys.push({
-          name: item.key,
-          namespace: item.ns || undefined,
-          screenshots: mapScreenshots(item),
-          translations: {
-            [language]: { text: item.newValue, resolution: "NEW" },
-          },
-        });
-      });
-
-      await updateTranslations.mutateAsync({
-        content: {
-          "application/json": {
-            keys,
-          },
-        },
-      });
-
-      // Add tags to keys
-      if (
-        (tolgeeConfig?.addTags ?? false) &&
-        tolgeeConfig?.tags &&
-        tolgeeConfig.tags.length > 0
-      ) {
-        await addTagsToKeys.mutateAsync({
-          content: {
-            "application/json": {
-              tagFiltered: tolgeeConfig?.tags ?? [],
-              filterKeys: [
-                ...changes.newKeys,
-                ...changes.unchangedKeys,
-                ...changes.changedKeys,
-              ].map((k) => ({
-                name: k.key,
-                namespace: k.ns || undefined,
-              })),
-            },
-          },
-        });
-      }
-
-      if (tolgeeConfig?.updateScreenshots ?? true) {
-        for (const screenshot of changes.screenshots.values()) {
-          const relatedKeys = screenshot.keys
-            .map((data) => ({
-              keyName: data.key,
-              namespace: data.ns || undefined,
-            }))
-            .slice(0, 100);
-          await bigMeta.mutateAsync({
-            content: {
-              "application/json": {
-                relatedKeysInOrder: relatedKeys,
-              },
-            },
-          });
-        }
-      }
-
+      await push(changes, uploadScreenshots, language);
       connectNodes();
       setSuccess(true);
     } catch (e) {
@@ -360,11 +205,15 @@ export const Push: FunctionalComponent = () => {
         ) : success ? (
           <Fragment>
             <div>
-              Successfully updated {changesSize} key(s)
+              Successfully updated {changesSize - unresolvedConflictsSize}{" "}
+              key(s)
               {uploadScreenshots
                 ? ` and uploaded ${screenshotCount} screenshot(s).`
                 : "."}
             </div>
+            {unresolvedConflicts && (
+              <UnresolvedConflicts conflicts={unresolvedConflicts} />
+            )}
             <ActionsBottom>
               <Button data-cy="push_ok_button" onClick={handleGoBack}>
                 OK

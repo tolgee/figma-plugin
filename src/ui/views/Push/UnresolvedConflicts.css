@@ -1,0 +1,11 @@
+.container {
+  display: grid;
+  color: var(--figma-color-text-warning);
+  margin: 10px 0px
+}
+
+.conflicts {
+  display: grid;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
