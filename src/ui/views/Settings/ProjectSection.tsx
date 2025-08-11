@@ -10,11 +10,12 @@ import {
 import { ProjectSettings } from "./ProjectSettings";
 import styles from "./Settings.css";
 import { CheckCircle } from "@/ui/icons/SvgIcons";
+import { TolgeeConfig } from "@/types";
 
 export interface ProjectSectionProps {
   showHeadline: boolean;
-  tolgeeConfig: any;
-  setTolgeeConfig: (c: any) => void;
+  tolgeeConfig: Partial<TolgeeConfig> & { apiUrl: string };
+  setTolgeeConfig: (c: Partial<TolgeeConfig> & { apiUrl: string }) => void;
   validated: boolean;
   projectName: string | undefined;
   projectId: number | undefined;

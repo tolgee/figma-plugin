@@ -3,8 +3,7 @@ import { preformatKeyEndpoint } from "@/main/endpoints/preformatKey";
 import { TolgeeConfig } from "@/types";
 
 /**
- * Hook, der das Key-Format über einen Endpoint im Figma-Kontext berechnen lässt.
- * Wird direkt mit NodeInfo und keyFormat aufgerufen und gibt { key, isLoading } zurück.
+ * Hook that calculates the prefilled key using the key format.
  */
 export function usePrefilledKey(
   nodeId: string,

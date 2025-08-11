@@ -45,7 +45,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       config: {
         apiKey: tolgeeConfig.apiKey,
         apiUrl: tolgeeConfig.apiUrl,
-        apiTimeout: 3000,
+        apiTimeout: 15000,
       },
     },
   });
