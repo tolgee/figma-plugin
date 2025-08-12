@@ -194,7 +194,7 @@ export const Index = () => {
         </Container>
       </div>
 
-      {nothingSelected ? (
+      {nothingSelected || selection.length === 0 ? (
         <Container space="medium" className="noSelection">
           <Text align="center">
             Select texts for translation

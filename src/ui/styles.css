@@ -72,7 +72,6 @@ select:disabled {
   border: 1px solid var(--figma-color-border-disabled-strong);
 }
 .noSelection {
-  margin-top: 16;
   display: flex;
   flex-direction: column;
   align-items: center;
