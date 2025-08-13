@@ -59,7 +59,7 @@ describe("Push", () => {
       createTestNode({ text: "On the road", key: "on-the-road-title" }),
     ];
     visitWithState({
-      config: SIGNED_IN,
+      config: { ...SIGNED_IN, updateScreenshots: true },
       selectedNodes: nodes,
       allNodes: nodes,
     });
@@ -77,5 +77,25 @@ describe("Push", () => {
       .contains("Successfully updated 0 key(s) and uploaded 1 screenshot(s).")
       .should("be.visible");
     cy.iframe().findDcy("push_ok_button").should("be.visible").click();
+  });
+
+  it("doesn't push screenshot when disabled", () => {
+    const nodes = [
+      createTestNode({ text: "On the road", key: "on-the-road-title" }),
+    ];
+    visitWithState({
+      config: { ...SIGNED_IN, updateScreenshots: false },
+      selectedNodes: nodes,
+      allNodes: nodes,
+    });
+
+    cy.frameLoaded("#plugin_iframe");
+
+    cy.iframe().contains("On the road").should("exist");
+    cy.iframe().findDcy("index_push_button").should("be.visible").click();
+
+    cy.iframe().contains("No changes necessary").should("be.visible");
+
+    cy.iframe().findDcy("push_finish_button").should("be.visible").click();
   });
 });

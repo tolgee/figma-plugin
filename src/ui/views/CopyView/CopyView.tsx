@@ -100,8 +100,12 @@ export const CopyView = () => {
       <VerticalSpace space="large" />
 
       {nothingSelected ? (
-        <Container space="medium">
-          <Text>No texts selected</Text>
+        <Container space="medium" className="noSelection">
+          <Text align="center">
+            Select texts for translation
+            <br />
+            (single texts or frames)
+          </Text>
         </Container>
       ) : (
         <NodeList

@@ -62,9 +62,9 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
         setGlobalError(undefined);
         _setRoute(route);
       },
-      setConfig(config: Partial<TolgeeConfig>) {
-        _setConfig(config);
-        emit<SetupHandle>("SETUP", config);
+      setConfig(_config: Partial<TolgeeConfig>) {
+        _setConfig(_config);
+        emit<SetupHandle>("SETUP", _config);
       },
       setLanguage(language: string) {
         _setConfig({ ...config, language });

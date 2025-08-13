@@ -43,6 +43,7 @@ export const Push: FunctionalComponent = () => {
   const [_loadingStatus, setLoadingStatus] = useState<string | undefined>();
   const [changes, setChanges] = useState<KeyChanges>();
   const selectedNodes = useConnectedNodes({ ignoreSelection: false });
+  const tolgeeConfig = useGlobalState((c) => c.config);
 
   const nodes = selectedNodes.data?.items ?? [];
 
@@ -70,10 +71,19 @@ export const Push: FunctionalComponent = () => {
         language,
       });
 
-      const screenshots = await getScreenshotsEndpoint.call(nodes);
+      const screenshots =
+        tolgeeConfig?.updateScreenshots ?? true
+          ? await getScreenshotsEndpoint.call(nodes)
+          : [];
 
       setChanges(
-        getPushChanges(deduplicatedNodes, translations, language, screenshots)
+        getPushChanges(
+          deduplicatedNodes,
+          translations,
+          language,
+          screenshots,
+          tolgeeConfig
+        )
       );
     } catch (e) {
       if (e === "invalid_project_api_key") {
@@ -100,6 +110,16 @@ export const Push: FunctionalComponent = () => {
   const updateTranslations = useApiMutation({
     url: "/v2/projects/keys/import-resolvable",
     method: "post",
+  });
+
+  const addNewTranslations = useApiMutation({
+    url: "/v2/projects/keys/import",
+    method: "post",
+  });
+
+  const addTagsToKeys = useApiMutation({
+    url: "/v2/projects/tag-complex",
+    method: "put",
   });
 
   const uploadImage = useApiMutation({
@@ -236,20 +256,45 @@ export const Push: FunctionalComponent = () => {
         },
       });
 
-      for (const screenshot of changes.screenshots.values()) {
-        const relatedKeys = screenshot.keys
-          .map((data) => ({
-            keyName: data.key,
-            namespace: data.ns || undefined,
-          }))
-          .slice(0, 100);
-        await bigMeta.mutateAsync({
+      // Add tags to keys
+      if (
+        (tolgeeConfig?.addTags ?? false) &&
+        tolgeeConfig?.tags &&
+        tolgeeConfig.tags.length > 0
+      ) {
+        await addTagsToKeys.mutateAsync({
           content: {
             "application/json": {
-              relatedKeysInOrder: relatedKeys,
+              tagFiltered: tolgeeConfig?.tags ?? [],
+              filterKeys: [
+                ...changes.newKeys,
+                ...changes.unchangedKeys,
+                ...changes.changedKeys,
+              ].map((k) => ({
+                name: k.key,
+                namespace: k.ns || undefined,
+              })),
             },
           },
         });
+      }
+
+      if (tolgeeConfig?.updateScreenshots ?? true) {
+        for (const screenshot of changes.screenshots.values()) {
+          const relatedKeys = screenshot.keys
+            .map((data) => ({
+              keyName: data.key,
+              namespace: data.ns || undefined,
+            }))
+            .slice(0, 100);
+          await bigMeta.mutateAsync({
+            content: {
+              "application/json": {
+                relatedKeysInOrder: relatedKeys,
+              },
+            },
+          });
+        }
       }
 
       connectNodes();

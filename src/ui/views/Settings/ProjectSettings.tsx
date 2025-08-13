@@ -2,16 +2,11 @@ import { useApiQuery } from "@/ui/client/useQueryApi";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
 import { TolgeeConfig } from "@/types";
-import {
-  VerticalSpace,
-  Text,
-  Muted,
-  Checkbox,
-  Textbox,
-} from "@create-figma-plugin/ui";
+import { VerticalSpace, Text, Muted, Checkbox } from "@create-figma-plugin/ui";
 import { Fragment, FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import styles from "./ProjectSettings.css";
+import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
 
 type Props = {
   apiKey: string;
@@ -19,6 +14,24 @@ type Props = {
   initialData?: Partial<TolgeeConfig>;
   onChange: (data: Partial<TolgeeConfig>) => void;
 };
+
+const namespaceHelpText = (
+  <Fragment>
+    <div>
+      For more information about namespaces,
+      <br />
+      check the{" "}
+      <a
+        href="https://docs.tolgee.io/js-sdk/namespaces"
+        target="_blank"
+        rel="noreferrer"
+      >
+        docs of the platform
+      </a>
+      .
+    </div>
+  </Fragment>
+);
 
 export const ProjectSettings: FunctionComponent<Props> = ({
   apiKey,
@@ -84,8 +97,6 @@ export const ProjectSettings: FunctionComponent<Props> = ({
         namespace: initialData?.namespace ?? namespaces?.[0] ?? "",
         namespacesDisabled:
           initialData?.namespacesDisabled ?? namespacesNotPresent,
-        ignoreNumbers: initialData?.ignoreNumbers ?? true,
-        ignorePrefix: initialData?.ignorePrefix ?? "_",
       });
     }
   }, [languages, namespaces]);
@@ -95,6 +106,16 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       onChange(settings);
     }
   }, [settings]);
+
+  const [namespacesDisabled, setNamespacesDisabled] = useState(
+    initialData?.namespacesDisabled ?? true
+  );
+
+  const handleDisableNamespaces = (e: any) => {
+    const checked = e.currentTarget.checked;
+    setNamespacesDisabled(!checked);
+    setSettings({ ...settings!, namespacesDisabled: !checked });
+  };
 
   if (languagesLoadable.isLoading || namespacesLoadable.isLoading) {
     return <FullPageLoading />;
@@ -124,63 +145,39 @@ export const ProjectSettings: FunctionComponent<Props> = ({
         ))}
       </select>
       <VerticalSpace space="medium" />
-      <Text>
-        <Muted>Default namespace</Muted>
-      </Text>
-      <VerticalSpace space="small" />
-      <div className={styles.namespacesRow}>
-        <NamespaceSelect
-          key={settings?.namespace || ""}
-          value={settings?.namespace || ""}
-          namespaces={namespaces}
-          onChange={(namespace) =>
-            setSettings((settings) => ({
-              ...settings!,
-              namespace,
-            }))
-          }
-        />
+      <div className={styles.namespaceShowRow}>
         <Checkbox
-          value={Boolean(settings?.namespacesDisabled)}
-          onChange={(e) =>
-            setSettings((settings) => ({
-              ...settings!,
-              namespacesDisabled: Boolean(e.currentTarget.checked),
-            }))
-          }
+          value={!namespacesDisabled}
+          onChange={handleDisableNamespaces}
         >
-          <Text>Hide namespace selectors</Text>
+          <Text>Use namespaces</Text>
         </Checkbox>
+
+        <InfoTooltip>{namespaceHelpText}</InfoTooltip>
       </div>
-      <VerticalSpace space="extraLarge" />
-      <Text>
-        <Muted>Ignore text nodes prefixed with:</Muted>
-      </Text>
       <VerticalSpace space="small" />
-      <Textbox
-        data-cy="settings_input_ignore_prefix"
-        onValueInput={(ignorePrefix) => {
-          setSettings((settings) => ({
-            ...settings,
-            ignorePrefix,
-          }));
-        }}
-        value={settings?.ignorePrefix ?? "_"}
-        variant="border"
-      />
-      <VerticalSpace space="small" />
-      <VerticalSpace space="small" />
-      <Checkbox
-        value={Boolean(settings?.ignoreNumbers)}
-        onChange={(e) =>
-          setSettings((settings) => ({
-            ...settings!,
-            ignoreNumbers: Boolean(e.currentTarget.checked),
-          }))
-        }
-      >
-        <Text>Ignore nodes with numbers</Text>
-      </Checkbox>
+      {!namespacesDisabled && (
+        <Fragment>
+          <VerticalSpace space="extraSmall" />
+          <Text>
+            <Muted>Default namespace</Muted>
+          </Text>
+          <VerticalSpace space="small" />
+          <div className={styles.namespacesRow}>
+            <NamespaceSelect
+              key={settings?.namespace || ""}
+              value={settings?.namespace || ""}
+              namespaces={namespaces}
+              onChange={(namespace) =>
+                setSettings((settings) => ({
+                  ...settings!,
+                  namespace,
+                }))
+              }
+            />
+          </div>
+        </Fragment>
+      )}
     </Fragment>
   );
 };

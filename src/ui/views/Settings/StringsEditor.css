@@ -4,7 +4,6 @@
   border-radius: var(--border-radius-2);
   cursor: text;
   background: var(--figma-color-bg);
-  /* color: var(--figma-color-text); */
   padding: 1px;
 }
 
@@ -13,67 +12,58 @@
   outline: 1px solid var(--figma-color-border-brand-strong);
 }
 
-.editor-wrapper > * {
-  padding: 8px 10px;
+.cm-scroller {
+  padding: 2px 0px;
 }
 
-.editor {
+.strings-editor {
   display: grid;
+  font-size: 0.7rem;
+  overflow: auto;
 }
 
-.editor .cm-editor {
+.strings-editor .cm-editor {
   outline: none !important;
   white-space: pre-wrap;
 }
 
-.editor .cm-line {
+.strings-editor .cm-line {
   padding: 0px 1px !important;
 }
 
-.editor .cm-content {
+.strings-editor .cm-content {
   padding: 0px !important;
 }
 
-.editor .cm-cursor {
+.strings-editor .cm-cursor {
   border-color: var(--figma-color-border-primary) !important;
 }
 
-.editor .placeholder-widget {
+.strings-editor .placeholder-widget {
   display: inline-flex;
   vertical-align: text-top;
   align-items: center;
   justify-content: center;
   min-width: 15px;
   border: 1px solid var(--figma-color-border);
-  background-color: var(--figma-color-bg);
-  color: var(--figma-color-text);
+  background-color: var(--figma-color-bg-grey);
+  color: var(--figma-color-text-grey);
+  font-weight: 500;
   border-radius: 10px;
   padding: 0px 7px;
-  font-size: 0.8em;
+  margin-top: -2px;
   user-select: none;
-  margin: 0px 1px;
   overflow: hidden;
 }
 
-.editor .placeholder-variable,
-.editor .placeholder-hash {
-  background-color: var(--figma-color-bg-editor-variable, #008371);
-}
-
-@media (prefers-color-scheme: light) {
-  .editor .placeholder-variable,
-  .editor .placeholder-hash {
-    color: white;
-  }
-}
-.editor > * {
+.strings-editor > * {
   display: grid;
 }
-.editor .placeholder-error {
+.strings-editor .placeholder-error {
   background: #ff000054;
 }
 
-.editor .placeholder-tagOpen {
+.strings-editor .placeholder-tagOpen {
   border: 1px solid var(--figma-color-border);
   background-color: var(--figma-color-bg-brand);
   color: var(--figma-color-bg-brand-contrast);
@@ -81,7 +71,7 @@
   padding-right: 6px;
 }
 
-.editor .placeholder-tagClose {
+.strings-editor .placeholder-tagClose {
   border: 1px solid var(--figma-color-border);
   background-color: var(--figma-color-bg-brand);
   color: var(--figma-color-bg-brand-contrast);
@@ -89,19 +79,30 @@
   padding-left: 6px;
 }
 
-.editor .placeholder-tagSelfClosed {
+.strings-editor .placeholder-tagSelfClosed {
   border: 1px solid var(--figma-color-border);
   background-color: var(--figma-color-bg-brand);
   color: var(--figma-color-bg-brand-contrast);
 }
 
-.editor [dir="rtl"] .placeholder-tagOpen {
+.strings-editor [dir="rtl"] .placeholder-tagOpen {
   border-radius: 0px 10px 10px 0px;
   padding-left: 6px;
 }
-.editor [dir="rtl"] .placeholder-tagClose {
+.strings-editor [dir="rtl"] .placeholder-tagClose {
   border-radius: 10px 0px 0px 10px;
   padding-right: 6px;
+}
+
+.strings-editor .cm-tooltip {
+  background-color: var(--figma-color-bg);
+  color: var(--figma-color-bg-contrast);
+  border-radius: 10px;
+  padding: 2px 9px;
+  user-select: none;
+  text-transform: capitalize;
+  white-space: nowrap;
+  font-size: 12px;
 }
 
 .plural-editor-wrapper {
@@ -146,4 +147,15 @@
     --syntax-color-function: #9ac99a;
     --syntax-color-other: #99aaff;
   }
+}
+
+.strings-editor .tolgee-completion-option {
+  text-transform: none;
+}
+
+/* Placeholder text styling */
+.strings-editor .cm-placeholder {
+  color: var(--figma-color-text-grey) !important;
+  pointer-events: none;
+  opacity: 0.5;
 }

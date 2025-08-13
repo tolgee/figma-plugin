@@ -33,6 +33,7 @@
 
 .key {
   cursor: unset;
+  grid-column: 1 / span 2;
 }
 
 .disabled {

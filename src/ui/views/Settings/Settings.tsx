@@ -7,9 +7,7 @@ import {
   Divider,
   IconWarning32,
   LoadingIndicator,
-  Muted,
-  Text,
-  Textbox,
+  Modal,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 
@@ -17,10 +15,12 @@ import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { useApiMutation } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { TopBar } from "../../components/TopBar/TopBar";
-import * as styles from "./Settings.css";
-import { ProjectSettings } from "./ProjectSettings";
 import { useQueryClient } from "react-query";
 import { useWindowSize } from "@/ui/hooks/useWindowSize";
+import { Expandable } from "./Expandable";
+import { ProjectSection } from "./ProjectSection";
+import { PushSection } from "./PushSection";
+import { StringsSection } from "./StringsSection";
 
 const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 
@@ -35,6 +35,9 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
     apiUrl: DEFAULT_TOLGEE_URL,
     ...config,
   });
+  const [setupStep, setSetupStep] = useState<
+    "project" | "strings" | "push" | null
+  >(noNavigation ? "project" : null);
 
   const { mutateAsync, isLoading } = useApiMutation({
     url: "/v2/api-keys/current",
@@ -43,6 +46,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       config: {
         apiKey: tolgeeConfig.apiKey,
         apiUrl: tolgeeConfig.apiUrl,
+        apiTimeout: 15000,
       },
     },
   });
@@ -59,14 +63,21 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
     setError(undefined);
   }, [tolgeeConfig]);
 
+  const [projectName, setProjectName] = useState<string | undefined>();
+  const [projectId, setProjectId] = useState<number | undefined>();
+  const [forgetDialogOpen, setForgetDialogOpen] = useState(false);
+
   const validateTolgeeCredentials = async () => {
     try {
+      setError(undefined);
       const res = await mutateAsync({});
       if (
         res &&
         res.scopes?.includes("translations.view") &&
         res.scopes?.includes("translations.edit")
       ) {
+        setProjectName(res.projectName);
+        setProjectId(res.projectId);
         return true;
       }
       throw new Error(
@@ -123,6 +134,60 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
     setTolgeeConfig({
       apiUrl: DEFAULT_TOLGEE_URL,
     });
+    setForgetDialogOpen(false);
+  };
+
+  function handleOpenButtonClick() {
+    setForgetDialogOpen(true);
+  }
+
+  const handleNextStep = () => {
+    if (setupStep === "project") {
+      setSetupStep("strings");
+    } else if (setupStep === "strings") {
+      setSetupStep("push");
+    } else if (setupStep === "push") {
+      handleSubmit();
+    }
+  };
+
+  const renderSection = (
+    step: "project" | "strings" | "push" | null = setupStep,
+    isSetup = false
+  ) => {
+    switch (step) {
+      case "project":
+        return (
+          <ProjectSection
+            showHeadline={isSetup}
+            projectName={projectName}
+            projectId={projectId}
+            tolgeeConfig={tolgeeConfig}
+            setTolgeeConfig={setTolgeeConfig}
+            validated={validated}
+            setValidated={setValidated}
+            handleValidate={handleValidate}
+          />
+        );
+      case "strings":
+        return (
+          <StringsSection
+            showHeadline={isSetup}
+            tolgeeConfig={tolgeeConfig}
+            setTolgeeConfig={setTolgeeConfig}
+          />
+        );
+      case "push":
+        return (
+          <PushSection
+            showHeadline={isSetup}
+            tolgeeConfig={tolgeeConfig}
+            setTolgeeConfig={setTolgeeConfig}
+          />
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -136,91 +201,135 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       )}
       <Divider />
       <VerticalSpace space="large" />
-      <Container space="medium">
-        <Text>
-          <Muted>Tolgee URL</Muted>
-        </Text>
-        <VerticalSpace space="small" />
-        <Textbox
-          data-cy="settings_input_api_url"
-          onValueInput={(apiUrl) => {
-            setValidated(false);
-            setTolgeeConfig({ ...tolgeeConfig, apiUrl });
-          }}
-          value={tolgeeConfig.apiUrl}
-          variant="border"
-        />
-        <VerticalSpace space="medium" />
-        <Text>
-          <Muted>Tolgee API key</Muted>
-        </Text>
-        <VerticalSpace space="small" />
-        <Textbox
-          data-cy="settings_input_api_key"
-          onValueInput={(apiKey) => {
-            setValidated(false);
-            setTolgeeConfig({ ...tolgeeConfig, apiKey });
-          }}
-          value={tolgeeConfig.apiKey ?? ""}
-          variant="border"
-        />
-        <VerticalSpace space="small" />
-
-        {validated ? (
-          <Text className={styles.success}>Credentials valid</Text>
-        ) : (
-          <Button data-cy="settings_button_validate" onClick={handleValidate}>
-            Validate
-          </Button>
-        )}
-
-        {validated && (
-          <ProjectSettings
-            apiUrl={tolgeeConfig.apiUrl}
-            apiKey={tolgeeConfig.apiKey || ""}
-            onChange={(data) => setTolgeeConfig({ ...tolgeeConfig, ...data })}
-            initialData={tolgeeConfig}
-          />
-        )}
-
-        <VerticalSpace space="medium" />
-        {isLoading ? (
-          <LoadingIndicator />
-        ) : error ? (
-          <Banner icon={<IconWarning32 />}>{error}</Banner>
-        ) : null}
-        <VerticalSpace space="extraLarge" />
-        {!isLoading && (
-          <ActionsBottom>
-            {config.documentInfo && (
+      {setupStep == null ? (
+        <Container space="medium">
+          <Expandable
+            dataCy="settings_expandable_project"
+            title="Project"
+            defaultOpen={!tolgeeConfig.apiKey}
+          >
+            {renderSection("project")}
+          </Expandable>
+          <Expandable
+            dataCy="settings_expandable_strings"
+            title="Strings and Keys"
+          >
+            {renderSection("strings")}
+          </Expandable>
+          <Expandable dataCy="settings_expandable_push" title="Push">
+            {renderSection("push")}
+          </Expandable>
+          <VerticalSpace space="extraLarge" />
+          {isLoading ? (
+            <LoadingIndicator />
+          ) : error ? (
+            <Banner icon={<IconWarning32 />}>{error}</Banner>
+          ) : null}
+          <VerticalSpace space="extraLarge" />
+          {!isLoading && (
+            <ActionsBottom>
+              {config.documentInfo && (
+                <div style={{ marginRight: "auto" }}>
+                  <Button
+                    data-cy="settings_button_forget"
+                    onClick={handleOpenButtonClick}
+                    secondary
+                  >
+                    Forget credentials
+                  </Button>
+                </div>
+              )}
+              {!noNavigation && (
+                <Button
+                  data-cy="settings_button_close"
+                  onClick={handleGoBack}
+                  secondary
+                >
+                  Close
+                </Button>
+              )}
               <Button
-                data-cy="settings_button_forget"
-                onClick={handleForget}
-                secondary
+                data-cy="settings_button_save"
+                onClick={handleSubmit}
+                disabled={!validated}
               >
-                Forget credentials
+                Save
               </Button>
-            )}
-            {!noNavigation && (
+            </ActionsBottom>
+          )}
+          <VerticalSpace space="small" />
+        </Container>
+      ) : (
+        <Container space="medium">
+          {renderSection(setupStep, true)}
+          <VerticalSpace space="extraLarge" />
+          {isLoading ? (
+            <LoadingIndicator />
+          ) : error ? (
+            <Banner icon={<IconWarning32 />}>{error}</Banner>
+          ) : null}
+          <VerticalSpace space="extraLarge" />
+          {!isLoading && (
+            <ActionsBottom>
+              {config.documentInfo && (
+                <div style={{ marginRight: "auto" }}>
+                  <Button
+                    data-cy="settings_button_forget"
+                    onClick={handleOpenButtonClick}
+                    secondary
+                  >
+                    Forget credentials
+                  </Button>
+                </div>
+              )}
+              {setupStep !== "project" && (
+                <Button
+                  data-cy="settings_button_close"
+                  onClick={() => {
+                    if (setupStep === "strings") setSetupStep("project");
+                    else if (setupStep === "push") setSetupStep("strings");
+                  }}
+                  secondary
+                >
+                  Back
+                </Button>
+              )}
               <Button
-                data-cy="settings_button_close"
-                onClick={handleGoBack}
-                secondary
+                data-cy="settings_button_save"
+                onClick={handleNextStep}
+                disabled={!validated}
               >
-                Close
+                {setupStep !== "push" ? "Next" : "Save"}
               </Button>
-            )}
-            <Button
-              data-cy="settings_button_save"
-              onClick={handleSubmit}
-              disabled={!validated}
-            >
-              Save
+            </ActionsBottom>
+          )}
+          <VerticalSpace space="small" />
+        </Container>
+      )}
+      <Modal
+        open={forgetDialogOpen}
+        title="Forget credentials for this project?"
+        onCloseButtonClick={() => setForgetDialogOpen(false)}
+      >
+        <div style={{ padding: "16px" }}>
+          <p>
+            Project "{projectName}" will be disconnected from the Figma plugin.
+          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              justifyContent: "flex-end",
+              marginTop: "16px",
+            }}
+          >
+            <Button onClick={() => setForgetDialogOpen(false)} secondary>
+              Cancel
             </Button>
-          </ActionsBottom>
-        )}
-        <VerticalSpace space="small" />
-      </Container>
+            <Button onClick={handleForget}>Continue</Button>
+          </div>
+        </div>
+      </Modal>
     </Fragment>
   );
 };

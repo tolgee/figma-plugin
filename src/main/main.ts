@@ -29,6 +29,7 @@ import { DEFAULT_SIZE } from "@/ui/state/sizes";
 import { formatTextEndpoint } from "./endpoints/formatText";
 import { editorTypeEndpoint } from "./endpoints/editorType";
 import { notifyEndpoint } from "./endpoints/notify";
+import { preformatKeyEndpoint } from "./endpoints/preformatKey";
 
 const getAllPages = () => {
   const document = figma.root;
@@ -107,6 +108,7 @@ export default async function () {
   highlightNodeEndpoint.register();
   editorTypeEndpoint.register();
   notifyEndpoint.register();
+  preformatKeyEndpoint.register();
 
   const config = await getPluginData();
 

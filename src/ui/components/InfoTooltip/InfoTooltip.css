@@ -3,4 +3,5 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  color: var(--figma-color-text-primary);
 }

@@ -1,13 +1,9 @@
 .languageContainer {
   display: flex;
-  height: 30px;
+  height: 100%;
   margin-left: -3px;
-  border: 1px solid var(--figma-color-border-strong);
-  border-radius: var(--border-radius-6);
-}
-
-.languageContainer:disabled {
-  border: 1px solid var(--figma-color-border-disabled-strong);
+  min-width: 100px;
+  padding-right: 20px;
 }
 
 .settingsButton {
@@ -45,6 +41,7 @@
 .container {
   display: grid;
   grid-template-rows: auto 1fr;
+  height: 100%;
 }
 
 .actionsContainer {

@@ -22,7 +22,7 @@ import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { ListItem } from "./ListItem";
-import { COMPACT_SIZE, DEFAULT_SIZE } from "@/ui/state/sizes";
+import { DEFAULT_SIZE } from "@/ui/state/sizes";
 import { useEditorMode } from "../../hooks/useEditorMode";
 
 export const Index = () => {
@@ -102,9 +102,7 @@ export const Index = () => {
     setError(undefined);
   }, [selection]);
 
-  const size = !selection || selection.length < 2 ? COMPACT_SIZE : DEFAULT_SIZE;
-
-  useWindowSize(size);
+  useWindowSize(DEFAULT_SIZE);
 
   const editorMode = useEditorMode();
 
@@ -113,7 +111,7 @@ export const Index = () => {
   }
 
   return (
-    <div className={styles.container} style={{ height: size.height }}>
+    <div className={styles.container}>
       {selectionLoadable.isFetching && <FullPageLoading blocking={false} />}
       <div>
         <Container
@@ -165,13 +163,15 @@ export const Index = () => {
                 </Fragment>
               }
               rightPart={
-                <div
-                  data-cy="index_settings_button"
-                  className={styles.settingsButton}
-                  onClick={() => setRoute("settings")}
-                  role="button"
-                >
-                  <Settings width={15} height={15} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div
+                    data-cy="index_settings_button"
+                    className={styles.settingsButton}
+                    onClick={() => setRoute("settings")}
+                    role="button"
+                  >
+                    <Settings width={15} height={15} />
+                  </div>
                 </div>
               }
             />
@@ -194,9 +194,13 @@ export const Index = () => {
         </Container>
       </div>
 
-      {nothingSelected ? (
-        <Container space="medium" style={{ marginTop: 16 }}>
-          <Text>No texts selected</Text>
+      {nothingSelected || selection.length === 0 ? (
+        <Container space="medium" className="noSelection">
+          <Text align="center">
+            Select texts for translation
+            <br />
+            (single texts or frames)
+          </Text>
         </Container>
       ) : (
         <NodeList

@@ -13,6 +13,7 @@ import { CreateCopy } from "./CreateCopy/CreateCopy";
 import { CopyView } from "./CopyView/CopyView";
 import { Dialog } from "../components/Dialog/Dialog";
 import { StringDetails } from "./StringDetails/StringDetails";
+import { ResizeHandle } from "../components/ResizeHandle/ResizeHandle";
 
 const getDialogPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
@@ -97,6 +98,7 @@ export const Router = () => {
       ) : (
         <Page route={route} setRoute={setRoute} />
       )}
+      <ResizeHandle />
     </Fragment>
   );
 };

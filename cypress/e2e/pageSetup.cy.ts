@@ -21,6 +21,6 @@ describe("Page setup", () => {
 
     cy.iframe().findDcy("page_setup_button_save").should("be.visible").click();
 
-    cy.iframe().contains("No texts selected").should("be.visible");
+    cy.iframe().contains("Select texts for translation").should("be.visible");
   });
 });

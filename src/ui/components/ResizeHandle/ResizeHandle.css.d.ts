@@ -1,5 +1,5 @@
 declare const styles: {
-  readonly "noSelection": string;
+  readonly "resizeHandle": string;
 };
 export = styles;
 

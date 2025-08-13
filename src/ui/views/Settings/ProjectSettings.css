@@ -3,3 +3,8 @@
   align-items: center;
   gap: 30px;
 }
+.namespaceShowRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

@@ -69,23 +69,39 @@ export const getPluginData = async () => {
 
 export const setPluginData = async (data: Partial<TolgeeConfig>) => {
   const {
+    addTags,
     apiKey,
     apiUrl,
+    ignoreHiddenLayers,
+    ignoreNumbers,
+    ignorePrefix,
+    ignoreTextLayers,
+    keyFormat,
     language,
     namespace,
     namespacesDisabled,
-    ignorePrefix,
-    ignoreNumbers,
+    prefillKeyFormat,
+    tags,
+    updateScreenshots,
+    variableCasing,
   } = data;
   await setGlobalSettings({ apiKey, apiUrl, ignorePrefix, ignoreNumbers });
   setDocumentData({
+    addTags,
     apiKey,
     apiUrl,
+    documentInfo: true,
+    ignoreHiddenLayers,
+    ignoreNumbers,
+    ignorePrefix,
+    ignoreTextLayers,
+    keyFormat,
     namespace,
     namespacesDisabled,
-    ignorePrefix,
-    ignoreNumbers,
-    documentInfo: true,
+    prefillKeyFormat,
+    tags,
+    updateScreenshots,
+    variableCasing,
   });
   setPageData({ language, pageInfo: true });
   emit<ConfigChangeHandler>("CONFIG_CHANGE", await getPluginData());

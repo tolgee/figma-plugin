@@ -120,7 +120,7 @@ export function createLinks() {
     createShortcutLink("Credentials", {
       config: DEFAULT_CREDENTIALS,
     }),
-    createShortcutLink("No texts selected", {
+    createShortcutLink("Select texts for translation", {
       config: SIGNED_IN,
     }),
     createShortcutLink("One unlinked node", {

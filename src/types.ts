@@ -94,6 +94,34 @@ export type GlobalSettings = {
   apiKey: string;
   ignorePrefix: string;
   ignoreNumbers: boolean;
+  updateScreenshots?: boolean;
+  addTags?: boolean;
+  tags?: string[];
+  /** Whether to prefill the key name with the key format */
+  prefillKeyFormat?: boolean;
+  /**
+   * A string that can contain some of the following placeholders and custom separators
+   * in order to generate a key name for the node.
+   *
+   * `{artboard}`
+   *
+   * `{frame}`
+   *
+   * `{elementName}` or `{elementText}`
+   *
+   * `{component}`
+   *
+   * `{section}` or `{group}`
+   */
+  keyFormat?: string;
+  ignoreHiddenLayers?: boolean;
+  ignoreTextLayers?: boolean;
+  variableCasing?:
+    | "snake_case"
+    | "snake_case_capitalized"
+    | "camelCase"
+    | "PascalCase"
+    | "noSpaces";
 };
 
 export type CurrentDocumentSettings = GlobalSettings & {
