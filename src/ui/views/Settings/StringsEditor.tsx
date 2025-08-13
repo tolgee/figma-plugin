@@ -147,6 +147,11 @@ export const StringsEditor = ({
           "(name of the artboard frame)",
           "{artboard}"
         ),
+        createCompletionOption(
+          "section",
+          "(name of the nearest section)",
+          "{section}"
+        ),
       ],
       commitCharacters: ["}"],
     };

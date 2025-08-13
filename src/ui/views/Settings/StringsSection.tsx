@@ -62,7 +62,7 @@ const keyFormatHelpText = (
       <ul>
         <li>element name (name of the string)</li>
         <li>...</li>
-        <li>section (nearest section)</li>
+        <li>section (name of thenearest section)</li>
         <li>separtators can be “.” “:” “_” “-” etc.</li>
       </ul>
       <br />
