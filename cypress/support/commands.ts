@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import "cypress-iframe";
 
 Cypress.Commands.add(
   "closestDcy",
