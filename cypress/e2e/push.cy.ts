@@ -116,7 +116,6 @@ describe("Push", () => {
       (async () => {
         await createProject({ translationProtection: "PROTECT_REVIEWED" });
         await markTitleAsReviewed();
-        console.log({ pak });
       })()
     ).then(() => {
       const nodes = [
@@ -130,7 +129,8 @@ describe("Push", () => {
         selectedNodes: nodes,
         allNodes: nodes,
       });
-      cy.iframeBody().contains("On the road updated").should("exist");
+
+      cy.iframeBody().contains("On the road updated").should("be.visible");
 
       cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
       cy.iframeBody()
@@ -141,10 +141,17 @@ describe("Push", () => {
       cy.iframeBody().contains(
         "Successfully updated 0 key(s) and uploaded 0 screenshot(s)."
       );
-      cy.iframeBody().contains("Some translations cannot be updated:");
-      cy.iframeBody().contains("on-the-road-title (overridable)");
+      cy.iframeBody()
+        .contains("Some translations cannot be updated:")
+        .should("be.visible");
+      cy.iframeBody()
+        .contains("on-the-road-title (overridable)")
+        .should("be.visible");
 
-      cy.iframeBody().findDcy("push-override-all-button").click();
+      cy.iframeBody()
+        .findDcy("push-override-all-button")
+        .should("be.visible")
+        .click();
 
       cy.iframeBody().findDcy("push-override-all-button").should("not.exist");
     });

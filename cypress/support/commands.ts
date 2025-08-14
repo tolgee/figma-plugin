@@ -33,9 +33,26 @@ declare global {
        * @example cy.iframeBody().find('button').click()
        */
       iframeBody(): Chainable<JQuery<HTMLBodyElement>>;
+
+      iframeReady(): void;
     }
   }
 }
+
+Cypress.Commands.add("iframeReady", () => {
+  return cy
+    .get('iframe[data-cy="plugin_iframe"]', { timeout: 15000 })
+    .should("be.visible")
+    .its("0.contentDocument")
+    .should("exist")
+    .then((doc: Document) => {
+      // Wait for readyState=complete AND #root present
+      // Both checks are retried by Cypress
+      cy.wrap(doc).its("readyState").should("eq", "complete");
+      cy.wrap(doc.body).should("exist");
+      cy.wrap(doc).find("#root", { timeout: 15000 }).should("exist");
+    });
+});
 
 Cypress.Commands.add("iframeDocument", () => {
   return cy
@@ -49,7 +66,9 @@ Cypress.Commands.add("iframeBody", () => {
     .iframeDocument()
     .its("body")
     .should("not.be.undefined")
-    .then((e) => cy.wrap<HTMLBodyElement>(e as HTMLBodyElement));
+    .then((e) => {
+      return cy.wrap<HTMLBodyElement>(e as HTMLBodyElement);
+    });
 });
 
 // Export {} to ensure this file is treated as a module by TypeScript.
