@@ -80,8 +80,7 @@ async function finish(code: number) {
     return true;
   }
   isFinishing = true;
-  const allProcesses = [...afterProcesses];
-  const runningProcesses = allProcesses.filter((p) => p.kill(0));
+  const runningProcesses = afterProcesses.filter((p) => p.kill(0));
   const childrenPending = runningProcesses.map(
     (p) =>
       new Promise<void>((resolve, reject) => {
