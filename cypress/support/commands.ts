@@ -54,21 +54,12 @@ Cypress.Commands.add("iframeReady", () => {
     });
 });
 
-Cypress.Commands.add("iframeDocument", () => {
-  return cy
-    .get('iframe[data-cy="plugin_iframe"]')
-    .its("0.contentDocument")
-    .should("exist");
-});
-
 Cypress.Commands.add("iframeBody", () => {
   return cy
-    .iframeDocument()
-    .its("body")
-    .should("not.be.undefined")
-    .then((e) => {
-      return cy.wrap<HTMLBodyElement>(e as HTMLBodyElement);
-    });
+    .get('iframe[data-cy="plugin_iframe"]', { timeout: 15000 })
+    .should("be.visible")
+    .its("0.contentDocument.body")
+    .should("not.be.empty");
 });
 
 // Export {} to ensure this file is treated as a module by TypeScript.

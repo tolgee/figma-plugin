@@ -7,7 +7,9 @@ describe("Copy view", () => {
       config: PAGE_COPY,
     });
 
-    cy.iframeBody().contains("Page copy - keys").should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("Page copy - keys").should("be.visible");
+    });
   });
 
   it("shows language if language set", () => {
@@ -15,7 +17,9 @@ describe("Copy view", () => {
       config: PAGE_COPY_LANGUAGE,
     });
 
-    cy.iframeBody().contains("Page copy - cs").should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("Page copy - cs").should("be.visible");
+    });
   });
 
   it("shows unconnected node correctly", () => {
@@ -26,17 +30,17 @@ describe("Copy view", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody().contains("Test node").should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("Test node").should("be.visible");
 
-    cy.iframeBody()
-      .findDcy("general_node_list_row_text")
-      .contains("Test node")
-      .should("be.visible");
+      cy.gcy("general_node_list_row_text")
+        .contains("Test node")
+        .should("be.visible");
 
-    cy.iframeBody()
-      .findDcy("general_node_list_row_key")
-      .contains("Not connected")
-      .should("be.visible");
+      cy.gcy("general_node_list_row_key")
+        .contains("Not connected")
+        .should("be.visible");
+    });
   });
 
   it("shows connected node correctly", () => {
@@ -53,21 +57,19 @@ describe("Copy view", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody().contains("Test node").should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("Test node").should("be.visible");
 
-    cy.iframeBody()
-      .findDcy("general_node_list_row_text")
-      .contains("Test node")
-      .should("be.visible");
+      cy.gcy("general_node_list_row_text")
+        .contains("Test node")
+        .should("be.visible");
 
-    cy.iframeBody()
-      .findDcy("general_node_list_row_key")
-      .contains("test_key")
-      .should("be.visible");
+      cy.gcy("general_node_list_row_key")
+        .contains("test_key")
+        .should("be.visible");
 
-    cy.iframeBody()
-      .findDcy("general_node_list_row_namespace")
-      .should("be.empty");
+      cy.gcy("general_node_list_row_namespace").should("be.empty");
+    });
   });
 
   it("shows connected node with namespace", () => {
@@ -85,22 +87,21 @@ describe("Copy view", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody().contains("Test node").should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("Test node").should("be.visible");
 
-    cy.iframeBody()
-      .findDcy("general_node_list_row_text")
-      .contains("Test node")
-      .should("be.visible");
+      cy.gcy("general_node_list_row_text")
+        .contains("Test node")
+        .should("be.visible");
 
-    cy.iframeBody()
-      .findDcy("general_node_list_row_key")
-      .contains("test_key")
-      .should("be.visible");
+      cy.gcy("general_node_list_row_key")
+        .contains("test_key")
+        .should("be.visible");
 
-    cy.iframeBody()
-      .findDcy("general_node_list_row_namespace")
-      .contains("test_ns")
-      .should("be.visible");
+      cy.gcy("general_node_list_row_namespace")
+        .contains("test_ns")
+        .should("be.visible");
+    });
   });
 
   it("pulls changes correctly", () => {
@@ -117,13 +118,12 @@ describe("Copy view", () => {
       allNodes: connectedCzech,
     });
 
-    cy.iframeBody().contains("Na cestě").should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("Na cestě").should("be.visible");
 
-    cy.iframeBody()
-      .findDcy("copy_view_pull_button")
-      .should("be.visible")
-      .click();
+      cy.gcy("copy_view_pull_button").should("be.visible").click();
 
-    cy.iframeBody().contains("Na cestu").should("be.visible");
+      cy.get("div").contains("Na cestu").should("be.visible");
+    });
   });
 });

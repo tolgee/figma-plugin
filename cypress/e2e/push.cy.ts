@@ -13,9 +13,13 @@ let client: TolgeeClient;
 let pak: string;
 
 describe("Push", () => {
-  beforeEach(async () => {
-    await createProject({ translationProtection: "PROTECT_REVIEWED" });
-    await markTitleAsReviewed();
+  beforeEach(() => {
+    return cy.wrap(
+      (async () => {
+        await createProject({ translationProtection: "PROTECT_REVIEWED" });
+        await markTitleAsReviewed();
+      })()
+    );
   });
 
   afterEach(() => {
@@ -33,22 +37,19 @@ describe("Push", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody().contains("New key").should("exist");
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("New key").should("exist");
 
-    cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
+      cy.gcy("index_push_button").should("be.visible").click();
 
-    cy.iframeBody().contains("New keys").should("exist");
+      cy.get("div").contains("New keys").should("exist");
 
-    cy.iframeBody()
-      .findDcy("changes_new_keys")
-      .contains("new_key")
-      .should("be.visible");
+      cy.gcy("changes_new_keys").contains("new_key").should("be.visible");
 
-    cy.iframeBody()
-      .findDcy("changes_changed_keys")
-      .contains("on-the-road-subtitle")
-      .should("be.visible");
-    cy.wait;
+      cy.gcy("changes_changed_keys")
+        .contains("on-the-road-subtitle")
+        .should("be.visible");
+    });
   });
 
   it("catches conflicts", () => {
@@ -62,13 +63,15 @@ describe("Push", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody().contains("First value").should("exist");
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("First value").should("exist");
 
-    cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
+      cy.gcy("index_push_button").should("be.visible").click();
 
-    cy.iframeBody()
-      .contains("There are multiple different translations for single key")
-      .should("exist");
+      cy.get("div")
+        .contains("There are multiple different translations for single key")
+        .should("exist");
+    });
   });
 
   it("pushes screenshot correctly", () => {
@@ -81,17 +84,19 @@ describe("Push", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody().contains("On the road").should("exist");
-    cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("On the road").should("exist");
+      cy.gcy("index_push_button").should("be.visible").click();
 
-    cy.iframeBody().contains("No changes necessary").should("be.visible");
-    cy.iframeBody().findDcy("push_upload_screenshots_checkbox").should("exist");
-    cy.iframeBody().findDcy("push_submit_button").should("be.visible").click();
+      cy.get("div").contains("No changes necessary").should("be.visible");
+      cy.gcy("push_upload_screenshots_checkbox").should("exist");
+      cy.gcy("push_submit_button").should("be.visible").click();
 
-    cy.iframeBody()
-      .contains("Successfully updated 0 key(s) and uploaded 1 screenshot(s).")
-      .should("be.visible");
-    cy.iframeBody().findDcy("push_ok_button").should("be.visible").click();
+      cy.get("div")
+        .contains("Successfully updated 0 key(s) and uploaded 1 screenshot(s).")
+        .should("be.visible");
+      cy.gcy("push_ok_button").should("be.visible").click();
+    });
   });
 
   it("doesn't push screenshot when disabled", () => {
@@ -103,13 +108,14 @@ describe("Push", () => {
       selectedNodes: nodes,
       allNodes: nodes,
     });
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("On the road").should("exist");
+      cy.gcy("index_push_button").should("be.visible").click();
 
-    cy.iframeBody().contains("On the road").should("exist");
-    cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
+      cy.get("div").contains("No changes necessary").should("be.visible");
 
-    cy.iframeBody().contains("No changes necessary").should("be.visible");
-
-    cy.iframeBody().findDcy("push_finish_button").should("be.visible").click();
+      cy.gcy("push_finish_button").should("be.visible").click();
+    });
   });
 
   it("doesn't override protected translation by default", () => {
@@ -125,32 +131,31 @@ describe("Push", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody().contains("On the road updated").should("exist");
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("On the road updated").should("exist");
 
-    cy.iframeBody().findDcy("index_push_button").click();
+      cy.gcy("index_push_button").click();
 
-    cy.iframeBody().contains("Changed keys").should("be.visible");
+      cy.get("div").contains("Changed keys").should("be.visible");
 
-    cy.iframeBody().findDcy("push_submit_button").should("be.visible").click();
+      cy.gcy("push_submit_button").should("be.visible").click();
 
-    cy.iframeBody()
-      .contains("Successfully updated 0 key(s) and uploaded 0 screenshot(s).")
-      .should("exist");
+      cy.get("div")
+        .contains("Successfully updated 0 key(s) and uploaded 0 screenshot(s).")
+        .should("exist");
 
-    cy.iframeBody()
-      .contains("Some translations cannot be updated:")
-      .should("exist");
+      cy.get("div")
+        .contains("Some translations cannot be updated:")
+        .should("exist");
 
-    cy.iframeBody().contains("on-the-road-title (overridable)").should("exist");
+      cy.get("div").contains("on-the-road-title (overridable)").should("exist");
 
-    cy.iframeBody()
-      .findDcy("push-override-all-button")
-      .should("be.visible")
-      .click();
+      cy.gcy("push-override-all-button").should("be.visible").click();
 
-    cy.iframeBody()
-      .contains("Successfully updated 1 key(s) and uploaded 0 screenshot(s).")
-      .should("exist");
+      cy.get("div")
+        .contains("Successfully updated 1 key(s) and uploaded 0 screenshot(s).")
+        .should("exist");
+    });
   });
 
   function getCredentials() {

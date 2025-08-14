@@ -21,13 +21,15 @@ describe("String details", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody().contains("test_key").should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("test_key").should("be.visible");
 
-    cy.iframeBody().findDcy("key_options_button").should("be.visible").click();
+      cy.gcy("key_options_button").should("be.visible").click();
 
-    cy.iframeBody().findDcy("dropdown").should("be.visible");
+      cy.gcy("dropdown").should("be.visible");
 
-    cy.iframeBody().findDcy("string_details_cy").should("be.visible");
+      cy.gcy("string_details_cy").should("be.visible");
+    });
   });
 
   it("should show the correct preview text", () => {
@@ -45,11 +47,12 @@ describe("String details", () => {
       allNodes: nodes,
     });
 
-    // Should show the key as preview text
-    cy.iframeBody()
-      .findDcy("string_details_preview_text")
-      .should("be.visible")
-      .contains("Test node");
+    cy.iframeBody().within(() => {
+      // Should show the key as preview text
+      cy.gcy("string_details_preview_text")
+        .should("be.visible")
+        .contains("Test node");
+    });
   });
 
   it("should react to key changes", async () => {
@@ -67,25 +70,25 @@ describe("String details", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody()
-      .find('[data-cy="string_details_input_key"]')
-      .should("have.value", "test_key");
+    cy.iframeBody().within(() => {
+      cy.gcy('[data-cy="string_details_input_key"]').should(
+        "have.value",
+        "test_key"
+      );
 
-    cy.iframeBody()
-      .find('[data-cy="string_details_input_key"]')
-      .type("new_key");
+      cy.gcy('[data-cy="string_details_input_key"]').type("new_key");
 
-    cy.iframeBody()
-      .find('[data-cy="string_details_input_key"]')
-      .should("have.value", "new_key");
+      cy.gcy('[data-cy="string_details_input_key"]').should(
+        "have.value",
+        "new_key"
+      );
 
-    cy.iframeBody().find('[data-cy="tooltip"]').click();
+      cy.get('[data-cy="tooltip"]').click();
 
-    cy.iframeBody()
-      .contains("You can use basic HTML tags")
-      .should("be.visible");
-
-    cy.wait(500);
+      cy.get("div")
+        .contains("You can use basic HTML tags")
+        .should("be.visible");
+    });
   });
 
   it("should show negative warning on missmatched translation", () => {
@@ -105,11 +108,13 @@ describe("String details", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody()
-      .contains("Advanced text format detected")
-      .should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.get("div")
+        .contains("Advanced text format detected")
+        .should("be.visible");
 
-    cy.iframeBody().find('[class^="_warningContainer_"]').should("be.visible");
+      cy.get('[class^="_warningContainer_"]').should("be.visible");
+    });
   });
 
   it("should show positive warning on plural keys", () => {
@@ -129,13 +134,13 @@ describe("String details", () => {
       allNodes: nodes,
     });
 
-    cy.iframeBody()
-      .contains("Advanced text format detected")
-      .should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.get("div")
+        .contains("Advanced text format detected")
+        .should("be.visible");
 
-    cy.iframeBody()
-      .find('[class^="_warningNoticeContainer_"]')
-      .should("be.visible");
+      cy.get('[class^="_warningNoticeContainer_"]').should("be.visible");
+    });
   });
 
   it("should not show warning on simple keys", () => {
@@ -154,9 +159,10 @@ describe("String details", () => {
       selectedNodes: nodes,
       allNodes: nodes,
     });
-
-    cy.iframeBody()
-      .contains("Advanced text format detected")
-      .should("not.exist");
+    cy.iframeBody().within(() => {
+      cy.get("div")
+        .contains("Advanced text format detected")
+        .should("not.exist");
+    });
   });
 });

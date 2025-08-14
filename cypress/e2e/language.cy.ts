@@ -15,12 +15,14 @@ describe("Change language", () => {
       selectedNodes: [],
       allNodes: nodes,
     });
+    cy.iframeBody().within(() => {
+      cy.gcy("index_language_select").should("have.value", "en"); // retried
+      cy.gcy("index_language_select").select("de");
 
-    cy.iframeBody().findDcy("index_language_select").select("de");
-
-    cy.iframeBody().contains(
-      "This action will replace translations in 1 text(s)"
-    );
-    cy.iframeBody().findDcy("pull_submit_button").should("exist").click();
+      cy.get("div")
+        .contains("This action will replace translations in 1 text(s)")
+        .should("exist");
+      cy.gcy("pull_submit_button").should("exist").click();
+    });
   });
 });
