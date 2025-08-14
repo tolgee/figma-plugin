@@ -6,7 +6,7 @@ import {
 } from "@tginternal/client";
 import { languagesTestData } from "./languageTestData";
 
-const API_URL = "http://localhost:8080";
+const API_URL = "http://localhost:22223";
 
 export async function userLogin() {
   const loadable = await createTolgeeClient({

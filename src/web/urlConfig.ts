@@ -32,7 +32,7 @@ export function createShortcutLink(name: string, props: PluginInitialData) {
 }
 
 export const DEFAULT_CREDENTIALS = {
-  apiUrl: "http://localhost:8080",
+  apiUrl: "http://localhost:22223",
   apiKey: "examples-admin-imported-project-implicit",
 };
 

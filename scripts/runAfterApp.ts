@@ -4,7 +4,7 @@ import colors from "colors";
 import terminate from "terminate";
 import http from "http";
 
-const PORT = 8080;
+const PORT = 22223;
 
 function systemColor(text: string) {
   return colors.grey(text);
