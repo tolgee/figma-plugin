@@ -111,7 +111,7 @@ describe("Push", () => {
     cy.iframeBody().findDcy("push_finish_button").should("be.visible").click();
   });
 
-  it.only("doesn't override protected translation by default", () => {
+  it("doesn't override protected translation by default", () => {
     cy.wrap(
       (async () => {
         await createProject({ translationProtection: "PROTECT_REVIEWED" });

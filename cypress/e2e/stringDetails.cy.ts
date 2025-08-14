@@ -21,13 +21,13 @@ describe("String details", () => {
       allNodes: nodes,
     });
 
-    cy.iframe().contains("test_key").should("be.visible");
+    cy.iframeBody().contains("test_key").should("be.visible");
 
-    cy.iframe().findDcy("key_options_button").should("be.visible").click();
+    cy.iframeBody().findDcy("key_options_button").should("be.visible").click();
 
-    cy.iframe().findDcy("dropdown").should("be.visible");
+    cy.iframeBody().findDcy("dropdown").should("be.visible");
 
-    cy.iframe().findDcy("string_details_cy").should("be.visible");
+    cy.iframeBody().findDcy("string_details_cy").should("be.visible");
   });
 
   it("should show the correct preview text", () => {
@@ -46,7 +46,7 @@ describe("String details", () => {
     });
 
     // Should show the key as preview text
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("string_details_preview_text")
       .should("be.visible")
       .contains("Test node");
@@ -105,9 +105,11 @@ describe("String details", () => {
       allNodes: nodes,
     });
 
-    cy.iframe().contains("Advanced text format detected").should("be.visible");
+    cy.iframeBody()
+      .contains("Advanced text format detected")
+      .should("be.visible");
 
-    cy.iframe().find('[class^="_warningContainer_"]').should("be.visible");
+    cy.iframeBody().find('[class^="_warningContainer_"]').should("be.visible");
   });
 
   it("should show positive warning on plural keys", () => {
@@ -127,9 +129,11 @@ describe("String details", () => {
       allNodes: nodes,
     });
 
-    cy.iframe().contains("Advanced text format detected").should("be.visible");
+    cy.iframeBody()
+      .contains("Advanced text format detected")
+      .should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .find('[class^="_warningNoticeContainer_"]')
       .should("be.visible");
   });

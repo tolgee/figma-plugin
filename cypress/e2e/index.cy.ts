@@ -10,19 +10,19 @@ describe("Index", () => {
       allNodes: nodes,
     });
 
-    cy.iframe().contains("Test node").should("be.visible");
+    cy.iframeBody().contains("Test node").should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_text")
       .contains("Test node")
       .should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_key")
       .find("input")
       .should("have.value", "test_key");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_namespace")
       .find("select")
       .should("have.value", "");
@@ -36,19 +36,19 @@ describe("Index", () => {
       allNodes: nodes,
     });
 
-    cy.iframe().contains("Test node").should("be.visible");
+    cy.iframeBody().contains("Test node").should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_text")
       .contains("Test node")
       .should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_key")
       .find("input")
       .should("have.value", "test_key");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_namespace")
       .find("select")
       .should("not.exist");
@@ -64,19 +64,21 @@ describe("Index", () => {
       allNodes: nodes,
     });
 
-    cy.iframe().contains("Test node").should("be.visible");
+    cy.iframeBody().contains("Test node").should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_text")
       .contains("Test node")
       .should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_key")
       .contains("test_key")
       .should("be.visible");
 
-    cy.iframe().findDcy("general_node_list_row_namespace").should("be.empty");
+    cy.iframeBody()
+      .findDcy("general_node_list_row_namespace")
+      .should("be.empty");
   });
 
   it("shows connected node with namespace", () => {
@@ -94,19 +96,19 @@ describe("Index", () => {
       allNodes: nodes,
     });
 
-    cy.iframe().contains("Test node").should("be.visible");
+    cy.iframeBody().contains("Test node").should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_text")
       .contains("Test node")
       .should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_key")
       .contains("test_key")
       .should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("general_node_list_row_namespace")
       .contains("test_ns")
       .should("be.visible");
