@@ -9,3 +9,8 @@
   margin-top: 5px;
   margin-bottom: 20px;
 }
+
+.styledHint {
+  display: grid;
+  gap: 10px;
+}

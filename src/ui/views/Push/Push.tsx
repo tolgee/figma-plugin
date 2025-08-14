@@ -135,13 +135,13 @@ export const Push: FunctionalComponent = () => {
   const { push, unresolvedConflicts } = usePush(setLoadingStatus);
   const unresolvedConflictsSize = unresolvedConflicts?.length ?? 0;
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (override = false) => {
     if (!changes) {
       return;
     }
 
     try {
-      await push(changes, uploadScreenshots, language);
+      await push(changes, uploadScreenshots, language, override);
       connectNodes();
       setSuccess(true);
     } catch (e) {
@@ -212,7 +212,10 @@ export const Push: FunctionalComponent = () => {
                 : "."}
             </div>
             {unresolvedConflicts && (
-              <UnresolvedConflicts conflicts={unresolvedConflicts} />
+              <UnresolvedConflicts
+                conflicts={unresolvedConflicts}
+                onOverride={() => handleSubmit(true)}
+              />
             )}
             <ActionsBottom>
               <Button data-cy="push_ok_button" onClick={handleGoBack}>
@@ -254,7 +257,10 @@ export const Push: FunctionalComponent = () => {
                   Finish
                 </Button>
               ) : (
-                <Button data-cy="push_submit_button" onClick={handleSubmit}>
+                <Button
+                  data-cy="push_submit_button"
+                  onClick={() => handleSubmit()}
+                >
                   Push to Tolgee
                 </Button>
               )}

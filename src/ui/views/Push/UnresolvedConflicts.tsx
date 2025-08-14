@@ -1,12 +1,14 @@
 import { components } from "@/ui/client/apiSchema.generated";
 import { h } from "preact";
 import styles from "./UnresolvedConflicts.css";
+import { Button } from "@create-figma-plugin/ui";
 
 type SimpleImportConflictResult =
   components["schemas"]["SimpleImportConflictResult"];
 
 type Props = {
   conflicts: SimpleImportConflictResult[];
+  onOverride: () => void;
 };
 
 function renderKey(key: SimpleImportConflictResult, note?: string) {
@@ -17,7 +19,7 @@ function renderKey(key: SimpleImportConflictResult, note?: string) {
   return `${`${key.keyName}`}${namespace}${renderedNote}`;
 }
 
-export const UnresolvedConflicts = ({ conflicts }: Props) => {
+export const UnresolvedConflicts = ({ conflicts, onOverride }: Props) => {
   const someOverridable = Boolean(conflicts.find((c) => c.isOverridable));
 
   return (
@@ -31,9 +33,13 @@ export const UnresolvedConflicts = ({ conflicts }: Props) => {
         ))}
       </div>
       {someOverridable && (
-        <div>
-          HINT: Overridable translations can be updated with the "Override all"
-          setting
+        <div className={styles.styledHint}>
+          You have permissions to override some translations (marked as
+          overridable), but it's not recommended, because these translations are
+          protected
+          <Button data-cy="push-override-all-button" onClick={onOverride}>
+            Override all
+          </Button>
         </div>
       )}
     </div>

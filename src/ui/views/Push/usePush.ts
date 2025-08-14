@@ -64,7 +64,8 @@ export function usePush(setLoadingStatus: (message?: string) => void) {
   async function push(
     changes: KeyChanges,
     uploadScreenshots: boolean,
-    language: string
+    language: string,
+    override: boolean
   ) {
     const screenshotsMap = new Map<FrameScreenshot, number>();
     const requiredScreenshots = uploadScreenshots ? changes.screenshots : [];
@@ -152,6 +153,7 @@ export function usePush(setLoadingStatus: (message?: string) => void) {
           "application/json": {
             errorOnUnresolvedConflict: false,
             keys,
+            overrideMode: override ? "ALL" : "RECOMMENDED",
           },
         },
       });

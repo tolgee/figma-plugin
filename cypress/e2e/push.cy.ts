@@ -1,35 +1,53 @@
-import { createTestNode, SIGNED_IN } from "@/web/urlConfig";
 import { visitWithState } from "../common/tools";
+import { TolgeeClient } from "@tginternal/client";
+import {
+  createProjectWithClient,
+  createPak,
+  deleteProject,
+  Options,
+} from "../common/apiClient";
+import { EXAMPLE_PROJECT } from "../common/exampleProject";
+import { createTestNode, SIGNED_IN } from "@/web/urlConfig";
+
+let client: TolgeeClient;
+let pak: string;
 
 describe("Push", () => {
+  beforeEach(() => {
+    cy.wrap(createProject());
+  });
+
+  afterEach(() => {
+    // deleteProject(client);
+  });
+
   it("shows differences correctly", () => {
     const nodes = [
       createTestNode({ text: "New key", key: "new_key" }),
       createTestNode({ text: "Changed key", key: "on-the-road-subtitle" }),
     ];
     visitWithState({
-      config: SIGNED_IN,
+      config: getCredentials(),
       selectedNodes: nodes,
       allNodes: nodes,
     });
 
-    cy.frameLoaded("#plugin_iframe");
+    cy.iframeBody().contains("New key").should("exist");
 
-    cy.iframe().contains("New key").should("exist");
+    cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
 
-    cy.iframe().findDcy("index_push_button").should("be.visible").click();
+    cy.iframeBody().contains("New keys").should("exist");
 
-    cy.iframe().contains("New keys").should("exist");
-
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("changes_new_keys")
       .contains("new_key")
       .should("be.visible");
 
-    cy.iframe()
+    cy.iframeBody()
       .findDcy("changes_changed_keys")
       .contains("on-the-road-subtitle")
       .should("be.visible");
+    cy.wait;
   });
 
   it("catches conflicts", () => {
@@ -38,18 +56,16 @@ describe("Push", () => {
       createTestNode({ text: "Second value", key: "new_key" }),
     ];
     visitWithState({
-      config: SIGNED_IN,
+      config: getCredentials(),
       selectedNodes: nodes,
       allNodes: nodes,
     });
 
-    cy.frameLoaded("#plugin_iframe");
+    cy.iframeBody().contains("First value").should("exist");
 
-    cy.iframe().contains("First value").should("exist");
+    cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
 
-    cy.iframe().findDcy("index_push_button").should("be.visible").click();
-
-    cy.iframe()
+    cy.iframeBody()
       .contains("There are multiple different translations for single key")
       .should("exist");
   });
@@ -59,24 +75,22 @@ describe("Push", () => {
       createTestNode({ text: "On the road", key: "on-the-road-title" }),
     ];
     visitWithState({
-      config: { ...SIGNED_IN, updateScreenshots: true },
+      config: { ...getCredentials(), updateScreenshots: true },
       selectedNodes: nodes,
       allNodes: nodes,
     });
 
-    cy.frameLoaded("#plugin_iframe");
+    cy.iframeBody().contains("On the road").should("exist");
+    cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
 
-    cy.iframe().contains("On the road").should("exist");
-    cy.iframe().findDcy("index_push_button").should("be.visible").click();
+    cy.iframeBody().contains("No changes necessary").should("be.visible");
+    cy.iframeBody().findDcy("push_upload_screenshots_checkbox").should("exist");
+    cy.iframeBody().findDcy("push_submit_button").should("be.visible").click();
 
-    cy.iframe().contains("No changes necessary").should("be.visible");
-    cy.iframe().findDcy("push_upload_screenshots_checkbox").should("exist");
-    cy.iframe().findDcy("push_submit_button").should("be.visible").click();
-
-    cy.iframe()
+    cy.iframeBody()
       .contains("Successfully updated 0 key(s) and uploaded 1 screenshot(s).")
       .should("be.visible");
-    cy.iframe().findDcy("push_ok_button").should("be.visible").click();
+    cy.iframeBody().findDcy("push_ok_button").should("be.visible").click();
   });
 
   it("doesn't push screenshot when disabled", () => {
@@ -84,18 +98,89 @@ describe("Push", () => {
       createTestNode({ text: "On the road", key: "on-the-road-title" }),
     ];
     visitWithState({
-      config: { ...SIGNED_IN, updateScreenshots: false },
+      config: { ...getCredentials(), updateScreenshots: false },
       selectedNodes: nodes,
       allNodes: nodes,
     });
 
-    cy.frameLoaded("#plugin_iframe");
+    cy.iframeBody().contains("On the road").should("exist");
+    cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
 
-    cy.iframe().contains("On the road").should("exist");
-    cy.iframe().findDcy("index_push_button").should("be.visible").click();
+    cy.iframeBody().contains("No changes necessary").should("be.visible");
 
-    cy.iframe().contains("No changes necessary").should("be.visible");
-
-    cy.iframe().findDcy("push_finish_button").should("be.visible").click();
+    cy.iframeBody().findDcy("push_finish_button").should("be.visible").click();
   });
+
+  it.only("doesn't override protected translation by default", () => {
+    cy.wrap(
+      (async () => {
+        await createProject({ translationProtection: "PROTECT_REVIEWED" });
+        await markTitleAsReviewed();
+        console.log({ pak });
+      })()
+    ).then(() => {
+      const nodes = [
+        createTestNode({
+          text: "On the road updated",
+          key: "on-the-road-title",
+        }),
+      ];
+      visitWithState({
+        config: { ...getCredentials(), updateScreenshots: false },
+        selectedNodes: nodes,
+        allNodes: nodes,
+      });
+      cy.iframeBody().contains("On the road updated").should("exist");
+
+      cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
+      cy.iframeBody()
+        .findDcy("push_finish_button")
+        .should("be.visible")
+        .click();
+
+      cy.iframeBody().contains(
+        "Successfully updated 0 key(s) and uploaded 0 screenshot(s)."
+      );
+      cy.iframeBody().contains("Some translations cannot be updated:");
+      cy.iframeBody().contains("on-the-road-title (overridable)");
+
+      cy.iframeBody().findDcy("push-override-all-button").click();
+
+      cy.iframeBody().findDcy("push-override-all-button").should("not.exist");
+    });
+  });
+
+  function getCredentials() {
+    return { ...SIGNED_IN, apiKey: pak };
+  }
+
+  async function createProject(options?: Options) {
+    client = await createProjectWithClient(
+      "Project 1",
+      EXAMPLE_PROJECT,
+      options
+    );
+    pak = await createPak(client);
+  }
+
+  async function markTitleAsReviewed() {
+    const { data: keys } = await client.GET("/v2/projects/{projectId}/keys", {
+      params: { path: { projectId: client.getProjectId() } },
+    });
+    const key = keys!._embedded!.keys!.find(
+      (k) => k.name === "on-the-road-title"
+    )!;
+    await client.PUT("/v2/projects/{projectId}/keys/{id}/complex-update", {
+      params: { path: { projectId: client.getProjectId(), id: key.id } },
+      body: {
+        name: key.name,
+        states: {
+          en: "REVIEWED",
+          cs: "REVIEWED",
+          fr: "REVIEWED",
+          de: "REVIEWED",
+        },
+      },
+    });
+  }
 });
