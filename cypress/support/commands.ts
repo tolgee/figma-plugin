@@ -55,7 +55,6 @@ Cypress.Commands.add("iframeReady", () => {
 });
 
 Cypress.Commands.add("iframeDocument", () => {
-  cy.iframeReady();
   return cy
     .get('iframe[data-cy="plugin_iframe"]')
     .its("0.contentDocument")

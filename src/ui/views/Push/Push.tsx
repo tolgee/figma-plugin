@@ -184,7 +184,7 @@ export const Push: FunctionalComponent = () => {
       />
       <Divider />
       <VerticalSpace space="large" />
-      <Container space="medium">
+      <Container space="medium" data-cy="push-container">
         {errorMessage && !error ? (
           <Banner icon={<IconWarning32 />}>{errorMessage}</Banner>
         ) : isLoading || !changes ? (

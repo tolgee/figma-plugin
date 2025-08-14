@@ -13,12 +13,13 @@ let client: TolgeeClient;
 let pak: string;
 
 describe("Push", () => {
-  beforeEach(() => {
-    cy.wrap(createProject());
+  beforeEach(async () => {
+    await createProject({ translationProtection: "PROTECT_REVIEWED" });
+    await markTitleAsReviewed();
   });
 
   afterEach(() => {
-    // deleteProject(client);
+    deleteProject(client);
   });
 
   it("shows differences correctly", () => {
@@ -112,49 +113,44 @@ describe("Push", () => {
   });
 
   it("doesn't override protected translation by default", () => {
-    cy.wrap(
-      (async () => {
-        await createProject({ translationProtection: "PROTECT_REVIEWED" });
-        await markTitleAsReviewed();
-      })()
-    ).then(() => {
-      const nodes = [
-        createTestNode({
-          text: "On the road updated",
-          key: "on-the-road-title",
-        }),
-      ];
-      visitWithState({
-        config: { ...getCredentials(), updateScreenshots: false },
-        selectedNodes: nodes,
-        allNodes: nodes,
-      });
-
-      cy.iframeBody().contains("On the road updated").should("be.visible");
-
-      cy.iframeBody().findDcy("index_push_button").should("be.visible").click();
-      cy.iframeBody()
-        .findDcy("push_finish_button")
-        .should("be.visible")
-        .click();
-
-      cy.iframeBody().contains(
-        "Successfully updated 0 key(s) and uploaded 0 screenshot(s)."
-      );
-      cy.iframeBody()
-        .contains("Some translations cannot be updated:")
-        .should("be.visible");
-      cy.iframeBody()
-        .contains("on-the-road-title (overridable)")
-        .should("be.visible");
-
-      cy.iframeBody()
-        .findDcy("push-override-all-button")
-        .should("be.visible")
-        .click();
-
-      cy.iframeBody().findDcy("push-override-all-button").should("not.exist");
+    const nodes = [
+      createTestNode({
+        text: "On the road updated",
+        key: "on-the-road-title",
+      }),
+    ];
+    visitWithState({
+      config: { ...getCredentials(), updateScreenshots: false },
+      selectedNodes: nodes,
+      allNodes: nodes,
     });
+
+    cy.iframeBody().contains("On the road updated").should("exist");
+
+    cy.iframeBody().findDcy("index_push_button").click();
+
+    cy.iframeBody().contains("Changed keys").should("be.visible");
+
+    cy.iframeBody().findDcy("push_submit_button").should("be.visible").click();
+
+    cy.iframeBody()
+      .contains("Successfully updated 0 key(s) and uploaded 0 screenshot(s).")
+      .should("exist");
+
+    cy.iframeBody()
+      .contains("Some translations cannot be updated:")
+      .should("exist");
+
+    cy.iframeBody().contains("on-the-road-title (overridable)").should("exist");
+
+    cy.iframeBody()
+      .findDcy("push-override-all-button")
+      .should("be.visible")
+      .click();
+
+    cy.iframeBody()
+      .contains("Successfully updated 1 key(s) and uploaded 0 screenshot(s).")
+      .should("exist");
   });
 
   function getCredentials() {
