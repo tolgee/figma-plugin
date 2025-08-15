@@ -1,45 +1,9 @@
-import {
-  TolgeeClientProps,
-  TolgeeClient,
-  createTolgeeClient,
-  components,
-} from "@tginternal/client";
+import { ApiClient, createApiClient, components } from "@tginternal/client";
 import { languagesTestData } from "./languageTestData";
 
 const API_URL = "http://localhost:22223";
 
-export async function userLogin() {
-  const loadable = await createTolgeeClient({
-    baseUrl: API_URL,
-    autoThrow: true,
-  }).POST("/api/public/generatetoken", {
-    body: { username: "admin", password: "admin" },
-  });
-
-  return loadable.data!.accessToken!;
-}
-
-export function createClient(
-  userToken: string,
-  options?: Partial<TolgeeClientProps>
-) {
-  const client = createTolgeeClient({
-    baseUrl: API_URL,
-    autoThrow: true,
-    ...options,
-  });
-
-  client.use({
-    // @ts-ignore
-    onRequest({ request }) {
-      request.headers.set("Authorization", "Bearer " + userToken);
-      return undefined;
-    },
-  });
-  return client;
-}
-
-export async function deleteProject(client: TolgeeClient | undefined) {
+export async function deleteProject(client: ApiClient | undefined) {
   await client?.DELETE("/v2/projects/{projectId}", {
     params: { path: { projectId: client?.getProjectId() } },
     parseAs: "stream",
@@ -55,8 +19,10 @@ export async function createProjectWithClient(
   data: components["schemas"]["SingleStepImportResolvableRequest"],
   options?: Options
 ) {
-  const userToken = await userLogin();
-  let client = createClient(userToken!);
+  const client = createApiClient({
+    baseUrl: API_URL,
+  });
+  await client.login({ username: "admin", password: "admin" });
   const organizations = await client.GET("/v2/organizations");
   const { languages, ...editOptions } = options ?? {};
 
@@ -69,7 +35,7 @@ export async function createProjectWithClient(
     },
   });
 
-  client = createClient(userToken, { projectId: project.data!.id });
+  client.setProjectId(project.data!.id);
 
   await client.PUT("/v2/projects/{projectId}", {
     params: {
@@ -107,7 +73,7 @@ export const DEFAULT_SCOPES = [
   "translations.state-edit",
 ];
 
-export async function createPak(client: TolgeeClient, scopes = DEFAULT_SCOPES) {
+export async function createPak(client: ApiClient, scopes = DEFAULT_SCOPES) {
   const apiKey = await client.POST("/v2/api-keys", {
     body: { projectId: client.getProjectId(), scopes },
   });
@@ -115,7 +81,7 @@ export async function createPak(client: TolgeeClient, scopes = DEFAULT_SCOPES) {
   return apiKey.data!.key;
 }
 
-export async function createPat(client: TolgeeClient) {
+export async function createPat(client: ApiClient) {
   const apiKey = await client.POST("/v2/pats", {
     body: { description: "e2e test pat" },
   });

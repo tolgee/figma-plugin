@@ -1,5 +1,5 @@
 import { visitWithState } from "../common/tools";
-import { TolgeeClient } from "@tginternal/client";
+import { ApiClient } from "@tginternal/client";
 import {
   createProjectWithClient,
   createPak,
@@ -9,7 +9,7 @@ import {
 import { EXAMPLE_PROJECT } from "../common/exampleProject";
 import { createTestNode, SIGNED_IN } from "@/web/urlConfig";
 
-let client: TolgeeClient;
+let client: ApiClient;
 let pak: string;
 
 describe("Push", () => {
