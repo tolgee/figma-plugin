@@ -126,7 +126,12 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   );
 
   const preview = useMemo(() => {
-    return getPreview(format, tolgeeConfig.variableCasing);
+    try {
+      return getPreview(format, tolgeeConfig.variableCasing);
+    } catch (error) {
+      console.error("Preview generation error:", error);
+      return format;
+    }
   }, [format, tolgeeConfig.variableCasing]);
 
   const handleFormatChange = (val: string) => {
