@@ -46,6 +46,7 @@ export const ResizeHandle = () => {
     );
 
     const newSize: WindowSize = { width: newWidth, height: newHeight };
+
     emit<ResizeHandler>("RESIZE", newSize);
 
     // Update the global size stack to remember this size

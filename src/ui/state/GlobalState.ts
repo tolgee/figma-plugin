@@ -33,11 +33,11 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     );
     const [sizeStack, setSizeStack] = useState<WindowSize[]>([]);
 
+    // Emit initial size on mount
     useEffect(() => {
-      const size = sizeStack[sizeStack.length - 1] ?? DEFAULT_SIZE;
-      emit<ResizeHandler>("RESIZE", size);
-      return () => emit<ResizeHandler>("RESIZE", DEFAULT_SIZE);
-    }, [sizeStack]);
+      const initialSize = sizeStack[sizeStack.length - 1] ?? DEFAULT_SIZE;
+      emit<ResizeHandler>("RESIZE", initialSize);
+    }, []);
 
     const [editedKeys, setEditedKeys] = useState<Record<string, string>>({});
 
