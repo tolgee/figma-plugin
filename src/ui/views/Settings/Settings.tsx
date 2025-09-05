@@ -16,7 +16,6 @@ import { useApiMutation } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { TopBar } from "../../components/TopBar/TopBar";
 import { useQueryClient } from "react-query";
-import { useWindowSize } from "@/ui/hooks/useWindowSize";
 import { Expandable } from "./Expandable";
 import { ProjectSection } from "./ProjectSection";
 import { PushSection } from "./PushSection";
@@ -50,8 +49,6 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       },
     },
   });
-
-  useWindowSize({ width: 500, height: 500 });
 
   const [validated, setValidated] = useState(false);
 

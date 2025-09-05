@@ -15,14 +15,12 @@ import { useApiQuery } from "@/ui/client/useQueryApi";
 import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
-import { useWindowSize } from "@/ui/hooks/useWindowSize";
 import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
 
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { ListItem } from "./ListItem";
-import { DEFAULT_SIZE } from "@/ui/state/sizes";
 import { useEditorMode } from "../../hooks/useEditorMode";
 
 export const Index = () => {
@@ -101,8 +99,6 @@ export const Index = () => {
   useEffect(() => {
     setError(undefined);
   }, [selection]);
-
-  useWindowSize(DEFAULT_SIZE);
 
   const editorMode = useEditorMode();
 
