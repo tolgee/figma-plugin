@@ -15,7 +15,7 @@ export const getPullChanges = (
   nodes.forEach((node) => {
     const value = keys?.[node.ns ?? ""]?.[node.key];
 
-    if (value) {
+    if (value?.translation) {
       if (
         value.translation !== node.translation ||
         value.keyIsPlural !== node.isPlural

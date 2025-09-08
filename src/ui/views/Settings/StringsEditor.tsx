@@ -158,6 +158,8 @@ export const StringsEditor = ({
   }
 
   useEffect(() => {
+    if (!ref.current) return;
+
     const extensions = [
       minimalSetup,
       EditorView.updateListener.of((v: ViewUpdate) => {
@@ -204,7 +206,10 @@ export const StringsEditor = ({
     editor.current!.dispatch({ selection: { anchor: length } });
 
     return () => {
-      editor.current!.destroy();
+      if (editor.current) {
+        editor.current.destroy();
+        editor.current = undefined;
+      }
     };
   }, []);
 

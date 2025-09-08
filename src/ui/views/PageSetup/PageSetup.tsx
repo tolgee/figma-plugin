@@ -14,14 +14,10 @@ import {
 } from "@create-figma-plugin/ui";
 import { Fragment, FunctionComponent, h } from "preact";
 import { useState } from "preact/hooks";
-import { useWindowSize } from "@/ui/hooks/useWindowSize";
-import { MINIMUM_SIZE } from "@/ui/state/sizes";
 
 export const PageSetup: FunctionComponent = () => {
   const config = useGlobalState((c) => c.config) || {};
   const { setRoute, setConfig } = useGlobalActions();
-
-  useWindowSize(MINIMUM_SIZE);
 
   const [settings, setSettings] = useState<
     Partial<CurrentPageSettings> | undefined
