@@ -154,7 +154,7 @@ export const Index = () => {
                     onClick={handleCopy}
                     secondary
                   >
-                    Create a copy
+                    Copy
                   </Button>
                 </Fragment>
               }
