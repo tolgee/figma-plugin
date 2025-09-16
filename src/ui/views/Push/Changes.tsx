@@ -25,6 +25,7 @@ export const Changes = ({ changes }: Props) => {
             data-cy="changes_new_keys"
           >
             <NodeList
+              rowHeight={28}
               items={changes.newKeys.map((k) => ({
                 id: k.key,
                 key: k.key,
@@ -47,6 +48,7 @@ export const Changes = ({ changes }: Props) => {
             data-cy="changes_changed_keys"
           >
             <NodeList
+              rowHeight={28}
               items={changes.changedKeys.map((k) => ({
                 id: k.key,
                 key: k.key,

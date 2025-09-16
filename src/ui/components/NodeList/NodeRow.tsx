@@ -77,6 +77,7 @@ export const NodeRow = ({
         {keyComponent ? keyComponent : node.key}
       </div>
       <div
+        className={styles.ns}
         title="Translation namespace"
         data-cy="general_node_list_row_namespace"
       >
