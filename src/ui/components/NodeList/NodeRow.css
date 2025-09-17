@@ -36,6 +36,11 @@
   grid-column: 1 / span 2;
 }
 
+.ns {
+  cursor: unset;
+  grid-column: 1 / span 2;
+}
+
 .disabled {
   color: var(--figma-color-text-disabled);
 }

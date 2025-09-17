@@ -14,6 +14,7 @@ import { CopyView } from "./CopyView/CopyView";
 import { Dialog } from "../components/Dialog/Dialog";
 import { StringDetails } from "./StringDetails/StringDetails";
 import { ResizeHandle } from "../components/ResizeHandle/ResizeHandle";
+import { useEditorMode } from "../hooks/useEditorMode";
 
 const getDialogPage = ([routeKey, routeData]: Route) => {
   switch (routeKey) {
@@ -68,6 +69,7 @@ export const Router = () => {
   const pageStringDetails = useGlobalState((c) => c.config?.pageStringDetails);
   const pageStringDetailsNodeInfo = useGlobalState((c) => c.config?.nodeInfo);
   const { setRoute } = useGlobalActions();
+  const editorMode = useEditorMode();
 
   const forceSettings = !pageCopy && !documentInfo;
   const errorOnTop = !forceSettings && routeKey !== "settings";
@@ -98,7 +100,7 @@ export const Router = () => {
       ) : (
         <Page route={route} setRoute={setRoute} />
       )}
-      <ResizeHandle />
+      {editorMode.data !== "dev" && <ResizeHandle />}
     </Fragment>
   );
 };

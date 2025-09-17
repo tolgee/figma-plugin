@@ -114,64 +114,66 @@ export const Index = () => {
           space="medium"
           style={{ paddingBlock: "var(--space-extra-small)" }}
         >
-          {editorMode.data !== "dev" && (
-            <TopBar
-              leftPart={
-                <Fragment>
-                  {languages && (
-                    <select
-                      data-cy="index_language_select"
-                      className={styles.languageContainer}
-                      value={language}
-                      onChange={(e) => {
-                        handleLanguageChange(
-                          (e.target as HTMLInputElement).value
-                        );
-                      }}
+          <TopBar
+            leftPart={
+              <Fragment>
+                {languages && editorMode.data !== "dev" && (
+                  <select
+                    data-cy="index_language_select"
+                    className={styles.languageContainer}
+                    value={language}
+                    onChange={(e) => {
+                      handleLanguageChange(
+                        (e.target as HTMLInputElement).value
+                      );
+                    }}
+                  >
+                    {languages.map((l) => (
+                      <option key={l.tag} value={l.tag}>
+                        {l.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                <Button data-cy="index_push_button" onClick={handlePush}>
+                  {nothingSelected ? "Push all" : "Push"}
+                </Button>
+
+                {editorMode.data !== "dev" && (
+                  <Fragment>
+                    <Button
+                      data-cy="index_pull_button"
+                      onClick={handlePull}
+                      secondary
                     >
-                      {languages.map((l) => (
-                        <option key={l.tag} value={l.tag}>
-                          {l.name}
-                        </option>
-                      ))}
-                    </select>
-                  )}
+                      {nothingSelected ? "Pull all" : "Pull"}
+                    </Button>
 
-                  <Button data-cy="index_push_button" onClick={handlePush}>
-                    {nothingSelected ? "Push all" : "Push"}
-                  </Button>
-
-                  <Button
-                    data-cy="index_pull_button"
-                    onClick={handlePull}
-                    secondary
-                  >
-                    {nothingSelected ? "Pull all" : "Pull"}
-                  </Button>
-
-                  <Button
-                    data-cy="index_create_copy_button"
-                    onClick={handleCopy}
-                    secondary
-                  >
-                    Create a copy
-                  </Button>
-                </Fragment>
-              }
-              rightPart={
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div
-                    data-cy="index_settings_button"
-                    className={styles.settingsButton}
-                    onClick={() => setRoute("settings")}
-                    role="button"
-                  >
-                    <Settings width={15} height={15} />
-                  </div>
+                    <Button
+                      data-cy="index_create_copy_button"
+                      onClick={handleCopy}
+                      secondary
+                    >
+                      Copy
+                    </Button>
+                  </Fragment>
+                )}
+              </Fragment>
+            }
+            rightPart={
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div
+                  data-cy="index_settings_button"
+                  className={styles.settingsButton}
+                  onClick={() => setRoute("settings")}
+                  role="button"
+                >
+                  <Settings width={15} height={15} />
                 </div>
-              }
-            />
-          )}
+              </div>
+            }
+          />
         </Container>
         <Divider />
         <Container space="medium">
@@ -200,11 +202,7 @@ export const Index = () => {
         </Container>
       ) : (
         <NodeList
-          items={
-            editorMode.data !== "dev"
-              ? selection
-              : selection.filter((n) => n.connected)
-          }
+          items={selection}
           row={(node) => (
             <ListItem
               node={node}
