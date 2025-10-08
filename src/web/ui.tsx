@@ -9,6 +9,4 @@ const AppWrapper = () => {
   return <Plugin {...data} />;
 };
 
-setTimeout(() => {
-  render(<AppWrapper />, document.getElementById("root")!);
-}, 0);
+render(<AppWrapper />, document.getElementById("root")!);

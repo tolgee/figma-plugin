@@ -70,6 +70,10 @@ jobs:
       - name: Install
         run: npm ci
 
+
+      - name: Test
+        run: npm run test
+
       - name: Cypress run
         run: npm run cy:run
 

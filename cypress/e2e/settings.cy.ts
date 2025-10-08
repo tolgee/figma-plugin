@@ -7,35 +7,35 @@ describe("Settings", () => {
       config: {},
     });
 
-    cy.iframe().findDcy("top_bar_back_button").should("not.exist");
-    cy.iframe().findDcy("settings_button_close").should("not.exist");
+    cy.iframeBody().within(() => {
+      cy.gcy("top_bar_back_button").should("not.exist");
+      cy.gcy("settings_button_close").should("not.exist");
+    });
   });
 
   it("works when filling empty", () => {
     visitWithState({});
 
-    cy.iframe()
-      .findDcy("settings_input_api_url")
-      .type(DEFAULT_CREDENTIALS.apiUrl);
+    cy.iframeBody().within(() => {
+      cy.gcy("settings_input_api_url").should("be.visible");
 
-    cy.iframe()
-      .findDcy("settings_input_api_key")
-      .type(DEFAULT_CREDENTIALS.apiKey);
+      cy.wait(100);
+      cy.gcy("settings_input_api_url").type(DEFAULT_CREDENTIALS.apiUrl);
 
-    cy.iframe().findDcy("settings_button_validate").click();
+      cy.gcy("settings_input_api_key").type(DEFAULT_CREDENTIALS.apiKey);
 
-    cy.iframe()
-      .contains("examples was successfully connected")
-      .should("be.visible");
+      cy.gcy("settings_button_validate").click();
 
-    cy.iframe().contains("Current language").should("be.visible");
+      cy.get("div")
+        .contains("examples was successfully connected")
+        .should("be.visible");
 
-    cy.iframe()
-      .findDcy("settings_input_language")
-      .should("be.visible")
-      .select("en");
+      cy.get("div").contains("Current language").should("be.visible");
 
-    cy.iframe().findDcy("settings_button_save").click();
+      cy.gcy("settings_input_language").should("be.visible").select("en");
+
+      cy.gcy("settings_button_save").click();
+    });
   });
 
   it("works when filling existing", () => {
@@ -50,33 +50,30 @@ describe("Settings", () => {
       },
     });
 
-    cy.iframe().findDcy("index_settings_button").should("be.visible").click();
-    cy.iframe().contains("Settings").should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.gcy("index_settings_button").should("be.visible").click();
+      cy.get("div").contains("Settings").should("be.visible");
 
-    cy.iframe().findDcy("settings_expandable_project").should("be.visible");
+      cy.gcy("settings_expandable_project").should("be.visible");
 
-    cy.iframe()
-      .findDcy("settings_input_api_url")
-      .type(DEFAULT_CREDENTIALS.apiUrl);
-    cy.iframe()
-      .findDcy("settings_input_api_key")
-      .type(DEFAULT_CREDENTIALS.apiKey);
+      cy.gcy("settings_input_api_url").type(DEFAULT_CREDENTIALS.apiUrl);
+      cy.gcy("settings_input_api_key").type(DEFAULT_CREDENTIALS.apiKey);
 
-    cy.iframe().findDcy("settings_button_validate").click();
+      cy.gcy("settings_button_validate").click();
 
-    cy.iframe()
-      .contains("examples was successfully connected")
-      .should("be.visible");
-    cy.iframe().contains("Current language").should("be.visible");
+      cy.get("div")
+        .contains("examples was successfully connected")
+        .should("be.visible");
+      cy.get("div").contains("Current language").should("be.visible");
 
-    cy.iframe()
-      .findDcy("settings_input_language")
-      .should("be.visible")
-      .select("en");
+      cy.gcy("settings_input_language").should("be.visible").select("en");
 
-    cy.iframe().findDcy("settings_button_save").click();
+      cy.gcy("settings_button_save").click();
 
-    cy.contains("Select texts for translation").should("be.visible");
+      cy.get("div")
+        .contains("Select texts for translation")
+        .should("be.visible");
+    });
   });
 
   it("tests strings settings configuration", () => {
@@ -91,41 +88,43 @@ describe("Settings", () => {
       },
     });
 
-    cy.iframe().findDcy("index_settings_button").should("be.visible").click();
-    cy.iframe().contains("Settings").should("be.visible");
+    cy.iframeBody().within(() => {
+      cy.gcy("index_settings_button").should("be.visible").click();
+      cy.get("div").contains("Settings").should("be.visible");
 
-    cy.iframe().findDcy("settings_expandable_strings").should("exist").click();
-    cy.iframe().findDcy("settings_checkbox_prefill_key_name").should("exist");
-    cy.iframe().findDcy("settings_checkbox_prefill_key_name").click();
+      cy.gcy("settings_expandable_strings").should("exist").click();
+      cy.gcy("settings_checkbox_prefill_key_name").should("exist");
+      cy.gcy("settings_checkbox_prefill_key_name").click();
 
-    // Test key format editor - check if it exists first
-    cy.iframe().findDcy("global-editor").should("exist");
+      // Test key format editor - check if it exists first
+      cy.gcy("global-editor").should("exist");
 
-    // Test variable casing dropdown - only if it's visible
-    cy.iframe().findDcy("settings_dropdown_variable_casing").should("exist");
+      // Test variable casing dropdown - only if it's visible
+      cy.gcy("settings_dropdown_variable_casing").should("exist");
 
-    // Verify preview exists
-    cy.iframe().findDcy("settings_text_preview").should("not.exist");
+      // Verify preview exists
+      cy.gcy("settings_text_preview").should("not.exist");
 
-    cy.iframe().findDcy("global-editor").click();
-    cy.wait(150);
-    cy.iframe().findDcy("global-editor").type("{enter}");
-    cy.iframe().findDcy("settings_text_preview").should("exist");
+      cy.gcy("global-editor").click();
+      cy.wait(150);
+      cy.gcy("global-editor").type("{enter}");
+      cy.gcy("settings_text_preview").should("exist");
 
-    // Verify My Artboard is in the preview
-    cy.iframe()
-      .findDcy("settings_text_preview")
-      .should("contain", "My Artboard");
+      // Verify My Artboard is in the preview
+      cy.gcy("settings_text_preview").should("contain", "My Artboard");
 
-    // Test ignore settings - only if they're visible
-    cy.iframe().findDcy("settings_checkbox_ignore_text_layers").should("exist");
+      // Test ignore settings - only if they're visible
+      cy.gcy("settings_checkbox_ignore_text_layers").should("exist");
 
-    // Test ignore prefix input - only if it's visible
-    cy.iframe().findDcy("settings_input_ignore_prefix").should("exist");
+      // Test ignore prefix input - only if it's visible
+      cy.gcy("settings_input_ignore_prefix").should("exist");
 
-    // Save settings
-    cy.iframe().findDcy("settings_button_save").click();
-    cy.contains("Select texts for translation").should("be.visible");
+      // Save settings
+      cy.gcy("settings_button_save").click();
+      cy.get("div")
+        .contains("Select texts for translation")
+        .should("be.visible");
+    });
   });
 
   it("tests push settings configuration", () => {
@@ -139,19 +138,24 @@ describe("Settings", () => {
         pageInfo: true,
       },
     });
-    cy.iframe().findDcy("index_settings_button").should("be.visible").click();
-    cy.iframe().contains("Settings").should("be.visible");
 
-    cy.iframe().findDcy("settings_expandable_push").should("exist").click();
+    cy.iframeBody().within(() => {
+      cy.gcy("index_settings_button").should("be.visible").click();
+      cy.get("div").contains("Settings").should("be.visible");
 
-    // Test update screenshots checkbox
-    cy.iframe().findDcy("settings_checkbox_update_screenshots").should("exist");
+      cy.gcy("settings_expandable_push").should("exist").click();
 
-    // Test add tags checkbox
-    cy.iframe().findDcy("settings_checkbox_add_tags").should("exist");
+      // Test update screenshots checkbox
+      cy.gcy("settings_checkbox_update_screenshots").should("exist");
 
-    // Save settings
-    cy.iframe().findDcy("settings_button_save").click();
-    cy.contains("Select texts for translation").should("be.visible");
+      // Test add tags checkbox
+      cy.gcy("settings_checkbox_add_tags").should("exist");
+
+      // Save settings
+      cy.gcy("settings_button_save").click();
+      cy.get("div")
+        .contains("Select texts for translation")
+        .should("be.visible");
+    });
   });
 });

@@ -6,21 +6,20 @@ describe("Page setup", () => {
     visitWithState({
       config: NEW_PAGE,
     });
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("Page setup").should("be.visible");
 
-    cy.iframe().contains("Page setup").should("be.visible");
+      cy.gcy("page_setup_button_save")
+        .should("be.visible")
+        .should("be.disabled");
 
-    cy.iframe()
-      .findDcy("page_setup_button_save")
-      .should("be.visible")
-      .should("be.disabled");
+      cy.gcy("page_setup_input_language").should("be.visible").select("cs");
 
-    cy.iframe()
-      .findDcy("page_setup_input_language")
-      .should("be.visible")
-      .select("cs");
+      cy.gcy("page_setup_button_save").should("be.visible").click();
 
-    cy.iframe().findDcy("page_setup_button_save").should("be.visible").click();
-
-    cy.iframe().contains("Select texts for translation").should("be.visible");
+      cy.get("div")
+        .contains("Select texts for translation")
+        .should("be.visible");
+    });
   });
 });

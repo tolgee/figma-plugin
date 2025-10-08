@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import "cypress-iframe";
 
 Cypress.Commands.add(
   "closestDcy",
@@ -34,23 +33,33 @@ declare global {
        * @example cy.iframeBody().find('button').click()
        */
       iframeBody(): Chainable<JQuery<HTMLBodyElement>>;
+
+      iframeReady(): void;
     }
   }
 }
 
-Cypress.Commands.add("iframeDocument", () => {
+Cypress.Commands.add("iframeReady", () => {
   return cy
-    .get('iframe[data-cy="plugin_iframe"]')
+    .get('iframe[data-cy="plugin_iframe"]', { timeout: 15000 })
+    .should("be.visible")
     .its("0.contentDocument")
-    .should("exist");
+    .should("exist")
+    .then((doc: Document) => {
+      // Wait for readyState=complete AND #root present
+      // Both checks are retried by Cypress
+      cy.wrap(doc).its("readyState").should("eq", "complete");
+      cy.wrap(doc.body).should("exist");
+      cy.wrap(doc).find("#root", { timeout: 15000 }).should("exist");
+    });
 });
 
 Cypress.Commands.add("iframeBody", () => {
   return cy
-    .iframeDocument()
-    .its("body")
-    .should("not.be.undefined")
-    .then((e) => cy.wrap<HTMLBodyElement>(e as HTMLBodyElement));
+    .get('iframe[data-cy="plugin_iframe"]', { timeout: 15000 })
+    .should("be.visible")
+    .its("0.contentDocument.body")
+    .should("not.be.empty");
 });
 
 // Export {} to ensure this file is treated as a module by TypeScript.

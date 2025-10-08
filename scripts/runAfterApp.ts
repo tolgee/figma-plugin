@@ -4,36 +4,24 @@ import colors from "colors";
 import terminate from "terminate";
 import http from "http";
 
+const PORT = 22223;
+
 function systemColor(text: string) {
   return colors.grey(text);
 }
 
-const afterArgs = process.argv.slice(2);
-
-const dockerComposeProcess = spawn(
-  "docker",
-  ["compose", "up", "--force-recreate"],
-  {
-    cwd: path.join(__dirname, "..", "cypress"),
-  }
-);
-
-const appProcesses = [dockerComposeProcess];
+const appProcesses: ChildProcess[] = [];
 
 const afterProcesses: ChildProcess[] = [];
 
-dockerComposeProcess.stdout.on("data", (data) => {
-  process.stdout.write(data);
-});
-
-dockerComposeProcess.stderr.pipe(process.stderr);
+const afterArgs = process.argv.slice(2);
 
 function checkServerStatus(callback: () => void) {
   const MAX_RETRIES = 300; // 300 seconds timeout
   let retryCount = 0;
   const options = {
     host: "localhost",
-    port: 8080,
+    port: PORT,
     path: "/", // Or any other endpoint
     timeout: 2000,
   };
@@ -86,18 +74,13 @@ function runAfterProcesses() {
   }
 }
 
-checkServerStatus(() => {
-  runAfterProcesses();
-});
-
 let isFinishing = false;
 async function finish(code: number) {
   if (isFinishing) {
     return true;
   }
   isFinishing = true;
-  const allProcesses = [...appProcesses, ...afterProcesses];
-  const runningProcesses = allProcesses.filter((p) => p.kill(0));
+  const runningProcesses = afterProcesses.filter((p) => p.kill(0));
   const childrenPending = runningProcesses.map(
     (p) =>
       new Promise<void>((resolve, reject) => {
@@ -135,3 +118,46 @@ process.on("SIGINT", () => {
 appProcesses.forEach((p) =>
   p.on("close", (code) => onChildFinish(getProcessName(p), code || 0))
 );
+
+async function main() {
+  let isRunning = false;
+
+  try {
+    const response: any = await fetch(
+      `http://localhost:${PORT}/actuator/health`
+    ).then((r) => r.json());
+
+    if (response.status === "UP") {
+      console.log(`Backend already running on port ${PORT}`);
+      isRunning = true;
+    }
+  } catch {
+    // backend not running - continue
+  }
+
+  if (!isRunning) {
+    const dockerComposeProcess = spawn(
+      "docker",
+      ["compose", "up", "--force-recreate"],
+      {
+        cwd: path.join(__dirname, "..", "cypress"),
+      }
+    );
+
+    appProcesses.push(dockerComposeProcess);
+
+    dockerComposeProcess.stdout.on("data", (data) => {
+      process.stdout.write(data);
+    });
+
+    dockerComposeProcess.stderr.pipe(process.stderr);
+
+    checkServerStatus(() => {
+      runAfterProcesses();
+    });
+  } else {
+    runAfterProcesses();
+  }
+}
+
+main();

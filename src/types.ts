@@ -122,6 +122,7 @@ export type GlobalSettings = {
     | "camelCase"
     | "PascalCase"
     | "noSpaces";
+  overrideAll?: boolean;
 };
 
 export type CurrentDocumentSettings = GlobalSettings & {

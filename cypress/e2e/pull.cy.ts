@@ -16,12 +16,13 @@ describe("Pull", () => {
       allNodes: nodes,
     });
 
-    cy.frameLoaded("#plugin_iframe");
-    cy.iframe().contains("On the road").should("exist");
-    cy.iframe().findDcy("index_pull_button").click();
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("On the road").should("exist");
+      cy.gcy("index_pull_button").click();
 
-    cy.iframe().contains("Everything up to date").should("be.visible");
-    cy.iframe().findDcy("pull_ok_button").should("be.visible").click();
+      cy.get("div").contains("Everything up to date").should("be.visible");
+      cy.gcy("pull_ok_button").should("be.visible").click();
+    });
   });
 
   it("pulling change", () => {
@@ -43,20 +44,21 @@ describe("Pull", () => {
       allNodes: nodes,
     });
 
-    cy.frameLoaded("#plugin_iframe");
-    cy.iframe().contains("On the old road").should("exist");
-    cy.iframe().findDcy("index_pull_button").click();
+    cy.iframeBody().within(() => {
+      cy.get("div").contains("On the old road").should("exist");
+      cy.gcy("index_pull_button").click();
 
-    cy.iframe()
-      .contains("This action will replace translations in 1")
-      .should("be.visible");
-    cy.iframe().contains("Missing keys").should("be.visible");
+      cy.get("div")
+        .contains("This action will replace translations in 1")
+        .should("be.visible");
+      cy.get("div").contains("Missing keys").should("be.visible");
 
-    cy.iframe().contains("nonexistant-key").should("be.visible");
+      cy.get("div").contains("nonexistant-key").should("be.visible");
 
-    cy.iframe().findDcy("pull_submit_button").should("be.visible").click();
+      cy.gcy("pull_submit_button").should("be.visible").click();
 
-    cy.iframe().contains("On the road").should("exist");
-    cy.iframe().contains("Connected to nonexistant").should("exist");
+      cy.get("div").contains("On the road").should("exist");
+      cy.get("div").contains("Connected to nonexistant").should("exist");
+    });
   });
 });
