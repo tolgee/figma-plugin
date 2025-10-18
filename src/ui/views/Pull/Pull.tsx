@@ -53,6 +53,10 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
     } catch (e) {
       if (e === "invalid_project_api_key") {
         setError("Invalid project API key");
+      } else if (e === "too_many_uploaded_images") {
+        setError(
+          "Too many uploaded images. Disable update screenshots in settings."
+        );
       } else {
         setError(`Cannot get translation data. ${e}`);
       }
