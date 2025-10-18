@@ -118,6 +118,11 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   const [ignoreHiddenLayers, setIgnoreHiddenLayers] = useState(
     tolgeeConfig.ignoreHiddenLayers ?? true
   );
+  const [
+    ignoreHiddenLayersIncludingChildren,
+    setIgnoreHiddenLayersIncludingChildren,
+  ] = useState(tolgeeConfig.ignoreHiddenLayersIncludingChildren ?? false);
+
   const [ignoreTextLayers, setIgnoreTextLayers] = useState(
     tolgeeConfig.ignoreTextLayers ?? false
   );
@@ -174,6 +179,16 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
     setTolgeeConfig({
       ...tolgeeConfig,
       ignoreHiddenLayers: event.currentTarget.checked,
+    });
+  }
+
+  function handleIgnoreHiddenLayersIncludingChildrenChange(
+    event: TargetedEvent<HTMLInputElement, Event>
+  ): void {
+    setIgnoreHiddenLayersIncludingChildren(event.currentTarget.checked);
+    setTolgeeConfig({
+      ...tolgeeConfig,
+      ignoreHiddenLayersIncludingChildren: event.currentTarget.checked,
     });
   }
 
@@ -282,6 +297,21 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
           <Bold>hidden layers</Bold>
         </Text>
       </Checkbox>
+      {ignoreHiddenLayers && (
+        <Fragment>
+          <VerticalSpace space="small" />
+          <div style={{ paddingLeft: "20px" }}>
+            <Checkbox
+              value={ignoreHiddenLayersIncludingChildren}
+              onChange={handleIgnoreHiddenLayersIncludingChildrenChange}
+            >
+              <Text>
+                <Bold>including all child texts</Bold>
+              </Text>
+            </Checkbox>
+          </div>
+        </Fragment>
+      )}
       <div class={styles.textLayers}>
         <Checkbox
           data-cy="settings_checkbox_ignore_text_layers"

@@ -115,6 +115,7 @@ export type GlobalSettings = {
    */
   keyFormat?: string;
   ignoreHiddenLayers?: boolean;
+  ignoreHiddenLayersIncludingChildren?: boolean;
   ignoreTextLayers?: boolean;
   variableCasing?:
     | "snake_case"

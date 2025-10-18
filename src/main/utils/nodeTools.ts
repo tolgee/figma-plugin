@@ -32,11 +32,31 @@ function shouldIncludeNode(
     return false;
   }
   if (
-    (settings.ignoreHiddenLayers ||
-      typeof settings.ignoreHiddenLayers === "undefined") &&
-    !node.visible
+    settings.ignoreHiddenLayers ||
+    typeof settings.ignoreHiddenLayers === "undefined"
   ) {
-    return false;
+    const isNodeVisible = !node.visible;
+    if (isNodeVisible && !settings.ignoreHiddenLayersIncludingChildren) {
+      return false;
+    }
+    if (settings.ignoreHiddenLayersIncludingChildren) {
+      let isParentHidden = false;
+      let parent = node.parent;
+      try {
+        while (parent) {
+          if (!(parent as SceneNode).visible) {
+            isParentHidden = true;
+            break;
+          }
+          parent = parent.parent;
+        }
+        if (isParentHidden) {
+          return false;
+        }
+      } catch (error) {
+        console.error("Error checking parent visibility:", error);
+      }
+    }
   }
   if (
     settings.ignoreTextLayers &&

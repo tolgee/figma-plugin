@@ -112,11 +112,6 @@ export const Push: FunctionalComponent = () => {
     method: "post",
   });
 
-  const addNewTranslations = useApiMutation({
-    url: "/v2/projects/keys/import",
-    method: "post",
-  });
-
   const addTagsToKeys = useApiMutation({
     url: "/v2/projects/tag-complex",
     method: "put",
