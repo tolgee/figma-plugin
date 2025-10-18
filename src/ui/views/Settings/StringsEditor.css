@@ -159,3 +159,8 @@
   pointer-events: none;
   opacity: 0.5;
 }
+@media (prefers-color-scheme: dark) {
+  .strings-editor .cm-placeholder {
+    color: var(--figma-color-text-primary) !important;
+  }
+}
