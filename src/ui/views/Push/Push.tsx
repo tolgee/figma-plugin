@@ -101,6 +101,10 @@ export const Push: FunctionalComponent = () => {
     computeDiff();
   }, [nodes.length]);
 
+  const totalScreenshotCount = useMemo(() => {
+    return changes?.screenshots.length || 0;
+  }, [changes]);
+
   const setNodesDataMutation = useSetNodesDataMutation();
 
   const loadingStatus =
@@ -392,7 +396,7 @@ export const Push: FunctionalComponent = () => {
           </Fragment>
         ) : (
           <Fragment>
-            {screenshotCount !== 0 && (
+            {totalScreenshotCount !== 0 && (
               <Fragment>
                 <Checkbox
                   data-cy="push_upload_screenshots_checkbox"
@@ -401,7 +405,7 @@ export const Push: FunctionalComponent = () => {
                     setUploadScreenshots(Boolean(e.currentTarget.checked))
                   }
                 >
-                  <Text>Upload {screenshotCount} screenshot(s)</Text>
+                  <Text>Upload {totalScreenshotCount} screenshot(s)</Text>
                 </Checkbox>
                 <VerticalSpace space="medium" />
               </Fragment>
@@ -416,7 +420,8 @@ export const Push: FunctionalComponent = () => {
               >
                 Cancel
               </Button>
-              {noChanges && (screenshotCount === 0 || !uploadScreenshots) ? (
+              {noChanges &&
+              (totalScreenshotCount === 0 || !uploadScreenshots) ? (
                 <Button
                   data-cy="push_finish_button"
                   onClick={handleConnectOnly}
