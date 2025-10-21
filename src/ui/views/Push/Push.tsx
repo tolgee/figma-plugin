@@ -44,6 +44,7 @@ export const Push: FunctionalComponent = () => {
   const [changes, setChanges] = useState<KeyChanges>();
   const selectedNodes = useConnectedNodes({ ignoreSelection: false });
   const tolgeeConfig = useGlobalState((c) => c.config);
+  const [screenshotCount, setScreenshotCount] = useState(0);
 
   const nodes = selectedNodes.data?.items ?? [];
 
@@ -226,7 +227,7 @@ export const Push: FunctionalComponent = () => {
           translations: {
             [language]: {
               text: item.newValue,
-              resolution: "OVERRIDE",
+              resolution: item.oldValue ? "OVERRIDE" : "NEW",
             },
           },
         });
@@ -251,44 +252,63 @@ export const Push: FunctionalComponent = () => {
         },
       });
 
-      // Add tags to keys
-      if (
-        (tolgeeConfig?.addTags ?? false) &&
-        tolgeeConfig?.tags &&
-        tolgeeConfig.tags.length > 0
-      ) {
-        await addTagsToKeys.mutateAsync({
-          content: {
-            "application/json": {
-              tagFiltered: tolgeeConfig?.tags ?? [],
-              filterKeys: [
-                ...changes.newKeys,
-                ...changes.unchangedKeys,
-                ...changes.changedKeys,
-              ].map((k) => ({
-                name: k.key,
-                namespace: k.ns || undefined,
-              })),
+      try {
+        // Add tags to keys
+        if (
+          (tolgeeConfig?.addTags ?? false) &&
+          tolgeeConfig?.tags &&
+          tolgeeConfig.tags.length > 0
+        ) {
+          await addTagsToKeys.mutateAsync({
+            content: {
+              "application/json": {
+                tagFiltered: tolgeeConfig?.tags ?? [],
+                filterKeys: [
+                  ...changes.newKeys,
+                  ...changes.unchangedKeys,
+                  ...changes.changedKeys,
+                ].map((k) => ({
+                  name: k.key,
+                  namespace: k.ns || undefined,
+                })),
+              },
             },
-          },
-        });
+          });
+        }
+      } catch (e) {
+        setErrorMessage(
+          `Error adding tags. ${e}. Translations were still updated.`
+        );
       }
 
       if (tolgeeConfig?.updateScreenshots ?? true) {
         for (const screenshot of changes.screenshots.values()) {
-          const relatedKeys = screenshot.keys
-            .map((data) => ({
-              keyName: data.key,
-              namespace: data.ns || undefined,
-            }))
-            .slice(0, 100);
-          await bigMeta.mutateAsync({
-            content: {
-              "application/json": {
-                relatedKeysInOrder: relatedKeys,
+          try {
+            const relatedKeys = screenshot.keys
+              .map((data) => ({
+                keyName: data.key,
+                namespace: data.ns || undefined,
+              }))
+              .slice(0, 100);
+            await bigMeta.mutateAsync({
+              content: {
+                "application/json": {
+                  relatedKeysInOrder: relatedKeys,
+                },
               },
-            },
-          });
+            });
+            setScreenshotCount(screenshotCount + 1);
+          } catch (e) {
+            if (e === "too_many_uploaded_images") {
+              setErrorMessage(
+                "Too many uploaded images. Disable update screenshots in settings. Translations were still updated."
+              );
+            } else {
+              setErrorMessage(
+                `Error updating screenshots. ${e}. Translations were still updated.`
+              );
+            }
+          }
         }
       }
 
@@ -298,8 +318,14 @@ export const Push: FunctionalComponent = () => {
       setError(true);
       if (e === "invalid_project_api_key") {
         setErrorMessage("Invalid project API key");
+      } else if (e === "too_many_uploaded_images") {
+        setErrorMessage(
+          "Too many uploaded images. Disable update screenshots in settings."
+        );
+      } else if (e === "import_keys_error") {
+        setErrorMessage("Error importing keys. Please try again.");
       } else {
-        setErrorMessage(`Cannot get translation data. ${e}`);
+        setErrorMessage(`Cannot push translations. ${e}`);
       }
       console.error(e);
     } finally {
@@ -321,8 +347,6 @@ export const Push: FunctionalComponent = () => {
   const changesSize = changes
     ? changes.changedKeys.length + changes.newKeys.length
     : 0;
-
-  const screenshotCount = changes?.screenshots.length || 0;
 
   const noChanges = changesSize === 0;
 
