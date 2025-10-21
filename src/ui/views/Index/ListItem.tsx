@@ -123,18 +123,17 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
             onClick={() => handleConnect(node)}
             className={styles.connectButton}
           >
-            {editorMode.data !== "dev" &&
-              (node.connected ? (
-                <InsertLink width={16} height={16} />
-              ) : (
-                <InsertLink
-                  width={16}
-                  height={16}
-                  style={{
-                    color: "var(--figma-color-text-secondary)",
-                  }}
-                />
-              ))}
+            {node.connected ? (
+              <InsertLink width={16} height={16} />
+            ) : (
+              <InsertLink
+                width={16}
+                height={16}
+                style={{
+                  color: "var(--figma-color-text-secondary)",
+                }}
+              />
+            )}
           </div>
           <KeyOptionsButton node={{ ...node, key: keyName ?? node.key }} />
         </div>
