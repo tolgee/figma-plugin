@@ -32,11 +32,12 @@ function shouldIncludeNode(
     return false;
   }
   if (
-    settings.ignoreHiddenLayers ||
-    typeof settings.ignoreHiddenLayers === "undefined"
+    !node.visible &&
+    (settings.ignoreHiddenLayers ||
+      typeof settings.ignoreHiddenLayers === "undefined")
   ) {
-    const isNodeVisible = !node.visible;
-    if (isNodeVisible && !settings.ignoreHiddenLayersIncludingChildren) {
+    const nodeIsHidden = !node.visible;
+    if (nodeIsHidden && !settings.ignoreHiddenLayersIncludingChildren) {
       return false;
     }
     if (settings.ignoreHiddenLayersIncludingChildren) {
