@@ -32,12 +32,10 @@ function shouldIncludeNode(
     return false;
   }
   if (
-    !node.visible &&
-    (settings.ignoreHiddenLayers ||
-      typeof settings.ignoreHiddenLayers === "undefined")
+    settings.ignoreHiddenLayers ||
+    typeof settings.ignoreHiddenLayers === "undefined"
   ) {
-    const nodeIsHidden = !node.visible;
-    if (nodeIsHidden && !settings.ignoreHiddenLayersIncludingChildren) {
+    if (!node.visible) {
       return false;
     }
     if (settings.ignoreHiddenLayersIncludingChildren) {
@@ -45,7 +43,8 @@ function shouldIncludeNode(
       let parent = node.parent;
       try {
         while (parent) {
-          if (!(parent as SceneNode).visible) {
+          if ("visible" in parent && !(parent as SceneNode).visible) {
+            console.log(parent, "PARENT HIDDEN");
             isParentHidden = true;
             break;
           }
