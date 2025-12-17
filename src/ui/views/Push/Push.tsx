@@ -47,7 +47,7 @@ export const Push: FunctionalComponent = () => {
   const [pushedKeysCount, setPushedKeysCount] = useState<number>(0);
   const selectedNodes = useConnectedNodes({ ignoreSelection: false });
   const tolgeeConfig = useGlobalState((c) => c.config);
-  const [screenshotCount, setScreenshotCount] = useState(0);
+  const [uploadedScreenshotCount, setUploadedScreenshotCount] = useState(0);
 
   const nodes = selectedNodes.data?.items ?? [];
 
@@ -252,6 +252,7 @@ export const Push: FunctionalComponent = () => {
       return;
     }
 
+    setUploadedScreenshotCount(0);
     setIsPushing(true);
 
     try {
@@ -394,7 +395,7 @@ export const Push: FunctionalComponent = () => {
                 },
               },
             });
-            setScreenshotCount(screenshotCount + 1);
+            setUploadedScreenshotCount((c) => c + 1);
           } catch (e) {
             if (e === "too_many_uploaded_images") {
               setErrorMessage(
@@ -477,7 +478,7 @@ export const Push: FunctionalComponent = () => {
             <div>
               Successfully updated {pushedKeysCount} key(s)
               {uploadScreenshots
-                ? ` and uploaded ${screenshotCount} screenshot(s).`
+                ? ` and uploaded ${uploadedScreenshotCount} screenshot(s).`
                 : "."}
             </div>
             <ActionsBottom>
