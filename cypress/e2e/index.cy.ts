@@ -23,15 +23,16 @@ describe("Index", () => {
       .should("have.value", "test_key");
 
     cy.iframe()
-      .findDcy("general_node_list_row_namespace")
-      .find("select")
-      .should("have.value", "");
+      .findDcy("general_namespace_select_input")
+      .should(($input) => {
+        expect($input.val() || "").to.be.empty;
+      });
   });
 
   it("hides namespace selector", () => {
     const nodes = [createTestNode({ text: "Test node", key: "test_key" })];
     visitWithState({
-      config: { ...SIGNED_IN, namespacesDisabled: true },
+      config: { ...SIGNED_IN },
       selectedNodes: nodes,
       allNodes: nodes,
     });
@@ -48,10 +49,7 @@ describe("Index", () => {
       .find("input")
       .should("have.value", "test_key");
 
-    cy.iframe()
-      .findDcy("general_node_list_row_namespace")
-      .find("select")
-      .should("not.exist");
+    cy.iframe().findDcy("general_namespace_select_input").should("not.exist");
   });
 
   it("shows connected node correctly", () => {

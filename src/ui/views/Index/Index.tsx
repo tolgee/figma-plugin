@@ -1,5 +1,5 @@
 import { Fragment, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useState, useMemo } from "preact/hooks";
 import {
   Banner,
   Button,
@@ -16,12 +16,14 @@ import { getConflictingNodes } from "@/tools/getConflictingNodes";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { useSelectedNodes } from "@/ui/hooks/useSelectedNodes";
+import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
 
 import { NodeList } from "../../components/NodeList/NodeList";
 import { TopBar } from "../../components/TopBar/TopBar";
 import styles from "./Index.css";
 import { ListItem } from "./ListItem";
 import { useEditorMode } from "../../hooks/useEditorMode";
+import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
@@ -51,12 +53,43 @@ export const Index = () => {
     method: "get",
   });
 
+  const hasNamespacesEnabled = useHasNamespacesEnabled();
+
   const languages = languagesLoadable.data?._embedded?.languages;
 
   const language =
     useGlobalState((c) => c.config?.language) || languages?.[0]?.tag || "";
 
   const { setRoute } = useGlobalActions();
+  const allNodes = useConnectedNodes({ ignoreSelection: true });
+
+  // Combine API namespaces + all namespaces from nodes
+  const allAvailableNamespaces = useMemo(() => {
+    const apiNamespaces =
+      namespacesLoadable.data?._embedded?.namespaces?.map(
+        (n) => n.name || ""
+      ) || [];
+    const nodeNamespaces = Array.from(
+      new Set(
+        (allNodes.data?.items || [])
+          .map((node) => node.ns)
+          .filter((ns): ns is string => Boolean(ns))
+      )
+    );
+    return Array.from(new Set([...apiNamespaces, ...nodeNamespaces]))
+      .filter(Boolean)
+      .sort((a, b) => {
+        // Sort alphabetically, but put empty string at the end
+        if (!a) return 1;
+        if (!b) return -1;
+        return a.localeCompare(b);
+      });
+  }, [namespacesLoadable.data, allNodes.data]);
+
+  // Refresh namespaces: refetch API and all nodes
+  const handleRefreshNamespaces = async () => {
+    await Promise.all([namespacesLoadable.refetch(), allNodes.refetch()]);
+  };
 
   const nothingSelected = !selectionLoadable.data?.somethingSelected;
 
@@ -205,8 +238,12 @@ export const Index = () => {
           items={selection}
           row={(node) => (
             <ListItem
+              hasNamespacesEnabled={hasNamespacesEnabled}
               node={node}
-              loadedNamespaces={namespacesLoadable.data?._embedded?.namespaces}
+              loadedNamespaces={allAvailableNamespaces.map((name) => ({
+                name,
+              }))}
+              onRefreshNamespaces={handleRefreshNamespaces}
             />
           )}
         />

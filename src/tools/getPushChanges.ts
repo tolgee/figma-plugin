@@ -24,7 +24,7 @@ export type KeyChanges = {
 export const getPushChanges = (
   nodes: NodeInfo[],
   translations: TranslationData,
-  language: string,
+  hasNamespacesEnabled: boolean,
   screenshots: FrameScreenshot[],
   tolgeeConfig: Partial<TolgeeConfig> | null
 ): KeyChanges => {
@@ -37,7 +37,9 @@ export const getPushChanges = (
     screenshots.forEach((screenshot) => {
       if (
         screenshot.keys.find(
-          (node) => node.key === value.key && compareNs(node.ns, value.ns)
+          (node) =>
+            node.key === value.key &&
+            (!hasNamespacesEnabled || compareNs(node.ns, value.ns))
         )
       ) {
         result.push(screenshot);
@@ -82,7 +84,7 @@ export const getPushChanges = (
 
     const change: KeyChangeValue = {
       key: node.key,
-      ns: node.ns,
+      ns: hasNamespacesEnabled ? node.ns : undefined,
       oldValue: oldValue ? oldValue.translation : undefined,
       oldIsPlural: oldValue ? oldValue.keyIsPlural : undefined,
       isPlural: node.isPlural,

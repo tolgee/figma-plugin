@@ -38,6 +38,9 @@
 
 .ns {
   cursor: unset;
+  overflow: visible;
+  text-overflow: unset;
+  margin-top: 4px;
   grid-column: 1 / span 2;
 }
 

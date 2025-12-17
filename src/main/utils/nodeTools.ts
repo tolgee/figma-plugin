@@ -44,7 +44,6 @@ function shouldIncludeNode(
       try {
         while (parent) {
           if ("visible" in parent && !(parent as SceneNode).visible) {
-            console.log(parent, "PARENT HIDDEN");
             isParentHidden = true;
             break;
           }

@@ -36,6 +36,12 @@ export const useAllTranslations = () => {
       ) ??
       [];
 
+    // Ensure empty string is included if namespaces is provided and contains empty string
+    // This handles the default namespace case
+    if (namespaces && namespaces.includes("") && !nsNames.includes("")) {
+      nsNames.push("");
+    }
+
     const data: TranslationData = {};
 
     for (const ns of nsNames) {
@@ -91,6 +97,9 @@ export const useAllTranslations = () => {
       } finally {
         setIsLoading(false);
       }
+    },
+    clearCache() {
+      setTranslationsData(null);
     },
     translationsData,
     isLoading,

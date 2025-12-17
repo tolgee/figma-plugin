@@ -1,0 +1,61 @@
+.autocompleteDropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--figma-color-bg);
+  border: 1px solid var(--figma-color-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  z-index: 2;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.autocompleteDropdown.down {
+  top: 110%;
+}
+.autocompleteDropdown.up {
+  bottom: 110%;
+}
+
+.autocompleteDropdownHeader {
+  padding: 12px 12px 0 12px;
+  font-size: 10px;
+}
+.autocompleteDropdownHeaderEmpty {
+  padding: 12px;
+  font-size: 10px;
+}
+
+.autocompleteDropdownItem {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 500;
+  background: none;
+  border: none;
+  color: var(--figma-color-text);
+}
+.autocompleteDropdownItem:hover {
+  background: var(--figma-color-bg-hover);
+}
+
+.autocompleteDropdownAdd {
+  padding: 12px 12px 12px 12px;
+  color: var(--figma-color-bg-brand);
+  font-weight: 500;
+  cursor: pointer;
+  border-top: 1px solid var(--figma-color-border);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: space-between;
+}
+.autocompleteDropdownAdd > * {
+  cursor: pointer;
+}
+
+.autocompleteDropdownAddHint {
+  font-style: italic;
+  color: var(--figma-color-bg-brand);
+  font-weight: 400;
+}

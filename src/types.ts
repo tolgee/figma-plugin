@@ -127,7 +127,6 @@ export type GlobalSettings = {
 
 export type CurrentDocumentSettings = GlobalSettings & {
   namespace: string;
-  namespacesDisabled: boolean;
   documentInfo: true;
 };
 

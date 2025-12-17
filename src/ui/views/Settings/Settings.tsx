@@ -12,7 +12,7 @@ import {
 } from "@create-figma-plugin/ui";
 
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
-import { useApiMutation } from "@/ui/client/useQueryApi";
+import { useApiMutation, useApiQuery } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { TopBar } from "../../components/TopBar/TopBar";
 import { useQueryClient } from "react-query";
@@ -20,6 +20,7 @@ import { Expandable } from "./Expandable";
 import { ProjectSection } from "./ProjectSection";
 import { PushSection } from "./PushSection";
 import { StringsSection } from "./StringsSection";
+import { getProjectIdFromApiKey } from "../../client/decodeApiKey";
 
 const DEFAULT_TOLGEE_URL = "https://app.tolgee.io";
 

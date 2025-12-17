@@ -10,7 +10,6 @@ import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { components } from "@/ui/client/apiSchema.generated";
 import { InsertLink } from "@/ui/icons/SvgIcons";
 import { KeyOptionsButton } from "../../components/KeyOptionsButton/KeyOptionsButton";
-import { useEditorMode } from "../../hooks/useEditorMode";
 import { usePrefilledKey } from "../../hooks/usePrefilledKey";
 
 type UsedNamespaceModel = components["schemas"]["UsedNamespaceModel"];
@@ -18,9 +17,16 @@ type UsedNamespaceModel = components["schemas"]["UsedNamespaceModel"];
 type Props = {
   node: NodeInfo;
   loadedNamespaces: UsedNamespaceModel[] | undefined;
+  hasNamespacesEnabled: boolean;
+  onRefreshNamespaces?: () => void;
 };
 
-export const ListItem = ({ node, loadedNamespaces }: Props) => {
+export const ListItem = ({
+  node,
+  loadedNamespaces,
+  hasNamespacesEnabled,
+  onRefreshNamespaces,
+}: Props) => {
   const nodeId = node?.id ?? "";
   const tolgeeConfig = useGlobalState((c) => c.config);
 
@@ -38,10 +44,6 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
   const setNodesDataMutation = useSetNodesDataMutation();
 
   const { setRoute } = useGlobalActions();
-
-  const namespacesDisabled = useGlobalState(
-    (c) => c.config?.namespacesDisabled
-  );
 
   useEffect(() => {
     if (prefilledKey.key && !node.connected) {
@@ -88,8 +90,6 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
     node.ns = value;
   };
 
-  const editorMode = useEditorMode();
-
   return (
     <NodeRow
       node={node}
@@ -100,14 +100,13 @@ export const ListItem = ({ node, loadedNamespaces }: Props) => {
       }
       nsComponent={
         !node.connected &&
-        !namespacesDisabled && (
-          <div className={styles.nsSelect}>
-            <NamespaceSelect
-              value={namespace ?? ""}
-              namespaces={namespaces}
-              onChange={handleNsChange(node)}
-            />
-          </div>
+        hasNamespacesEnabled && (
+          <NamespaceSelect
+            value={namespace ?? ""}
+            namespaces={namespaces}
+            onChange={handleNsChange(node)}
+            onRefresh={onRefreshNamespaces}
+          />
         )
       }
       action={

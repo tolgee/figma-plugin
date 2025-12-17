@@ -6,7 +6,7 @@
   "scripts": {
     "build": "build-figma-plugin --typecheck --minify",
     "watch": "build-figma-plugin --typecheck --watch",
-    "schema": "openapi-typescript http://localhost:8080/v3/api-docs/Accessible%20with%20API%20key --output ./src/client/apiSchema.generated.ts",
+    "schema": "openapi-typescript 'http://localhost:8085/v3/api-docs/Accessible with Project API key (All)' --output ./src/ui/client/apiSchema.generated.ts",
     "eslint": "eslint --ext .ts,.tsx,.js,.jsx src",
     "watch:web": "npm run --prefix web watch",
     "dev:web": "ts-node ./scripts/runAfterApp.ts \"npm run watch:web\"",
