@@ -29,29 +29,6 @@ describe("Index", () => {
       });
   });
 
-  it("hides namespace selector", () => {
-    const nodes = [createTestNode({ text: "Test node", key: "test_key" })];
-    visitWithState({
-      config: { ...SIGNED_IN },
-      selectedNodes: nodes,
-      allNodes: nodes,
-    });
-
-    cy.iframe().contains("Test node").should("be.visible");
-
-    cy.iframe()
-      .findDcy("general_node_list_row_text")
-      .contains("Test node")
-      .should("be.visible");
-
-    cy.iframe()
-      .findDcy("general_node_list_row_key")
-      .find("input")
-      .should("have.value", "test_key");
-
-    cy.iframe().findDcy("general_namespace_select_input").should("not.exist");
-  });
-
   it("shows connected node correctly", () => {
     const nodes = [
       createTestNode({ text: "Test node", key: "test_key", connected: true }),

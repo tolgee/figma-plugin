@@ -379,7 +379,7 @@ export const Push: FunctionalComponent = () => {
         );
       }
 
-      if (tolgeeConfig?.updateScreenshots ?? true) {
+      if ((tolgeeConfig?.updateScreenshots ?? true) && uploadScreenshots) {
         for (const screenshot of changes.screenshots.values()) {
           try {
             const relatedKeys = screenshot.keys

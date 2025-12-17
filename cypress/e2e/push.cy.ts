@@ -151,7 +151,7 @@ describe("Push", () => {
 
   it("doesn't push screenshot when disabled", () => {
     const nodes = [
-      createTestNode({ text: "On the road", key: "on-the-road-title" }),
+      createTestNode({ text: "Changed text 2", key: "on-the-road-title" }),
     ];
     visitWithState({
       config: { ...SIGNED_IN, updateScreenshots: false },
@@ -161,7 +161,7 @@ describe("Push", () => {
 
     cy.frameLoaded("#plugin_iframe");
 
-    cy.iframe().contains("On the road").should("exist");
+    cy.iframe().contains("Changed text 2").should("exist");
     cy.iframe().findDcy("index_push_button").should("be.visible").click();
 
     cy.iframe().contains("No changes necessary").should("be.visible");
