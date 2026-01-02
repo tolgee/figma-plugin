@@ -139,10 +139,10 @@ export async function client<
   const projectId = getProjectIdFromApiKey(fetchOptions.apiKey);
 
   if (projectId !== undefined) {
-    pathParams.projectId = projectId;
     if (pathParams.projectId === undefined) {
       urlResult = addProjectIdToUrl(urlResult);
     }
+    pathParams.projectId = projectId;
   }
 
   if (pathParams) {

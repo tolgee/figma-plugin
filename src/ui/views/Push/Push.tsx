@@ -444,6 +444,7 @@ export const Push: FunctionalComponent = () => {
     setError(false);
     setSuccess(false);
     setPushedKeysCount(0);
+    setUploadedScreenshotCount(0);
     setErrorMessage(undefined);
   };
 
