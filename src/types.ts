@@ -115,6 +115,7 @@ export type GlobalSettings = {
    */
   keyFormat?: string;
   ignoreHiddenLayers?: boolean;
+  ignoreHiddenLayersIncludingChildren?: boolean;
   ignoreTextLayers?: boolean;
   variableCasing?:
     | "snake_case"
@@ -126,7 +127,6 @@ export type GlobalSettings = {
 
 export type CurrentDocumentSettings = GlobalSettings & {
   namespace: string;
-  namespacesDisabled: boolean;
   documentInfo: true;
 };
 

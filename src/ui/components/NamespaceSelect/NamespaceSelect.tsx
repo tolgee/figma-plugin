@@ -1,98 +1,96 @@
-import {
-  Button,
-  Container,
-  Divider,
-  Modal,
-  Textbox,
-  VerticalSpace,
-} from "@create-figma-plugin/ui";
-import { Fragment, FunctionComponent, h } from "preact";
-import { useState } from "preact/hooks";
+import { FunctionComponent, h } from "preact";
+import { useState, useRef } from "preact/hooks";
+import { AutocompleteSelect } from "../AutocompleteSelect/AutocompleteSelect";
+import { IconButton } from "@create-figma-plugin/ui";
+import { Refresh } from "@/ui/icons/SvgIcons";
 import styles from "./NamespaceSelect.css";
 
 type Props = {
   namespaces: string[];
   value: string;
   onChange: (value: string) => void;
-  selectProps?: h.JSX.HTMLAttributes<HTMLSelectElement>;
+  onRefresh?: () => Promise<void> | void;
 };
-
-const ADD_NEW_VALUE = Number.MAX_VALUE;
 
 export const NamespaceSelect: FunctionComponent<Props> = ({
   value,
   namespaces,
-  selectProps,
   onChange,
+  onRefresh,
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [nsName, setNsName] = useState<string>("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleModalClose = () => {
-    setModalOpen(false);
-  };
+  // Ensure all namespaces are included, plus the current value if it's not in the list
+  const allNamespaces = [
+    ...new Set([
+      ...namespaces,
+      ...(value && !namespaces.includes(value) ? [value] : []),
+    ]),
+  ]
+    .filter(Boolean)
+    .sort((a, b) => {
+      // Sort alphabetically, but put empty string at the end
+      if (!a) return 1;
+      if (!b) return -1;
+      return a.localeCompare(b);
+    });
 
-  function setValue(value: string) {
-    onChange(value);
-  }
+  const handleRefresh = async (e: MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!onRefresh || isRefreshing) return;
 
-  const handleSetCustomValue = () => {
-    setValue(nsName);
-    setModalOpen(false);
+    // Store if input was focused before refresh
+    const wasFocused = document.activeElement === inputRef.current;
+
+    setIsRefreshing(true);
+    try {
+      await onRefresh();
+      // Reopen the dropdown if it was open before
+      if (wasFocused && inputRef.current) {
+        setTimeout(() => {
+          inputRef.current?.focus();
+          // Small delay to ensure the options are updated
+          setTimeout(() => {
+            inputRef.current?.focus();
+          }, 50);
+        }, 100);
+      }
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   return (
-    <Fragment>
-      <select
-        data-cy="general_namespace_select_input"
-        value={value}
-        onChange={(e) => {
-          if (e.currentTarget.value === String(ADD_NEW_VALUE)) {
-            setValue(value);
-            setModalOpen(true);
-          } else {
-            setValue(e.currentTarget.value);
-          }
-        }}
-        {...selectProps}
-      >
-        {namespaces?.map((namespace) => (
-          <option key={namespace} value={namespace || ""}>
-            {namespace || "<none>"}
-          </option>
-        ))}
-        {!namespaces.includes(value) && <option value={value}>{value}</option>}
-        <option value={ADD_NEW_VALUE}>+ Set custom</option>
-      </select>
-      <Modal
-        open={modalOpen}
-        title="Custom namespace"
-        onCloseButtonClick={handleModalClose}
-      >
-        <div className={styles.modalBody}>
-          <Container space="small">
-            <VerticalSpace space="large" />
-            <Textbox
-              variant="border"
-              placeholder="Insert namespace name"
-              value={nsName}
-              onChange={(e) => setNsName(e.currentTarget.value)}
-              onKeyDownCapture={(e) => {
-                if (e.key === "Enter") {
-                  handleSetCustomValue();
-                }
-              }}
-            />
-            <VerticalSpace space="large" />
-          </Container>
-          <Divider />
-          <Container space="small">
-            <div className={styles.actions}>
-              <Button onClick={handleSetCustomValue}>Set</Button>
-            </div>
-          </Container>
-        </div>
-      </Modal>
-    </Fragment>
+    <div className={styles.container}>
+      <div className={styles.inputWrapper}>
+        <AutocompleteSelect
+          existingOptionsPlaceholder="Existing namespaces"
+          noOptionsPlaceholder="No namespaces found"
+          value={value}
+          options={allNamespaces}
+          placeholder="Add namespace..."
+          onChange={onChange}
+          displayValue={(v) => v || "<none>"}
+          dataCy="general_namespace_select_input"
+          singleSelect={true}
+          inputRef={inputRef}
+        />
+        {onRefresh && (
+          <IconButton
+            onClick={handleRefresh}
+            className={`${styles.refreshButton} ${
+              isRefreshing ? styles.rotating : ""
+            }`}
+            title="Refresh namespaces"
+            disabled={isRefreshing}
+            data-refresh-button
+          >
+            <Refresh width={16} height={16} />
+          </IconButton>
+        )}
+      </div>
+    </div>
   );
 };

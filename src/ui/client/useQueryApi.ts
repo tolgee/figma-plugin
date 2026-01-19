@@ -13,6 +13,7 @@ import { useGlobalState } from "../state/GlobalState";
 import { paths } from "./apiSchema.generated";
 import { client, ClientOptions } from "./client";
 import { RequestParamsType, ResponseContent } from "./types";
+import { customPaths } from "./apiSchema.custom";
 
 export type QueryProps<
   Url extends keyof Paths,
@@ -28,7 +29,7 @@ export type QueryProps<
 export const useApiQuery = <
   Url extends keyof Paths,
   Method extends keyof Paths[Url],
-  Paths = paths
+  Paths = paths & customPaths
 >(
   props: QueryProps<Url, Method, Paths>
 ) => {

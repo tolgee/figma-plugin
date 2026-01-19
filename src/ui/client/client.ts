@@ -3,6 +3,7 @@ import { paths } from "./apiSchema.generated";
 import { RequestParamsType, ResponseContent } from "./types";
 import { globalState } from "../state/GlobalState";
 import { errorToText } from "./errorCodes";
+import { customPaths } from "./apiSchema.custom";
 
 type GlobalOptions = {
   apiUrl?: string;
@@ -123,7 +124,7 @@ export const addProjectIdToUrl = (url: string) => {
 export async function client<
   Url extends keyof Paths,
   Method extends keyof Paths[Url],
-  Paths = paths
+  Paths = paths & customPaths
 >(
   url: Url,
   method: Method,
@@ -136,9 +137,12 @@ export async function client<
   let urlResult = url as string;
 
   const projectId = getProjectIdFromApiKey(fetchOptions.apiKey);
+
   if (projectId !== undefined) {
+    if (pathParams.projectId === undefined) {
+      urlResult = addProjectIdToUrl(urlResult);
+    }
     pathParams.projectId = projectId;
-    urlResult = addProjectIdToUrl(urlResult);
   }
 
   if (pathParams) {

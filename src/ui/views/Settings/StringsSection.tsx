@@ -79,6 +79,24 @@ const keyFormatHelpText = (
   </Fragment>
 );
 
+const hiddenLayersHelpText = (
+  <Fragment>
+    <div>
+      Skips layers with visibility turned off in Figma.
+      <br />
+      <br />
+      With "Including all child texts" enabled,
+      <br />
+      all text layers inside hidden layers are
+      <br />
+      also ignored, even if individually set to visible.
+      <br />
+      <br />
+      Otherwise, only the hidden layer itself is ignored.
+    </div>
+  </Fragment>
+);
+
 const formattingStyleHelpText = (
   <Fragment>
     <div>
@@ -118,6 +136,11 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   const [ignoreHiddenLayers, setIgnoreHiddenLayers] = useState(
     tolgeeConfig.ignoreHiddenLayers ?? true
   );
+  const [
+    ignoreHiddenLayersIncludingChildren,
+    setIgnoreHiddenLayersIncludingChildren,
+  ] = useState(tolgeeConfig.ignoreHiddenLayersIncludingChildren ?? false);
+
   const [ignoreTextLayers, setIgnoreTextLayers] = useState(
     tolgeeConfig.ignoreTextLayers ?? false
   );
@@ -174,6 +197,16 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
     setTolgeeConfig({
       ...tolgeeConfig,
       ignoreHiddenLayers: event.currentTarget.checked,
+    });
+  }
+
+  function handleIgnoreHiddenLayersIncludingChildrenChange(
+    event: TargetedEvent<HTMLInputElement, Event>
+  ): void {
+    setIgnoreHiddenLayersIncludingChildren(event.currentTarget.checked);
+    setTolgeeConfig({
+      ...tolgeeConfig,
+      ignoreHiddenLayersIncludingChildren: event.currentTarget.checked,
     });
   }
 
@@ -269,19 +302,31 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
       <Text className={styles.sectionTitle}>Ignore strings</Text>
       <VerticalSpace space="medium" />
       <Checkbox value={ignoreNumbers} onChange={handleIgnoreNumbersChange}>
-        <Text>
-          <Bold>numbers</Bold>
-        </Text>
+        <Text>numbers</Text>
       </Checkbox>
       <VerticalSpace space="small" />
-      <Checkbox
-        value={ignoreHiddenLayers}
-        onChange={handleIgnoreHiddenLayersChange}
-      >
-        <Text>
-          <Bold>hidden layers</Bold>
-        </Text>
-      </Checkbox>
+      <Inline style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <Checkbox
+          value={ignoreHiddenLayers}
+          onChange={handleIgnoreHiddenLayersChange}
+        >
+          <Text>hidden layers</Text>
+        </Checkbox>
+        <InfoTooltip>{hiddenLayersHelpText}</InfoTooltip>
+      </Inline>
+      {ignoreHiddenLayers && (
+        <Fragment>
+          <VerticalSpace space="small" />
+          <div style={{ paddingLeft: "20px" }}>
+            <Checkbox
+              value={ignoreHiddenLayersIncludingChildren}
+              onChange={handleIgnoreHiddenLayersIncludingChildrenChange}
+            >
+              <Text>including all child texts</Text>
+            </Checkbox>
+          </div>
+        </Fragment>
+      )}
       <div class={styles.textLayers}>
         <Checkbox
           data-cy="settings_checkbox_ignore_text_layers"
@@ -289,9 +334,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
           value={ignoreTextLayers}
           onChange={handleTextLayersChange}
         >
-          <Text>
-            <Bold>text layers with prefix</Bold>
-          </Text>
+          <Text>text layers with prefix</Text>
         </Checkbox>
         <Textbox
           data-cy="settings_input_ignore_prefix"

@@ -85,8 +85,7 @@ export const NodeRow = ({
           ? nsComponent
           : node.ns && (
               <span>
-                <span className={styles.disabled}>ns:</span>
-                {node.ns}
+                <span className={styles.disabled}>Namespace:</span> {node.ns}
               </span>
             )}
       </div>

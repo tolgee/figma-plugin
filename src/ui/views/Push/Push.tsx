@@ -29,6 +29,7 @@ import { getScreenshotsEndpoint } from "@/main/endpoints/getScreenshots";
 import { useConnectedNodes } from "@/ui/hooks/useConnectedNodes";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
+import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
 
 type ImportKeysResolvableItemDto =
   components["schemas"]["ImportKeysResolvableItemDto"];
@@ -40,65 +41,161 @@ export const Push: FunctionalComponent = () => {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>();
   const [success, setSuccess] = useState(false);
+  const [isPushing, setIsPushing] = useState(false);
   const [_loadingStatus, setLoadingStatus] = useState<string | undefined>();
   const [changes, setChanges] = useState<KeyChanges>();
+  const [pushedKeysCount, setPushedKeysCount] = useState<number>(0);
   const selectedNodes = useConnectedNodes({ ignoreSelection: false });
   const tolgeeConfig = useGlobalState((c) => c.config);
+  const [uploadedScreenshotCount, setUploadedScreenshotCount] = useState(0);
 
   const nodes = selectedNodes.data?.items ?? [];
 
   const [uploadScreenshots, setUploadScreenshots] = useState(true);
 
+  // Optimize deduplication from O(n²) to O(n) using Set
   const deduplicatedNodes = useMemo(() => {
+    const seen = new Set<string>();
     const deduplicatedNodes: NodeInfo[] = [];
-    nodes.forEach((node) => {
-      if (
-        !deduplicatedNodes.find(
-          (n) => node.key === n.key && compareNs(node.ns, n.ns)
-        )
-      ) {
+    for (const node of nodes) {
+      const key = `${node.key}:${node.ns || ""}`;
+      if (!seen.has(key)) {
+        seen.add(key);
         deduplicatedNodes.push(node);
       }
-    });
+    }
     return deduplicatedNodes;
   }, [nodes]);
 
   const allTranslationsLoadable = useAllTranslations();
+  const hasNamespacesEnabled = useHasNamespacesEnabled();
 
-  async function computeDiff() {
-    try {
-      const translations = await allTranslationsLoadable.getData({
-        language,
-      });
+  // Create a stable key from nodes to detect changes (including namespace changes)
+  const nodesKey = useMemo(
+    () => nodes.map((n) => `${n.id}:${n.key}:${n.ns || ""}`).join("|"),
+    [nodes]
+  );
 
-      const screenshots =
-        tolgeeConfig?.updateScreenshots ?? true
+  // Extract unique namespaces from nodes being pushed (performance optimization)
+  // Only load translations for namespaces actually used by the nodes
+  // This is computed inside the effect to avoid dependency issues
+  const requiredNamespacesKey = useMemo(() => {
+    if (!hasNamespacesEnabled) return "";
+    const uniqueNamespaces = Array.from(
+      new Set(
+        deduplicatedNodes
+          .map((node) => node.ns)
+          .filter((ns): ns is string => Boolean(ns))
+      )
+    );
+    return uniqueNamespaces.sort().join(",");
+  }, [deduplicatedNodes, hasNamespacesEnabled]);
+
+  // Memoize screenshots key to avoid regenerating screenshots unnecessarily
+  const screenshotsKey = useMemo(
+    () =>
+      tolgeeConfig?.updateScreenshots
+        ? nodes.map((n) => `${n.id}:${n.key}:${n.ns || ""}`).join("|")
+        : "",
+    [nodes, tolgeeConfig?.updateScreenshots]
+  );
+
+  // Extract stable primitive values from tolgeeConfig to avoid object reference issues
+  const tolgeeConfigTags = useMemo(
+    () => JSON.stringify(tolgeeConfig?.tags?.sort() || []),
+    [tolgeeConfig?.tags]
+  );
+  const tolgeeConfigUpdateScreenshots = tolgeeConfig?.updateScreenshots ?? true;
+  const tolgeeConfigAddTags = tolgeeConfig?.addTags ?? false;
+
+  useEffect(() => {
+    // Don't recompute if we're showing success screen
+    if (success) {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function computeDiff() {
+      setLoadingStatus("Loading translations");
+      try {
+        // Compute requiredNamespaces inside the effect to avoid dependency issues
+        // Include all namespaces from nodes, including empty string for default namespace
+        const requiredNamespaces =
+          hasNamespacesEnabled && deduplicatedNodes.length > 0
+            ? Array.from(
+                new Set(deduplicatedNodes.map((node) => node.ns ?? ""))
+              )
+            : undefined;
+
+        const translations = await allTranslationsLoadable.getData({
+          language,
+          namespaces: requiredNamespaces,
+        });
+
+        // Check if cancelled before expensive screenshot operation
+        if (cancelled) return;
+
+        const screenshots = tolgeeConfigUpdateScreenshots
           ? await getScreenshotsEndpoint.call(nodes)
           : [];
 
-      setChanges(
-        getPushChanges(
-          deduplicatedNodes,
-          translations,
-          language,
-          screenshots,
-          tolgeeConfig
-        )
-      );
-    } catch (e) {
-      if (e === "invalid_project_api_key") {
-        setErrorMessage("Invalid API key");
-      } else {
-        setErrorMessage(`Cannot get translation data. ${e}`);
-      }
-    } finally {
-      setLoadingStatus(undefined);
-    }
-  }
+        // Check if cancelled before setting state
+        if (cancelled) return;
 
-  useEffect(() => {
+        // Reconstruct tolgeeConfig object for getPushChanges
+        const configForDiff = {
+          ...tolgeeConfig,
+          updateScreenshots: tolgeeConfigUpdateScreenshots,
+          addTags: tolgeeConfigAddTags,
+        };
+
+        setChanges(
+          getPushChanges(
+            deduplicatedNodes,
+            translations,
+            hasNamespacesEnabled,
+            screenshots,
+            configForDiff
+          )
+        );
+      } catch (e) {
+        if (cancelled) return;
+        if (e === "invalid_project_api_key") {
+          setErrorMessage("Invalid API key");
+        } else {
+          setErrorMessage(`Cannot get translation data. ${e}`);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingStatus(undefined);
+        }
+      }
+    }
+
     computeDiff();
-  }, [nodes.length]);
+
+    // Cleanup: cancel if dependencies change before async operations complete
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    nodesKey,
+    screenshotsKey,
+    hasNamespacesEnabled,
+    language,
+    requiredNamespacesKey,
+    tolgeeConfigTags,
+    tolgeeConfigUpdateScreenshots,
+    tolgeeConfigAddTags,
+    success, // Include success to prevent recompute when showing success screen
+    // Note: allTranslationsLoadable.getData is stable via useCallback with refs
+    // We don't include allTranslationsLoadable itself to avoid infinite loops
+  ]);
+
+  const totalScreenshotCount = useMemo(() => {
+    return changes?.screenshots.length || 0;
+  }, [changes]);
 
   const setNodesDataMutation = useSetNodesDataMutation();
 
@@ -109,11 +206,6 @@ export const Push: FunctionalComponent = () => {
 
   const updateTranslations = useApiMutation({
     url: "/v2/projects/keys/import-resolvable",
-    method: "post",
-  });
-
-  const addNewTranslations = useApiMutation({
-    url: "/v2/projects/keys/import",
     method: "post",
   });
 
@@ -161,6 +253,9 @@ export const Push: FunctionalComponent = () => {
       return;
     }
 
+    setUploadedScreenshotCount(0);
+    setIsPushing(true);
+
     try {
       const screenshotsMap = new Map<FrameScreenshot, number>();
       const requiredScreenshots = uploadScreenshots ? changes.screenshots : [];
@@ -169,7 +264,7 @@ export const Push: FunctionalComponent = () => {
         setLoadingStatus(
           `Uploading images (${i + 1}/${requiredScreenshots.length})`
         );
-        const imageBlob = new Blob([screenshot.image.buffer], {
+        const imageBlob = new Blob([screenshot.image.buffer as ArrayBuffer], {
           type: "image/png",
         });
         const location = `figma-${screenshot.info.id}`;
@@ -231,7 +326,7 @@ export const Push: FunctionalComponent = () => {
           translations: {
             [language]: {
               text: item.newValue,
-              resolution: "OVERRIDE",
+              resolution: item.oldValue ? "OVERRIDE" : "NEW",
             },
           },
         });
@@ -256,58 +351,92 @@ export const Push: FunctionalComponent = () => {
         },
       });
 
-      // Add tags to keys
-      if (
-        (tolgeeConfig?.addTags ?? false) &&
-        tolgeeConfig?.tags &&
-        tolgeeConfig.tags.length > 0
-      ) {
-        await addTagsToKeys.mutateAsync({
-          content: {
-            "application/json": {
-              tagFiltered: tolgeeConfig?.tags ?? [],
-              filterKeys: [
-                ...changes.newKeys,
-                ...changes.unchangedKeys,
-                ...changes.changedKeys,
-              ].map((k) => ({
-                name: k.key,
-                namespace: k.ns || undefined,
-              })),
-            },
-          },
-        });
-      }
-
-      if (tolgeeConfig?.updateScreenshots ?? true) {
-        for (const screenshot of changes.screenshots.values()) {
-          const relatedKeys = screenshot.keys
-            .map((data) => ({
-              keyName: data.key,
-              namespace: data.ns || undefined,
-            }))
-            .slice(0, 100);
-          await bigMeta.mutateAsync({
+      try {
+        // Add tags to keys
+        if (
+          (tolgeeConfig?.addTags ?? false) &&
+          tolgeeConfig?.tags &&
+          tolgeeConfig.tags.length > 0
+        ) {
+          await addTagsToKeys.mutateAsync({
             content: {
               "application/json": {
-                relatedKeysInOrder: relatedKeys,
+                tagFiltered: tolgeeConfig?.tags ?? [],
+                filterKeys: [
+                  ...changes.newKeys,
+                  ...changes.unchangedKeys,
+                  ...changes.changedKeys,
+                ].map((k) => ({
+                  name: k.key,
+                  namespace: k.ns || undefined,
+                })),
               },
             },
           });
         }
+      } catch (e) {
+        setErrorMessage(
+          `Error adding tags. ${e}. Translations were still updated.`
+        );
       }
 
+      if ((tolgeeConfig?.updateScreenshots ?? true) && uploadScreenshots) {
+        for (const screenshot of changes.screenshots.values()) {
+          try {
+            const relatedKeys = screenshot.keys
+              .map((data) => ({
+                keyName: data.key,
+                namespace: data.ns || undefined,
+              }))
+              .slice(0, 100);
+            await bigMeta.mutateAsync({
+              content: {
+                "application/json": {
+                  relatedKeysInOrder: relatedKeys,
+                },
+              },
+            });
+            setUploadedScreenshotCount((c) => c + 1);
+          } catch (e) {
+            if (e === "too_many_uploaded_images") {
+              setErrorMessage(
+                "Too many uploaded images. Disable update screenshots in settings. Translations were still updated."
+              );
+            } else {
+              setErrorMessage(
+                `Error updating screenshots. ${e}. Translations were still updated.`
+              );
+            }
+          }
+        }
+      }
+
+      // Store the count of keys that were pushed before clearing cache
+      const keysPushed = changes.newKeys.length + changes.changedKeys.length;
+      setPushedKeysCount(keysPushed);
+
       connectNodes();
+
+      // Clear translations cache so newly pushed keys are recognized on next check
+      allTranslationsLoadable.clearCache();
+
       setSuccess(true);
     } catch (e) {
       setError(true);
       if (e === "invalid_project_api_key") {
         setErrorMessage("Invalid project API key");
+      } else if (e === "too_many_uploaded_images") {
+        setErrorMessage(
+          "Too many uploaded images. Disable update screenshots in settings."
+        );
+      } else if (e === "import_keys_error") {
+        setErrorMessage("Error importing keys. Please try again.");
       } else {
-        setErrorMessage(`Cannot get translation data. ${e}`);
+        setErrorMessage(`Cannot push translations. ${e}`);
       }
       console.error(e);
     } finally {
+      setIsPushing(false);
       setLoadingStatus(undefined);
     }
   };
@@ -315,7 +444,9 @@ export const Push: FunctionalComponent = () => {
   const handleRepeat = () => {
     setError(false);
     setSuccess(false);
-    computeDiff();
+    setPushedKeysCount(0);
+    setUploadedScreenshotCount(0);
+    setErrorMessage(undefined);
   };
 
   const isLoading =
@@ -323,11 +454,12 @@ export const Push: FunctionalComponent = () => {
     updateTranslations.isLoading ||
     uploadImage.isLoading;
 
-  const changesSize = changes
+  // Use pushedKeysCount if we're showing success (after push), otherwise use current changes
+  const changesSize = success
+    ? pushedKeysCount
+    : changes
     ? changes.changedKeys.length + changes.newKeys.length
     : 0;
-
-  const screenshotCount = changes?.screenshots.length || 0;
 
   const noChanges = changesSize === 0;
 
@@ -342,7 +474,22 @@ export const Push: FunctionalComponent = () => {
       <Container space="medium">
         {errorMessage && !error ? (
           <Banner icon={<IconWarning32 />}>{errorMessage}</Banner>
-        ) : isLoading || !changes ? (
+        ) : success ? (
+          // Show success screen immediately, don't wait for recompute
+          <Fragment>
+            <div>
+              Successfully updated {pushedKeysCount} key(s)
+              {uploadScreenshots
+                ? ` and uploaded ${uploadedScreenshotCount} screenshot(s).`
+                : "."}
+            </div>
+            <ActionsBottom>
+              <Button data-cy="push_ok_button" onClick={handleGoBack}>
+                OK
+              </Button>
+            </ActionsBottom>
+          </Fragment>
+        ) : isLoading || !changes || isPushing ? (
           <FullPageLoading text={loadingStatus} />
         ) : error ? (
           <Fragment>
@@ -357,23 +504,9 @@ export const Push: FunctionalComponent = () => {
               <Button onClick={handleRepeat}>Try again</Button>
             </ActionsBottom>
           </Fragment>
-        ) : success ? (
-          <Fragment>
-            <div>
-              Successfully updated {changesSize} key(s)
-              {uploadScreenshots
-                ? ` and uploaded ${screenshotCount} screenshot(s).`
-                : "."}
-            </div>
-            <ActionsBottom>
-              <Button data-cy="push_ok_button" onClick={handleGoBack}>
-                OK
-              </Button>
-            </ActionsBottom>
-          </Fragment>
         ) : (
           <Fragment>
-            {screenshotCount !== 0 && (
+            {totalScreenshotCount !== 0 && (
               <Fragment>
                 <Checkbox
                   data-cy="push_upload_screenshots_checkbox"
@@ -382,7 +515,7 @@ export const Push: FunctionalComponent = () => {
                     setUploadScreenshots(Boolean(e.currentTarget.checked))
                   }
                 >
-                  <Text>Upload {screenshotCount} screenshot(s)</Text>
+                  <Text>Upload {totalScreenshotCount} screenshot(s)</Text>
                 </Checkbox>
                 <VerticalSpace space="medium" />
               </Fragment>
@@ -397,7 +530,8 @@ export const Push: FunctionalComponent = () => {
               >
                 Cancel
               </Button>
-              {noChanges && (screenshotCount === 0 || !uploadScreenshots) ? (
+              {noChanges &&
+              (totalScreenshotCount === 0 || !uploadScreenshots) ? (
                 <Button
                   data-cy="push_finish_button"
                   onClick={handleConnectOnly}

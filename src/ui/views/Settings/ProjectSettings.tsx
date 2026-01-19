@@ -7,6 +7,8 @@ import { Fragment, FunctionComponent, h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import styles from "./ProjectSettings.css";
 import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
+import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
+import { getProjectIdFromApiKey } from "../../client/decodeApiKey";
 
 type Props = {
   apiKey: string;
@@ -15,9 +17,27 @@ type Props = {
   onChange: (data: Partial<TolgeeConfig>) => void;
 };
 
-const namespaceHelpText = (
+const namespaceHelpText = ({
+  apiUrl,
+  projectId,
+}: {
+  apiUrl: string;
+  projectId: number;
+}) => (
   <Fragment>
     <div>
+      Namespaces are enabled in Platform.
+      <br />
+      Disable them{" "}
+      <a
+        href={`${apiUrl}/projects/${projectId}/manage/edit/advanced`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        here
+      </a>{" "}
+      to no longer user namespaces.
+      <br />
       For more information about namespaces,
       <br />
       check the{" "}
@@ -29,6 +49,29 @@ const namespaceHelpText = (
         docs of the platform
       </a>
       .
+    </div>
+  </Fragment>
+);
+const namespaceHelpTextSetUp = ({
+  apiUrl,
+  projectId,
+}: {
+  apiUrl: string;
+  projectId: number;
+}) => (
+  <Fragment>
+    <div>
+      Namespaces are disabled in Platform.
+      <br />
+      Enable them{" "}
+      <a
+        href={`${apiUrl}/projects/${projectId}/manage/edit/advanced`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        here
+      </a>{" "}
+      to use namespaces.
     </div>
   </Fragment>
 );
@@ -76,6 +119,8 @@ export const ProjectSettings: FunctionComponent<Props> = ({
     },
   });
 
+  const hasNamespacesEnabled = useHasNamespacesEnabled();
+
   const languages = languagesLoadable.data?._embedded?.languages;
   const namespaces = namespacesLoadable.data?._embedded?.namespaces?.map(
     (n) => n.name || ""
@@ -87,7 +132,14 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   ) {
     namespaces.push(settings.namespace);
   }
-  const namespacesNotPresent = namespaces?.length === 1 && !namespaces[0];
+
+  // Sort namespaces alphabetically
+  namespaces.sort((a, b) => {
+    // Sort alphabetically, but put empty string at the end
+    if (!a) return 1;
+    if (!b) return -1;
+    return a.localeCompare(b);
+  });
 
   useEffect(() => {
     if (!settings && namespacesLoadable.data && languagesLoadable.data) {
@@ -95,8 +147,6 @@ export const ProjectSettings: FunctionComponent<Props> = ({
         language:
           initialData?.language || languages?.find((l) => l.base)?.tag || "",
         namespace: initialData?.namespace ?? namespaces?.[0] ?? "",
-        namespacesDisabled:
-          initialData?.namespacesDisabled ?? namespacesNotPresent,
       });
     }
   }, [languages, namespaces]);
@@ -106,16 +156,6 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       onChange(settings);
     }
   }, [settings]);
-
-  const [namespacesDisabled, setNamespacesDisabled] = useState(
-    initialData?.namespacesDisabled ?? true
-  );
-
-  const handleDisableNamespaces = (e: any) => {
-    const checked = e.currentTarget.checked;
-    setNamespacesDisabled(!checked);
-    setSettings({ ...settings!, namespacesDisabled: !checked });
-  };
 
   if (languagesLoadable.isLoading || namespacesLoadable.isLoading) {
     return <FullPageLoading />;
@@ -146,17 +186,28 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       </select>
       <VerticalSpace space="medium" />
       <div className={styles.namespaceShowRow}>
-        <Checkbox
-          value={!namespacesDisabled}
-          onChange={handleDisableNamespaces}
-        >
+        <Checkbox disabled value={hasNamespacesEnabled}>
           <Text>Use namespaces</Text>
         </Checkbox>
 
-        <InfoTooltip>{namespaceHelpText}</InfoTooltip>
+        {hasNamespacesEnabled ? (
+          <InfoTooltip>
+            {namespaceHelpText({
+              apiUrl,
+              projectId: getProjectIdFromApiKey(apiKey) ?? 0,
+            })}
+          </InfoTooltip>
+        ) : (
+          <InfoTooltip>
+            {namespaceHelpTextSetUp({
+              apiUrl,
+              projectId: getProjectIdFromApiKey(apiKey) ?? 0,
+            })}
+          </InfoTooltip>
+        )}
       </div>
       <VerticalSpace space="small" />
-      {!namespacesDisabled && (
+      {hasNamespacesEnabled && (
         <Fragment>
           <VerticalSpace space="extraSmall" />
           <Text>
