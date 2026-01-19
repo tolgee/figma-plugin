@@ -146,7 +146,6 @@ export const Push: FunctionalComponent = () => {
         // Reconstruct tolgeeConfig object for getPushChanges
         const configForDiff = {
           ...tolgeeConfig,
-          tags: tolgeeConfig?.tags,
           updateScreenshots: tolgeeConfigUpdateScreenshots,
           addTags: tolgeeConfigAddTags,
         };
@@ -190,6 +189,8 @@ export const Push: FunctionalComponent = () => {
     tolgeeConfigUpdateScreenshots,
     tolgeeConfigAddTags,
     success, // Include success to prevent recompute when showing success screen
+    // Note: allTranslationsLoadable.getData is stable via useCallback with refs
+    // We don't include allTranslationsLoadable itself to avoid infinite loops
   ]);
 
   const totalScreenshotCount = useMemo(() => {
