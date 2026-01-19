@@ -1,5 +1,6 @@
 import { h } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
+import { useDebounce } from "use-debounce";
 import { NodeInfo } from "@/types";
 import { NodeRow } from "@/ui/components/NodeList/NodeRow";
 import { KeyInput } from "./KeyInput";
@@ -37,6 +38,7 @@ export const ListItem = ({
   );
 
   const [keyName, setKeyName] = useState((node.key || prefilledKey.key) ?? "");
+  const [debouncedKeyName] = useDebounce(keyName, 300);
 
   const defaultNamespace = useGlobalState((c) => c.config?.namespace);
   const [namespace, setNamespace] = useState(node.ns ?? defaultNamespace);
@@ -47,9 +49,18 @@ export const ListItem = ({
 
   useEffect(() => {
     if (prefilledKey.key && !node.connected) {
-      handleKeyChange(node)(prefilledKey.key);
+      setKeyName(prefilledKey.key);
     }
   }, [prefilledKey.key]);
+
+  // Debounced mutation: only update Figma nodes after user stops typing
+  useEffect(() => {
+    if (debouncedKeyName !== (node.key || "")) {
+      setNodesDataMutation.mutate({
+        nodes: [{ ...node, key: debouncedKeyName, ns: namespace }],
+      });
+    }
+  }, [debouncedKeyName, namespace, node]);
 
   const handleConnect = (node: NodeInfo) => {
     setRoute("connect", { node });
@@ -66,11 +77,8 @@ export const ListItem = ({
     [loadedNamespaces, defaultNamespace]
   );
 
-  const handleKeyChange = (node: NodeInfo) => (value: string) => {
+  const handleKeyChange = () => (value: string) => {
     setKeyName(value);
-    setNodesDataMutation.mutate({
-      nodes: [{ ...node, key: value, ns: namespace }],
-    });
   };
 
   useEffect(() => {
@@ -95,7 +103,7 @@ export const ListItem = ({
       node={node}
       keyComponent={
         !node.connected && (
-          <KeyInput value={keyName || ""} onChange={handleKeyChange(node)} />
+          <KeyInput value={keyName || ""} onChange={handleKeyChange()} />
         )
       }
       nsComponent={
