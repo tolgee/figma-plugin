@@ -14,10 +14,6 @@ export const useAllTranslations = () => {
     url: "/v2/projects/used-namespaces",
     method: "get",
   });
-  const translationsLoadable = useApiMutation({
-    url: "/v2/projects/translations/{languages}",
-    method: "get",
-  });
   const translationsBaseLoadable = useApiMutation({
     url: "/v2/projects/translations",
     method: "get",
@@ -114,7 +110,7 @@ export const useAllTranslations = () => {
     setTranslationsData(null);
   }, []);
 
-  const error = namespacesLoadable.error || translationsLoadable.error;
+  const error = namespacesLoadable.error || translationsBaseLoadable.error;
 
   return {
     getData,
