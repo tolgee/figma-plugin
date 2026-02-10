@@ -53,14 +53,21 @@ export const ListItem = ({
     }
   }, [prefilledKey.key]);
 
+  useEffect(() => {
+    if (node.connected) {
+      setKeyName(node.key || "");
+      setNamespace(node.ns ?? defaultNamespace);
+    }
+  }, [node.connected, node.key, node.ns, defaultNamespace]);
+
   // Debounced mutation: only update Figma nodes after user stops typing
   useEffect(() => {
-    if (debouncedKeyName !== (node.key || "")) {
+    if (!node.connected && debouncedKeyName !== (node.key || "")) {
       setNodesDataMutation.mutate({
         nodes: [{ ...node, key: debouncedKeyName, ns: namespace }],
       });
     }
-  }, [debouncedKeyName, namespace, node]);
+  }, [debouncedKeyName, namespace, node, node.connected]);
 
   const handleConnect = (node: NodeInfo) => {
     setRoute("connect", { node });
@@ -82,12 +89,12 @@ export const ListItem = ({
   };
 
   useEffect(() => {
-    if (keyName && namespace !== node.ns) {
+    if (!node.connected && keyName && namespace !== node.ns) {
       setNodesDataMutation.mutate({
         nodes: [{ ...node, key: keyName, ns: namespace }],
       });
     }
-  }, [namespace]);
+  }, [namespace, node.connected]);
 
   const handleNsChange = (node: NodeInfo) => (value: string) => {
     setNamespace(value);
