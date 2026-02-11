@@ -17,6 +17,8 @@ type UsedNamespaceModel = components["schemas"]["UsedNamespaceModel"];
 
 type Props = {
   node: NodeInfo;
+  groupedNodes?: NodeInfo[];
+  duplicatesCount?: number;
   loadedNamespaces: UsedNamespaceModel[] | undefined;
   hasNamespacesEnabled: boolean;
   onRefreshNamespaces?: () => void;
@@ -24,11 +26,20 @@ type Props = {
 
 export const ListItem = ({
   node,
+  groupedNodes,
+  duplicatesCount,
   loadedNamespaces,
   hasNamespacesEnabled,
   onRefreshNamespaces,
 }: Props) => {
   const nodeId = node?.id ?? "";
+  const effectiveNodes = useMemo(
+    () =>
+      groupedNodes && groupedNodes.length > 0
+        ? groupedNodes
+        : [node],
+    [groupedNodes, node]
+  );
   const tolgeeConfig = useGlobalState((c) => c.config);
 
   const prefilledKey = usePrefilledKey(
@@ -62,15 +73,26 @@ export const ListItem = ({
 
   // Debounced mutation: only update Figma nodes after user stops typing
   useEffect(() => {
-    if (!node.connected && debouncedKeyName !== (node.key || "")) {
+    const hasConnected = effectiveNodes.some((current) => current.connected);
+    if (hasConnected) {
+      return;
+    }
+    const shouldUpdate = effectiveNodes.some(
+      (current) => debouncedKeyName !== (current.key || "")
+    );
+    if (shouldUpdate) {
       setNodesDataMutation.mutate({
-        nodes: [{ ...node, key: debouncedKeyName, ns: namespace }],
+        nodes: effectiveNodes.map((current) => ({
+          ...current,
+          key: debouncedKeyName,
+          ns: namespace,
+        })),
       });
     }
-  }, [debouncedKeyName, namespace, node, node.connected]);
+  }, [debouncedKeyName, namespace, effectiveNodes]);
 
-  const handleConnect = (node: NodeInfo) => {
-    setRoute("connect", { node });
+  const handleConnect = () => {
+    setRoute("connect", { nodes: effectiveNodes });
   };
 
   const namespaces = useMemo(
@@ -89,25 +111,43 @@ export const ListItem = ({
   };
 
   useEffect(() => {
-    if (!node.connected && keyName && namespace !== node.ns) {
+    const hasConnected = effectiveNodes.some((current) => current.connected);
+    if (hasConnected || !keyName) {
+      return;
+    }
+    const shouldUpdate = effectiveNodes.some(
+      (current) => current.ns !== namespace
+    );
+    if (shouldUpdate) {
       setNodesDataMutation.mutate({
-        nodes: [{ ...node, key: keyName, ns: namespace }],
+        nodes: effectiveNodes.map((current) => ({
+          ...current,
+          key: keyName,
+          ns: namespace,
+        })),
       });
     }
-  }, [namespace, node.connected]);
+  }, [namespace, keyName, effectiveNodes]);
 
-  const handleNsChange = (node: NodeInfo) => (value: string) => {
+  const handleNsChange = () => (value: string) => {
     setNamespace(value);
     setNodesDataMutation.mutate({
-      nodes: [{ ...node, key: keyName, ns: value }],
+      nodes: effectiveNodes.map((current) => ({
+        ...current,
+        key: keyName,
+        ns: value,
+      })),
     });
-    node.key = keyName;
-    node.ns = value;
+    effectiveNodes.forEach((current) => {
+      current.key = keyName;
+      current.ns = value;
+    });
   };
 
   return (
     <NodeRow
       node={node}
+      duplicatesCount={duplicatesCount}
       keyComponent={
         !node.connected && (
           <KeyInput value={keyName || ""} onChange={handleKeyChange()} />
@@ -119,7 +159,7 @@ export const ListItem = ({
           <NamespaceSelect
             value={namespace ?? ""}
             namespaces={namespaces}
-            onChange={handleNsChange(node)}
+            onChange={handleNsChange()}
             onRefresh={onRefreshNamespaces}
           />
         )
@@ -134,7 +174,7 @@ export const ListItem = ({
                 ? "Connect to existing key"
                 : "Edit key connection"
             }
-            onClick={() => handleConnect(node)}
+            onClick={handleConnect}
             className={styles.connectButton}
           >
             {node.connected ? (

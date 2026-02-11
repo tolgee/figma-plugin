@@ -9,6 +9,7 @@ import { HtmlText } from "../Shared/HtmlText";
 
 type Props = {
   node: PartialNodeInfo;
+  duplicatesCount?: number;
   action?: ComponentChildren;
   keyComponent?: ComponentChildren;
   nsComponent?: ComponentChildren;
@@ -18,6 +19,7 @@ type Props = {
 
 export const NodeRow = ({
   node,
+  duplicatesCount,
   action,
   keyComponent,
   nsComponent,
@@ -63,6 +65,9 @@ export const NodeRow = ({
           {node.isPlural && <Badge>plural</Badge>}
           {Object.keys(node.paramsValues ?? {}).length > 0 && (
             <Badge>parameters</Badge>
+          )}
+          {typeof duplicatesCount === "number" && duplicatesCount > 1 && (
+            <Badge>{`${duplicatesCount}x`}</Badge>
           )}
         </div>
       )}

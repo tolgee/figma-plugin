@@ -24,13 +24,16 @@ import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
 
 type Props = RouteParam<"connect">;
 
-export const Connect = ({ node }: Props) => {
+export const Connect = ({ nodes }: Props) => {
   const { setRoute } = useGlobalActions();
   const config = useGlobalState((c) => c.config);
 
   const language = useGlobalState((c) => c.config?.language);
 
-  const [search, setSearch] = useState(node.key || node.characters);
+  const primaryNode = nodes[0];
+  const [search, setSearch] = useState(
+    primaryNode?.key || primaryNode?.characters || ""
+  );
 
   const [debouncedSearch] = useDebounce(search, 1000);
 
@@ -59,6 +62,10 @@ export const Connect = ({ node }: Props) => {
     ns: string | undefined,
     translation: string | undefined
   ) => {
+    if (nodes.length === 0) {
+      setRoute("index");
+      return;
+    }
     if (
       !allTranslationsLoadable.isLoading &&
       allTranslationsLoadable.translationsData == null
@@ -72,46 +79,40 @@ export const Connect = ({ node }: Props) => {
       if (tolgeeTranslation) {
         translation = tolgeeTranslation.translation;
         await setNodesDataMutation.mutateAsync({
-          nodes: [
-            {
-              ...node,
-              translation: tolgeeTranslation.translation || node.characters,
-              isPlural: tolgeeTranslation.keyIsPlural,
-              pluralParamValue: tolgeeTranslation.keyPluralArgName,
-              key,
-              ns: ns || "",
-              connected: true,
-            },
-          ],
+          nodes: nodes.map((node) => ({
+            ...node,
+            translation: tolgeeTranslation.translation || node.characters,
+            isPlural: tolgeeTranslation.keyIsPlural,
+            pluralParamValue: tolgeeTranslation.keyPluralArgName,
+            key,
+            ns: ns || "",
+            connected: true,
+          })),
         });
         setRoute("index");
         return;
       }
     }
     await setNodesDataMutation.mutateAsync({
-      nodes: [
-        {
-          ...node,
-          translation: translation || node.characters,
-          key,
-          ns: ns || "",
-          connected: true,
-        },
-      ],
+      nodes: nodes.map((node) => ({
+        ...node,
+        translation: translation || node.characters,
+        key,
+        ns: ns || "",
+        connected: true,
+      })),
     });
     setRoute("index");
   };
 
   const handleRemoveConnection = async () => {
     await setNodesDataMutation.mutateAsync({
-      nodes: [
-        {
-          ...node,
-          key: "",
-          ns: undefined,
-          connected: false,
-        },
-      ],
+      nodes: nodes.map((node) => ({
+        ...node,
+        key: "",
+        ns: undefined,
+        connected: false,
+      })),
     });
     setRoute("index");
   };
@@ -158,7 +159,7 @@ export const Connect = ({ node }: Props) => {
           ))}
       </div>
       <ActionsBottom>
-        {node.connected && (
+        {primaryNode?.connected && (
           <Button secondary onClick={handleRemoveConnection}>
             Remove connection
           </Button>
