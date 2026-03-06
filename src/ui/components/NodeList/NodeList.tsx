@@ -1,5 +1,5 @@
 import { ComponentChildren, Fragment, h } from "preact";
-import { useEffect, useMemo, useRef, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 
 import styles from "./NodeList.css";
 import { NodeRow } from "./NodeRow";
@@ -112,20 +112,17 @@ export function NodeList<T extends { id: string }>({
   const totalHeight = items.length * rowHeight;
   const offsetY = startIndex * rowHeight;
 
-  const spacerStyle = useMemo(
-    () => ({ height: totalHeight, position: "relative" as const }),
-    [totalHeight]
-  );
-  const translateStyle = useMemo(
-    () => ({
-      transform: `translateY(${offsetY}px)`,
-      position: "absolute" as const,
-      top: 0,
-      left: 0,
-      right: 0,
-    }),
-    [offsetY]
-  );
+  const spacerStyle = {
+    height: totalHeight,
+    position: "relative" as const,
+  };
+  const translateStyle = {
+    transform: `translateY(${offsetY}px)`,
+    position: "absolute" as const,
+    top: 0,
+    left: 0,
+    right: 0,
+  };
 
   return (
     <div

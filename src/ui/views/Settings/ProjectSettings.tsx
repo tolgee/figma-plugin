@@ -125,7 +125,11 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   const namespaces = useMemo(() => {
     const ns = namespacesLoadable.data?._embedded?.namespaces?.map(
       (n) => n.name || ""
-    ) || [""];
+    ) ?? [""];
+
+    if (ns.length === 0) {
+      ns.push("");
+    }
 
     if (
       settings?.namespace !== undefined &&

@@ -28,7 +28,6 @@ export const NamespaceSelect: FunctionComponent<Props> = ({
         ...namespaces,
         ...(value && !namespaces.includes(value) ? [value] : []),
       ])]
-        .filter(Boolean)
         .sort((a, b) => {
           if (!a) return 1;
           if (!b) return -1;

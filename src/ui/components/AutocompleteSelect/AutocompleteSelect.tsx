@@ -98,19 +98,22 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
     setInputValue(singleValue ?? "");
   }, [singleSelect, singleValue, isFocused]);
 
-  const lowerInputValue = useMemo(() => inputValue.toLowerCase(), [inputValue]);
-  const lowerInputTrimmed = useMemo(() => inputValue.trim().toLowerCase(), [inputValue]);
+  const trimmedInputValue = useMemo(() => inputValue.trim(), [inputValue]);
+  const lowerInputTrimmed = useMemo(
+    () => trimmedInputValue.toLowerCase(),
+    [trimmedInputValue]
+  );
 
   const filteredOptions = useMemo(() => {
     const filtered = options.filter((opt) =>
-      opt.toLowerCase().includes(lowerInputValue)
+      opt.toLowerCase().includes(lowerInputTrimmed)
     );
     // In multi-select mode, exclude already selected values
     if (isMultiSelect) {
       return filtered.filter((opt) => !multiValues.includes(opt));
     }
     return filtered;
-  }, [options, lowerInputValue, isMultiSelect, multiValues]);
+  }, [options, lowerInputTrimmed, isMultiSelect, multiValues]);
 
   const exactMatch = useMemo(() => {
     return filteredOptions.find(
@@ -128,12 +131,19 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
         (opt) => opt.toLowerCase() === lowerInputTrimmed
       );
 
-  const highlightedOptions = useMemo(() =>
-    filteredOptions.map(opt => {
-      const matchIndex = opt.toLowerCase().indexOf(lowerInputValue);
-      const isExact = opt.toLowerCase() === lowerInputTrimmed;
-      return { opt, matchIndex, isExact };
-    }), [filteredOptions, lowerInputValue, lowerInputTrimmed]);
+  const highlightedOptions = useMemo(
+    () =>
+      filteredOptions.map((opt) => {
+        const label = displayValue(opt);
+        const matchIndex =
+          lowerInputTrimmed === ""
+            ? -1
+            : label.toLowerCase().indexOf(lowerInputTrimmed);
+        const isExact = opt.toLowerCase() === lowerInputTrimmed;
+        return { opt, label, matchIndex, isExact };
+      }),
+    [filteredOptions, displayValue, lowerInputTrimmed]
+  );
 
   const canAdd = inputValue.trim() && !alreadyExists;
 
@@ -259,7 +269,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
                 <Muted>{noOptionsPlaceholder}</Muted>
               </div>
             )}
-            {highlightedOptions.map(({ opt, matchIndex, isExact }) => {
+            {highlightedOptions.map(({ opt, label, matchIndex, isExact }) => {
               if (matchIndex === -1) {
                 return (
                   <div
@@ -272,7 +282,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
                       alignItems: "center",
                     }}
                   >
-                    <span>{displayValue(opt)}</span>
+                    <span>{label}</span>
                     {isExact && (
                       <span className={styles.autocompleteDropdownAddHint}>
                         Enter
@@ -281,12 +291,12 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
                   </div>
                 );
               }
-              const before = opt.slice(0, matchIndex);
-              const match = opt.slice(
+              const before = label.slice(0, matchIndex);
+              const match = label.slice(
                 matchIndex,
-                matchIndex + inputValue.length
+                matchIndex + trimmedInputValue.length
               );
-              const after = opt.slice(matchIndex + inputValue.length);
+              const after = label.slice(matchIndex + trimmedInputValue.length);
               return (
                 <div
                   key={opt}

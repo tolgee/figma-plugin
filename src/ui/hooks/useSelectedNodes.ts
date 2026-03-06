@@ -9,7 +9,7 @@ export const useSelectedNodes = () => {
   const result = useQuery(
     [getSelectedNodesEndpoint.name],
     delayed(() => getSelectedNodesEndpoint.call()),
-    { keepPreviousData: true }
+    { keepPreviousData: true, staleTime: 0, cacheTime: 0 }
   );
 
   const refetchTimerRef = useRef<ReturnType<typeof setTimeout>>();
