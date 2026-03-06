@@ -1,5 +1,5 @@
 import { h } from "preact";
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { emit } from "@/utilities";
 import { ResizeHandler, WindowSize } from "@/types";
 import { DEFAULT_SIZE, MINIMUM_SIZE } from "@/ui/state/sizes";
@@ -30,7 +30,7 @@ export const ResizeHandle = () => {
     setStartSize(currentSize);
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizing || !startPos || !startSize) return;
 
     const deltaX = e.clientX - startPos.x;
@@ -59,13 +59,13 @@ export const ResizeHandle = () => {
       }
       return newStack;
     });
-  };
+  }, [isResizing, startPos, startSize, setSizeStack]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsResizing(false);
     setStartPos(null);
     setStartSize(null);
-  };
+  }, []);
 
   useEffect(() => {
     if (isResizing) {
@@ -77,7 +77,7 @@ export const ResizeHandle = () => {
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [isResizing]);
+  }, [isResizing, handleMouseMove, handleMouseUp]);
   return (
     <div
       ref={handleRef}

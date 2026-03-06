@@ -1,5 +1,5 @@
 import { Fragment, h } from "preact";
-import { useEffect, useState, useMemo } from "preact/hooks";
+import { useCallback, useEffect, useState, useMemo } from "preact/hooks";
 import {
   Banner,
   Button,
@@ -86,10 +86,27 @@ export const Index = () => {
       });
   }, [namespacesLoadable.data, allNodes.data]);
 
+  const loadedNamespaces = useMemo(
+    () => allAvailableNamespaces.map((name) => ({ name })),
+    [allAvailableNamespaces]
+  );
+
   // Refresh namespaces: refetch API and all nodes
-  const handleRefreshNamespaces = async () => {
+  const handleRefreshNamespaces = useCallback(async () => {
     await Promise.all([namespacesLoadable.refetch(), allNodes.refetch()]);
-  };
+  }, []);
+
+  const renderRow = useCallback(
+    (node: (typeof selection)[number]) => (
+      <ListItem
+        hasNamespacesEnabled={hasNamespacesEnabled}
+        node={node}
+        loadedNamespaces={loadedNamespaces}
+        onRefreshNamespaces={handleRefreshNamespaces}
+      />
+    ),
+    [hasNamespacesEnabled, loadedNamespaces, handleRefreshNamespaces]
+  );
 
   const nothingSelected = !selectionLoadable.data?.somethingSelected;
 
@@ -236,16 +253,7 @@ export const Index = () => {
       ) : (
         <NodeList
           items={selection}
-          row={(node) => (
-            <ListItem
-              hasNamespacesEnabled={hasNamespacesEnabled}
-              node={node}
-              loadedNamespaces={allAvailableNamespaces.map((name) => ({
-                name,
-              }))}
-              onRefreshNamespaces={handleRefreshNamespaces}
-            />
-          )}
+          row={renderRow}
         />
       )}
     </div>

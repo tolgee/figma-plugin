@@ -1,4 +1,5 @@
 import { ComponentChildren, h } from "preact";
+import { memo } from "preact/compat";
 
 import { PartialNodeInfo } from "@/types";
 import styles from "./NodeRow.css";
@@ -16,7 +17,7 @@ type Props = {
   onClick?: () => void;
 };
 
-export const NodeRow = ({
+export const NodeRow = memo(({
   node,
   action,
   keyComponent,
@@ -91,4 +92,4 @@ export const NodeRow = ({
       </div>
     </div>
   );
-};
+});

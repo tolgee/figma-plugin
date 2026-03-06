@@ -227,7 +227,6 @@ export const StringsEditor = ({
   return (
     <div class="editor-wrapper">
       <div
-        placeholder="artboard.element"
         onClick={() => {
           startCompletion(editor.current!);
         }}

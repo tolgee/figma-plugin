@@ -1,8 +1,15 @@
 import { ComponentChildren, Fragment, h } from "preact";
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 
 import styles from "./NodeList.css";
 import { NodeRow } from "./NodeRow";
+
+const containerStyle = {
+  overflow: "auto" as const,
+  position: "relative" as const,
+};
+
+const itemStyle = { width: "100%" };
 
 type Props<T extends { id: string }> = {
   items: T[];
@@ -105,34 +112,31 @@ export function NodeList<T extends { id: string }>({
   const totalHeight = items.length * rowHeight;
   const offsetY = startIndex * rowHeight;
 
+  const spacerStyle = useMemo(
+    () => ({ height: totalHeight, position: "relative" as const }),
+    [totalHeight]
+  );
+  const translateStyle = useMemo(
+    () => ({
+      transform: `translateY(${offsetY}px)`,
+      position: "absolute" as const,
+      top: 0,
+      left: 0,
+      right: 0,
+    }),
+    [offsetY]
+  );
+
   return (
     <div
       className={styles.container}
       ref={containerRef}
-      style={{
-        overflow: "auto",
-        position: "relative",
-      }}
+      style={containerStyle}
     >
-      {/* Total height spacer */}
-      <div style={{ height: totalHeight, position: "relative" }}>
-        {/* Visible items container */}
-        <div
-          style={{
-            transform: `translateY(${offsetY}px)`,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-          }}
-        >
+      <div style={spacerStyle}>
+        <div style={translateStyle}>
           {visibleItems.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                width: "100%",
-              }}
-            >
+            <div key={item.id} style={itemStyle}>
               {renderItem(item)}
             </div>
           ))}

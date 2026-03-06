@@ -4,7 +4,7 @@ import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect
 import { TolgeeConfig } from "@/types";
 import { VerticalSpace, Text, Muted, Checkbox } from "@create-figma-plugin/ui";
 import { Fragment, FunctionComponent, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import styles from "./ProjectSettings.css";
 import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
 import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
@@ -122,24 +122,28 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   const hasNamespacesEnabled = useHasNamespacesEnabled();
 
   const languages = languagesLoadable.data?._embedded?.languages;
-  const namespaces = namespacesLoadable.data?._embedded?.namespaces?.map(
-    (n) => n.name || ""
-  ) || [""];
+  const namespaces = useMemo(() => {
+    const ns = namespacesLoadable.data?._embedded?.namespaces?.map(
+      (n) => n.name || ""
+    ) || [""];
 
-  if (
-    settings?.namespace !== undefined &&
-    !namespaces.includes(settings.namespace)
-  ) {
-    namespaces.push(settings.namespace);
-  }
+    if (
+      settings?.namespace !== undefined &&
+      !ns.includes(settings.namespace)
+    ) {
+      ns.push(settings.namespace);
+    }
 
-  // Sort namespaces alphabetically
-  namespaces.sort((a, b) => {
-    // Sort alphabetically, but put empty string at the end
-    if (!a) return 1;
-    if (!b) return -1;
-    return a.localeCompare(b);
-  });
+    // Sort namespaces alphabetically
+    ns.sort((a, b) => {
+      // Sort alphabetically, but put empty string at the end
+      if (!a) return 1;
+      if (!b) return -1;
+      return a.localeCompare(b);
+    });
+
+    return ns;
+  }, [namespacesLoadable.data, settings?.namespace]);
 
   useEffect(() => {
     if (!settings && namespacesLoadable.data && languagesLoadable.data) {

@@ -32,21 +32,22 @@ export const getPushChanges = (
   const changedKeys: KeyChangeValue[] = [];
   const unchangedKeys: KeyChangeValue[] = [];
 
-  const getKeyScreenshots = (value: NodeInfo): FrameScreenshot[] => {
-    const result: FrameScreenshot[] = [];
-    screenshots.forEach((screenshot) => {
-      if (
-        screenshot.keys.find(
-          (node) =>
-            node.key === value.key &&
-            (!hasNamespacesEnabled || compareNs(node.ns, value.ns))
-        )
-      ) {
-        result.push(screenshot);
+  const screenshotsByKey = new Map<string, FrameScreenshot[]>();
+  screenshots.forEach((screenshot) => {
+    screenshot.keys.forEach((node) => {
+      const mapKey = `${node.key}\0${hasNamespacesEnabled ? (node.ns || "") : ""}`;
+      let list = screenshotsByKey.get(mapKey);
+      if (!list) {
+        list = [];
+        screenshotsByKey.set(mapKey, list);
       }
+      list.push(screenshot);
     });
+  });
 
-    return result;
+  const getKeyScreenshots = (value: NodeInfo): FrameScreenshot[] => {
+    const mapKey = `${value.key}\0${hasNamespacesEnabled ? (value.ns || "") : ""}`;
+    return screenshotsByKey.get(mapKey) ?? [];
   };
   const newTags = tolgeeConfig?.tags;
 

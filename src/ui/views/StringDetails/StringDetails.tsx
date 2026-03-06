@@ -11,6 +11,7 @@ import {
   Muted,
   Text,
   Textbox,
+  TextboxNumeric,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
@@ -435,11 +436,10 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                   <InfoTooltip>{valuesForFigmaString}</InfoTooltip>
                 </Muted>
                 {tolgeeValue.parameter && (
-                  <Textbox
+                  <TextboxNumeric
                     data-cy="string_details_plural_paramter_value"
                     placeholder={tolgeeValue.parameter}
                     value={currentNode.pluralParamValue ?? ""}
-                    type="number"
                     onChange={({ currentTarget }) => {
                       setNeedsSubmission(true);
                       if (currentTarget.value !== "") {

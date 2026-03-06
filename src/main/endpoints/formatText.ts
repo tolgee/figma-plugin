@@ -64,8 +64,16 @@ export const formatText = async ({
     return ranges;
   };
 
+  let cachedAvailableFonts: Font[] | null = null;
+  const getAvailableFonts = async () => {
+    if (!cachedAvailableFonts) {
+      cachedAvailableFonts = await figma.listAvailableFontsAsync();
+    }
+    return cachedAvailableFonts;
+  };
+
   const getFontsOfFamily = async (font: FontName) =>
-    (await figma.listAvailableFontsAsync()).filter(
+    (await getAvailableFonts()).filter(
       (f) => f.fontName.family === font.family
     );
 

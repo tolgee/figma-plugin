@@ -1,13 +1,6 @@
 import { createEndpoint } from "../utils/createEndpoint";
 import { TOLGEE_KEY_FORMAT_PLACEHOLDERS } from "@/constants";
-import {
-  getFrame,
-  getComponent,
-  getSection,
-  getElement,
-  getArtboard,
-  getGroup,
-} from "../utils/nodeParents";
+import { getAllParents } from "../utils/nodeParents";
 import { formatString } from "@/utilities";
 import { TolgeeConfig } from "@/types";
 
@@ -56,6 +49,8 @@ export const preformatKeyEndpoint = createEndpoint<
   PreformatKeyEndpointArgs,
   string
 >("FORMAT_KEY", ({ nodeId, keyFormat, variableCasing }) => {
+  const parents = getAllParents(nodeId);
+
   let result = keyFormat;
   for (const placeholder of Object.values(TOLGEE_KEY_FORMAT_PLACEHOLDERS)) {
     switch (placeholder) {
@@ -64,7 +59,7 @@ export const preformatKeyEndpoint = createEndpoint<
           keyFormat,
           result,
           placeholder,
-          getArtboard(nodeId)?.name ?? "",
+          parents.artboard?.name ?? "",
           variableCasing
         );
         break;
@@ -73,7 +68,7 @@ export const preformatKeyEndpoint = createEndpoint<
           keyFormat,
           result,
           placeholder,
-          getFrame(nodeId)?.name ?? "",
+          parents.frame?.name ?? "",
           variableCasing
         );
         break;
@@ -82,27 +77,25 @@ export const preformatKeyEndpoint = createEndpoint<
           keyFormat,
           result,
           placeholder,
-          getElement(nodeId)?.name ?? "",
+          parents.element?.name ?? "",
           variableCasing
         );
         break;
-      case "{elementText}": {
-        const element = getElement(nodeId);
+      case "{elementText}":
         result = replacePlaceholder(
           keyFormat,
           result,
           placeholder,
-          element?.type === "TEXT" ? element.characters : "",
+          parents.element?.type === "TEXT" ? parents.element.characters : "",
           variableCasing
         );
         break;
-      }
       case "{component}":
         result = replacePlaceholder(
           keyFormat,
           result,
           placeholder,
-          getComponent(nodeId)?.name ?? "",
+          parents.component?.name ?? "",
           variableCasing
         );
         break;
@@ -111,7 +104,7 @@ export const preformatKeyEndpoint = createEndpoint<
           keyFormat,
           result,
           placeholder,
-          getSection(nodeId)?.name ?? "",
+          parents.section?.name ?? "",
           variableCasing
         );
         break;
@@ -120,7 +113,7 @@ export const preformatKeyEndpoint = createEndpoint<
           keyFormat,
           result,
           placeholder,
-          getGroup(nodeId)?.name ?? "",
+          parents.group?.name ?? "",
           variableCasing
         );
         break;
