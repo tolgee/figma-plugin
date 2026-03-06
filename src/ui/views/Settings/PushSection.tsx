@@ -38,7 +38,6 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
   useEffect(() => {
     setTolgeeConfig({ ...tolgeeConfig, tags });
     if (onTagsChange) onTagsChange(tags);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tags]);
 
   return (
@@ -55,7 +54,6 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
         <Checkbox
           data-cy="settings_checkbox_update_screenshots"
           value={tolgeeConfig.updateScreenshots ?? true}
-          checked={tolgeeConfig.updateScreenshots ?? true}
           onChange={(e) =>
             setTolgeeConfig({
               ...tolgeeConfig,
@@ -69,7 +67,6 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
         <Checkbox
           data-cy="settings_checkbox_add_tags"
           value={tolgeeConfig.addTags ?? false}
-          checked={tolgeeConfig.addTags ?? false}
           onChange={(e) => {
             setTolgeeConfig({
               ...tolgeeConfig,

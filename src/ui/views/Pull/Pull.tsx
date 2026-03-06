@@ -47,7 +47,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
         language: lang ?? "",
       });
       setDiffData(
-        getPullChanges(selectedNodes.data?.items || [], lang, translations)
+        getPullChanges(selectedNodes.data?.items || [], lang, translations),
       );
       setError(undefined);
     } catch (e) {
@@ -55,7 +55,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
         setError("Invalid project API key");
       } else if (e === "too_many_uploaded_images") {
         setError(
-          "Too many uploaded images. Disable update screenshots in settings."
+          "Too many uploaded images. Disable update screenshots in settings.",
         );
       } else {
         setError(`Cannot get translation data. ${e}`);
@@ -93,6 +93,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
         ...n,
         formatted,
       } as NodeInfo & { formatted: string };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       return {
         ...n,
@@ -114,7 +115,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
           .filter((i) => i.connected)
           .map((n) => {
             const changedNode = diffData!.changedNodes.find(
-              (c) => c.key === n.key
+              (c) => c.key === n.key,
             );
             if (!changedNode) {
               return n;

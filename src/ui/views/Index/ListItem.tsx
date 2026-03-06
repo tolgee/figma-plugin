@@ -1,5 +1,5 @@
 import { h } from "preact";
-import { useEffect, useMemo, useState } from "preact/hooks";
+import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import { useDebounce } from "use-debounce";
 import { NodeInfo } from "@/types";
 import { NodeRow } from "@/ui/components/NodeList/NodeRow";
@@ -34,7 +34,7 @@ export const ListItem = ({
   const prefilledKey = usePrefilledKey(
     nodeId,
     tolgeeConfig?.keyFormat ?? "",
-    tolgeeConfig?.variableCasing
+    tolgeeConfig?.variableCasing,
   );
 
   const [keyName, setKeyName] = useState((node.key || prefilledKey.key) ?? "");
@@ -60,14 +60,19 @@ export const ListItem = ({
     }
   }, [node.connected, node.key, node.ns, defaultNamespace]);
 
-  // Debounced mutation: only update Figma nodes after user stops typing
+  // Single debounced mutation for both key and namespace changes
+  const [debouncedNamespace] = useDebounce(namespace, 300);
+
   useEffect(() => {
-    if (!node.connected && debouncedKeyName !== (node.key || "")) {
+    if (node.connected) return;
+    const keyChanged = debouncedKeyName !== (node.key || "");
+    const nsChanged = debouncedNamespace !== (node.ns ?? defaultNamespace);
+    if (keyChanged || nsChanged) {
       setNodesDataMutation.mutate({
-        nodes: [{ ...node, key: debouncedKeyName, ns: namespace }],
+        nodes: [{ ...node, key: debouncedKeyName, ns: debouncedNamespace }],
       });
     }
-  }, [debouncedKeyName, namespace, node, node.connected]);
+  }, [debouncedKeyName, debouncedNamespace, node.id, node.connected]);
 
   const handleConnect = (node: NodeInfo) => {
     setRoute("connect", { node });
@@ -79,38 +84,25 @@ export const ListItem = ({
         new Set([
           ...(loadedNamespaces?.map((ns) => ns.name || "") || []),
           defaultNamespace || "",
-        ])
+        ]),
       ),
-    [loadedNamespaces, defaultNamespace]
+    [loadedNamespaces, defaultNamespace],
   );
 
-  const handleKeyChange = () => (value: string) => {
+  const handleKeyChange = useCallback((value: string) => {
     setKeyName(value);
-  };
+  }, []);
 
-  useEffect(() => {
-    if (!node.connected && keyName && namespace !== node.ns) {
-      setNodesDataMutation.mutate({
-        nodes: [{ ...node, key: keyName, ns: namespace }],
-      });
-    }
-  }, [namespace, node.connected]);
-
-  const handleNsChange = (node: NodeInfo) => (value: string) => {
+  const handleNsChange = useCallback((value: string) => {
     setNamespace(value);
-    setNodesDataMutation.mutate({
-      nodes: [{ ...node, key: keyName, ns: value }],
-    });
-    node.key = keyName;
-    node.ns = value;
-  };
+  }, []);
 
   return (
     <NodeRow
       node={node}
       keyComponent={
         !node.connected && (
-          <KeyInput value={keyName || ""} onChange={handleKeyChange()} />
+          <KeyInput value={keyName || ""} onChange={handleKeyChange} />
         )
       }
       nsComponent={
@@ -119,7 +111,7 @@ export const ListItem = ({
           <NamespaceSelect
             value={namespace ?? ""}
             namespaces={namespaces}
-            onChange={handleNsChange(node)}
+            onChange={handleNsChange}
             onRefresh={onRefreshNamespaces}
           />
         )

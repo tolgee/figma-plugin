@@ -12,7 +12,6 @@ export const useHasNamespacesEnabled = () => {
   });
 
   // Then get the project info if we have a project ID
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const projectQuery = useApiQuery({
     url: "/v2/projects/{projectId}",
     method: "get",

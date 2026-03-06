@@ -39,7 +39,7 @@ export const createFormatIcu = (): FinalFormatterMiddleware => {
     params,
   }) => {
     const ignoreTag = !Object.values(params || {}).find(
-      (p) => typeof p === "function"
+      (p) => typeof p === "function",
     );
 
     const locale = getLanguage(language);

@@ -4,7 +4,7 @@ import { getDocumentData } from "./settingsTools";
 
 export const getNodeInfo = (node: TextNode): NodeInfo => {
   const pluginData = JSON.parse(
-    node.getPluginData(TOLGEE_NODE_INFO) || "{}"
+    node.getPluginData(TOLGEE_NODE_INFO) || "{}",
   ) as Partial<NodeInfo>;
   return {
     id: node.id,
@@ -23,7 +23,7 @@ export const getNodeInfo = (node: TextNode): NodeInfo => {
 
 function shouldIncludeNode(
   node: TextNode,
-  settings: Partial<CurrentDocumentSettings>
+  settings: Partial<CurrentDocumentSettings>,
 ) {
   if (
     (settings.ignoreNumbers || typeof settings.ignoreNumbers === "undefined") &&
@@ -83,7 +83,7 @@ export const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
     if (node.children) {
       // @ts-ignore
       findTextNodes(node.children as SceneNode[]).forEach((n) =>
-        result.push(n)
+        result.push(n),
       );
     }
   }

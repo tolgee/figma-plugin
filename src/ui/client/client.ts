@@ -25,13 +25,14 @@ async function getResObject(r: Response) {
   const textBody = await r.text();
   try {
     return JSON.parse(textBody);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return textBody;
   }
 }
 
 const flattenParams = (
-  params: Params | null | undefined
+  params: Params | null | undefined,
 ): Record<string, string | string[]> => {
   if (params) {
     return Object.entries(params).reduce(
@@ -39,7 +40,7 @@ const flattenParams = (
         Array.isArray(value) || typeof value !== "object"
           ? { ...acc, [key]: value }
           : { ...acc, ...flattenParams(value) },
-      {}
+      {},
     );
   }
   return {};
@@ -62,7 +63,7 @@ function buildQuery(object: { [key: string]: any }): string {
 async function customFetch(
   input: RequestInfo,
   options: GlobalOptions,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<Response> {
   if (!options.apiUrl) {
     throw "URL not specified";
@@ -124,13 +125,13 @@ export const addProjectIdToUrl = (url: string) => {
 export async function client<
   Url extends keyof Paths,
   Method extends keyof Paths[Url],
-  Paths = paths & customPaths
+  Paths = paths & customPaths,
 >(
   url: Url,
   method: Method,
   request: RequestParamsType<Url, Method, Paths>,
   clientOptions: ClientOptions,
-  options: GlobalOptions
+  options: GlobalOptions,
 ) {
   const fetchOptions = { ...options, ...clientOptions?.config };
   const pathParams = (request as any)?.path || {};

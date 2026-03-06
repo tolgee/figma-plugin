@@ -45,7 +45,7 @@ export const CopyView = () => {
     const { changedNodes } = getPullChanges(
       connectedNodes.items,
       language!,
-      translations
+      translations,
     );
 
     const formatter = createFormatIcu();

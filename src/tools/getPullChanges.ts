@@ -6,7 +6,7 @@ import { getTolgeeFormat } from "@tginternal/editor";
 export const getPullChanges = (
   nodes: NodeInfo[],
   lang: string,
-  keys: TranslationData
+  keys: TranslationData,
 ) => {
   const changedNodes: NodeInfo[] = [];
   const missingKeys: PartialNodeInfo[] = [];
@@ -23,7 +23,7 @@ export const getPullChanges = (
         const tolgeeValue = getTolgeeFormat(
           value.translation,
           value.keyIsPlural,
-          false
+          false,
         );
         try {
           const formatted = formatter.format({
@@ -40,6 +40,7 @@ export const getPullChanges = (
             characters: formatted,
             translation: value.translation,
           });
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {
           changedNodes.push({
             ...node,

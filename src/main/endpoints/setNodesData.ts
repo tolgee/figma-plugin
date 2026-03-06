@@ -21,8 +21,8 @@ export const setNodesDataEndpoint = createEndpoint<SetNodesDataProps, void>(
           paramsValues: nodeInfo.paramsValues,
           ns: nodeInfo.ns,
           connected: nodeInfo.connected,
-        })
+        }),
       );
     }
-  }
+  },
 );

@@ -8,7 +8,7 @@ import {
 type SelectorType<StateType, ReturnType> = (state: StateType) => ReturnType;
 
 export const createProvider = <StateType, Actions, ProviderProps>(
-  controller: (props: ProviderProps) => [state: StateType, actions: Actions]
+  controller: (props: ProviderProps) => [state: StateType, actions: Actions],
 ) => {
   const StateContext = createContextSelectable<StateType>(null as any);
   const DispatchContext = createContext<Actions>(null as any);
@@ -43,7 +43,7 @@ export const createProvider = <StateType, Actions, ProviderProps>(
 
   const useActions = () => useContext(DispatchContext);
   const useStateContext = function <SelectorReturn>(
-    selector: SelectorType<StateType, SelectorReturn>
+    selector: SelectorType<StateType, SelectorReturn>,
   ) {
     return useContextSelector(StateContext, selector);
   };

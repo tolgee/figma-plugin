@@ -22,7 +22,7 @@ import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
 
 function getPreview(
   format: string,
-  variableCasing: TolgeeConfig["variableCasing"]
+  variableCasing: TolgeeConfig["variableCasing"],
 ) {
   let newFormat = format;
   for (const key of Object.keys(TOLGEE_KEY_FORMAT_PLACEHOLDERS)) {
@@ -30,14 +30,14 @@ function getPreview(
       TOLGEE_KEY_FORMAT_PLACEHOLDERS_EXAMPLES[
         key as keyof typeof TOLGEE_KEY_FORMAT_PLACEHOLDERS
       ],
-      variableCasing
+      variableCasing,
     );
     if (replaceString === "") {
       newFormat = newFormat.replace(new RegExp(`{${key}}[^{]*`, "g"), "");
     } else {
       newFormat = newFormat.replace(
         new RegExp(`\\{${key}\\}`, "g"),
-        replaceString
+        replaceString,
       );
     }
   }
@@ -128,13 +128,13 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
 }) => {
   const [format, setFormat] = useState(tolgeeConfig.keyFormat || "");
   const [prefill, setPrefill] = useState(
-    tolgeeConfig.prefillKeyFormat ?? false
+    tolgeeConfig.prefillKeyFormat ?? false,
   );
   const [ignoreNumbers, setIgnoreNumbers] = useState(
-    tolgeeConfig.ignoreNumbers ?? true
+    tolgeeConfig.ignoreNumbers ?? true,
   );
   const [ignoreHiddenLayers, setIgnoreHiddenLayers] = useState(
-    tolgeeConfig.ignoreHiddenLayers ?? true
+    tolgeeConfig.ignoreHiddenLayers ?? true,
   );
   const [
     ignoreHiddenLayersIncludingChildren,
@@ -142,10 +142,10 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   ] = useState(tolgeeConfig.ignoreHiddenLayersIncludingChildren ?? false);
 
   const [ignoreTextLayers, setIgnoreTextLayers] = useState(
-    tolgeeConfig.ignoreTextLayers ?? false
+    tolgeeConfig.ignoreTextLayers ?? false,
   );
   const [ignorePrefix, setIgnorePrefix] = useState(
-    tolgeeConfig.ignorePrefix ?? ""
+    tolgeeConfig.ignorePrefix ?? "",
   );
 
   const preview = useMemo(() => {
@@ -181,7 +181,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   }
 
   function handleIgnoreNumbersChange(
-    event: TargetedEvent<HTMLInputElement, Event>
+    event: TargetedEvent<HTMLInputElement, Event>,
   ): void {
     setIgnoreNumbers(event.currentTarget.checked);
     setTolgeeConfig({
@@ -191,7 +191,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   }
 
   function handleIgnoreHiddenLayersChange(
-    event: TargetedEvent<HTMLInputElement, Event>
+    event: TargetedEvent<HTMLInputElement, Event>,
   ): void {
     setIgnoreHiddenLayers(event.currentTarget.checked);
     setTolgeeConfig({
@@ -201,7 +201,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   }
 
   function handleIgnoreHiddenLayersIncludingChildrenChange(
-    event: TargetedEvent<HTMLInputElement, Event>
+    event: TargetedEvent<HTMLInputElement, Event>,
   ): void {
     setIgnoreHiddenLayersIncludingChildren(event.currentTarget.checked);
     setTolgeeConfig({
@@ -211,7 +211,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   }
 
   function handleTextLayersChange(
-    event: TargetedEvent<HTMLInputElement, Event>
+    event: TargetedEvent<HTMLInputElement, Event>,
   ): void {
     setIgnoreTextLayers(event.currentTarget.checked);
     setTolgeeConfig({
@@ -274,7 +274,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
               value={tolgeeConfig.variableCasing ?? ""}
               onChange={(e) => {
                 handleVariableCasingChange(
-                  (e.target as HTMLInputElement).value
+                  (e.target as HTMLInputElement).value,
                 );
               }}
             >

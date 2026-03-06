@@ -1,5 +1,5 @@
 import { Fragment, h, JSX } from "preact";
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import styles from "./Popover.css";
 import { computePosition, offset, autoPlacement } from "@floating-ui/dom";
 import { HtmlText } from "../Shared/HtmlText";
@@ -29,15 +29,7 @@ const Dropdown = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [displayPopover, setDisplayPopover] = useState(false);
 
-  const open = () => {
-    if (!popoverTrigger.current || !dropdownRef.current) {
-      return;
-    }
-    setDisplayPopover(true);
-    computePositionAndSet();
-  };
-
-  const computePositionAndSet = () => {
+  const computePositionAndSet = useCallback(() => {
     if (!popoverTrigger.current || !dropdownRef.current) {
       return;
     }
@@ -51,14 +43,22 @@ const Dropdown = ({
         maxWidth: clampWidth ? `calc(100% - ${x + 8}px)` : null,
       });
     });
-  };
+  }, [popoverTrigger, clampWidth]);
 
-  const close = () => {
+  const open = useCallback(() => {
+    if (!popoverTrigger.current || !dropdownRef.current) {
+      return;
+    }
+    setDisplayPopover(true);
+    computePositionAndSet();
+  }, [popoverTrigger, computePositionAndSet]);
+
+  const close = useCallback(() => {
     setTimeout(() => {
       setDisplayPopover(false);
     });
     onClose?.();
-  };
+  }, [onClose]);
 
   useEffect(() => {
     if (!popoverTrigger.current || !dropdownRef.current) {
@@ -72,7 +72,7 @@ const Dropdown = ({
       popoverTrigger.current?.removeEventListener("click", open);
       window.removeEventListener("resize", computePositionAndSet);
     };
-  }, [popoverTrigger]);
+  }, [popoverTrigger, open, computePositionAndSet]);
 
   // Close dropdown if clicked outside the dropdown and anchor element.
   useEffect(() => {
@@ -91,7 +91,7 @@ const Dropdown = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [popoverTrigger]);
+  }, [popoverTrigger, close]);
 
   return (
     <div

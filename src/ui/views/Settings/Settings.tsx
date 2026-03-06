@@ -1,4 +1,4 @@
-import { Fragment, FunctionComponent, h } from "preact";
+import { h, Fragment, FunctionComponent } from "preact";
 import { useState, useEffect, useCallback } from "preact/hooks";
 import {
   Banner,
@@ -78,7 +78,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
         return true;
       }
       throw new Error(
-        "Missing token scopes. The token should have translations.view and translations.edit scopes."
+        "Missing token scopes. The token should have translations.view and translations.edit scopes.",
       );
     } catch (e: any) {
       if (e === "Forbidden") {
@@ -96,7 +96,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       setError(
         (e === "invalid_project_api_key"
           ? "Invalid project API key"
-          : e.message) || e
+          : e.message) || e,
       );
     }
   };
@@ -115,7 +115,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
       setError(
         (e === "invalid_project_api_key"
           ? "Invalid project API key"
-          : e.message) || e
+          : e.message) || e,
       );
     }
     queryClient.clear();
@@ -150,7 +150,7 @@ export const Settings: FunctionComponent<Props> = ({ noNavigation }) => {
 
   const renderSection = (
     step: "project" | "strings" | "push" | null = setupStep,
-    isSetup = false
+    isSetup = false,
   ) => {
     switch (step) {
       case "project":

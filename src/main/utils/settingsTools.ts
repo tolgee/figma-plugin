@@ -11,7 +11,7 @@ import { setPageData } from "./pages";
 
 const getGlobalSettings = async () => {
   const pluginData = await figma.clientStorage.getAsync(
-    TOLGEE_PLUGIN_CONFIG_NAME
+    TOLGEE_PLUGIN_CONFIG_NAME,
   );
   return pluginData ? (JSON.parse(pluginData) as Partial<GlobalSettings>) : {};
 };
@@ -19,7 +19,7 @@ const getGlobalSettings = async () => {
 const setGlobalSettings = async (data: Partial<GlobalSettings>) => {
   await figma.clientStorage.setAsync(
     TOLGEE_PLUGIN_CONFIG_NAME,
-    JSON.stringify(data)
+    JSON.stringify(data),
   );
 };
 

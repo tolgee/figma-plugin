@@ -1,5 +1,5 @@
 import { FunctionComponent, h } from "preact";
-import { useState, useRef } from "preact/hooks";
+import { useMemo, useState, useRef } from "preact/hooks";
 import { AutocompleteSelect } from "../AutocompleteSelect/AutocompleteSelect";
 import { IconButton } from "@create-figma-plugin/ui";
 import { Refresh } from "@/ui/icons/SvgIcons";
@@ -22,19 +22,20 @@ export const NamespaceSelect: FunctionComponent<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Ensure all namespaces are included, plus the current value if it's not in the list
-  const allNamespaces = [
-    ...new Set([
-      ...namespaces,
-      ...(value && !namespaces.includes(value) ? [value] : []),
-    ]),
-  ]
-    .filter(Boolean)
-    .sort((a, b) => {
-      // Sort alphabetically, but put empty string at the end
-      if (!a) return 1;
-      if (!b) return -1;
-      return a.localeCompare(b);
-    });
+  const allNamespaces = useMemo(
+    () =>
+      [
+        ...new Set([
+          ...namespaces,
+          ...(value && !namespaces.includes(value) ? [value] : []),
+        ]),
+      ].sort((a, b) => {
+        if (!a) return 1;
+        if (!b) return -1;
+        return a.localeCompare(b);
+      }),
+    [namespaces, value],
+  );
 
   const handleRefresh = async (e: MouseEvent) => {
     e.stopPropagation();

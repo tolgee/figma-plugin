@@ -23,7 +23,7 @@ function arrayBufferToString(buffer: any) {
     result += String.fromCharCode.apply(
       null,
       // @ts-ignore
-      bufView.subarray(i, i + addition)
+      bufView.subarray(i, i + addition),
     );
   }
 
@@ -55,7 +55,7 @@ function base32Decode(input: string) {
 }
 
 export function getProjectIdFromApiKey(
-  key: string | undefined
+  key: string | undefined,
 ): number | undefined {
   if (!key) {
     return undefined;
@@ -67,7 +67,6 @@ export function getProjectIdFromApiKey(
       return Number(projectId);
     }
   } catch {
-    // eslint-disable-next-line no-console
     console.warn("Tolgee: API key can't be parsed");
   }
   return undefined;

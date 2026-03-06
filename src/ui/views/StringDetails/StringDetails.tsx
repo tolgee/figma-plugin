@@ -11,6 +11,7 @@ import {
   Muted,
   Text,
   Textbox,
+  TextboxNumeric,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
@@ -86,7 +87,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
       ) {
         const currentTranslation = translation;
         const res = confirm(
-          `TOLGEE\nYou have unsaved changes for the translation\n${currentNode.key}\nDo you want to save them?`
+          `TOLGEE\nYou have unsaved changes for the translation\n${currentNode.key}\nDo you want to save them?`,
         );
         if (res) {
           updateNodeDataAndText(currentNode, currentTranslation);
@@ -94,7 +95,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
       }
 
       const currentTranslation = isSimpleNode(selectedNode)
-        ? (selectedNode.characters || selectedNode.translation) ?? ""
+        ? ((selectedNode.characters || selectedNode.translation) ?? "")
         : selectedNode?.translation ||
           translationLoadable.translation?.translation ||
           "";
@@ -112,7 +113,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     const tolgeeValue = getTolgeeFormat(
       translation ?? currentNode?.translation ?? currentNode?.characters ?? "",
       currentNode?.isPlural ?? false,
-      true
+      true,
     );
 
     setEditorValue({
@@ -126,7 +127,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
     if (currentNode) {
       refreshTranslation(
         currentNode,
-        currentNode.translation ?? currentNode.characters
+        currentNode.translation ?? currentNode.characters,
       );
     }
   }, [currentNode]);
@@ -136,7 +137,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
       return;
     }
     const currentTranslation = isSimpleNode(selectedNode)
-      ? (selectedNode.characters || selectedNode.translation) ?? ""
+      ? ((selectedNode.characters || selectedNode.translation) ?? "")
       : selectedNode?.translation ||
         translationLoadable.translation?.translation ||
         "";
@@ -157,7 +158,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
   /** Updates the textnode content and the node data */
   const updateNodeDataAndText = (
     node: NodeInfo,
-    currentTranslation: string
+    currentTranslation: string,
   ): string => {
     const newTranslation = getInterpolatedTranslation({
       currentTranslation,
@@ -221,7 +222,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
           onClick={() =>
             window.open(
               "https://docs.tolgee.io/platform/projects_and_organizations/editing_translations",
-              "_blank"
+              "_blank",
             )
           }
         >
@@ -343,10 +344,10 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                       newPlural && tolgeeValue.parameter == null
                         ? "value"
                         : newPlural
-                        ? tolgeeValue.parameter
-                        : undefined,
+                          ? tolgeeValue.parameter
+                          : undefined,
                   },
-                  false
+                  false,
                 );
                 const newNode: NodeInfo = {
                   ...currentNode,
@@ -386,7 +387,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                   currentVariants.every(
                     ([key, value], index) =>
                       key === newVariants[index][0] &&
-                      value === newVariants[index][1]
+                      value === newVariants[index][1],
                   )
                 ) {
                   return;
@@ -395,7 +396,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                 setEditorValue(value);
                 const generatedIcuString = tolgeeFormatGenerateIcu(
                   value,
-                  false
+                  false,
                 );
 
                 if (generatedIcuString !== translation) {
@@ -410,7 +411,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
 
                 const generatedIcuString = tolgeeFormatGenerateIcu(
                   editorValue,
-                  false
+                  false,
                 );
 
                 if (generatedIcuString !== currentNode.translation) {
@@ -435,11 +436,10 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                   <InfoTooltip>{valuesForFigmaString}</InfoTooltip>
                 </Muted>
                 {tolgeeValue.parameter && (
-                  <Textbox
+                  <TextboxNumeric
                     data-cy="string_details_plural_paramter_value"
                     placeholder={tolgeeValue.parameter}
                     value={currentNode.pluralParamValue ?? ""}
-                    type="number"
                     onChange={({ currentTarget }) => {
                       setNeedsSubmission(true);
                       if (currentTarget.value !== "") {
@@ -460,7 +460,7 @@ export const StringDetails = ({ node: initialNode }: StringDetailsProps) => {
                   .filter(
                     (p) =>
                       tolgeeValue.parameter == null ||
-                      p.name != tolgeeValue.parameter
+                      p.name != tolgeeValue.parameter,
                   )
                   .map((p) => (
                     <Fragment key={p}>
