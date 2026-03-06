@@ -93,7 +93,7 @@ export const StringsEditor = ({
   function createCompletionOption(
     label: string,
     detail: string,
-    insertText: string
+    insertText: string,
   ) {
     return {
       label,
@@ -120,37 +120,37 @@ export const StringsEditor = ({
         createCompletionOption(
           "element name",
           "(name of the string)",
-          "{elementName}"
+          "{elementName}",
         ),
         createCompletionOption(
           "element text",
           "(displayed text of the string)",
-          "{elementText}"
+          "{elementText}",
         ),
         createCompletionOption(
           "group",
           "(name of the nearest group)",
-          "{group}"
+          "{group}",
         ),
         createCompletionOption(
           "component",
           "(name of the nearest component)",
-          "{component}"
+          "{component}",
         ),
         createCompletionOption(
           "frame",
           "(name of the nearest frame)",
-          "{frame}"
+          "{frame}",
         ),
         createCompletionOption(
           "artboard",
           "(name of the artboard frame)",
-          "{artboard}"
+          "{artboard}",
         ),
         createCompletionOption(
           "section",
           "(name of the nearest section)",
-          "{section}"
+          "{section}",
         ),
       ],
       commitCharacters: ["}"],
@@ -179,7 +179,7 @@ export const StringsEditor = ({
           examplePluralNum: 1,
           nested: true,
           tooltips: false,
-        })
+        }),
       ),
       autocompletion({
         override: [completions],

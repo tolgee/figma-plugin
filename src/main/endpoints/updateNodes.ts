@@ -20,7 +20,6 @@ export const updateNodesEndpoint = createEndpoint<UpdateNodeProps, void>(
     const promises = nodes.map((nodeInfo) => {
       const node = textNodes.find((nod) => nod.id === nodeInfo.id)!;
       if (node.hasMissingFont) {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
         return;
       }
 
@@ -34,5 +33,5 @@ export const updateNodesEndpoint = createEndpoint<UpdateNodeProps, void>(
 
     // update selection
     emit<SelectionChangeHandler>("SELECTION_CHANGE");
-  }
+  },
 );

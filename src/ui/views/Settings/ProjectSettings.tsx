@@ -3,7 +3,7 @@ import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading
 import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
 import { TolgeeConfig } from "@/types";
 import { VerticalSpace, Text, Muted, Checkbox } from "@create-figma-plugin/ui";
-import { Fragment, FunctionComponent, h } from "preact";
+import { h, Fragment, FunctionComponent } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import styles from "./ProjectSettings.css";
 import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
@@ -83,7 +83,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   initialData,
 }) => {
   const [settings, setSettings] = useState<Partial<TolgeeConfig> | undefined>(
-    undefined
+    undefined,
   );
 
   const languagesLoadable = useApiQuery({
@@ -124,17 +124,14 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   const languages = languagesLoadable.data?._embedded?.languages;
   const namespaces = useMemo(() => {
     const ns = namespacesLoadable.data?._embedded?.namespaces?.map(
-      (n) => n.name || ""
+      (n) => n.name || "",
     ) ?? [""];
 
     if (ns.length === 0) {
       ns.push("");
     }
 
-    if (
-      settings?.namespace !== undefined &&
-      !ns.includes(settings.namespace)
-    ) {
+    if (settings?.namespace !== undefined && !ns.includes(settings.namespace)) {
       ns.push(settings.namespace);
     }
 

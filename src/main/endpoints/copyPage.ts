@@ -25,10 +25,10 @@ export const copyPageEndpoint = createEndpoint<Props | undefined, void>(
     newPage.name = name;
     setPageData(
       { pageCopy: true, pageInfo: true, language: data?.language },
-      newPage
+      newPage,
     );
     const textNodes = findTextNodes(newPage.children).filter(
-      (n) => getNodeInfo(n).key
+      (n) => getNodeInfo(n).key,
     );
 
     try {
@@ -45,7 +45,7 @@ export const copyPageEndpoint = createEndpoint<Props | undefined, void>(
 
       if (data?.language) {
         const newText = data.nodes.find(
-          (n) => n.key === key && compareNs(n.ns, ns)
+          (n) => n.key === key && compareNs(n.ns, ns),
         )?.characters;
 
         if (newText) {
@@ -57,5 +57,5 @@ export const copyPageEndpoint = createEndpoint<Props | undefined, void>(
     }
 
     figma.notify(`Created page "${name}"`);
-  }
+  },
 );

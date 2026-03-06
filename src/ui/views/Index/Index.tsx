@@ -67,14 +67,14 @@ export const Index = () => {
   const allAvailableNamespaces = useMemo(() => {
     const apiNamespaces =
       namespacesLoadable.data?._embedded?.namespaces?.map(
-        (n) => n.name || ""
+        (n) => n.name || "",
       ) || [];
     const nodeNamespaces = Array.from(
       new Set(
         (allNodes.data?.items || [])
           .map((node) => node.ns)
-          .filter((ns): ns is string => Boolean(ns))
-      )
+          .filter((ns): ns is string => Boolean(ns)),
+      ),
     );
     return Array.from(new Set([...apiNamespaces, ...nodeNamespaces]))
       .filter(Boolean)
@@ -88,7 +88,7 @@ export const Index = () => {
 
   const loadedNamespaces = useMemo(
     () => allAvailableNamespaces.map((name) => ({ name })),
-    [allAvailableNamespaces]
+    [allAvailableNamespaces],
   );
 
   // Refresh namespaces: refetch API and all nodes
@@ -105,7 +105,7 @@ export const Index = () => {
         onRefreshNamespaces={handleRefreshNamespaces}
       />
     ),
-    [hasNamespacesEnabled, loadedNamespaces, handleRefreshNamespaces]
+    [hasNamespacesEnabled, loadedNamespaces, handleRefreshNamespaces],
   );
 
   const nothingSelected = !selectionLoadable.data?.somethingSelected;
@@ -128,8 +128,8 @@ export const Index = () => {
       const keys = Array.from(new Set(conflicts.map((n) => n.key)));
       setError(
         `There are multiple different translations for single key (${keys.join(
-          ", "
-        )})`
+          ", ",
+        )})`,
       );
     } else {
       setRoute("push");
@@ -174,7 +174,7 @@ export const Index = () => {
                     value={language}
                     onChange={(e) => {
                       handleLanguageChange(
-                        (e.target as HTMLInputElement).value
+                        (e.target as HTMLInputElement).value,
                       );
                     }}
                   >
@@ -251,10 +251,7 @@ export const Index = () => {
           </Text>
         </Container>
       ) : (
-        <NodeList
-          items={selection}
-          row={renderRow}
-        />
+        <NodeList items={selection} row={renderRow} />
       )}
     </div>
   );

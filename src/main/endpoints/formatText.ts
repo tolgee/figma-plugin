@@ -22,7 +22,7 @@ export const formatText = async ({
 
   const fontNames = textNode.getRangeAllFontNames(
     0,
-    textNode.characters.length
+    textNode.characters.length,
   );
 
   for (const font of fontNames) {
@@ -38,7 +38,7 @@ export const formatText = async ({
 
   const findRanges = (
     html: string,
-    tag: string
+    tag: string,
   ): { start: number; end: number }[] => {
     const ranges: { start: number; end: number }[] = [];
     const regex = new RegExp(`<${tag}>(.*?)</${tag}>`, "g");
@@ -74,12 +74,12 @@ export const formatText = async ({
 
   const getFontsOfFamily = async (font: FontName) =>
     (await getAvailableFonts()).filter(
-      (f) => f.fontName.family === font.family
+      (f) => f.fontName.family === font.family,
     );
 
   const findBestBoldStyle = async (
     family: string,
-    availableFonts: Font[]
+    availableFonts: Font[],
   ): Promise<string | null> => {
     /** Some common names for bold styles */
     const boldStyles = [
@@ -96,7 +96,7 @@ export const formatText = async ({
     for (const style of boldStyles) {
       const fontExists = availableFonts.some(
         (font) =>
-          font.fontName.family === family && font.fontName.style === style
+          font.fontName.family === family && font.fontName.style === style,
       );
       if (fontExists) {
         try {
@@ -110,7 +110,7 @@ export const formatText = async ({
 
     /** First font where "bold" is included */
     const fallbackFont = availableFonts.find((f) =>
-      f.fontName.style.toLowerCase().includes("bold")
+      f.fontName.style.toLowerCase().includes("bold"),
     );
 
     if (fallbackFont) {
@@ -126,7 +126,7 @@ export const formatText = async ({
 
   const findBestItalicStyle = async (
     family: string,
-    availableFonts: Font[]
+    availableFonts: Font[],
   ): Promise<string | null> => {
     /** List of common italic styles */
     const italicStyles = [
@@ -144,7 +144,7 @@ export const formatText = async ({
     for (const style of italicStyles) {
       const fontExists = availableFonts.some(
         (font) =>
-          font.fontName.family === family && font.fontName.style === style
+          font.fontName.family === family && font.fontName.style === style,
       );
       if (fontExists) {
         try {
@@ -160,7 +160,7 @@ export const formatText = async ({
     const fallbackFont = availableFonts.find(
       (f) =>
         f.fontName.style.toLowerCase().includes("italic") ||
-        f.fontName.style.toLowerCase().includes("oblique")
+        f.fontName.style.toLowerCase().includes("oblique"),
     );
 
     if (fallbackFont) {
@@ -177,7 +177,7 @@ export const formatText = async ({
   const applyStyles = async (
     ranges: { start: number; end: number }[],
     style: Partial<Paint & FontName> | undefined,
-    decoration?: TextDecoration
+    decoration?: TextDecoration,
   ) => {
     for (const range of ranges) {
       if (range.start > range.end) {
@@ -190,14 +190,14 @@ export const formatText = async ({
           {
             family: style.family,
             style: style.style,
-          }
+          },
         );
       }
       if (decoration) {
         textNode.setRangeTextDecoration(
           range.start,
           Math.min(textNode.characters.length, range.end),
-          decoration
+          decoration,
         );
       }
     }
@@ -206,13 +206,13 @@ export const formatText = async ({
   const getFontForRange = (range: { start: number; end: number }) => {
     const font = textNode.getRangeFontName(
       range.start,
-      Math.min(textNode.characters.length, range.end)
+      Math.min(textNode.characters.length, range.end),
     );
 
     if (font === figma.mixed) {
       return textNode.getRangeFontName(
         range.start,
-        range.start + 1
+        range.start + 1,
       ) as FontName;
     }
     return font as FontName;
@@ -236,7 +236,7 @@ export const formatText = async ({
   const formattedRanges = [...boldRanges, ...italicRanges];
   for (let i = 0; i < textNode.characters.length; i++) {
     const isBoldOrItalic = formattedRanges.some(
-      (range) => i >= range.start && i <= range.end
+      (range) => i >= range.start && i <= range.end,
     );
 
     if (!isBoldOrItalic) {
@@ -294,7 +294,7 @@ export const formatText = async ({
       const availableFonts = await getFontsOfFamily(font);
       const italicStyle = await findBestItalicStyle(
         font.family,
-        availableFonts
+        availableFonts,
       );
 
       if (italicStyle) {
@@ -314,5 +314,5 @@ export const formatText = async ({
 
 export const formatTextEndpoint = createEndpoint<FormatTextEndpointArgs, void>(
   "UPDATE_NODE_TEXT",
-  async (args) => await formatText(args)
+  async (args) => await formatText(args),
 );

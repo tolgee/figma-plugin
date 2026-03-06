@@ -59,7 +59,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
     : null;
 
   const [inputValue, setInputValue] = useState(
-    singleSelect ? singleValue ?? "" : ""
+    singleSelect ? (singleValue ?? "") : "",
   );
   const [isFocused, setIsFocused] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -67,16 +67,16 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
   const inputRef = externalInputRef || internalInputRef;
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownDirection, setDropdownDirection] = useState<"down" | "up">(
-    "down"
+    "down",
   );
 
   // For single-select mode, show value in input when not focused, otherwise show inputValue
   // Ensure we always return a string, not undefined
   const displayInputValue = singleSelect
     ? isFocused
-      ? inputValue ?? ""
-      : singleValue ?? ""
-    : inputValue ?? "";
+      ? (inputValue ?? "")
+      : (singleValue ?? "")
+    : (inputValue ?? "");
 
   useLayoutEffect(() => {
     if (!showDropdown || !inputRef.current) return;
@@ -101,12 +101,12 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
   const trimmedInputValue = useMemo(() => inputValue.trim(), [inputValue]);
   const lowerInputTrimmed = useMemo(
     () => trimmedInputValue.toLowerCase(),
-    [trimmedInputValue]
+    [trimmedInputValue],
   );
 
   const filteredOptions = useMemo(() => {
     const filtered = options.filter((opt) =>
-      opt.toLowerCase().includes(lowerInputTrimmed)
+      opt.toLowerCase().includes(lowerInputTrimmed),
     );
     // In multi-select mode, exclude already selected values
     if (isMultiSelect) {
@@ -117,19 +117,15 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
 
   const exactMatch = useMemo(() => {
     return filteredOptions.find(
-      (opt) => opt.toLowerCase() === lowerInputTrimmed
+      (opt) => opt.toLowerCase() === lowerInputTrimmed,
     );
   }, [filteredOptions, lowerInputTrimmed]);
 
   const alreadyExists = isMultiSelect
     ? multiValues.includes(inputValue.trim()) ||
-      options.some(
-        (opt) => opt.toLowerCase() === lowerInputTrimmed
-      )
+      options.some((opt) => opt.toLowerCase() === lowerInputTrimmed)
     : singleValue === inputValue.trim() ||
-      options.some(
-        (opt) => opt.toLowerCase() === lowerInputTrimmed
-      );
+      options.some((opt) => opt.toLowerCase() === lowerInputTrimmed);
 
   const highlightedOptions = useMemo(
     () =>
@@ -142,7 +138,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
         const isExact = opt.toLowerCase() === lowerInputTrimmed;
         return { opt, label, matchIndex, isExact };
       }),
-    [filteredOptions, displayValue, lowerInputTrimmed]
+    [filteredOptions, displayValue, lowerInputTrimmed],
   );
 
   const canAdd = inputValue.trim() && !alreadyExists;
@@ -294,7 +290,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
               const before = label.slice(0, matchIndex);
               const match = label.slice(
                 matchIndex,
-                matchIndex + trimmedInputValue.length
+                matchIndex + trimmedInputValue.length,
               );
               const after = label.slice(matchIndex + trimmedInputValue.length);
               return (

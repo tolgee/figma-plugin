@@ -15,7 +15,7 @@ function replacePlaceholder(
   result: string,
   placeholder: string,
   value: string,
-  variableCasing: TolgeeConfig["variableCasing"]
+  variableCasing: TolgeeConfig["variableCasing"],
 ) {
   let newFormat = result;
   const replaceString = formatString(value, variableCasing);
@@ -24,22 +24,22 @@ function replacePlaceholder(
     // If the value is empty, we need to remove the placeholder and the separator before it
     const textBeforePlaceholder = originalFormat.slice(
       0,
-      originalFormat.indexOf(placeholder)
+      originalFormat.indexOf(placeholder),
     );
 
     const separatorBeforePlaceholder = textBeforePlaceholder.slice(
-      textBeforePlaceholder.lastIndexOf("}") + 1
+      textBeforePlaceholder.lastIndexOf("}") + 1,
     );
 
     newFormat = newFormat.replace(
       new RegExp(`${separatorBeforePlaceholder}${placeholder}`, "g"),
-      ""
+      "",
     );
   } else {
     // If the value is not empty, we need to replace the placeholder with the value
     newFormat = newFormat.replace(
       new RegExp(`${placeholder}`, "g"),
-      replaceString
+      replaceString,
     );
   }
   return newFormat;
@@ -60,7 +60,7 @@ export const preformatKeyEndpoint = createEndpoint<
           result,
           placeholder,
           parents.artboard?.name ?? "",
-          variableCasing
+          variableCasing,
         );
         break;
       case "{frame}":
@@ -69,7 +69,7 @@ export const preformatKeyEndpoint = createEndpoint<
           result,
           placeholder,
           parents.frame?.name ?? "",
-          variableCasing
+          variableCasing,
         );
         break;
       case "{elementName}":
@@ -78,7 +78,7 @@ export const preformatKeyEndpoint = createEndpoint<
           result,
           placeholder,
           parents.element?.name ?? "",
-          variableCasing
+          variableCasing,
         );
         break;
       case "{elementText}":
@@ -87,7 +87,7 @@ export const preformatKeyEndpoint = createEndpoint<
           result,
           placeholder,
           parents.element?.type === "TEXT" ? parents.element.characters : "",
-          variableCasing
+          variableCasing,
         );
         break;
       case "{component}":
@@ -96,7 +96,7 @@ export const preformatKeyEndpoint = createEndpoint<
           result,
           placeholder,
           parents.component?.name ?? "",
-          variableCasing
+          variableCasing,
         );
         break;
       case "{section}":
@@ -105,7 +105,7 @@ export const preformatKeyEndpoint = createEndpoint<
           result,
           placeholder,
           parents.section?.name ?? "",
-          variableCasing
+          variableCasing,
         );
         break;
       case "{group}":
@@ -114,7 +114,7 @@ export const preformatKeyEndpoint = createEndpoint<
           result,
           placeholder,
           parents.group?.name ?? "",
-          variableCasing
+          variableCasing,
         );
         break;
       default:

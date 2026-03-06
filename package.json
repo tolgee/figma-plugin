@@ -7,7 +7,7 @@
     "build": "build-figma-plugin --typecheck --minify",
     "watch": "build-figma-plugin --typecheck --watch",
     "schema": "openapi-typescript 'http://localhost:8085/v3/api-docs/Accessible with Project API key (All)' --output ./src/ui/client/apiSchema.generated.ts",
-    "eslint": "eslint --ext .ts,.tsx,.js,.jsx src",
+    "eslint": "eslint --fix --ext .ts,.tsx,.js,.jsx src",
     "watch:web": "npm run --prefix web watch",
     "dev:web": "ts-node ./scripts/runAfterApp.ts \"npm run watch:web\"",
     "dev:figma": "ts-node ./scripts/runAfterApp.ts \"npm run watch\"",

@@ -12,7 +12,7 @@ export const getScreenshotsEndpoint = createEndpoint(
     const connectedNodes = findTextNodes(
       figma.currentPage.selection.length
         ? figma.currentPage.selection
-        : figma.currentPage.children
+        : figma.currentPage.children,
     ).filter((node) => getNodeInfo(node).key);
 
     const frameToNodes = new Map<FrameNode, TextNode[]>();
@@ -52,8 +52,8 @@ export const getScreenshotsEndpoint = createEndpoint(
             };
           }),
         };
-      })
+      }),
     );
     return data;
-  }
+  },
 );

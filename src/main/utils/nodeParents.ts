@@ -63,7 +63,7 @@ export function getArtboard(nodeId: string): FrameNode | undefined {
  * Returns the component name if the node is inside a component.
  */
 export function getComponent(
-  nodeId: string
+  nodeId: string,
 ): ComponentNode | ComponentSetNode | undefined {
   return getAllParents(nodeId).component;
 }

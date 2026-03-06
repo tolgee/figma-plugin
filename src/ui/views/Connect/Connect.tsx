@@ -57,7 +57,7 @@ export const Connect = ({ node }: Props) => {
   const handleConnect = async (
     key: string,
     ns: string | undefined,
-    translation: string | undefined
+    translation: string | undefined,
   ) => {
     if (
       !allTranslationsLoadable.isLoading &&

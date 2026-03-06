@@ -34,7 +34,7 @@ export const ListItem = ({
   const prefilledKey = usePrefilledKey(
     nodeId,
     tolgeeConfig?.keyFormat ?? "",
-    tolgeeConfig?.variableCasing
+    tolgeeConfig?.variableCasing,
   );
 
   const [keyName, setKeyName] = useState((node.key || prefilledKey.key) ?? "");
@@ -84,9 +84,9 @@ export const ListItem = ({
         new Set([
           ...(loadedNamespaces?.map((ns) => ns.name || "") || []),
           defaultNamespace || "",
-        ])
+        ]),
       ),
-    [loadedNamespaces, defaultNamespace]
+    [loadedNamespaces, defaultNamespace],
   );
 
   const handleKeyChange = useCallback((value: string) => {

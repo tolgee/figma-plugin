@@ -16,7 +16,7 @@ export const ResizeHandle = () => {
   const [isResizing, setIsResizing] = useState(false);
   const [startSize, setStartSize] = useState<WindowSize | null>(null);
   const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const handleRef = useRef<HTMLDivElement>(null);
   const { setSizeStack } = useGlobalActions();
@@ -30,36 +30,39 @@ export const ResizeHandle = () => {
     setStartSize(currentSize);
   };
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isResizing || !startPos || !startSize) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isResizing || !startPos || !startSize) return;
 
-    const deltaX = e.clientX - startPos.x;
-    const deltaY = e.clientY - startPos.y;
+      const deltaX = e.clientX - startPos.x;
+      const deltaY = e.clientY - startPos.y;
 
-    const newWidth = Math.max(
-      MIN_WIDTH,
-      Math.min(MAX_WIDTH, startSize.width + deltaX)
-    );
-    const newHeight = Math.max(
-      MIN_HEIGHT,
-      Math.min(MAX_HEIGHT, startSize.height + deltaY)
-    );
+      const newWidth = Math.max(
+        MIN_WIDTH,
+        Math.min(MAX_WIDTH, startSize.width + deltaX),
+      );
+      const newHeight = Math.max(
+        MIN_HEIGHT,
+        Math.min(MAX_HEIGHT, startSize.height + deltaY),
+      );
 
-    const newSize: WindowSize = { width: newWidth, height: newHeight };
+      const newSize: WindowSize = { width: newWidth, height: newHeight };
 
-    emit<ResizeHandler>("RESIZE", newSize);
+      emit<ResizeHandler>("RESIZE", newSize);
 
-    // Update the global size stack to remember this size
-    setSizeStack((stack) => {
-      const newStack = [...stack];
-      if (newStack.length > 0) {
-        newStack[newStack.length - 1] = newSize;
-      } else {
-        newStack.push(newSize);
-      }
-      return newStack;
-    });
-  }, [isResizing, startPos, startSize, setSizeStack]);
+      // Update the global size stack to remember this size
+      setSizeStack((stack) => {
+        const newStack = [...stack];
+        if (newStack.length > 0) {
+          newStack[newStack.length - 1] = newSize;
+        } else {
+          newStack.push(newSize);
+        }
+        return newStack;
+      });
+    },
+    [isResizing, startPos, startSize, setSizeStack],
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);

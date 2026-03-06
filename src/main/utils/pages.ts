@@ -15,7 +15,7 @@ export const getPageData = (page = figma.currentPage) => {
 
 export const setPageData = (
   data: Partial<CurrentPageSettings>,
-  page = figma.currentPage
+  page = figma.currentPage,
 ) => {
   page.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, JSON.stringify(data));
 };

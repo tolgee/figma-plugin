@@ -38,7 +38,6 @@ export const PushSection: FunctionComponent<PushSectionProps> = ({
   useEffect(() => {
     setTolgeeConfig({ ...tolgeeConfig, tags });
     if (onTagsChange) onTagsChange(tags);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tags]);
 
   return (

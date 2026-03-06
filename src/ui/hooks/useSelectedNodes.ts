@@ -9,7 +9,7 @@ export const useSelectedNodes = () => {
   const result = useQuery(
     [getSelectedNodesEndpoint.name],
     delayed(() => getSelectedNodesEndpoint.call()),
-    { keepPreviousData: true, staleTime: 0, cacheTime: 0 }
+    { keepPreviousData: true, staleTime: 0, cacheTime: 0 },
   );
 
   const refetchTimerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -19,8 +19,14 @@ export const useSelectedNodes = () => {
   }, []);
 
   useEffect(() => {
-    const unsubDoc = on<DocumentChangeHandler>("DOCUMENT_CHANGE", debouncedRefetch);
-    const unsubSel = on<SelectionChangeHandler>("SELECTION_CHANGE", debouncedRefetch);
+    const unsubDoc = on<DocumentChangeHandler>(
+      "DOCUMENT_CHANGE",
+      debouncedRefetch,
+    );
+    const unsubSel = on<SelectionChangeHandler>(
+      "SELECTION_CHANGE",
+      debouncedRefetch,
+    );
     return () => {
       unsubDoc();
       unsubSel();

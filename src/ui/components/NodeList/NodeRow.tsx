@@ -17,79 +17,74 @@ type Props = {
   onClick?: () => void;
 };
 
-export const NodeRow = memo(({
-  node,
-  action,
-  keyComponent,
-  nsComponent,
-  compact,
-  onClick,
-}: Props) => {
-  const showText = node.characters || !compact || action;
+export const NodeRow = memo(
+  ({ node, action, keyComponent, nsComponent, compact, onClick }: Props) => {
+    const showText = node.characters || !compact || action;
 
-  const { translationDiffersFromNode } = useInterpolatedTranslation(node);
+    const { translationDiffersFromNode } = useInterpolatedTranslation(node);
 
-  const infoString =
-    "Manual changes have been detected.\nGo to details to resolve conflict.";
+    const infoString =
+      "Manual changes have been detected.\nGo to details to resolve conflict.";
 
-  return (
-    <div
-      data-cy="general_node_list_row"
-      className={styles.container}
-      style={{
-        gridTemplateColumns: action ? "1fr 1fr auto" : "1fr 1fr",
-        cursor: onClick ? "pointer" : "default",
-      }}
-      role={onClick ? "button" : undefined}
-      onClick={onClick}
-    >
-      {showText && (
-        <div
-          title="Translation text"
-          className={styles.text}
-          data-cy="general_node_list_row_text"
-        >
-          <HtmlText
-            style={{
-              whiteSpace: "pre-wrap",
-            }}
-            text={node.characters ?? ""}
-          />
-
-          {translationDiffersFromNode && (
-            <InfoTooltip rotated color="var(--figma-color-bg-brand)">
-              {infoString}
-            </InfoTooltip>
-          )}
-          {node.isPlural && <Badge>plural</Badge>}
-          {Object.keys(node.paramsValues ?? {}).length > 0 && (
-            <Badge>parameters</Badge>
-          )}
-        </div>
-      )}
-      <div className={styles.action} data-cy="general_node_list_row_action">
-        {action}
-      </div>
+    return (
       <div
-        title="Translation key"
-        data-cy="general_node_list_row_key"
-        className={styles.key}
+        data-cy="general_node_list_row"
+        className={styles.container}
+        style={{
+          gridTemplateColumns: action ? "1fr 1fr auto" : "1fr 1fr",
+          cursor: onClick ? "pointer" : "default",
+        }}
+        role={onClick ? "button" : undefined}
+        onClick={onClick}
       >
-        {keyComponent ? keyComponent : node.key}
-      </div>
-      <div
-        className={styles.ns}
-        title="Translation namespace"
-        data-cy="general_node_list_row_namespace"
-      >
-        {nsComponent
-          ? nsComponent
-          : node.ns && (
-              <span>
-                <span className={styles.disabled}>Namespace:</span> {node.ns}
-              </span>
+        {showText && (
+          <div
+            title="Translation text"
+            className={styles.text}
+            data-cy="general_node_list_row_text"
+          >
+            <HtmlText
+              style={{
+                whiteSpace: "pre-wrap",
+              }}
+              text={node.characters ?? ""}
+            />
+
+            {translationDiffersFromNode && (
+              <InfoTooltip rotated color="var(--figma-color-bg-brand)">
+                {infoString}
+              </InfoTooltip>
             )}
+            {node.isPlural && <Badge>plural</Badge>}
+            {Object.keys(node.paramsValues ?? {}).length > 0 && (
+              <Badge>parameters</Badge>
+            )}
+          </div>
+        )}
+        <div className={styles.action} data-cy="general_node_list_row_action">
+          {action}
+        </div>
+        <div
+          title="Translation key"
+          data-cy="general_node_list_row_key"
+          className={styles.key}
+        >
+          {keyComponent ? keyComponent : node.key}
+        </div>
+        <div
+          className={styles.ns}
+          title="Translation namespace"
+          data-cy="general_node_list_row_namespace"
+        >
+          {nsComponent
+            ? nsComponent
+            : node.ns && (
+                <span>
+                  <span className={styles.disabled}>Namespace:</span> {node.ns}
+                </span>
+              )}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+);

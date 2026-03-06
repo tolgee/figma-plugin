@@ -24,16 +24,17 @@ export const NamespaceSelect: FunctionComponent<Props> = ({
   // Ensure all namespaces are included, plus the current value if it's not in the list
   const allNamespaces = useMemo(
     () =>
-      [...new Set([
-        ...namespaces,
-        ...(value && !namespaces.includes(value) ? [value] : []),
-      ])]
-        .sort((a, b) => {
-          if (!a) return 1;
-          if (!b) return -1;
-          return a.localeCompare(b);
-        }),
-    [namespaces, value]
+      [
+        ...new Set([
+          ...namespaces,
+          ...(value && !namespaces.includes(value) ? [value] : []),
+        ]),
+      ].sort((a, b) => {
+        if (!a) return 1;
+        if (!b) return -1;
+        return a.localeCompare(b);
+      }),
+    [namespaces, value],
   );
 
   const handleRefresh = async (e: MouseEvent) => {

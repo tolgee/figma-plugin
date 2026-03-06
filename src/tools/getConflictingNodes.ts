@@ -1,5 +1,4 @@
 import { NodeInfo } from "@/types";
-import { compareNs } from "./compareNs";
 
 export type Conflicts = Record<string, string[]>;
 
@@ -20,7 +19,7 @@ export const getConflictingNodes = (nodes: NodeInfo[]) => {
   for (const group of groupMap.values()) {
     if (group.length < 2) continue;
     const hasConflict = group.some(
-      (n, i) => i > 0 && n.characters !== group[0].characters
+      (n, i) => i > 0 && n.characters !== group[0].characters,
     );
     if (hasConflict) {
       conflictingNodes.push(...group);

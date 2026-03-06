@@ -59,7 +59,7 @@ export const CreateCopy: FunctionComponent = () => {
         const { changedNodes } = getPullChanges(
           connectedNodes.data?.items || [],
           language,
-          response
+          response,
         );
 
         copyPageMutation.mutate(
@@ -67,7 +67,7 @@ export const CreateCopy: FunctionComponent = () => {
             language,
             nodes: changedNodes,
           },
-          { onSuccess: goToIndex }
+          { onSuccess: goToIndex },
         );
       }
     }

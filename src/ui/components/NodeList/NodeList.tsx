@@ -49,7 +49,7 @@ export function NodeList<T extends { id: string }>({
       const availableHeight = window.innerHeight - rect.top - 20; // 20px padding
       const calculatedHeight = Math.max(
         minVisibleRows * rowHeight,
-        Math.min(availableHeight, items.length * rowHeight)
+        Math.min(availableHeight, items.length * rowHeight),
       );
       setContainerHeight(calculatedHeight);
     }
@@ -102,7 +102,7 @@ export function NodeList<T extends { id: string }>({
   const visibleStart = Math.floor(scrollTop / rowHeight);
   const visibleEnd = Math.min(
     items.length - 1,
-    Math.ceil((scrollTop + containerHeight) / rowHeight)
+    Math.ceil((scrollTop + containerHeight) / rowHeight),
   );
 
   const startIndex = Math.max(0, visibleStart - overscan);
@@ -125,11 +125,7 @@ export function NodeList<T extends { id: string }>({
   };
 
   return (
-    <div
-      className={styles.container}
-      ref={containerRef}
-      style={containerStyle}
-    >
+    <div className={styles.container} ref={containerRef} style={containerStyle}>
       <div style={spacerStyle}>
         <div style={translateStyle}>
           {visibleItems.map((item) => (
