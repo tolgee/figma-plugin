@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "es2015",
     "typeRoots": ["node_modules/@figma", "node_modules/@types"],
-    "types": ["plugin-typings"],
+    "types": ["plugin-typings", "node"],
     "skipLibCheck": true,
     "module": "commonjs",
     "noEmit": true,
