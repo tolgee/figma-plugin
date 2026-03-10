@@ -135,11 +135,10 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       ns.push(settings.namespace);
     }
 
-    // Sort namespaces alphabetically
+    // Sort namespaces: keep empty string (implicit default) first, then alphabetically
     ns.sort((a, b) => {
-      // Sort alphabetically, but put empty string at the end
-      if (!a) return 1;
-      if (!b) return -1;
+      if (a === "" || !a) return -1;
+      if (b === "" || !b) return 1;
       return a.localeCompare(b);
     });
 

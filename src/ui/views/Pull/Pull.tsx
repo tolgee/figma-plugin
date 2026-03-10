@@ -49,7 +49,12 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
         language: lang ?? "",
       });
       setDiffData(
-        getPullChanges(selectedNodes.data?.items || [], lang, translations, hasNamespacesEnabled),
+        getPullChanges(
+          selectedNodes.data?.items || [],
+          lang,
+          translations,
+          hasNamespacesEnabled,
+        ),
       );
       setError(undefined);
     } catch (e) {

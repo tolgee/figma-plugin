@@ -72,7 +72,13 @@ export const ListItem = ({
         nodes: [{ ...node, key: debouncedKeyName, ns: debouncedNamespace }],
       });
     }
-  }, [debouncedKeyName, debouncedNamespace, node.id, node.connected]);
+  }, [
+    debouncedKeyName,
+    debouncedNamespace,
+    node.id,
+    node.connected,
+    defaultNamespace,
+  ]);
 
   const handleConnect = (node: NodeInfo) => {
     setRoute("connect", { node });

@@ -4,6 +4,7 @@ import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import reactPlugin from "eslint-plugin-react";
 import prettierPlugin from "eslint-plugin-prettier";
+import jestPlugin from "eslint-plugin-jest";
 
 /** @type {import("eslint").Linter.FlatConfig[]} */
 export default [
@@ -25,6 +26,7 @@ export default [
       "@typescript-eslint": tsPlugin,
       react: reactPlugin,
       prettier: prettierPlugin,
+      jest: jestPlugin,
     },
     rules: {
       // Start from preact + recommended + TS recommended
