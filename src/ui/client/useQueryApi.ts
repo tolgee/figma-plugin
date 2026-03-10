@@ -18,7 +18,7 @@ import { customPaths } from "./apiSchema.custom";
 export type QueryProps<
   Url extends keyof Paths,
   Method extends keyof Paths[Url],
-  Paths = paths
+  Paths = paths,
 > = {
   url: Url;
   method: Method;
@@ -29,9 +29,9 @@ export type QueryProps<
 export const useApiQuery = <
   Url extends keyof Paths,
   Method extends keyof Paths[Url],
-  Paths = paths & customPaths
+  Paths = paths & customPaths,
 >(
-  props: QueryProps<Url, Method, Paths>
+  props: QueryProps<Url, Method, Paths>,
 ) => {
   const { url, method, options, clientOptions, ...request } = props;
 
@@ -44,14 +44,14 @@ export const useApiQuery = <
         apiKey: config.apiKey,
         apiUrl: config.apiUrl,
       }),
-    options
+    options,
   );
 };
 
 export type MutationProps<
   Url extends keyof Paths,
   Method extends keyof Paths[Url],
-  Paths = paths
+  Paths = paths,
 > = {
   url: Url;
   method: Method;
@@ -67,9 +67,9 @@ export type MutationProps<
 export const useApiMutation = <
   Url extends keyof Paths,
   Method extends keyof Paths[Url],
-  Paths = paths
+  Paths = paths,
 >(
-  props: MutationProps<Url, Method, Paths>
+  props: MutationProps<Url, Method, Paths>,
 ) => {
   const queryClient = useQueryClient();
   const { url, method, options, invalidatePrefix, clientOptions } = props;
@@ -81,7 +81,7 @@ export const useApiMutation = <
   >(
     (request) =>
       client<Url, Method, Paths>(url, method, request, clientOptions, config),
-    options
+    options,
   );
 
   // inject custom onSuccess
@@ -100,14 +100,14 @@ export const useApiMutation = <
     (variables, options) => {
       return mutation.mutate(variables, customOptions(options as any));
     },
-    [mutation.mutate]
+    [mutation.mutate],
   );
 
   const mutateAsync = useCallback<typeof mutation.mutateAsync>(
     (variables, options) => {
       return mutation.mutateAsync(variables, customOptions(options as any));
     },
-    [mutation.mutateAsync]
+    [mutation.mutateAsync],
   );
 
   return { ...mutation, mutate, mutateAsync };

@@ -6,5 +6,5 @@ export const editorTypeEndpoint = createEndpoint<null, EditorType>(
   "EDITOR_TYPE",
   () => {
     return figma.editorType;
-  }
+  },
 );

@@ -73,7 +73,7 @@ export const Push: FunctionalComponent = () => {
   // Create a stable key from nodes to detect changes (including namespace changes)
   const nodesKey = useMemo(
     () => nodes.map((n) => `${n.id}:${n.key}:${n.ns || ""}`).join("|"),
-    [nodes]
+    [nodes],
   );
 
   // Extract unique namespaces from nodes being pushed (performance optimization)
@@ -85,8 +85,8 @@ export const Push: FunctionalComponent = () => {
       new Set(
         deduplicatedNodes
           .map((node) => node.ns)
-          .filter((ns): ns is string => Boolean(ns))
-      )
+          .filter((ns): ns is string => Boolean(ns)),
+      ),
     );
     return uniqueNamespaces.sort().join(",");
   }, [deduplicatedNodes, hasNamespacesEnabled]);
@@ -97,13 +97,13 @@ export const Push: FunctionalComponent = () => {
       tolgeeConfig?.updateScreenshots
         ? nodes.map((n) => `${n.id}:${n.key}:${n.ns || ""}`).join("|")
         : "",
-    [nodes, tolgeeConfig?.updateScreenshots]
+    [nodes, tolgeeConfig?.updateScreenshots],
   );
 
   // Extract stable primitive values from tolgeeConfig to avoid object reference issues
   const tolgeeConfigTags = useMemo(
-    () => JSON.stringify(tolgeeConfig?.tags?.sort() || []),
-    [tolgeeConfig?.tags]
+    () => JSON.stringify([...(tolgeeConfig?.tags ?? [])].sort()),
+    [tolgeeConfig?.tags],
   );
   const tolgeeConfigUpdateScreenshots = tolgeeConfig?.updateScreenshots ?? true;
   const tolgeeConfigAddTags = tolgeeConfig?.addTags ?? false;
@@ -124,7 +124,7 @@ export const Push: FunctionalComponent = () => {
         const requiredNamespaces =
           hasNamespacesEnabled && deduplicatedNodes.length > 0
             ? Array.from(
-                new Set(deduplicatedNodes.map((node) => node.ns ?? ""))
+                new Set(deduplicatedNodes.map((node) => node.ns ?? "")),
               )
             : undefined;
 
@@ -156,8 +156,8 @@ export const Push: FunctionalComponent = () => {
             translations,
             hasNamespacesEnabled,
             screenshots,
-            configForDiff
-          )
+            configForDiff,
+          ),
         );
       } catch (e) {
         if (cancelled) return;
@@ -234,7 +234,7 @@ export const Push: FunctionalComponent = () => {
         ...n,
         translation:
           changes?.changedKeys.find(
-            (k) => k.key === n.key && compareNs(k.ns, n.ns)
+            (k) => k.key === n.key && compareNs(k.ns, n.ns),
           )?.newValue ?? n.translation,
         connected: true,
       })),
@@ -262,7 +262,7 @@ export const Push: FunctionalComponent = () => {
 
       for (const [i, screenshot] of requiredScreenshots.entries()) {
         setLoadingStatus(
-          `Uploading images (${i + 1}/${requiredScreenshots.length})`
+          `Uploading images (${i + 1}/${requiredScreenshots.length})`,
         );
         const imageBlob = new Blob([screenshot.image.buffer as ArrayBuffer], {
           type: "image/png",
@@ -287,7 +287,7 @@ export const Push: FunctionalComponent = () => {
         if (uploadScreenshots) {
           item.screenshots.forEach((screenshot) => {
             const relevantNodes = screenshot.keys.filter(
-              ({ key, ns }) => key === item.key && compareNs(ns, item.ns)
+              ({ key, ns }) => key === item.key && compareNs(ns, item.ns),
             );
 
             result.push({
@@ -376,7 +376,7 @@ export const Push: FunctionalComponent = () => {
         }
       } catch (e) {
         setErrorMessage(
-          `Error adding tags. ${e}. Translations were still updated.`
+          `Error adding tags. ${e}. Translations were still updated.`,
         );
       }
 
@@ -400,11 +400,11 @@ export const Push: FunctionalComponent = () => {
           } catch (e) {
             if (e === "too_many_uploaded_images") {
               setErrorMessage(
-                "Too many uploaded images. Disable update screenshots in settings. Translations were still updated."
+                "Too many uploaded images. Disable update screenshots in settings. Translations were still updated.",
               );
             } else {
               setErrorMessage(
-                `Error updating screenshots. ${e}. Translations were still updated.`
+                `Error updating screenshots. ${e}. Translations were still updated.`,
               );
             }
           }
@@ -427,10 +427,10 @@ export const Push: FunctionalComponent = () => {
         setErrorMessage("Invalid project API key");
       } else if (e === "too_many_uploaded_images") {
         setErrorMessage(
-          "Too many uploaded images. Disable update screenshots in settings."
+          "Too many uploaded images. Disable update screenshots in settings.",
         );
       } else if (e === "import_keys_error") {
-        setErrorMessage("Error importing keys. Please try again.");
+        setErrorMessage("Error pushing translations. Please try again.");
       } else {
         setErrorMessage(`Cannot push translations. ${e}`);
       }
@@ -458,8 +458,8 @@ export const Push: FunctionalComponent = () => {
   const changesSize = success
     ? pushedKeysCount
     : changes
-    ? changes.changedKeys.length + changes.newKeys.length
-    : 0;
+      ? changes.changedKeys.length + changes.newKeys.length
+      : 0;
 
   const noChanges = changesSize === 0;
 

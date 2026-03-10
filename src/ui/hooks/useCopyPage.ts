@@ -11,6 +11,6 @@ type Props = {
 export const useCopyPage = () => {
   return useMutation<void, void, Props | undefined>(
     [copyPageEndpoint.name],
-    delayed((data: Props | undefined) => copyPageEndpoint.call(data))
+    delayed((data: Props | undefined) => copyPageEndpoint.call(data)),
   );
 };

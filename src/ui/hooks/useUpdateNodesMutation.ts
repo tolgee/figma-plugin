@@ -8,7 +8,7 @@ import { useMutation } from "react-query";
 export const useUpdateNodesMutation = () => {
   const result = useMutation<void, unknown, UpdateNodeProps>(
     [updateNodesEndpoint.name],
-    delayed((props: UpdateNodeProps) => updateNodesEndpoint.call(props))
+    delayed((props: UpdateNodeProps) => updateNodesEndpoint.call(props)),
   );
   return { ...result };
 };

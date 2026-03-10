@@ -79,13 +79,16 @@ export const useAllTranslations = () => {
           (batchOfTranslations.page?.totalElements ?? 0);
       } while (hasMore);
 
-      data[ns] = translationsData.reduce((acc, key) => {
-        acc[key.keyName] = {
-          ...key,
-          translation: key.translations[language]?.text ?? "",
-        };
-        return acc;
-      }, {} as Record<string, any>);
+      data[ns] = translationsData.reduce(
+        (acc, key) => {
+          acc[key.keyName] = {
+            ...key,
+            translation: key.translations[language]?.text ?? "",
+          };
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
     }
     setTranslationsData(data);
     return data;

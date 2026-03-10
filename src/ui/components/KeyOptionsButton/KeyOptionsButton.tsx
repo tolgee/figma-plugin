@@ -34,7 +34,7 @@ export const KeyOptionsButton = ({ node }: Props) => {
         setRoute("string_details", { node });
       },
     }),
-    [node, setRoute]
+    [node, setRoute],
   );
 
   const moveToStringOption = {

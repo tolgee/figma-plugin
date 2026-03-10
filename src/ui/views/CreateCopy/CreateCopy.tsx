@@ -59,7 +59,7 @@ export const CreateCopy: FunctionComponent = () => {
         const { changedNodes } = getPullChanges(
           connectedNodes.data?.items || [],
           language,
-          response
+          response,
         );
 
         copyPageMutation.mutate(
@@ -67,7 +67,7 @@ export const CreateCopy: FunctionComponent = () => {
             language,
             nodes: changedNodes,
           },
-          { onSuccess: goToIndex }
+          { onSuccess: goToIndex },
         );
       }
     }
@@ -126,17 +126,19 @@ export const CreateCopy: FunctionComponent = () => {
             </Text>
             <VerticalSpace space="small" />
 
-            {languages?.map((language) => (
-              <div key={language.id}>
-                <Checkbox
-                  value={selectedLanguages.includes(language.tag)}
-                  onChange={() => handleToggleLanguage(language.tag)}
-                >
-                  <Text>{language.name}</Text>
-                </Checkbox>
-                <VerticalSpace space="small" />
-              </div>
-            ))}
+            <div style={{ maxHeight: 200, overflowY: "auto" }}>
+              {languages?.map((language) => (
+                <div key={language.id}>
+                  <Checkbox
+                    value={selectedLanguages.includes(language.tag)}
+                    onChange={() => handleToggleLanguage(language.tag)}
+                  >
+                    <Text>{language.name}</Text>
+                  </Checkbox>
+                  <VerticalSpace space="small" />
+                </div>
+              ))}
+            </div>
           </Fragment>
         )}
 

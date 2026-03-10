@@ -47,7 +47,7 @@ function main() {
 
     state.allNodes = state.allNodes.map(updateNode("allNodesChanged"));
     state.selectedNodes = state.selectedNodes.map(
-      updateNode("selectionChanged")
+      updateNode("selectionChanged"),
     );
 
     if (notify) {

@@ -2,9 +2,9 @@ import { useApiQuery } from "@/ui/client/useQueryApi";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
 import { TolgeeConfig } from "@/types";
-import { VerticalSpace, Text, Muted, Checkbox } from "@create-figma-plugin/ui";
-import { Fragment, FunctionComponent, h } from "preact";
-import { useEffect, useState } from "preact/hooks";
+import { VerticalSpace, Text, Muted } from "@create-figma-plugin/ui";
+import { h, Fragment, FunctionComponent } from "preact";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import styles from "./ProjectSettings.css";
 import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
 import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
@@ -83,7 +83,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   initialData,
 }) => {
   const [settings, setSettings] = useState<Partial<TolgeeConfig> | undefined>(
-    undefined
+    undefined,
   );
 
   const languagesLoadable = useApiQuery({
@@ -122,24 +122,28 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   const hasNamespacesEnabled = useHasNamespacesEnabled();
 
   const languages = languagesLoadable.data?._embedded?.languages;
-  const namespaces = namespacesLoadable.data?._embedded?.namespaces?.map(
-    (n) => n.name || ""
-  ) || [""];
+  const namespaces = useMemo(() => {
+    const ns = namespacesLoadable.data?._embedded?.namespaces?.map(
+      (n) => n.name || "",
+    ) ?? [""];
 
-  if (
-    settings?.namespace !== undefined &&
-    !namespaces.includes(settings.namespace)
-  ) {
-    namespaces.push(settings.namespace);
-  }
+    if (ns.length === 0) {
+      ns.push("");
+    }
 
-  // Sort namespaces alphabetically
-  namespaces.sort((a, b) => {
-    // Sort alphabetically, but put empty string at the end
-    if (!a) return 1;
-    if (!b) return -1;
-    return a.localeCompare(b);
-  });
+    if (settings?.namespace !== undefined && !ns.includes(settings.namespace)) {
+      ns.push(settings.namespace);
+    }
+
+    // Sort namespaces: keep empty string (implicit default) first, then alphabetically
+    ns.sort((a, b) => {
+      if (a === "" || !a) return -1;
+      if (b === "" || !b) return 1;
+      return a.localeCompare(b);
+    });
+
+    return ns;
+  }, [namespacesLoadable.data, settings?.namespace]);
 
   useEffect(() => {
     if (!settings && namespacesLoadable.data && languagesLoadable.data) {
@@ -185,34 +189,34 @@ export const ProjectSettings: FunctionComponent<Props> = ({
         ))}
       </select>
       <VerticalSpace space="medium" />
-      <div className={styles.namespaceShowRow}>
-        <Checkbox disabled value={hasNamespacesEnabled}>
-          <Text>Use namespaces</Text>
-        </Checkbox>
-
-        {hasNamespacesEnabled ? (
-          <InfoTooltip>
-            {namespaceHelpText({
-              apiUrl,
-              projectId: getProjectIdFromApiKey(apiKey) ?? 0,
-            })}
-          </InfoTooltip>
-        ) : (
-          <InfoTooltip>
-            {namespaceHelpTextSetUp({
-              apiUrl,
-              projectId: getProjectIdFromApiKey(apiKey) ?? 0,
-            })}
-          </InfoTooltip>
-        )}
-      </div>
-      <VerticalSpace space="small" />
+      {!hasNamespacesEnabled && (
+        <Fragment>
+          <div className={styles.namespaceShowRow}>
+            <Muted>Namespaces are disabled</Muted>
+            <InfoTooltip>
+              {namespaceHelpTextSetUp({
+                apiUrl,
+                projectId: getProjectIdFromApiKey(apiKey) ?? 0,
+              })}
+            </InfoTooltip>
+          </div>
+          <VerticalSpace space="small" />
+        </Fragment>
+      )}
       {hasNamespacesEnabled && (
         <Fragment>
           <VerticalSpace space="extraSmall" />
-          <Text>
-            <Muted>Default namespace</Muted>
-          </Text>
+          <div className={styles.namespaceShowRow}>
+            <Text>
+              <Muted>Default namespace</Muted>
+            </Text>
+            <InfoTooltip>
+              {namespaceHelpText({
+                apiUrl,
+                projectId: getProjectIdFromApiKey(apiKey) ?? 0,
+              })}
+            </InfoTooltip>
+          </div>
           <VerticalSpace space="small" />
           <div className={styles.namespacesRow}>
             <NamespaceSelect
