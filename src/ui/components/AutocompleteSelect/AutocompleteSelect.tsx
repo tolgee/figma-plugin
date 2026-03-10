@@ -104,16 +104,23 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
     [trimmedInputValue],
   );
 
+  const normalizedMultiSet = useMemo(
+    () => new Set(multiValues.map((v) => v.toLowerCase().trim())),
+    [multiValues],
+  );
+
   const filteredOptions = useMemo(() => {
     const filtered = options.filter((opt) =>
       opt.toLowerCase().includes(lowerInputTrimmed),
     );
-    // In multi-select mode, exclude already selected values
+    // In multi-select mode, exclude already selected values (normalized comparison)
     if (isMultiSelect) {
-      return filtered.filter((opt) => !multiValues.includes(opt));
+      return filtered.filter(
+        (opt) => !normalizedMultiSet.has(opt.toLowerCase().trim()),
+      );
     }
     return filtered;
-  }, [options, lowerInputTrimmed, isMultiSelect, multiValues]);
+  }, [options, lowerInputTrimmed, isMultiSelect, normalizedMultiSet]);
 
   const exactMatch = useMemo(() => {
     return filteredOptions.find(
@@ -122,7 +129,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
   }, [filteredOptions, lowerInputTrimmed]);
 
   const alreadyExists = isMultiSelect
-    ? multiValues.includes(inputValue.trim()) ||
+    ? normalizedMultiSet.has(lowerInputTrimmed) ||
       options.some((opt) => opt.toLowerCase() === lowerInputTrimmed)
     : singleValue === inputValue.trim() ||
       options.some((opt) => opt.toLowerCase() === lowerInputTrimmed);
@@ -163,7 +170,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
         setInputValue(newValue);
       }
     } else if (isMultiSelect && multiOnChange) {
-      if (newValue && !multiValues.includes(newValue)) {
+      if (newValue && !normalizedMultiSet.has(newValue.toLowerCase())) {
         multiOnChange([...multiValues, newValue]);
         setInputValue("");
       }
