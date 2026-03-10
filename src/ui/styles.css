@@ -46,7 +46,8 @@ a {
 
 select {
   border: 1px solid var(--figma-color-border);
-  overflow: hidden;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
   border-radius: var(--border-radius-2);
   cursor: text;
   background: var(--figma-color-bg);

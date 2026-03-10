@@ -6,11 +6,9 @@ import { delayed } from "@/main/utils/delayed";
 import { useQuery } from "react-query";
 
 export const useConnectedNodes = (props: ConnectedNodesProps) => {
-  const result = useQuery(
+  return useQuery(
     [getConnectedNodesEndpoint.name],
     delayed(() => getConnectedNodesEndpoint.call(props)),
     { select: (data) => ({ ...data, items: data.items.filter((n) => n.key) }) },
   );
-
-  return { ...result };
 };

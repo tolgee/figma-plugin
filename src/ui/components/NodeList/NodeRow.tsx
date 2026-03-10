@@ -13,12 +13,13 @@ type Props = {
   action?: ComponentChildren;
   keyComponent?: ComponentChildren;
   nsComponent?: ComponentChildren;
+  showNamespace?: boolean;
   compact?: boolean;
   onClick?: () => void;
 };
 
 export const NodeRow = memo(
-  ({ node, action, keyComponent, nsComponent, compact, onClick }: Props) => {
+  ({ node, action, keyComponent, nsComponent, showNamespace = true, compact, onClick }: Props) => {
     const showText = node.characters || !compact || action;
 
     const { translationDiffersFromNode } = useInterpolatedTranslation(node);
@@ -78,7 +79,7 @@ export const NodeRow = memo(
         >
           {nsComponent
             ? nsComponent
-            : node.ns && (
+            : showNamespace && node.ns && (
                 <span>
                   <span className={styles.disabled}>Namespace:</span> {node.ns}
                 </span>

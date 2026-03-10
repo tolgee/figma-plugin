@@ -7,13 +7,15 @@ export const getPullChanges = (
   nodes: NodeInfo[],
   lang: string,
   keys: TranslationData,
+  hasNamespacesEnabled = true,
 ) => {
   const changedNodes: NodeInfo[] = [];
   const missingKeys: PartialNodeInfo[] = [];
   const formatter = createFormatIcu();
 
   nodes.forEach((node) => {
-    const value = keys?.[node.ns ?? ""]?.[node.key];
+    const nsLookup = hasNamespacesEnabled ? (node.ns ?? "") : "";
+    const value = keys?.[nsLookup]?.[node.key];
 
     if (value?.translation) {
       if (

@@ -51,7 +51,8 @@ export const getPushChanges = (
   const newTags = tolgeeConfig?.tags;
 
   nodes.forEach((node) => {
-    const oldValue = translations?.[node.ns ?? ""]?.[node.key];
+    const nsLookup = hasNamespacesEnabled ? (node.ns ?? "") : "";
+    const oldValue = translations?.[nsLookup]?.[node.key];
 
     const oldTags = oldValue?.keyTags.map((tag) => tag.name) ?? [];
 

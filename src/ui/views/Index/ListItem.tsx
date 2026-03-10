@@ -100,6 +100,7 @@ export const ListItem = ({
   return (
     <NodeRow
       node={node}
+      showNamespace={hasNamespacesEnabled}
       keyComponent={
         !node.connected && (
           <KeyInput value={keyName || ""} onChange={handleKeyChange} />

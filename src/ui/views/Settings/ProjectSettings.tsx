@@ -2,7 +2,7 @@ import { useApiQuery } from "@/ui/client/useQueryApi";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
 import { TolgeeConfig } from "@/types";
-import { VerticalSpace, Text, Muted, Checkbox } from "@create-figma-plugin/ui";
+import { VerticalSpace, Text, Muted } from "@create-figma-plugin/ui";
 import { h, Fragment, FunctionComponent } from "preact";
 import { useEffect, useMemo, useState } from "preact/hooks";
 import styles from "./ProjectSettings.css";
@@ -190,34 +190,34 @@ export const ProjectSettings: FunctionComponent<Props> = ({
         ))}
       </select>
       <VerticalSpace space="medium" />
-      <div className={styles.namespaceShowRow}>
-        <Checkbox disabled value={hasNamespacesEnabled}>
-          <Text>Use namespaces</Text>
-        </Checkbox>
-
-        {hasNamespacesEnabled ? (
-          <InfoTooltip>
-            {namespaceHelpText({
-              apiUrl,
-              projectId: getProjectIdFromApiKey(apiKey) ?? 0,
-            })}
-          </InfoTooltip>
-        ) : (
-          <InfoTooltip>
-            {namespaceHelpTextSetUp({
-              apiUrl,
-              projectId: getProjectIdFromApiKey(apiKey) ?? 0,
-            })}
-          </InfoTooltip>
-        )}
-      </div>
-      <VerticalSpace space="small" />
+      {!hasNamespacesEnabled && (
+        <Fragment>
+          <div className={styles.namespaceShowRow}>
+            <Muted>Namespaces are disabled</Muted>
+            <InfoTooltip>
+              {namespaceHelpTextSetUp({
+                apiUrl,
+                projectId: getProjectIdFromApiKey(apiKey) ?? 0,
+              })}
+            </InfoTooltip>
+          </div>
+          <VerticalSpace space="small" />
+        </Fragment>
+      )}
       {hasNamespacesEnabled && (
         <Fragment>
           <VerticalSpace space="extraSmall" />
-          <Text>
-            <Muted>Default namespace</Muted>
-          </Text>
+          <div className={styles.namespaceShowRow}>
+            <Text>
+              <Muted>Default namespace</Muted>
+            </Text>
+            <InfoTooltip>
+              {namespaceHelpText({
+                apiUrl,
+                projectId: getProjectIdFromApiKey(apiKey) ?? 0,
+              })}
+            </InfoTooltip>
+          </div>
           <VerticalSpace space="small" />
           <div className={styles.namespacesRow}>
             <NamespaceSelect

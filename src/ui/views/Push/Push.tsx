@@ -102,7 +102,7 @@ export const Push: FunctionalComponent = () => {
 
   // Extract stable primitive values from tolgeeConfig to avoid object reference issues
   const tolgeeConfigTags = useMemo(
-    () => JSON.stringify(tolgeeConfig?.tags?.sort() || []),
+    () => JSON.stringify([...(tolgeeConfig?.tags ?? [])].sort()),
     [tolgeeConfig?.tags],
   );
   const tolgeeConfigUpdateScreenshots = tolgeeConfig?.updateScreenshots ?? true;
@@ -430,7 +430,7 @@ export const Push: FunctionalComponent = () => {
           "Too many uploaded images. Disable update screenshots in settings.",
         );
       } else if (e === "import_keys_error") {
-        setErrorMessage("Error importing keys. Please try again.");
+        setErrorMessage("Error pushing translations. Please try again.");
       } else {
         setErrorMessage(`Cannot push translations. ${e}`);
       }

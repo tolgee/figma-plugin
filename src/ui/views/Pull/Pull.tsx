@@ -24,6 +24,7 @@ import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
+import { useHasNamespacesEnabled } from "@/ui/hooks/useHasNamespacesEnabled";
 import { getPlaceholders, getTolgeeFormat } from "@tginternal/editor";
 import { createFormatIcu } from "../../../createFormatIcu";
 import { NodeInfo } from "../../../types";
@@ -37,6 +38,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
   const updateNodeLoadable = useUpdateNodesMutation();
   const setNodesDataMutation = useSetNodesDataMutation();
   const allTranslationsLoadable = useAllTranslations();
+  const hasNamespacesEnabled = useHasNamespacesEnabled();
   const [diffData, setDiffData] = useState<ReturnType<typeof getPullChanges>>();
 
   const [error, setError] = useState<string>();
@@ -47,7 +49,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
         language: lang ?? "",
       });
       setDiffData(
-        getPullChanges(selectedNodes.data?.items || [], lang, translations),
+        getPullChanges(selectedNodes.data?.items || [], lang, translations, hasNamespacesEnabled),
       );
       setError(undefined);
     } catch (e) {
