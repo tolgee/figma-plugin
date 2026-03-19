@@ -24,6 +24,7 @@ import styles from "./Index.css";
 import { ListItem } from "./ListItem";
 import { useEditorMode } from "../../hooks/useEditorMode";
 import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
+import { useHasBranchingEnabled } from "../../hooks/useHasBranchingEnabled";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
@@ -54,6 +55,8 @@ export const Index = () => {
   });
 
   const hasNamespacesEnabled = useHasNamespacesEnabled();
+  const hasBranchingEnabled = useHasBranchingEnabled();
+  const currentBranch = useGlobalState((c) => c.config?.branch);
 
   const languages = languagesLoadable.data?._embedded?.languages;
 
@@ -213,6 +216,11 @@ export const Index = () => {
             }
             rightPart={
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {hasBranchingEnabled && currentBranch && (
+                  <Text style={{ fontSize: 11, opacity: 0.6 }}>
+                    {currentBranch}
+                  </Text>
+                )}
                 <div
                   data-cy="index_settings_button"
                   className={styles.settingsButton}

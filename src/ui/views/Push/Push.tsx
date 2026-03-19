@@ -37,6 +37,7 @@ type KeyScreenshotDto = components["schemas"]["KeyScreenshotDto"];
 
 export const Push: FunctionalComponent = () => {
   const language = useGlobalState((c) => c.config!.language!);
+  const branch = useGlobalState((c) => c.config?.branch);
   const { setRoute } = useGlobalActions();
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -131,6 +132,7 @@ export const Push: FunctionalComponent = () => {
         const translations = await allTranslationsLoadable.getData({
           language,
           namespaces: requiredNamespaces,
+          branch: branch || undefined,
         });
 
         // Check if cancelled before expensive screenshot operation
@@ -184,6 +186,7 @@ export const Push: FunctionalComponent = () => {
     screenshotsKey,
     hasNamespacesEnabled,
     language,
+    branch,
     requiredNamespacesKey,
     tolgeeConfigTags,
     tolgeeConfigUpdateScreenshots,
@@ -335,6 +338,7 @@ export const Push: FunctionalComponent = () => {
       changes.newKeys.forEach((item) => {
         keys.push({
           name: item.key,
+          branch: branch || undefined,
           namespace: item.ns || undefined,
           screenshots: mapScreenshots(item),
           translations: {
@@ -359,6 +363,7 @@ export const Push: FunctionalComponent = () => {
           tolgeeConfig.tags.length > 0
         ) {
           await addTagsToKeys.mutateAsync({
+            query: { branch: branch || undefined },
             content: {
               "application/json": {
                 tagFiltered: tolgeeConfig?.tags ?? [],
@@ -390,6 +395,7 @@ export const Push: FunctionalComponent = () => {
               }))
               .slice(0, 100);
             await bigMeta.mutateAsync({
+              query: { branch: branch || undefined },
               content: {
                 "application/json": {
                   relatedKeysInOrder: relatedKeys,

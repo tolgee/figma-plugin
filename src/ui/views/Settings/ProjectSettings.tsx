@@ -1,6 +1,7 @@
 import { useApiQuery } from "@/ui/client/useQueryApi";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { NamespaceSelect } from "@/ui/components/NamespaceSelect/NamespaceSelect";
+import { BranchSelect } from "@/ui/components/BranchSelect/BranchSelect";
 import { TolgeeConfig } from "@/types";
 import { VerticalSpace, Text, Muted } from "@create-figma-plugin/ui";
 import { h, Fragment, FunctionComponent } from "preact";
@@ -8,6 +9,7 @@ import { useEffect, useMemo, useState } from "preact/hooks";
 import styles from "./ProjectSettings.css";
 import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
 import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
+import { useHasBranchingEnabled } from "../../hooks/useHasBranchingEnabled";
 import { getProjectIdFromApiKey } from "../../client/decodeApiKey";
 
 type Props = {
@@ -76,6 +78,30 @@ const namespaceHelpTextSetUp = ({
   </Fragment>
 );
 
+const branchingHelpTextSetUp = ({
+  apiUrl,
+  projectId,
+}: {
+  apiUrl: string;
+  projectId: number;
+}) => (
+  <Fragment>
+    <div>
+      Branching is disabled in Platform.
+      <br />
+      Enable it{" "}
+      <a
+        href={`${apiUrl}/projects/${projectId}/manage/edit/advanced`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        here
+      </a>{" "}
+      to use branches.
+    </div>
+  </Fragment>
+);
+
 export const ProjectSettings: FunctionComponent<Props> = ({
   apiKey,
   apiUrl,
@@ -120,6 +146,40 @@ export const ProjectSettings: FunctionComponent<Props> = ({
   });
 
   const hasNamespacesEnabled = useHasNamespacesEnabled();
+  const hasBranchingEnabled = useHasBranchingEnabled();
+
+  const apiKeyInfo = useApiQuery({
+    url: "/v2/api-keys/current",
+    method: "get",
+    options: {
+      cacheTime: 60000,
+      staleTime: 60000,
+    },
+  });
+
+  const branchesLoadable = useApiQuery({
+    url: "/v2/projects/{projectId}/branches",
+    method: "get",
+    path: {
+      projectId: apiKeyInfo.data?.projectId ?? 0,
+    },
+    options: {
+      cacheTime: 0,
+      staleTime: 0,
+      enabled: hasBranchingEnabled && apiKeyInfo.data?.projectId !== undefined,
+    },
+    clientOptions: {
+      config: {
+        apiKey,
+        apiUrl,
+      },
+    },
+  });
+
+  const branches = useMemo(
+    () => branchesLoadable.data?._embedded?.branches ?? [],
+    [branchesLoadable.data],
+  );
 
   const languages = languagesLoadable.data?._embedded?.languages;
   const namespaces = useMemo(() => {
@@ -147,13 +207,25 @@ export const ProjectSettings: FunctionComponent<Props> = ({
 
   useEffect(() => {
     if (!settings && namespacesLoadable.data && languagesLoadable.data) {
+      const defaultBranch = branches.find((b) => b.isDefault)?.name;
       setSettings({
         language:
           initialData?.language || languages?.find((l) => l.base)?.tag || "",
         namespace: initialData?.namespace ?? namespaces?.[0] ?? "",
+        branch: initialData?.branch ?? defaultBranch,
       });
     }
-  }, [languages, namespaces]);
+  }, [languages, namespaces, branches]);
+
+  // Update branch when branches load after initial settings are already set
+  useEffect(() => {
+    if (settings && !settings.branch && branches.length > 0) {
+      const defaultBranch = branches.find((b) => b.isDefault)?.name;
+      if (defaultBranch) {
+        setSettings((prev) => ({ ...prev!, branch: defaultBranch }));
+      }
+    }
+  }, [branches, settings?.branch]);
 
   useEffect(() => {
     if (settings) {
@@ -229,6 +301,48 @@ export const ProjectSettings: FunctionComponent<Props> = ({
                   namespace,
                 }))
               }
+            />
+          </div>
+        </Fragment>
+      )}
+      <VerticalSpace space="medium" />
+      {!hasBranchingEnabled && (
+        <Fragment>
+          <div className={styles.namespaceShowRow}>
+            <Muted>Branching is disabled</Muted>
+            <InfoTooltip>
+              {branchingHelpTextSetUp({
+                apiUrl,
+                projectId: getProjectIdFromApiKey(apiKey) ?? 0,
+              })}
+            </InfoTooltip>
+          </div>
+          <VerticalSpace space="small" />
+        </Fragment>
+      )}
+      {hasBranchingEnabled && (
+        <Fragment>
+          <VerticalSpace space="extraSmall" />
+          <div className={styles.namespaceShowRow}>
+            <Text>
+              <Muted>Branch</Muted>
+            </Text>
+          </div>
+          <VerticalSpace space="small" />
+          <div className={styles.namespacesRow}>
+            <BranchSelect
+              key={settings?.branch || ""}
+              value={settings?.branch || ""}
+              branches={branches}
+              onChange={(branch) =>
+                setSettings((settings) => ({
+                  ...settings!,
+                  branch,
+                }))
+              }
+              onRefresh={async () => {
+                await branchesLoadable.refetch();
+              }}
             />
           </div>
         </Fragment>

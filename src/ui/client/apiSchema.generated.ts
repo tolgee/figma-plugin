@@ -296,6 +296,13 @@ export interface paths {
      */
     get: operations["getAllNamespaces_1"];
   };
+"/v2/projects/{projectId}": {
+    /**
+     * Get project info
+     * @description Returns info about a project
+     */
+    get: operations["getProjectInfo"];
+};
   "/v2/projects/import/apply": {
     /**
      * Apply import
@@ -1609,6 +1616,7 @@ export interface components {
        * @example what_a_key_to_translate
        */
       name: string;
+      branch?: string;
       /** @description The namespace of the key. (When empty or null default namespace will be used) */
       namespace?: string;
       screenshots?: components["schemas"]["KeyScreenshotDto"][];
@@ -2539,6 +2547,7 @@ export interface components {
        * @enum {string}
        */
       translationProtection: "NONE" | "PROTECT_REVIEWED";
+      useBranching: boolean;
       useNamespaces: boolean;
     };
     ProjectStatsModel: {
@@ -5335,6 +5344,12 @@ export interface operations {
    * @description Stores a bigMeta for a project
    */
   store_3: {
+    parameters?: {
+      query?: {
+        /** @description Branch name to store big meta on */
+        branch?: string;
+      };
+    };
     requestBody: {
       content: {
         "application/json": components["schemas"]["BigMetaDto"];
@@ -5827,6 +5842,53 @@ export interface operations {
       };
     };
   };
+  getProjectInfo: {
+    parameters: {
+      path: {
+        projectId: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProjectModel"];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json":
+          | components["schemas"]["ErrorResponseTyped"]
+          | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json":
+          | components["schemas"]["ErrorResponseTyped"]
+          | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+      /** @description Forbidden */
+      403: {
+        content: {
+          "application/json":
+          | components["schemas"]["ErrorResponseTyped"]
+          | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+      /** @description Not Found */
+      404: {
+        content: {
+          "application/json":
+          | components["schemas"]["ErrorResponseTyped"]
+          | components["schemas"]["ErrorResponseBody"];
+        };
+      };
+    },
+  },
   /**
    * Apply import
    * @description Imports the data prepared in previous step
@@ -9174,6 +9236,12 @@ export interface operations {
   };
   /** Execute complex tag operation */
   executeComplexTagOperation_1: {
+    parameters?: {
+      query?: {
+        /** @description Branch name to tag keys on */
+        branch?: string;
+      };
+    };
     requestBody: {
       content: {
         "application/json": components["schemas"]["ComplexTagKeysRequest"];
@@ -10031,6 +10099,8 @@ export interface operations {
   getTranslations_1: {
     parameters: {
       query?: {
+        /** @description Branch name to fetch translations from */
+        branch?: string;
         /** @description Cursor to get next data */
         cursor?: string;
         /**
@@ -11078,6 +11148,12 @@ export interface operations {
    * @description Returns all used project namespaces. Response contains default (null) namespace if used.
    */
   getUsedNamespaces_1: {
+    parameters?: {
+      query?: {
+        /** @description Branch name to get namespaces from */
+        branch?: string;
+      };
+    };
     responses: {
       /** @description OK */
       200: {

@@ -7,6 +7,7 @@ import { useFigmaNotify } from "./useFigmaNotify";
 type Props = {
   language: string;
   namespaces?: string[];
+  branch?: string;
 };
 
 export const useAllTranslations = () => {
@@ -37,11 +38,13 @@ export const useAllTranslations = () => {
     notifierRef.current = notifier;
   }, [namespacesLoadable, translationsBaseLoadable, notifier]);
 
-  async function loadData({ language, namespaces }: Props) {
+  async function loadData({ language, namespaces, branch }: Props) {
     const nsNames =
       namespaces ??
       (
-        await namespacesLoadableRef.current.mutateAsync({})
+        await namespacesLoadableRef.current.mutateAsync({
+          query: { branch: branch || undefined },
+        })
       )._embedded?.namespaces?.map((n) => n.name ?? "") ??
       [];
 
@@ -68,6 +71,7 @@ export const useAllTranslations = () => {
               languages: [language],
               size: 1000,
               cursor,
+              branch: branch || undefined,
             },
           });
 

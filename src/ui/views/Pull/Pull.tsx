@@ -28,12 +28,14 @@ import { useHasNamespacesEnabled } from "@/ui/hooks/useHasNamespacesEnabled";
 import { getPlaceholders, getTolgeeFormat } from "@tginternal/editor";
 import { createFormatIcu } from "../../../createFormatIcu";
 import { NodeInfo } from "../../../types";
+import { useGlobalState } from "@/ui/state/GlobalState";
 
 type Props = RouteParam<"pull">;
 
 export const Pull: FunctionalComponent<Props> = ({ lang }) => {
   const selectedNodes = useConnectedNodes({ ignoreSelection: false });
   const { setRoute, setLanguage } = useGlobalActions();
+  const branch = useGlobalState((c) => c.config?.branch);
 
   const updateNodeLoadable = useUpdateNodesMutation();
   const setNodesDataMutation = useSetNodesDataMutation();
@@ -47,6 +49,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
     try {
       const translations = await allTranslationsLoadable.getData({
         language: lang ?? "",
+        branch: branch || undefined,
       });
       setDiffData(
         getPullChanges(
