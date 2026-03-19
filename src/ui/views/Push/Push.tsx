@@ -31,8 +31,8 @@ import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
 import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
 
-type ImportKeysResolvableItemDto =
-  components["schemas"]["ImportKeysResolvableItemDto"];
+type SingleStepImportResolvableItemRequest =
+  components["schemas"]["SingleStepImportResolvableItemRequest"];
 type KeyScreenshotDto = components["schemas"]["KeyScreenshotDto"];
 
 export const Push: FunctionalComponent = () => {
@@ -208,7 +208,7 @@ export const Push: FunctionalComponent = () => {
       : _loadingStatus;
 
   const updateTranslations = useApiMutation({
-    url: "/v2/projects/keys/import-resolvable",
+    url: "/v2/projects/single-step-import-resolvable",
     method: "post",
   });
 
@@ -250,7 +250,7 @@ export const Push: FunctionalComponent = () => {
   };
 
   const handleSubmit = async () => {
-    const keys: ImportKeysResolvableItemDto[] = [];
+    const keys: SingleStepImportResolvableItemRequest[] = [];
 
     if (!changes) {
       return;
@@ -329,7 +329,7 @@ export const Push: FunctionalComponent = () => {
           translations: {
             [language]: {
               text: item.newValue,
-              resolution: item.oldValue ? "OVERRIDE" : "NEW",
+              resolution: "OVERRIDE",
             },
           },
         });
@@ -338,11 +338,10 @@ export const Push: FunctionalComponent = () => {
       changes.newKeys.forEach((item) => {
         keys.push({
           name: item.key,
-          branch: branch || undefined,
           namespace: item.ns || undefined,
           screenshots: mapScreenshots(item),
           translations: {
-            [language]: { text: item.newValue, resolution: "NEW" },
+            [language]: { text: item.newValue, resolution: "OVERRIDE" },
           },
         });
       });
@@ -351,6 +350,8 @@ export const Push: FunctionalComponent = () => {
         content: {
           "application/json": {
             keys,
+            overrideMode: "RECOMMENDED",
+            branch: branch || undefined,
           },
         },
       });

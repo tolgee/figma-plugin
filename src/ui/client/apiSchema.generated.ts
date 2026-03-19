@@ -2874,6 +2874,7 @@ export interface components {
        * .If `true`, import will fail completely on unresolved conflict and won't apply any changes. Unresolved conflicts are reported in the `params` of the error response
        */
       errorOnUnresolvedConflict?: boolean;
+      branch?: string;
       /** @description List of keys to import */
       keys: components["schemas"]["SingleStepImportResolvableItemRequest"][];
       /**
