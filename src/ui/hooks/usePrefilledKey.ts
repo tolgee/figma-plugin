@@ -9,7 +9,7 @@ export function usePrefilledKey(
   nodeId: string,
   keyFormat: string,
   variableCasing: TolgeeConfig["variableCasing"],
-  nodeKey?: string
+  nodeKey?: string,
 ) {
   const result = useQuery<string, undefined, string>(
     [preformatKeyEndpoint.name, nodeId, keyFormat],
@@ -20,7 +20,7 @@ export function usePrefilledKey(
     {
       enabled: !!nodeId && !!keyFormat && !nodeKey,
       structuralSharing: false,
-    }
+    },
   );
 
   return { key: result.data, isLoading: result.isLoading };

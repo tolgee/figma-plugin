@@ -30,7 +30,7 @@ export const highlightNodeEndpoint = createEndpoint(
         highlitedNodes.delete(id);
       }, 500);
     }
-  }
+  },
 );
 
 export const cleanUp = () => {

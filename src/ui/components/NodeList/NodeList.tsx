@@ -4,6 +4,13 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import styles from "./NodeList.css";
 import { NodeRow } from "./NodeRow";
 
+const containerStyle = {
+  overflow: "auto" as const,
+  position: "relative" as const,
+};
+
+const itemStyle = { width: "100%" };
+
 type Props<T extends { id: string }> = {
   items: T[];
   actionCallback?: (item: T) => ComponentChildren;
@@ -42,7 +49,7 @@ export function NodeList<T extends { id: string }>({
       const availableHeight = window.innerHeight - rect.top - 20; // 20px padding
       const calculatedHeight = Math.max(
         minVisibleRows * rowHeight,
-        Math.min(availableHeight, items.length * rowHeight)
+        Math.min(availableHeight, items.length * rowHeight),
       );
       setContainerHeight(calculatedHeight);
     }
@@ -95,7 +102,7 @@ export function NodeList<T extends { id: string }>({
   const visibleStart = Math.floor(scrollTop / rowHeight);
   const visibleEnd = Math.min(
     items.length - 1,
-    Math.ceil((scrollTop + containerHeight) / rowHeight)
+    Math.ceil((scrollTop + containerHeight) / rowHeight),
   );
 
   const startIndex = Math.max(0, visibleStart - overscan);
@@ -105,34 +112,24 @@ export function NodeList<T extends { id: string }>({
   const totalHeight = items.length * rowHeight;
   const offsetY = startIndex * rowHeight;
 
+  const spacerStyle = {
+    height: totalHeight,
+    position: "relative" as const,
+  };
+  const translateStyle = {
+    transform: `translateY(${offsetY}px)`,
+    position: "absolute" as const,
+    top: 0,
+    left: 0,
+    right: 0,
+  };
+
   return (
-    <div
-      className={styles.container}
-      ref={containerRef}
-      style={{
-        overflow: "auto",
-        position: "relative",
-      }}
-    >
-      {/* Total height spacer */}
-      <div style={{ height: totalHeight, position: "relative" }}>
-        {/* Visible items container */}
-        <div
-          style={{
-            transform: `translateY(${offsetY}px)`,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-          }}
-        >
+    <div className={styles.container} ref={containerRef} style={containerStyle}>
+      <div style={spacerStyle}>
+        <div style={translateStyle}>
           {visibleItems.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                width: "100%",
-              }}
-            >
+            <div key={item.id} style={itemStyle}>
               {renderItem(item)}
             </div>
           ))}

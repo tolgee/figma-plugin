@@ -59,7 +59,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
     : null;
 
   const [inputValue, setInputValue] = useState(
-    singleSelect ? singleValue ?? "" : ""
+    singleSelect ? (singleValue ?? "") : "",
   );
   const [isFocused, setIsFocused] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -67,16 +67,16 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
   const inputRef = externalInputRef || internalInputRef;
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [dropdownDirection, setDropdownDirection] = useState<"down" | "up">(
-    "down"
+    "down",
   );
 
   // For single-select mode, show value in input when not focused, otherwise show inputValue
   // Ensure we always return a string, not undefined
   const displayInputValue = singleSelect
     ? isFocused
-      ? inputValue ?? ""
-      : singleValue ?? ""
-    : inputValue ?? "";
+      ? (inputValue ?? "")
+      : (singleValue ?? "")
+    : (inputValue ?? "");
 
   useLayoutEffect(() => {
     if (!showDropdown || !inputRef.current) return;
@@ -89,7 +89,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
     } else {
       setDropdownDirection("down");
     }
-  }, [inputValue, showDropdown]);
+  }, [showDropdown]);
 
   // Sync inputValue with value prop when not focused (for single-select mode)
   useEffect(() => {
@@ -98,32 +98,55 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
     setInputValue(singleValue ?? "");
   }, [singleSelect, singleValue, isFocused]);
 
+  const trimmedInputValue = useMemo(() => inputValue.trim(), [inputValue]);
+  const lowerInputTrimmed = useMemo(
+    () => trimmedInputValue.toLowerCase(),
+    [trimmedInputValue],
+  );
+
+  const normalizedMultiSet = useMemo(
+    () => new Set(multiValues.map((v) => v.toLowerCase().trim())),
+    [multiValues],
+  );
+
   const filteredOptions = useMemo(() => {
     const filtered = options.filter((opt) =>
-      opt.toLowerCase().includes(inputValue.toLowerCase())
+      opt.toLowerCase().includes(lowerInputTrimmed),
     );
-    // In multi-select mode, exclude already selected values
+    // In multi-select mode, exclude already selected values (normalized comparison)
     if (isMultiSelect) {
-      return filtered.filter((opt) => !multiValues.includes(opt));
+      return filtered.filter(
+        (opt) => !normalizedMultiSet.has(opt.toLowerCase().trim()),
+      );
     }
     return filtered;
-  }, [options, inputValue, isMultiSelect, multiValues]);
+  }, [options, lowerInputTrimmed, isMultiSelect, normalizedMultiSet]);
 
   const exactMatch = useMemo(() => {
     return filteredOptions.find(
-      (opt) => opt.toLowerCase() === inputValue.trim().toLowerCase()
+      (opt) => opt.toLowerCase() === lowerInputTrimmed,
     );
-  }, [filteredOptions, inputValue]);
+  }, [filteredOptions, lowerInputTrimmed]);
 
   const alreadyExists = isMultiSelect
-    ? multiValues.includes(inputValue.trim()) ||
-      options.some(
-        (opt) => opt.toLowerCase() === inputValue.trim().toLowerCase()
-      )
+    ? normalizedMultiSet.has(lowerInputTrimmed) ||
+      options.some((opt) => opt.toLowerCase() === lowerInputTrimmed)
     : singleValue === inputValue.trim() ||
-      options.some(
-        (opt) => opt.toLowerCase() === inputValue.trim().toLowerCase()
-      );
+      options.some((opt) => opt.toLowerCase() === lowerInputTrimmed);
+
+  const highlightedOptions = useMemo(
+    () =>
+      filteredOptions.map((opt) => {
+        const label = displayValue(opt);
+        const matchIndex =
+          lowerInputTrimmed === ""
+            ? -1
+            : label.toLowerCase().indexOf(lowerInputTrimmed);
+        const isExact = opt.toLowerCase() === lowerInputTrimmed;
+        return { opt, label, matchIndex, isExact };
+      }),
+    [filteredOptions, displayValue, lowerInputTrimmed],
+  );
 
   const canAdd = inputValue.trim() && !alreadyExists;
 
@@ -147,7 +170,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
         setInputValue(newValue);
       }
     } else if (isMultiSelect && multiOnChange) {
-      if (newValue && !multiValues.includes(newValue)) {
+      if (newValue && !normalizedMultiSet.has(newValue.toLowerCase())) {
         multiOnChange([...multiValues, newValue]);
         setInputValue("");
       }
@@ -249,12 +272,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
                 <Muted>{noOptionsPlaceholder}</Muted>
               </div>
             )}
-            {filteredOptions.map((opt) => {
-              const matchIndex = opt
-                .toLowerCase()
-                .indexOf(inputValue.toLowerCase());
-              const isExact =
-                opt.toLowerCase() === inputValue.trim().toLowerCase();
+            {highlightedOptions.map(({ opt, label, matchIndex, isExact }) => {
               if (matchIndex === -1) {
                 return (
                   <div
@@ -267,7 +285,7 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
                       alignItems: "center",
                     }}
                   >
-                    <span>{displayValue(opt)}</span>
+                    <span>{label}</span>
                     {isExact && (
                       <span className={styles.autocompleteDropdownAddHint}>
                         Enter
@@ -276,12 +294,12 @@ export const AutocompleteSelect: FunctionComponent<Props> = (props) => {
                   </div>
                 );
               }
-              const before = opt.slice(0, matchIndex);
-              const match = opt.slice(
+              const before = label.slice(0, matchIndex);
+              const match = label.slice(
                 matchIndex,
-                matchIndex + inputValue.length
+                matchIndex + trimmedInputValue.length,
               );
-              const after = opt.slice(matchIndex + inputValue.length);
+              const after = label.slice(matchIndex + trimmedInputValue.length);
               return (
                 <div
                   key={opt}

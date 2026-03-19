@@ -8,7 +8,7 @@ import { useMutation } from "react-query";
 export const useConnectedMutation = (props: ConnectedNodesProps) => {
   const result = useMutation(
     [getConnectedNodesEndpoint.name],
-    delayed(() => getConnectedNodesEndpoint.call(props))
+    delayed(() => getConnectedNodesEndpoint.call(props)),
   );
   return { ...result };
 };

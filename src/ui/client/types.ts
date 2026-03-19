@@ -3,14 +3,14 @@ import { components, paths } from "./apiSchema.generated";
 export type RequestParamsType<
   Url extends keyof Paths,
   Method extends keyof Paths[Url],
-  Paths = paths
+  Paths = paths,
 > = OperationSchema<Url, Method, Paths>["parameters"] &
   OperationSchema<Url, Method, Paths>["requestBody"];
 
 export type ResponseContent<
   Url extends keyof Paths,
   Method extends keyof Paths[Url],
-  Paths
+  Paths,
 > = OperationSchema<
   Url,
   Method,
@@ -18,32 +18,36 @@ export type ResponseContent<
 >["responses"][200] extends NotNullAnyContent
   ? OperationSchema<Url, Method, Paths>["responses"][200]["content"]["*/*"]
   : OperationSchema<
-      Url,
-      Method,
-      Paths
-    >["responses"][200] extends NotNullJsonHalContent
-  ? OperationSchema<
-      Url,
-      Method,
-      Paths
-    >["responses"][200]["content"]["application/hal+json"]
-  : OperationSchema<
-      Url,
-      Method,
-      Paths
-    >["responses"][200] extends NotNullJsonContent
-  ? OperationSchema<
-      Url,
-      Method,
-      Paths
-    >["responses"][200]["content"]["application/json"]
-  : OperationSchema<
-      Url,
-      Method,
-      Paths
-    >["responses"][201] extends NotNullAnyContent
-  ? OperationSchema<Url, Method, Paths>["responses"][201]["content"]["*/*"]
-  : void;
+        Url,
+        Method,
+        Paths
+      >["responses"][200] extends NotNullJsonHalContent
+    ? OperationSchema<
+        Url,
+        Method,
+        Paths
+      >["responses"][200]["content"]["application/hal+json"]
+    : OperationSchema<
+          Url,
+          Method,
+          Paths
+        >["responses"][200] extends NotNullJsonContent
+      ? OperationSchema<
+          Url,
+          Method,
+          Paths
+        >["responses"][200]["content"]["application/json"]
+      : OperationSchema<
+            Url,
+            Method,
+            Paths
+          >["responses"][201] extends NotNullAnyContent
+        ? OperationSchema<
+            Url,
+            Method,
+            Paths
+          >["responses"][201]["content"]["*/*"]
+        : void;
 
 type NotNullAnyContent = {
   content: {
@@ -99,7 +103,7 @@ type OperationSchemaType = {
 type OperationSchema<
   Url extends keyof Paths,
   Method extends keyof Paths[Url],
-  Paths = paths
+  Paths = paths,
 > = Paths[Url][Method] extends OperationSchemaType ? Paths[Url][Method] : never;
 
 export type TranslationData = Record<

@@ -16,7 +16,7 @@ export const useSetNodesDataMutation = () => {
         // Invalidate connected nodes query to ensure fresh data is fetched
         queryClient.invalidateQueries([getConnectedNodesEndpoint.name]);
       },
-    }
+    },
   );
   return { ...result };
 };

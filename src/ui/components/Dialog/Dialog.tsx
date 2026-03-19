@@ -19,7 +19,7 @@ export const Dialog = ({ children, onClose }: Props) => {
     ref.current?.focus();
     ref.current?.addEventListener("keydown", handler);
     return () => ref.current?.removeEventListener("keydown", handler);
-  }, []);
+  }, [onClose]);
 
   return (
     <div ref={ref} tabIndex={0} data-cy="dialog">

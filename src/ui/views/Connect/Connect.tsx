@@ -32,7 +32,7 @@ export const Connect = ({ node }: Props) => {
 
   const [search, setSearch] = useState(node.key || node.characters);
 
-  const [debouncedSearch] = useDebounce(search, 1000);
+  const [debouncedSearch] = useDebounce(search, 300);
 
   const translationsLoadable = useApiQuery({
     url: "/v2/projects/keys/search",
@@ -57,7 +57,7 @@ export const Connect = ({ node }: Props) => {
   const handleConnect = async (
     key: string,
     ns: string | undefined,
-    translation: string | undefined
+    translation: string | undefined,
   ) => {
     if (
       !allTranslationsLoadable.isLoading &&

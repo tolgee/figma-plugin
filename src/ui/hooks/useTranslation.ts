@@ -32,9 +32,9 @@ export const useTranslation = (props: Props) => {
     getData: translationsLoadable.getData,
     translation:
       props.key != null
-        ? translationsLoadable.translationsData?.[
+        ? (translationsLoadable.translationsData?.[
             props.namespace ?? "default"
-          ]?.[props.key] ?? null
+          ]?.[props.key] ?? null)
         : null,
     isLoading: translationsLoadable.isLoading,
     error,

@@ -1,5 +1,4 @@
 import { FrameScreenshot, NodeInfo, TolgeeConfig } from "@/types";
-import { compareNs } from "./compareNs";
 import { TranslationData } from "../ui/client/types";
 import { getTolgeeFormat } from "@tginternal/editor";
 import { stringFormatter } from "../main/utils/textFormattingTools";
@@ -26,32 +25,34 @@ export const getPushChanges = (
   translations: TranslationData,
   hasNamespacesEnabled: boolean,
   screenshots: FrameScreenshot[],
-  tolgeeConfig: Partial<TolgeeConfig> | null
+  tolgeeConfig: Partial<TolgeeConfig> | null,
 ): KeyChanges => {
   const newKeys: KeyChangeValue[] = [];
   const changedKeys: KeyChangeValue[] = [];
   const unchangedKeys: KeyChangeValue[] = [];
 
-  const getKeyScreenshots = (value: NodeInfo): FrameScreenshot[] => {
-    const result: FrameScreenshot[] = [];
-    screenshots.forEach((screenshot) => {
-      if (
-        screenshot.keys.find(
-          (node) =>
-            node.key === value.key &&
-            (!hasNamespacesEnabled || compareNs(node.ns, value.ns))
-        )
-      ) {
-        result.push(screenshot);
+  const screenshotsByKey = new Map<string, FrameScreenshot[]>();
+  screenshots.forEach((screenshot) => {
+    screenshot.keys.forEach((node) => {
+      const mapKey = `${node.key}\0${hasNamespacesEnabled ? node.ns || "" : ""}`;
+      let list = screenshotsByKey.get(mapKey);
+      if (!list) {
+        list = [];
+        screenshotsByKey.set(mapKey, list);
       }
+      list.push(screenshot);
     });
+  });
 
-    return result;
+  const getKeyScreenshots = (value: NodeInfo): FrameScreenshot[] => {
+    const mapKey = `${value.key}\0${hasNamespacesEnabled ? value.ns || "" : ""}`;
+    return screenshotsByKey.get(mapKey) ?? [];
   };
   const newTags = tolgeeConfig?.tags;
 
   nodes.forEach((node) => {
-    const oldValue = translations?.[node.ns ?? ""]?.[node.key];
+    const nsLookup = hasNamespacesEnabled ? (node.ns ?? "") : "";
+    const oldValue = translations?.[nsLookup]?.[node.key];
 
     const oldTags = oldValue?.keyTags.map((tag) => tag.name) ?? [];
 
@@ -66,13 +67,13 @@ export const getPushChanges = (
       : null;
 
     const newTranslation = hasChangesOutsideFromTolgee
-      ? node.characters ?? node.translation
+      ? (node.characters ?? node.translation)
       : node.translation || node.characters;
 
     const newTolgeeValue = getTolgeeFormat(
       newTranslation,
       node.isPlural,
-      false
+      false,
     );
 
     const hasChanges =

@@ -24,19 +24,23 @@ import { useUpdateNodesMutation } from "@/ui/hooks/useUpdateNodesMutation";
 import { useHighlightNodeMutation } from "@/ui/hooks/useHighlightNodeMutation";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
+import { useHasNamespacesEnabled } from "@/ui/hooks/useHasNamespacesEnabled";
 import { getPlaceholders, getTolgeeFormat } from "@tginternal/editor";
 import { createFormatIcu } from "../../../createFormatIcu";
 import { NodeInfo } from "../../../types";
+import { useGlobalState } from "@/ui/state/GlobalState";
 
 type Props = RouteParam<"pull">;
 
 export const Pull: FunctionalComponent<Props> = ({ lang }) => {
   const selectedNodes = useConnectedNodes({ ignoreSelection: false });
   const { setRoute, setLanguage } = useGlobalActions();
+  const branch = useGlobalState((c) => c.config?.branch);
 
   const updateNodeLoadable = useUpdateNodesMutation();
   const setNodesDataMutation = useSetNodesDataMutation();
   const allTranslationsLoadable = useAllTranslations();
+  const hasNamespacesEnabled = useHasNamespacesEnabled();
   const [diffData, setDiffData] = useState<ReturnType<typeof getPullChanges>>();
 
   const [error, setError] = useState<string>();
@@ -45,9 +49,15 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
     try {
       const translations = await allTranslationsLoadable.getData({
         language: lang ?? "",
+        branch: branch || undefined,
       });
       setDiffData(
-        getPullChanges(selectedNodes.data?.items || [], lang, translations)
+        getPullChanges(
+          selectedNodes.data?.items || [],
+          lang,
+          translations,
+          hasNamespacesEnabled,
+        ),
       );
       setError(undefined);
     } catch (e) {
@@ -55,7 +65,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
         setError("Invalid project API key");
       } else if (e === "too_many_uploaded_images") {
         setError(
-          "Too many uploaded images. Disable update screenshots in settings."
+          "Too many uploaded images. Disable update screenshots in settings.",
         );
       } else {
         setError(`Cannot get translation data. ${e}`);
@@ -93,6 +103,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
         ...n,
         formatted,
       } as NodeInfo & { formatted: string };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       return {
         ...n,
@@ -114,7 +125,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
           .filter((i) => i.connected)
           .map((n) => {
             const changedNode = diffData!.changedNodes.find(
-              (c) => c.key === n.key
+              (c) => c.key === n.key,
             );
             if (!changedNode) {
               return n;

@@ -29,7 +29,7 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     const routeKey = route[0];
     const [config, _setConfig] = useState(initialConfig);
     const [globalError, setGlobalError] = useState<string | undefined>(
-      undefined
+      undefined,
     );
     const [sizeStack, setSizeStack] = useState<WindowSize[]>([]);
 
@@ -83,6 +83,6 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     globalState.actions = actions;
 
     return [data, actions];
-  }
+  },
 );
 export { DEFAULT_SIZE };

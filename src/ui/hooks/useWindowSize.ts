@@ -20,7 +20,7 @@ export const useWindowSize = (newSize: WindowSize) => {
             return addedSize;
           }
           return i;
-        })
+        }),
       );
     } else {
       setSizeStack((stack) => [...stack, addedSize]);

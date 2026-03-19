@@ -1,7 +1,6 @@
 import { useApiQuery } from "../client/useQueryApi";
 
-export const useHasNamespacesEnabled = () => {
-  // First, get the project ID from the API key info (relevant for legacy api keys)
+export const useHasBranchingEnabled = () => {
   const apiKeyInfo = useApiQuery({
     url: "/v2/api-keys/current",
     method: "get",
@@ -11,7 +10,6 @@ export const useHasNamespacesEnabled = () => {
     },
   });
 
-  // Then get the project info if we have a project ID
   const projectQuery = useApiQuery({
     url: "/v2/projects/{projectId}",
     method: "get",
@@ -25,5 +23,5 @@ export const useHasNamespacesEnabled = () => {
     },
   });
 
-  return projectQuery.data?.useNamespaces ?? false;
+  return projectQuery.data?.useBranching ?? false;
 };
