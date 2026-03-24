@@ -80,7 +80,7 @@ export const ListItem = ({
     defaultNamespace,
   ]);
 
-  const handleConnect = (node: NodeInfo) => {
+  const handleConnect = () => {
     setRoute("connect", { node });
   };
 
@@ -133,7 +133,7 @@ export const ListItem = ({
                 ? "Connect to existing key"
                 : "Edit key connection"
             }
-            onClick={() => handleConnect(node)}
+            onClick={handleConnect}
             className={styles.connectButton}
           >
             {node.connected ? (
