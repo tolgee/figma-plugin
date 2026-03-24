@@ -24,6 +24,7 @@ import styles from "./Index.css";
 import { ListItem } from "./ListItem";
 import { useEditorMode } from "../../hooks/useEditorMode";
 import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
+import { NodeInfo } from "@/types";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
@@ -93,6 +94,31 @@ export const Index = () => {
 
   const nothingSelected = !selectionLoadable.data?.somethingSelected;
 
+  const groupedSelection = useMemo(() => {
+    const groups = new Map<string, NodeInfo[]>();
+    selection.forEach((node) => {
+      const textKey = node.characters.trim();
+      const groupKey = node.connected
+        ? `connected:${node.key}::${node.ns ?? ""}::${textKey}`
+        : `unconnected:${textKey}`;
+      const group = groups.get(groupKey);
+      if (group) {
+        group.push(node);
+      } else {
+        groups.set(groupKey, [node]);
+      }
+    });
+
+    return Array.from(groups.values())
+      .map((nodes, index) => ({
+        id: `group-${index}-${nodes[0]?.id ?? ""}`,
+        key: nodes[0]?.characters.trim() ?? "",
+        nodes,
+        duplicatesCount: nodes.length,
+      }))
+      .sort((a, b) => a.key.localeCompare(b.key));
+  }, [selection]);
+
   const handleLanguageChange = (lang: string) => {
     if (lang !== language) {
       setRoute("pull", { lang });
@@ -102,10 +128,12 @@ export const Index = () => {
   const defaultNamespace = useGlobalState((c) => c.config?.namespace);
 
   const handlePush = () => {
-    const subjectNodes = selection.map((node) => ({
-      ...node,
-      ns: node.ns ?? defaultNamespace,
-    }));
+    const subjectNodes = groupedSelection
+      .flatMap((group) => group.nodes)
+      .map((node) => ({
+        ...node,
+        ns: node.ns ?? defaultNamespace,
+      }));
     const conflicts = getConflictingNodes(subjectNodes);
     if (conflicts.length > 0) {
       const keys = Array.from(new Set(conflicts.map((n) => n.key)));
@@ -131,7 +159,7 @@ export const Index = () => {
 
   useEffect(() => {
     setError(undefined);
-  }, [selection]);
+  }, [groupedSelection]);
 
   const editorMode = useEditorMode();
 
@@ -235,11 +263,13 @@ export const Index = () => {
         </Container>
       ) : (
         <NodeList
-          items={selection}
-          row={(node) => (
+          items={groupedSelection}
+          row={(group) => (
             <ListItem
               hasNamespacesEnabled={hasNamespacesEnabled}
-              node={node}
+              node={group.nodes[0]}
+              groupedNodes={group.nodes}
+              duplicatesCount={group.duplicatesCount}
               loadedNamespaces={allAvailableNamespaces.map((name) => ({
                 name,
               }))}
