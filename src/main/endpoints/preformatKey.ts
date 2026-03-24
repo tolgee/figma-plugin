@@ -10,6 +10,10 @@ export type PreformatKeyEndpointArgs = {
   variableCasing: TolgeeConfig["variableCasing"];
 };
 
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function replacePlaceholder(
   originalFormat: string,
   result: string,
@@ -32,13 +36,16 @@ function replacePlaceholder(
     );
 
     newFormat = newFormat.replace(
-      new RegExp(`${separatorBeforePlaceholder}${placeholder}`, "g"),
+      new RegExp(
+        `${escapeRegExp(separatorBeforePlaceholder)}${escapeRegExp(placeholder)}`,
+        "g",
+      ),
       "",
     );
   } else {
     // If the value is not empty, we need to replace the placeholder with the value
     newFormat = newFormat.replace(
-      new RegExp(`${placeholder}`, "g"),
+      new RegExp(`${escapeRegExp(placeholder)}`, "g"),
       replaceString,
     );
   }

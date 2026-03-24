@@ -35,7 +35,6 @@ export default [
 
       // Project-specific rules from .eslintrc.json
       "prettier/prettier": "error",
-      "react-hooks/exhaustive-deps": "off",
       "@typescript-eslint/ban-ts-comment": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-non-null-assertion": "off",

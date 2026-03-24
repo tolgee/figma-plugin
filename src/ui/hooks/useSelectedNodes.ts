@@ -16,7 +16,7 @@ export const useSelectedNodes = () => {
   const debouncedRefetch = useCallback(() => {
     if (refetchTimerRef.current) clearTimeout(refetchTimerRef.current);
     refetchTimerRef.current = setTimeout(() => result.refetch(), 50);
-  }, []);
+  }, [result.refetch]);
 
   useEffect(() => {
     const unsubDoc = on<DocumentChangeHandler>(

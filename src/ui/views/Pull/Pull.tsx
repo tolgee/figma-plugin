@@ -75,7 +75,7 @@ export const Pull: FunctionalComponent<Props> = ({ lang }) => {
 
   useEffect(() => {
     computeDiff();
-  }, [selectedNodes.data, lang]);
+  }, [selectedNodes.data, lang, branch, hasNamespacesEnabled]);
 
   const formatter = useMemo(() => createFormatIcu(), [lang]);
 

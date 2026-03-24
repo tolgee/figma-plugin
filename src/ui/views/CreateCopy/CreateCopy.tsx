@@ -47,9 +47,7 @@ export const CreateCopy: FunctionComponent = () => {
 
   const handleSubmit = async () => {
     if (copyType === "keys") {
-      copyPageMutation.mutate(undefined, {
-        onSuccess: goToIndex,
-      });
+      await copyPageMutation.mutateAsync(undefined);
     } else {
       for (const language of selectedLanguages) {
         const response = await allTranslationsLoadable.getData({
@@ -62,15 +60,13 @@ export const CreateCopy: FunctionComponent = () => {
           response,
         );
 
-        copyPageMutation.mutate(
-          {
-            language,
-            nodes: changedNodes,
-          },
-          { onSuccess: goToIndex },
-        );
+        await copyPageMutation.mutateAsync({
+          language,
+          nodes: changedNodes,
+        });
       }
     }
+    goToIndex();
   };
 
   const goToIndex = () => {
