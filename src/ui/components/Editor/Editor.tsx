@@ -162,7 +162,7 @@ export const Editor = ({
   useEffect(() => {
     editor.current?.dispatch({
       effects: disabledCompartment.current.reconfigure(
-        EditorState.readOnly.of(Boolean(disabled))
+        EditorState.readOnly.of(Boolean(disabled)),
       ),
     });
   }, [disabled]);

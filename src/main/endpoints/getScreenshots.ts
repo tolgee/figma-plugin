@@ -12,21 +12,26 @@ export const getScreenshotsEndpoint = createEndpoint(
     const connectedNodes = findTextNodes(
       figma.currentPage.selection.length
         ? figma.currentPage.selection
-        : figma.currentPage.children
+        : figma.currentPage.children,
     ).filter((node) => getNodeInfo(node).key);
 
-    const frames = new Set<FrameNode>();
+    const frameToNodes = new Map<FrameNode, TextNode[]>();
 
-    // find frames in parents
+    // find frames in parents and group text nodes by frame
     connectedNodes.forEach((connectedNode) => {
       const frame = findLastParentFrame(connectedNode);
       if (frame) {
-        frames.add(frame);
+        let nodes = frameToNodes.get(frame);
+        if (!nodes) {
+          nodes = [];
+          frameToNodes.set(frame, nodes);
+        }
+        nodes.push(connectedNode);
       }
     });
 
     const data: FrameScreenshot[] = await Promise.all(
-      Array.from(frames).map(async (frame) => {
+      Array.from(frameToNodes.entries()).map(async ([frame, textNodes]) => {
         const framePosition = frame.absoluteBoundingBox!;
         return {
           image: await frame.exportAsync({ format: "PNG" }),
@@ -36,7 +41,7 @@ export const getScreenshotsEndpoint = createEndpoint(
             width: framePosition.width,
             height: framePosition.height,
           },
-          keys: [...findTextNodes([frame])].map((node) => {
+          keys: textNodes.map((node) => {
             const nodePosition = node.absoluteBoundingBox!;
             return {
               ...getNodeInfo(node),
@@ -47,8 +52,8 @@ export const getScreenshotsEndpoint = createEndpoint(
             };
           }),
         };
-      })
+      }),
     );
     return data;
-  }
+  },
 );

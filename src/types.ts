@@ -127,6 +127,7 @@ export type GlobalSettings = {
 
 export type CurrentDocumentSettings = GlobalSettings & {
   namespace: string;
+  branch?: string;
   documentInfo: true;
 };
 

@@ -22,7 +22,7 @@ export const emit = <Handler extends EventHandler>(
  */
 export const formatString = (
   str = "",
-  formatOption: TolgeeConfig["variableCasing"]
+  formatOption: TolgeeConfig["variableCasing"],
 ) => {
   switch (formatOption) {
     case "camelCase":
@@ -32,7 +32,7 @@ export const formatString = (
         .map((word, index) =>
           index > 0
             ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-            : word.toLowerCase()
+            : word.toLowerCase(),
         )
         .join("");
     case "PascalCase":
@@ -40,7 +40,7 @@ export const formatString = (
         .split(/\s+/)
         .filter(Boolean)
         .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
         )
         .join("");
     case "snake_case":

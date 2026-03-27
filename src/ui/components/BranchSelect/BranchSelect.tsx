@@ -3,38 +3,32 @@ import { useMemo, useState, useRef } from "preact/hooks";
 import { AutocompleteSelect } from "../AutocompleteSelect/AutocompleteSelect";
 import { IconButton } from "@create-figma-plugin/ui";
 import { Refresh } from "@/ui/icons/SvgIcons";
-import styles from "./NamespaceSelect.css";
+import styles from "./BranchSelect.css";
 
 type Props = {
-  namespaces: string[];
+  branches: Array<{ name: string; isDefault: boolean }>;
   value: string;
   onChange: (value: string) => void;
   onRefresh?: () => Promise<void> | void;
 };
 
-export const NamespaceSelect: FunctionComponent<Props> = ({
+export const BranchSelect: FunctionComponent<Props> = ({
   value,
-  namespaces,
+  branches,
   onChange,
   onRefresh,
 }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Ensure all namespaces are included, plus the current value if it's not in the list
-  const allNamespaces = useMemo(
-    () =>
-      [
-        ...new Set([
-          ...namespaces,
-          ...(value && !namespaces.includes(value) ? [value] : []),
-        ]),
-      ].sort((a, b) => {
-        if (!a) return 1;
-        if (!b) return -1;
-        return a.localeCompare(b);
-      }),
-    [namespaces, value],
+  const branchNames = useMemo(
+    () => branches.map((b) => b.name).sort((a, b) => a.localeCompare(b)),
+    [branches],
+  );
+
+  const defaultBranchName = useMemo(
+    () => branches.find((b) => b.isDefault)?.name,
+    [branches],
   );
 
   const handleRefresh = async (e: MouseEvent) => {
@@ -42,17 +36,14 @@ export const NamespaceSelect: FunctionComponent<Props> = ({
     e.preventDefault();
     if (!onRefresh || isRefreshing) return;
 
-    // Store if input was focused before refresh
     const wasFocused = document.activeElement === inputRef.current;
 
     setIsRefreshing(true);
     try {
       await onRefresh();
-      // Reopen the dropdown if it was open before
       if (wasFocused && inputRef.current) {
         setTimeout(() => {
           inputRef.current?.focus();
-          // Small delay to ensure the options are updated
           setTimeout(() => {
             inputRef.current?.focus();
           }, 50);
@@ -67,14 +58,16 @@ export const NamespaceSelect: FunctionComponent<Props> = ({
     <div className={styles.container}>
       <div className={styles.inputWrapper}>
         <AutocompleteSelect
-          existingOptionsPlaceholder="Existing namespaces"
-          noOptionsPlaceholder="No namespaces found"
+          existingOptionsPlaceholder="Existing branches"
+          noOptionsPlaceholder="No branches found"
           value={value}
-          options={allNamespaces}
-          placeholder="Add namespace..."
+          options={branchNames}
+          placeholder="Select branch..."
           onChange={onChange}
-          displayValue={(v) => v || "<none>"}
-          dataCy="general_namespace_select_input"
+          displayValue={(v) =>
+            v === defaultBranchName ? `${v} (default)` : v
+          }
+          dataCy="general_branch_select_input"
           singleSelect={true}
           inputRef={inputRef}
         />
@@ -84,7 +77,7 @@ export const NamespaceSelect: FunctionComponent<Props> = ({
             className={`${styles.refreshButton} ${
               isRefreshing ? styles.rotating : ""
             }`}
-            title="Refresh namespaces"
+            title="Refresh branches"
             disabled={isRefreshing}
             data-refresh-button
           >
