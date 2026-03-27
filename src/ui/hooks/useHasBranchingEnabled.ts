@@ -1,3 +1,4 @@
+import { useEffect } from "preact/hooks";
 import { useApiQuery } from "../client/useQueryApi";
 
 export const useHasBranchingEnabled = () => {
@@ -23,5 +24,16 @@ export const useHasBranchingEnabled = () => {
     },
   });
 
-  return projectQuery.data?.useBranching ?? false;
+  const hasBranching = projectQuery.data?.useBranching ?? false;
+
+  useEffect(() => {
+    if (projectQuery.data) {
+      // eslint-disable-next-line no-console
+      console.info(
+        `[Tolgee] Branching feature: ${hasBranching ? "ENABLED" : "DISABLED — enable it in your Tolgee project settings (Settings → General → Branching)"}`
+      );
+    }
+  }, [projectQuery.data, hasBranching]);
+
+  return hasBranching;
 };
