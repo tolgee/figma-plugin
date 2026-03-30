@@ -2,7 +2,7 @@ import { emit, on, once } from "@/utilities";
 
 export const createEndpoint = <I, O>(
   name: string,
-  fn: ((input: I) => Promise<O>) | ((input: I) => O)
+  fn: ((input: I) => Promise<O>) | ((input: I) => O),
 ) => {
   let endpointRequestCounter = 0;
   let implementation = fn;

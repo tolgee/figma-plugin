@@ -13,7 +13,6 @@ export const HtmlText = (props: HtmlTextProps) => {
     <span
       data-cy={props.dataCy}
       style={props.style}
-      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{
         __html: DOMPurify.sanitize(props.text ?? ""),
       }}

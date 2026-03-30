@@ -7,6 +7,7 @@ import {
   ResetHandler,
   ResizeHandler,
   SelectionChangeHandler,
+  SetBranchHandler,
   SetLanguageHandler,
   SetupHandle,
   SyncCompleteHandler,
@@ -89,6 +90,12 @@ export default async function () {
     await setPluginData(data);
   });
 
+  on<SetBranchHandler>("SET_BRANCH", async (branch: string) => {
+    const pluginData = await getPluginData();
+    const data = { ...pluginData, branch };
+    await setPluginData(data);
+  });
+
   on<ResizeHandler>("RESIZE", (size) => {
     figma.ui.resize(size.width, size.height);
   });
@@ -119,6 +126,6 @@ export default async function () {
     },
     {
       config,
-    }
+    },
   );
 }

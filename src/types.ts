@@ -15,6 +15,11 @@ export interface SetLanguageHandler extends EventHandler {
   handler: (language: string) => void;
 }
 
+export interface SetBranchHandler extends EventHandler {
+  name: "SET_BRANCH";
+  handler: (branch: string) => void;
+}
+
 export interface ConfigChangeHandler extends EventHandler {
   name: "CONFIG_CHANGE";
   handler: (config: Partial<TolgeeConfig>) => void;
@@ -127,6 +132,7 @@ export type GlobalSettings = {
 
 export type CurrentDocumentSettings = GlobalSettings & {
   namespace: string;
+  branch?: string;
   documentInfo: true;
 };
 

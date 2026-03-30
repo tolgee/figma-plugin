@@ -47,9 +47,7 @@ export const CreateCopy: FunctionComponent = () => {
 
   const handleSubmit = async () => {
     if (copyType === "keys") {
-      copyPageMutation.mutate(undefined, {
-        onSuccess: goToIndex,
-      });
+      await copyPageMutation.mutateAsync(undefined);
     } else {
       for (const language of selectedLanguages) {
         const response = await allTranslationsLoadable.getData({
@@ -59,18 +57,16 @@ export const CreateCopy: FunctionComponent = () => {
         const { changedNodes } = getPullChanges(
           connectedNodes.data?.items || [],
           language,
-          response
+          response,
         );
 
-        copyPageMutation.mutate(
-          {
-            language,
-            nodes: changedNodes,
-          },
-          { onSuccess: goToIndex }
-        );
+        await copyPageMutation.mutateAsync({
+          language,
+          nodes: changedNodes,
+        });
       }
     }
+    goToIndex();
   };
 
   const goToIndex = () => {
@@ -126,17 +122,19 @@ export const CreateCopy: FunctionComponent = () => {
             </Text>
             <VerticalSpace space="small" />
 
-            {languages?.map((language) => (
-              <div key={language.id}>
-                <Checkbox
-                  value={selectedLanguages.includes(language.tag)}
-                  onChange={() => handleToggleLanguage(language.tag)}
-                >
-                  <Text>{language.name}</Text>
-                </Checkbox>
-                <VerticalSpace space="small" />
-              </div>
-            ))}
+            <div style={{ maxHeight: 200, overflowY: "auto" }}>
+              {languages?.map((language) => (
+                <div key={language.id}>
+                  <Checkbox
+                    value={selectedLanguages.includes(language.tag)}
+                    onChange={() => handleToggleLanguage(language.tag)}
+                  >
+                    <Text>{language.name}</Text>
+                  </Checkbox>
+                  <VerticalSpace space="small" />
+                </div>
+              ))}
+            </div>
           </Fragment>
         )}
 

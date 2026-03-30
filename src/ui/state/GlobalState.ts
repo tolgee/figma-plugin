@@ -6,6 +6,7 @@ import {
   NodeInfo,
   ResetHandler,
   ResizeHandler,
+  SetBranchHandler,
   SetLanguageHandler,
   SetupHandle,
   TolgeeConfig,
@@ -29,7 +30,7 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     const routeKey = route[0];
     const [config, _setConfig] = useState(initialConfig);
     const [globalError, setGlobalError] = useState<string | undefined>(
-      undefined
+      undefined,
     );
     const [sizeStack, setSizeStack] = useState<WindowSize[]>([]);
 
@@ -70,6 +71,10 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
         _setConfig({ ...config, language });
         emit<SetLanguageHandler>("SET_LANGUAGE", language);
       },
+      setBranch(branch: string) {
+        _setConfig({ ...config, branch });
+        emit<SetBranchHandler>("SET_BRANCH", branch);
+      },
       setEditedKey(id: string, key: string) {
         setEditedKeys((keys) => ({ ...keys, [id]: key }));
       },
@@ -83,6 +88,6 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
     globalState.actions = actions;
 
     return [data, actions];
-  }
+  },
 );
 export { DEFAULT_SIZE };

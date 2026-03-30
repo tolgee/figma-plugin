@@ -26,6 +26,7 @@ export const Changes = ({ changes }: Props) => {
           >
             <NodeList
               rowHeight={52}
+              minVisibleRows={Infinity}
               items={changes.newKeys.map((k) => ({
                 id: k.key,
                 key: k.key,
@@ -49,6 +50,7 @@ export const Changes = ({ changes }: Props) => {
           >
             <NodeList
               rowHeight={28}
+              minVisibleRows={Infinity}
               items={changes.changedKeys.map((k) => ({
                 id: k.key,
                 key: k.key,
