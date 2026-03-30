@@ -7,6 +7,7 @@ import {
   ResetHandler,
   ResizeHandler,
   SelectionChangeHandler,
+  SetBranchHandler,
   SetLanguageHandler,
   SetupHandle,
   SyncCompleteHandler,
@@ -86,6 +87,12 @@ export default async function () {
   on<SetLanguageHandler>("SET_LANGUAGE", async (language: string) => {
     const pluginData = await getPluginData();
     const data = { ...pluginData, language };
+    await setPluginData(data);
+  });
+
+  on<SetBranchHandler>("SET_BRANCH", async (branch: string) => {
+    const pluginData = await getPluginData();
+    const data = { ...pluginData, branch };
     await setPluginData(data);
   });
 

@@ -15,6 +15,11 @@ export interface SetLanguageHandler extends EventHandler {
   handler: (language: string) => void;
 }
 
+export interface SetBranchHandler extends EventHandler {
+  name: "SET_BRANCH";
+  handler: (branch: string) => void;
+}
+
 export interface ConfigChangeHandler extends EventHandler {
   name: "CONFIG_CHANGE";
   handler: (config: Partial<TolgeeConfig>) => void;

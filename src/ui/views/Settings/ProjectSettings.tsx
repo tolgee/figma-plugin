@@ -102,6 +102,22 @@ const branchingHelpTextSetUp = ({
   </Fragment>
 );
 
+const branchingHelpText = () => (
+  <Fragment>
+    <div>
+      This project uses branching. Upload keys only to permitted branches.{" "}
+      <a
+        href="https://docs.tolgee.io/platform/branching/overview"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Read more about branching
+      </a>
+      .
+    </div>
+  </Fragment>
+);
+
 export const ProjectSettings: FunctionComponent<Props> = ({
   apiKey,
   apiUrl,
@@ -305,7 +321,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
           </div>
         </Fragment>
       )}
-      <VerticalSpace space="medium" />
+      <VerticalSpace space="small" />
       {!hasBranchingEnabled && (
         <Fragment>
           <div className={styles.namespaceShowRow}>
@@ -327,6 +343,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
             <Text>
               <Muted>Branch</Muted>
             </Text>
+            <InfoTooltip>{branchingHelpText()}</InfoTooltip>
           </div>
           <VerticalSpace space="small" />
           <div className={styles.namespacesRow}>

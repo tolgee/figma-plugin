@@ -6,6 +6,7 @@ import {
   NodeInfo,
   ResetHandler,
   ResizeHandler,
+  SetBranchHandler,
   SetLanguageHandler,
   SetupHandle,
   TolgeeConfig,
@@ -69,6 +70,10 @@ export const [GlobalState, useGlobalActions, useGlobalState] = createProvider(
       setLanguage(language: string) {
         _setConfig({ ...config, language });
         emit<SetLanguageHandler>("SET_LANGUAGE", language);
+      },
+      setBranch(branch: string) {
+        _setConfig({ ...config, branch });
+        emit<SetBranchHandler>("SET_BRANCH", branch);
       },
       setEditedKey(id: string, key: string) {
         setEditedKeys((keys) => ({ ...keys, [id]: key }));

@@ -25,6 +25,7 @@ import { ListItem } from "./ListItem";
 import { useEditorMode } from "../../hooks/useEditorMode";
 import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
 import { useHasBranchingEnabled } from "../../hooks/useHasBranchingEnabled";
+import { BranchSelect } from "../../components/BranchSelect/BranchSelect";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
@@ -57,6 +58,34 @@ export const Index = () => {
   const hasNamespacesEnabled = useHasNamespacesEnabled();
   const hasBranchingEnabled = useHasBranchingEnabled();
   const currentBranch = useGlobalState((c) => c.config?.branch);
+  const { setBranch } = useGlobalActions();
+
+  const apiKeyInfo = useApiQuery({
+    url: "/v2/api-keys/current",
+    method: "get",
+    options: { cacheTime: 60000, staleTime: 60000 },
+  });
+
+  const branchesLoadable = useApiQuery({
+    url: "/v2/projects/{projectId}/branches",
+    method: "get",
+    path: { projectId: apiKeyInfo.data?.projectId ?? 0 },
+    options: {
+      cacheTime: 0,
+      staleTime: 0,
+      enabled: hasBranchingEnabled && apiKeyInfo.data?.projectId !== undefined,
+    },
+  });
+
+  const branches = branchesLoadable.data?._embedded?.branches ?? [];
+
+  const isBranchMissing =
+    hasBranchingEnabled &&
+    !branchesLoadable.isLoading &&
+    branchesLoadable.data !== undefined &&
+    !!currentBranch &&
+    branches.length > 0 &&
+    !branches.some((b) => b.name === currentBranch);
 
   const languages = languagesLoadable.data?._embedded?.languages;
 
@@ -235,6 +264,25 @@ export const Index = () => {
         </Container>
         <Divider />
         <Container space="medium">
+          {isBranchMissing && (
+            <Fragment>
+              <VerticalSpace space="medium" />
+              <Banner icon={<IconWarning32 />}>
+                Branch &quot;{currentBranch}&quot; no longer exists. Please
+                select a different branch.
+              </Banner>
+              <VerticalSpace space="small" />
+              <BranchSelect
+                branches={branches}
+                value=""
+                onChange={setBranch}
+                onRefresh={async () => {
+                  await branchesLoadable.refetch();
+                }}
+              />
+              <VerticalSpace space="medium" />
+            </Fragment>
+          )}
           {error && (
             <Fragment>
               <Banner
