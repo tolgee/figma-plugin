@@ -1,8 +1,8 @@
 declare const styles: {
-  readonly "wrapper": string;
   readonly "refreshButton": string;
   readonly "rotate": string;
   readonly "rotating": string;
+  readonly "wrapper": string;
 };
 export = styles;
 

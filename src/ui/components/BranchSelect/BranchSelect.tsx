@@ -1,5 +1,5 @@
 import { FunctionComponent, h } from "preact";
-import { useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import { Dropdown, DropdownOption, IconButton } from "@create-figma-plugin/ui";
 import { Branch, Refresh } from "@/ui/icons/SvgIcons";
 import styles from "./BranchSelect.css";
@@ -30,6 +30,10 @@ export const BranchSelect: FunctionComponent<Props> = ({
     [branches],
   );
 
+  useEffect(() => {
+    console.log("branches", branches);
+  }, [branches]);
+
   const handleRefresh = async (e: MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -47,7 +51,7 @@ export const BranchSelect: FunctionComponent<Props> = ({
       <Dropdown
         icon={<Branch width={12} height={12} />}
         options={options}
-        value={value || null}
+        value={value && branches.find((b) => b.name === value) ? value : null}
         placeholder="Select branch..."
         onValueChange={onChange}
         data-cy="general_branch_select_input"

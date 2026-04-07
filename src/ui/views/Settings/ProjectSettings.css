@@ -8,3 +8,13 @@
   align-items: center;
   gap: 8px;
 }
+.branchingRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.branchingShowRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

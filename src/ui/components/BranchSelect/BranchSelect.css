@@ -9,9 +9,15 @@
   flex: 1;
   min-width: 0;
 }
+.wrapper > :first-child > :nth-child(2) {
+  flex-grow: 1;
+}
 
 .refreshButton {
   flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  position: relative;
   color: var(--figma-color-text-secondary);
   transition: color 0.2s;
 }

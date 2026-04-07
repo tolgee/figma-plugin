@@ -105,7 +105,8 @@ const branchingHelpTextSetUp = ({
 const branchingHelpText = () => (
   <Fragment>
     <div>
-      This project uses branching. Upload keys only to permitted branches.{" "}
+      This project uses branching. <br />
+      Upload keys only to permitted branches. <br />
       <a
         href="https://docs.tolgee.io/platform/branching/overview"
         target="_blank"
@@ -321,11 +322,13 @@ export const ProjectSettings: FunctionComponent<Props> = ({
           </div>
         </Fragment>
       )}
-      <VerticalSpace space="small" />
       {!hasBranchingEnabled && (
         <Fragment>
-          <div className={styles.namespaceShowRow}>
-            <Muted>Branching is disabled</Muted>
+          <VerticalSpace space="small" />
+          <div className={styles.branchingShowRow}>
+            <Text>
+              <Muted>Branching is disabled</Muted>
+            </Text>
             <InfoTooltip>
               {branchingHelpTextSetUp({
                 apiUrl,
@@ -339,14 +342,14 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       {hasBranchingEnabled && (
         <Fragment>
           <VerticalSpace space="extraSmall" />
-          <div className={styles.namespaceShowRow}>
+          <div className={styles.branchingShowRow}>
             <Text>
               <Muted>Branch</Muted>
             </Text>
             <InfoTooltip>{branchingHelpText()}</InfoTooltip>
           </div>
-          <VerticalSpace space="small" />
-          <div className={styles.namespacesRow}>
+          <VerticalSpace space="extraSmall" />
+          <div className={styles.branchingRow}>
             <BranchSelect
               key={settings?.branch || ""}
               value={settings?.branch || ""}
