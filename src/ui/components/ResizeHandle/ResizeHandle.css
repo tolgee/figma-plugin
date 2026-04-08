@@ -13,18 +13,18 @@
 
 .resizeHandle:hover {
   opacity: 1;
-  background-color: #7C848F;
+  background-color: #7c848f;
   color: white;
 }
 
 .resizeHandle:active {
-  background-color: #7C848F;
+  background-color: #7c848f;
   color: white;
   opacity: 1;
 }
 
 .resizeHandle:focus {
-  outline: 2px solid #7C848F;
+  outline: 2px solid #7c848f;
   outline-offset: 2px;
   opacity: 1;
 }

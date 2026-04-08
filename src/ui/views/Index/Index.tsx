@@ -246,7 +246,7 @@ export const Index = () => {
             rightPart={
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 {hasBranchingEnabled && currentBranch && (
-                  <Text style={{ fontSize: 11, opacity: 0.6 }}>
+                  <Text className={styles.branchText} title={currentBranch}>
                     {currentBranch}
                   </Text>
                 )}

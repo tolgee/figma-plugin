@@ -1,7 +1,7 @@
 import { FunctionComponent, h } from "preact";
-import { useEffect, useMemo, useState } from "preact/hooks";
-import { Dropdown, DropdownOption, IconButton } from "@create-figma-plugin/ui";
-import { Branch, Refresh } from "@/ui/icons/SvgIcons";
+import { useMemo, useState } from "preact/hooks";
+import { IconButton } from "@create-figma-plugin/ui";
+import { Refresh } from "@/ui/icons/SvgIcons";
 import styles from "./BranchSelect.css";
 
 type Props = {
@@ -19,7 +19,7 @@ export const BranchSelect: FunctionComponent<Props> = ({
 }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const options = useMemo<DropdownOption[]>(
+  const options = useMemo<{ text: string; value: string }[]>(
     () =>
       [...branches]
         .sort((a, b) => a.name.localeCompare(b.name))
@@ -29,10 +29,6 @@ export const BranchSelect: FunctionComponent<Props> = ({
         })),
     [branches],
   );
-
-  useEffect(() => {
-    console.log("branches", branches);
-  }, [branches]);
 
   const handleRefresh = async (e: MouseEvent) => {
     e.stopPropagation();
@@ -48,14 +44,19 @@ export const BranchSelect: FunctionComponent<Props> = ({
 
   return (
     <div className={styles.wrapper}>
-      <Dropdown
-        icon={<Branch width={12} height={12} />}
-        options={options}
-        value={value && branches.find((b) => b.name === value) ? value : null}
-        placeholder="Select branch..."
-        onValueChange={onChange}
+      <select
+        value={
+          value && branches.find((b) => b.name === value) ? value : undefined
+        }
+        onChange={(e) => onChange(e.currentTarget.value)}
         data-cy="general_branch_select_input"
-      />
+      >
+        {options?.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.text}
+          </option>
+        ))}
+      </select>
       {onRefresh && (
         <IconButton
           onClick={handleRefresh}

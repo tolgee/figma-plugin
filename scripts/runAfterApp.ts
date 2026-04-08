@@ -15,7 +15,7 @@ const dockerComposeProcess = spawn(
   ["compose", "up", "--force-recreate"],
   {
     cwd: path.join(__dirname, "..", "cypress"),
-  }
+  },
 );
 
 const appProcesses = [dockerComposeProcess];
@@ -46,8 +46,8 @@ function checkServerStatus(callback: () => void) {
       if (retryCount++ >= MAX_RETRIES) {
         console.log(
           systemColor(
-            "Server failed to start after maximum retries. Exiting..."
-          )
+            "Server failed to start after maximum retries. Exiting...",
+          ),
         );
         finish(1);
         return;
@@ -61,7 +61,7 @@ function checkServerStatus(callback: () => void) {
     console.log(systemColor("Waiting for server to start..."));
     if (retryCount++ >= MAX_RETRIES) {
       console.log(
-        systemColor("Server failed to start after maximum retries. Exiting...")
+        systemColor("Server failed to start after maximum retries. Exiting..."),
       );
       finish(1);
       return;
@@ -79,7 +79,7 @@ function runAfterProcesses() {
         shell: true,
       });
       afterProcess.on("close", (code) =>
-        onChildFinish(getProcessName(afterProcess), code || 0)
+        onChildFinish(getProcessName(afterProcess), code || 0),
       );
       afterProcesses.push(afterProcess);
     });
@@ -103,9 +103,9 @@ async function finish(code: number) {
       new Promise<void>((resolve, reject) => {
         console.log(systemColor(`Terminating process "${getProcessName(p)}"`));
         terminate(p.pid!, { timeout: 5000 }, (err) =>
-          err ? reject(err) : resolve()
+          err ? reject(err) : resolve(),
         );
-      })
+      }),
   );
 
   await Promise.all(childrenPending);
@@ -133,5 +133,5 @@ process.on("SIGINT", () => {
 });
 
 appProcesses.forEach((p) =>
-  p.on("close", (code) => onChildFinish(getProcessName(p), code || 0))
+  p.on("close", (code) => onChildFinish(getProcessName(p), code || 0)),
 );

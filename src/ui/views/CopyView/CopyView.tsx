@@ -24,6 +24,7 @@ import { createFormatIcu } from "../../../createFormatIcu";
 export const CopyView = () => {
   const selectionLoadable = useSelectedNodes();
   const language = useGlobalState((c) => c.config?.language);
+  const branch = useGlobalState((c) => c.config?.branch);
   const connectedNodesLoadable = useConnectedMutation({
     ignoreSelection: false,
   });
@@ -38,6 +39,7 @@ export const CopyView = () => {
   const handlePull = async () => {
     const translations = await allTranslationsLoadable.getData({
       language: language ?? "",
+      branch: branch || undefined,
     });
 
     const connectedNodes = await connectedNodesLoadable.mutateAsync(undefined);

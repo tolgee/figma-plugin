@@ -42,3 +42,12 @@
   display: flex;
   gap: 4px;
 }
+
+.branchText {
+  font-size: 11px;
+  opacity: 0.6;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

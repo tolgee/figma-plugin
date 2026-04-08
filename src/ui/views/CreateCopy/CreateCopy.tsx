@@ -2,7 +2,7 @@ import { useApiQuery } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { TopBar } from "@/ui/components/TopBar/TopBar";
-import { useGlobalActions } from "@/ui/state/GlobalState";
+import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { getPullChanges } from "@/tools/getPullChanges";
 import {
   VerticalSpace,
@@ -24,6 +24,7 @@ type CopyType = "language" | "keys";
 
 export const CreateCopy: FunctionComponent = () => {
   const { setRoute } = useGlobalActions();
+  const branch = useGlobalState((c) => c.config?.branch);
 
   const [copyType, setCopyType] = useState<CopyType>("keys");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
@@ -52,6 +53,7 @@ export const CreateCopy: FunctionComponent = () => {
       for (const language of selectedLanguages) {
         const response = await allTranslationsLoadable.getData({
           language,
+          branch: branch || undefined,
         });
 
         const { changedNodes } = getPullChanges(

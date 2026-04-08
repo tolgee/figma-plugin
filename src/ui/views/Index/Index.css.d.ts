@@ -1,5 +1,6 @@
 declare const styles: {
   readonly "actionsContainer": string;
+  readonly "branchText": string;
   readonly "connectButton": string;
   readonly "container": string;
   readonly "disabled": string;

@@ -11,6 +11,7 @@ import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
 import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
 import { useHasBranchingEnabled } from "../../hooks/useHasBranchingEnabled";
 import { getProjectIdFromApiKey } from "../../client/decodeApiKey";
+import { Branch } from "../../icons/SvgIcons";
 
 type Props = {
   apiKey: string;
@@ -343,6 +344,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
         <Fragment>
           <VerticalSpace space="extraSmall" />
           <div className={styles.branchingShowRow}>
+            <Branch width={12} height={12} />
             <Text>
               <Muted>Branch</Muted>
             </Text>

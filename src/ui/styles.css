@@ -60,7 +60,8 @@ select {
   width: 100%;
   padding: 6px 8px;
 }
-button, button > * {
+button,
+button > * {
   cursor: pointer;
 }
 
