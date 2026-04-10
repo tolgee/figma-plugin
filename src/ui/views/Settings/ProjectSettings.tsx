@@ -170,8 +170,15 @@ export const ProjectSettings: FunctionComponent<Props> = ({
     url: "/v2/api-keys/current",
     method: "get",
     options: {
+      enabled: hasBranchingEnabled,
       cacheTime: 60000,
       staleTime: 60000,
+    },
+    clientOptions: {
+      config: {
+        apiKey,
+        apiUrl,
+      },
     },
   });
 
@@ -223,27 +230,40 @@ export const ProjectSettings: FunctionComponent<Props> = ({
     return ns;
   }, [namespacesLoadable.data, settings?.namespace]);
 
-  useEffect(() => {
-    if (!settings && namespacesLoadable.data && languagesLoadable.data) {
-      const defaultBranch = branches.find((b) => b.isDefault)?.name;
-      setSettings({
-        language:
-          initialData?.language || languages?.find((l) => l.base)?.tag || "",
-        namespace: initialData?.namespace ?? namespaces?.[0] ?? "",
-        branch: initialData?.branch ?? defaultBranch,
-      });
-    }
-  }, [languages, namespaces, branches]);
+  const branchNames = useMemo(
+    () => branches.map((b) => b.name),
+    [branches],
+  );
 
-  // Update branch when branches load after initial settings are already set
   useEffect(() => {
-    if (settings && !settings.branch && branches.length > 0) {
-      const defaultBranch = branches.find((b) => b.isDefault)?.name;
-      if (defaultBranch) {
-        setSettings((prev) => ({ ...prev!, branch: defaultBranch }));
-      }
+    if (!namespacesLoadable.data || !languagesLoadable.data || settings) {
+      return;
     }
-  }, [branches, settings?.branch]);
+    if (hasBranchingEnabled && branchesLoadable.isLoading) {
+      return;
+    }
+
+    const defaultBranch = branches.find((b) => b.isDefault)?.name;
+    const savedBranch =
+      initialData?.branch && branchNames.includes(initialData.branch)
+        ? initialData.branch
+        : undefined;
+
+    setSettings({
+      language:
+        initialData?.language || languages?.find((l) => l.base)?.tag || "",
+      namespace: initialData?.namespace ?? namespaces?.[0] ?? "",
+      branch: hasBranchingEnabled ? savedBranch ?? defaultBranch : undefined,
+    });
+  }, [
+    branchNames,
+    branches,
+    branchesLoadable.isLoading,
+    hasBranchingEnabled,
+    languages,
+    namespaces,
+    settings,
+  ]);
 
   useEffect(() => {
     if (settings) {
