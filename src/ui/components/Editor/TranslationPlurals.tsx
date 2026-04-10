@@ -49,7 +49,7 @@ export const TranslationPlurals = ({
           {variants
             .filter(
               ([variant]) =>
-                showEmpty || value.variants[variant as Intl.LDMLPluralRule]
+                showEmpty || value.variants[variant as Intl.LDMLPluralRule],
             )
             .map(([variant, exampleValue]) => (
               <Fragment key={variant}>

@@ -1,12 +1,13 @@
 import { Textbox } from "@create-figma-plugin/ui";
 import { h } from "preact";
+import { memo } from "preact/compat";
 
 type Props = {
   value: string;
   onChange: (value: string) => void;
 };
 
-export const KeyInput = ({ value, onChange }: Props) => {
+export const KeyInput = memo(({ value, onChange }: Props) => {
   return (
     <Textbox
       data-cy="index_unconnected_key_input"
@@ -22,4 +23,4 @@ export const KeyInput = ({ value, onChange }: Props) => {
       }}
     />
   );
-};
+});

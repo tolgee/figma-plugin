@@ -9,7 +9,7 @@ export const stringFormatter = (
   } = {
     replaceHtmlTags: true,
     replaceNewlines: true,
-  }
+  },
 ) => {
   let newString = str;
   if (args.replaceHtmlTags) {

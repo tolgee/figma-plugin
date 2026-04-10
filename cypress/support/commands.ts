@@ -6,7 +6,7 @@ Cypress.Commands.add(
   { prevSubject: true },
   (subject: Cypress.Chainable, dataCy) => {
     return subject.closest(`[data-cy="${dataCy}"]`);
-  }
+  },
 );
 
 Cypress.Commands.add("gcy", (dataCy) => {
@@ -18,7 +18,7 @@ Cypress.Commands.add(
   { prevSubject: true },
   (subject: Cypress.Chainable, dataCy) => {
     return subject.find(`[data-cy="${dataCy}"]`, { timeout: 30000 });
-  }
+  },
 );
 
 declare global {

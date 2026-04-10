@@ -11,15 +11,16 @@ export const Dialog = ({ children, onClose }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const element = ref.current;
     const handler = (e: KeyboardEvent) => {
       if (e.code === "Escape") {
         onClose();
       }
     };
-    ref.current?.focus();
-    ref.current?.addEventListener("keydown", handler);
-    return () => ref.current?.removeEventListener("keydown", handler);
-  }, []);
+    element?.focus();
+    element?.addEventListener("keydown", handler);
+    return () => element?.removeEventListener("keydown", handler);
+  }, [onClose]);
 
   return (
     <div ref={ref} tabIndex={0} data-cy="dialog">

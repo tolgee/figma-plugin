@@ -1,5 +1,5 @@
 import { Fragment, h } from "preact";
-import { useEffect, useState, useMemo } from "preact/hooks";
+import { useCallback, useEffect, useState, useMemo } from "preact/hooks";
 import {
   Banner,
   Button,
@@ -24,6 +24,8 @@ import styles from "./Index.css";
 import { ListItem } from "./ListItem";
 import { useEditorMode } from "../../hooks/useEditorMode";
 import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
+import { useHasBranchingEnabled } from "../../hooks/useHasBranchingEnabled";
+import { BranchSelect } from "../../components/BranchSelect/BranchSelect";
 
 export const Index = () => {
   const selectionLoadable = useSelectedNodes();
@@ -54,6 +56,36 @@ export const Index = () => {
   });
 
   const hasNamespacesEnabled = useHasNamespacesEnabled();
+  const hasBranchingEnabled = useHasBranchingEnabled();
+  const currentBranch = useGlobalState((c) => c.config?.branch);
+  const { setBranch } = useGlobalActions();
+
+  const apiKeyInfo = useApiQuery({
+    url: "/v2/api-keys/current",
+    method: "get",
+    options: { cacheTime: 60000, staleTime: 60000 },
+  });
+
+  const branchesLoadable = useApiQuery({
+    url: "/v2/projects/{projectId}/branches",
+    method: "get",
+    path: { projectId: apiKeyInfo.data?.projectId ?? 0 },
+    options: {
+      cacheTime: 0,
+      staleTime: 0,
+      enabled: hasBranchingEnabled && apiKeyInfo.data?.projectId !== undefined,
+    },
+  });
+
+  const branches = branchesLoadable.data?._embedded?.branches ?? [];
+
+  const isBranchMissing =
+    hasBranchingEnabled &&
+    !branchesLoadable.isLoading &&
+    branchesLoadable.data !== undefined &&
+    !!currentBranch &&
+    branches.length > 0 &&
+    !branches.some((b) => b.name === currentBranch);
 
   const languages = languagesLoadable.data?._embedded?.languages;
 
@@ -67,14 +99,14 @@ export const Index = () => {
   const allAvailableNamespaces = useMemo(() => {
     const apiNamespaces =
       namespacesLoadable.data?._embedded?.namespaces?.map(
-        (n) => n.name || ""
+        (n) => n.name || "",
       ) || [];
     const nodeNamespaces = Array.from(
       new Set(
         (allNodes.data?.items || [])
           .map((node) => node.ns)
-          .filter((ns): ns is string => Boolean(ns))
-      )
+          .filter((ns): ns is string => Boolean(ns)),
+      ),
     );
     return Array.from(new Set([...apiNamespaces, ...nodeNamespaces]))
       .filter(Boolean)
@@ -86,10 +118,27 @@ export const Index = () => {
       });
   }, [namespacesLoadable.data, allNodes.data]);
 
+  const loadedNamespaces = useMemo(
+    () => allAvailableNamespaces.map((name) => ({ name })),
+    [allAvailableNamespaces],
+  );
+
   // Refresh namespaces: refetch API and all nodes
-  const handleRefreshNamespaces = async () => {
+  const handleRefreshNamespaces = useCallback(async () => {
     await Promise.all([namespacesLoadable.refetch(), allNodes.refetch()]);
-  };
+  }, []);
+
+  const renderRow = useCallback(
+    (node: (typeof selection)[number]) => (
+      <ListItem
+        hasNamespacesEnabled={hasNamespacesEnabled}
+        node={node}
+        loadedNamespaces={loadedNamespaces}
+        onRefreshNamespaces={handleRefreshNamespaces}
+      />
+    ),
+    [hasNamespacesEnabled, loadedNamespaces, handleRefreshNamespaces],
+  );
 
   const nothingSelected = !selectionLoadable.data?.somethingSelected;
 
@@ -111,8 +160,8 @@ export const Index = () => {
       const keys = Array.from(new Set(conflicts.map((n) => n.key)));
       setError(
         `There are multiple different translations for single key (${keys.join(
-          ", "
-        )})`
+          ", ",
+        )})`,
       );
     } else {
       setRoute("push");
@@ -157,7 +206,7 @@ export const Index = () => {
                     value={language}
                     onChange={(e) => {
                       handleLanguageChange(
-                        (e.target as HTMLInputElement).value
+                        (e.target as HTMLInputElement).value,
                       );
                     }}
                   >
@@ -196,6 +245,11 @@ export const Index = () => {
             }
             rightPart={
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {hasBranchingEnabled && currentBranch && (
+                  <Text className={styles.branchText} title={currentBranch}>
+                    {currentBranch}
+                  </Text>
+                )}
                 <div
                   data-cy="index_settings_button"
                   className={styles.settingsButton}
@@ -210,6 +264,25 @@ export const Index = () => {
         </Container>
         <Divider />
         <Container space="medium">
+          {isBranchMissing && (
+            <Fragment>
+              <VerticalSpace space="medium" />
+              <Banner icon={<IconWarning32 />}>
+                Branch &quot;{currentBranch}&quot; no longer exists. Please
+                select a different branch.
+              </Banner>
+              <VerticalSpace space="small" />
+              <BranchSelect
+                branches={branches}
+                value=""
+                onChange={setBranch}
+                onRefresh={async () => {
+                  await branchesLoadable.refetch();
+                }}
+              />
+              <VerticalSpace space="medium" />
+            </Fragment>
+          )}
           {error && (
             <Fragment>
               <Banner
@@ -234,19 +307,7 @@ export const Index = () => {
           </Text>
         </Container>
       ) : (
-        <NodeList
-          items={selection}
-          row={(node) => (
-            <ListItem
-              hasNamespacesEnabled={hasNamespacesEnabled}
-              node={node}
-              loadedNamespaces={allAvailableNamespaces.map((name) => ({
-                name,
-              }))}
-              onRefreshNamespaces={handleRefreshNamespaces}
-            />
-          )}
-        />
+        <NodeList items={selection} row={renderRow} />
       )}
     </div>
   );

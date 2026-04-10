@@ -20,8 +20,8 @@ export const useInterpolatedTranslation = (node?: PartialNodeInfo) => {
     Object.keys(node.paramsValues ?? {}).length === 0 &&
     !/<[^>]*>/g.test(node.translation ?? "");
   const rawTranslation = isSimpleNode
-    ? (node?.characters || node?.translation) ?? ""
-    : (node?.translation || node?.characters) ?? "";
+    ? ((node?.characters || node?.translation) ?? "")
+    : ((node?.translation || node?.characters) ?? "");
   const paramsValues = node?.paramsValues ?? {};
 
   const selectedPluralVariant = useMemo(() => {
@@ -30,7 +30,7 @@ export const useInterpolatedTranslation = (node?: PartialNodeInfo) => {
     }
     return selectPluralRule(
       config?.language ?? "en",
-      parseInt(node?.pluralParamValue || "1", 10)
+      parseInt(node?.pluralParamValue || "1", 10),
     );
   }, [node, node?.pluralParamValue, config?.language]);
 
@@ -49,13 +49,13 @@ export const useInterpolatedTranslation = (node?: PartialNodeInfo) => {
       pluralParamValue?: string;
       currentTranslation: string;
     },
-    updateState = false
+    updateState = false,
   ): string | null => {
     const { paramsValues, currentTranslation } = args;
     const tolgeeValue = getTolgeeFormat(
       currentTranslation,
       node?.isPlural ?? false,
-      false
+      false,
     );
 
     if (updateState) {
@@ -69,15 +69,15 @@ export const useInterpolatedTranslation = (node?: PartialNodeInfo) => {
           ? tolgeeValue.variants[selectedPluralVariant]!
           : tolgeeValue.variants["other"] ||
               Object.values(tolgeeValue.variants)[0] ||
-              ""
+              "",
       )?.filter((p) => p.type === "variable") ?? [];
 
     if (
       (newPlaceholders.some(
-        (p) => placeholders.find((p2) => p2.name === p.name) == null
+        (p) => placeholders.find((p2) => p2.name === p.name) == null,
       ) ||
         placeholders.some(
-          (p) => newPlaceholders.find((p2) => p2.name === p.name) == null
+          (p) => newPlaceholders.find((p2) => p2.name === p.name) == null,
         )) &&
       updateState
     ) {
@@ -147,12 +147,6 @@ export const useInterpolatedTranslation = (node?: PartialNodeInfo) => {
   const previousCharacters = nodeCharacters.replace(/\u2028|\u8233/g, "\n\n");
 
   useEffect(() => {
-    previousCharacters != newTranslation &&
-    !node?.isPlural &&
-    placeholders.length === 0
-      ? previousCharacters ?? newTranslation ?? ""
-      : newTranslation ?? previousCharacters ?? "";
-
     const newCharacters = getOrUpdateInterpolatedTranslation({
       paramsValues: paramsValues || {},
       currentTranslation: newTranslation,

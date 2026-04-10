@@ -2,7 +2,7 @@ import { useApiQuery } from "@/ui/client/useQueryApi";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { TopBar } from "@/ui/components/TopBar/TopBar";
-import { useGlobalActions } from "@/ui/state/GlobalState";
+import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { getPullChanges } from "@/tools/getPullChanges";
 import {
   VerticalSpace,
@@ -24,6 +24,7 @@ type CopyType = "language" | "keys";
 
 export const CreateCopy: FunctionComponent = () => {
   const { setRoute } = useGlobalActions();
+  const branch = useGlobalState((c) => c.config?.branch);
 
   const [copyType, setCopyType] = useState<CopyType>("keys");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
@@ -47,30 +48,27 @@ export const CreateCopy: FunctionComponent = () => {
 
   const handleSubmit = async () => {
     if (copyType === "keys") {
-      copyPageMutation.mutate(undefined, {
-        onSuccess: goToIndex,
-      });
+      await copyPageMutation.mutateAsync(undefined);
     } else {
       for (const language of selectedLanguages) {
         const response = await allTranslationsLoadable.getData({
           language,
+          branch: branch || undefined,
         });
 
         const { changedNodes } = getPullChanges(
           connectedNodes.data?.items || [],
           language,
-          response
+          response,
         );
 
-        copyPageMutation.mutate(
-          {
-            language,
-            nodes: changedNodes,
-          },
-          { onSuccess: goToIndex }
-        );
+        await copyPageMutation.mutateAsync({
+          language,
+          nodes: changedNodes,
+        });
       }
     }
+    goToIndex();
   };
 
   const goToIndex = () => {
@@ -126,17 +124,19 @@ export const CreateCopy: FunctionComponent = () => {
             </Text>
             <VerticalSpace space="small" />
 
-            {languages?.map((language) => (
-              <div key={language.id}>
-                <Checkbox
-                  value={selectedLanguages.includes(language.tag)}
-                  onChange={() => handleToggleLanguage(language.tag)}
-                >
-                  <Text>{language.name}</Text>
-                </Checkbox>
-                <VerticalSpace space="small" />
-              </div>
-            ))}
+            <div style={{ maxHeight: 200, overflowY: "auto" }}>
+              {languages?.map((language) => (
+                <div key={language.id}>
+                  <Checkbox
+                    value={selectedLanguages.includes(language.tag)}
+                    onChange={() => handleToggleLanguage(language.tag)}
+                  >
+                    <Text>{language.name}</Text>
+                  </Checkbox>
+                  <VerticalSpace space="small" />
+                </div>
+              ))}
+            </div>
           </Fragment>
         )}
 
