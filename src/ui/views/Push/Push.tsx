@@ -34,6 +34,8 @@ import { useHasNamespacesEnabled } from "../../hooks/useHasNamespacesEnabled";
 type SingleStepImportResolvableItemRequest =
   components["schemas"]["SingleStepImportResolvableItemRequest"];
 type KeyScreenshotDto = components["schemas"]["KeyScreenshotDto"];
+type SimpleImportConflictResult =
+  components["schemas"]["SimpleImportConflictResult"];
 
 export const Push: FunctionalComponent = () => {
   const language = useGlobalState((c) => c.config!.language!);
@@ -46,6 +48,9 @@ export const Push: FunctionalComponent = () => {
   const [_loadingStatus, setLoadingStatus] = useState<string | undefined>();
   const [changes, setChanges] = useState<KeyChanges>();
   const [pushedKeysCount, setPushedKeysCount] = useState<number>(0);
+  const [unresolvedConflicts, setUnresolvedConflicts] = useState<
+    SimpleImportConflictResult[]
+  >([]);
   const selectedNodes = useConnectedNodes({ ignoreSelection: false });
   const tolgeeConfig = useGlobalState((c) => c.config);
   const [uploadedScreenshotCount, setUploadedScreenshotCount] = useState(0);
@@ -346,7 +351,7 @@ export const Push: FunctionalComponent = () => {
         });
       });
 
-      await updateTranslations.mutateAsync({
+      const updateResult = await updateTranslations.mutateAsync({
         content: {
           "application/json": {
             keys,
@@ -356,6 +361,9 @@ export const Push: FunctionalComponent = () => {
           },
         },
       });
+
+      const conflicts = updateResult?.unresolvedConflicts ?? [];
+      setUnresolvedConflicts(conflicts);
 
       try {
         // Add tags to keys
@@ -455,6 +463,7 @@ export const Push: FunctionalComponent = () => {
     setPushedKeysCount(0);
     setUploadedScreenshotCount(0);
     setErrorMessage(undefined);
+    setUnresolvedConflicts([]);
   };
 
   const isLoading =
@@ -486,11 +495,32 @@ export const Push: FunctionalComponent = () => {
           // Show success screen immediately, don't wait for recompute
           <Fragment>
             <div>
-              Successfully updated {pushedKeysCount} key(s)
+              Successfully updated{" "}
+              {Math.max(pushedKeysCount - unresolvedConflicts.length, 0)} key(s)
               {uploadScreenshots
                 ? ` and uploaded ${uploadedScreenshotCount} screenshot(s).`
                 : "."}
             </div>
+            {unresolvedConflicts.length > 0 && (
+              <Fragment>
+                <VerticalSpace space="medium" />
+                <Banner icon={<IconWarning32 />}>
+                  <div>
+                    These translations could not be updated because they are
+                    either disabled or already reviewed:
+                  </div>
+                  <VerticalSpace space="small" />
+                  <ul style={{ margin: 0, paddingLeft: 16 }}>
+                    {unresolvedConflicts.map((c, i) => (
+                      <li key={i}>
+                        {c.keyNamespace ? `${c.keyNamespace}:` : ""}
+                        {c.keyName} ({c.language})
+                      </li>
+                    ))}
+                  </ul>
+                </Banner>
+              </Fragment>
+            )}
             <ActionsBottom>
               <Button data-cy="push_ok_button" onClick={handleGoBack}>
                 OK
