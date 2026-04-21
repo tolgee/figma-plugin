@@ -350,6 +350,7 @@ export const Push: FunctionalComponent = () => {
         content: {
           "application/json": {
             keys,
+            errorOnUnresolvedConflict: false,
             overrideMode: "RECOMMENDED",
             branch: branch || undefined,
           },
