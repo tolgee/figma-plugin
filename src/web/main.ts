@@ -17,6 +17,7 @@ import { setNodesDataEndpoint } from "@/main/endpoints/setNodesData";
 import { getSelectedNodesEndpoint } from "@/main/endpoints/getSelectedNodes";
 import { getConnectedNodesEndpoint } from "@/main/endpoints/getConnectedNodes";
 import { copyPageEndpoint } from "@/main/endpoints/copyPage";
+import { clearPrefilledKeysEndpoint } from "@/main/endpoints/clearPrefilledKeys";
 import { formatTextEndpoint } from "../main/endpoints/formatText";
 
 const iframe = document.getElementById("plugin_iframe") as HTMLIFrameElement;
@@ -69,7 +70,27 @@ function main() {
   });
 
   getScreenshotsEndpoint.mock(() => {
-    return [exampleScreenshot] as FrameScreenshot[];
+    // Build the screenshot's `keys` array from current state so multiple
+    // nodes that share the same translation key produce multiple entries
+    // (which is what the real Figma getScreenshots returns and what
+    // exercises the dedup path in getPushChanges).
+    const keys = state.allNodes
+      .filter((n) => n.key)
+      .map((n, i) => ({
+        ...n,
+        x: 10 + i * 80,
+        y: 30,
+        width: 70,
+        height: 20,
+      }));
+    if (keys.length === 0) return [];
+    return [
+      {
+        image: exampleScreenshot.image,
+        info: exampleScreenshot.info,
+        keys,
+      },
+    ] as FrameScreenshot[];
   });
   getSelectedNodesEndpoint.mock(() => ({
     items: state.selectedNodes,
@@ -91,6 +112,13 @@ function main() {
   formatTextEndpoint.mock(({ formatted, nodeInfo }) => {
     nodeInfo.characters = formatted;
     updateNodes([nodeInfo], false);
+  });
+  clearPrefilledKeysEndpoint.mock(() => {
+    const clearKey = (n: NodeInfo) => (n.connected ? n : { ...n, key: "" });
+    state.allNodes = state.allNodes.map(clearKey);
+    state.selectedNodes = state.selectedNodes.map(clearKey);
+    emit<DocumentChangeHandler>("DOCUMENT_CHANGE");
+    emit<SelectionChangeHandler>("SELECTION_CHANGE");
   });
 }
 

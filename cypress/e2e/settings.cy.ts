@@ -1,4 +1,4 @@
-import { DEFAULT_CREDENTIALS } from "@/web/urlConfig";
+import { createTestNode, DEFAULT_CREDENTIALS } from "@/web/urlConfig";
 import { visitWithState } from "../common/tools";
 
 describe("Settings", () => {
@@ -126,6 +126,93 @@ describe("Settings", () => {
     // Save settings
     cy.iframe().findDcy("settings_button_save").click();
     cy.contains("Select texts for translation").should("be.visible");
+  });
+
+  it("clears prefilled keys for unconnected nodes when prefill is toggled off", () => {
+    const nodes = [
+      createTestNode({ text: "Unconnected node", key: "prefilled_key" }),
+    ];
+    visitWithState({
+      config: {
+        apiUrl: DEFAULT_CREDENTIALS.apiUrl,
+        apiKey: DEFAULT_CREDENTIALS.apiKey,
+        language: "en",
+        namespace: "",
+        documentInfo: true,
+        pageInfo: true,
+        prefillKeyFormat: true,
+      },
+      selectedNodes: nodes,
+      allNodes: nodes,
+    });
+
+    // Sanity check: the previously prefilled key is shown.
+    cy.iframe()
+      .findDcy("index_unconnected_key_input")
+      .should("have.value", "prefilled_key");
+
+    // Open settings and toggle prefill off.
+    cy.iframe().findDcy("index_settings_button").should("be.visible").click();
+    cy.iframe().findDcy("settings_expandable_strings").should("exist").click();
+    cy.iframe().findDcy("settings_checkbox_prefill_key_name").click();
+
+    // Save and return to Index.
+    cy.iframe().findDcy("settings_button_save").click();
+    cy.iframe().contains("Unconnected node").should("be.visible");
+
+    // The prefilled key has been cleared.
+    cy.iframe()
+      .findDcy("index_unconnected_key_input")
+      .should("have.value", "");
+  });
+
+  it("preserves connected node keys when prefill is toggled off", () => {
+    const nodes = [
+      createTestNode({ text: "Unconnected node", key: "prefilled_key" }),
+      createTestNode({
+        text: "Connected node",
+        key: "connected_key",
+        connected: true,
+      }),
+    ];
+    visitWithState({
+      config: {
+        apiUrl: DEFAULT_CREDENTIALS.apiUrl,
+        apiKey: DEFAULT_CREDENTIALS.apiKey,
+        language: "en",
+        namespace: "",
+        documentInfo: true,
+        pageInfo: true,
+        prefillKeyFormat: true,
+      },
+      selectedNodes: nodes,
+      allNodes: nodes,
+    });
+
+    // Both nodes are visible up front, with their respective keys.
+    cy.iframe()
+      .findDcy("index_unconnected_key_input")
+      .should("have.value", "prefilled_key");
+    cy.iframe()
+      .findDcy("general_node_list_row_key")
+      .contains("connected_key")
+      .should("be.visible");
+
+    // Toggle prefill off.
+    cy.iframe().findDcy("index_settings_button").should("be.visible").click();
+    cy.iframe().findDcy("settings_expandable_strings").should("exist").click();
+    cy.iframe().findDcy("settings_checkbox_prefill_key_name").click();
+    cy.iframe().findDcy("settings_button_save").click();
+    cy.iframe().contains("Connected node").should("be.visible");
+
+    // Unconnected key cleared, connected key untouched.
+    cy.iframe()
+      .findDcy("index_unconnected_key_input")
+      .should("have.value", "");
+    cy.iframe()
+      .findDcy("general_node_list_row_key")
+      .contains("connected_key")
+      .should("be.visible");
   });
 
   it("tests push settings configuration", () => {
