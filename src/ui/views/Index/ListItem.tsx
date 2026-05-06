@@ -35,6 +35,7 @@ export const ListItem = ({
     nodeId,
     tolgeeConfig?.keyFormat ?? "",
     tolgeeConfig?.variableCasing,
+    tolgeeConfig?.prefillKeyFormat ?? false,
   );
 
   const [keyName, setKeyName] = useState((node.key || prefilledKey.key) ?? "");
