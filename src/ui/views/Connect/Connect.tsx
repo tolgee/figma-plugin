@@ -14,19 +14,18 @@ import {
 import { useGlobalActions, useGlobalState } from "@/ui/state/GlobalState";
 import { TopBar } from "@/ui/components/TopBar/TopBar";
 import { ActionsBottom } from "@/ui/components/ActionsBottom/ActionsBottom";
-import { useApiQuery } from "@/ui/client/useQueryApi";
+import { useApiMutation, useApiQuery } from "@/ui/client/useQueryApi";
 import { FullPageLoading } from "@/ui/components/FullPageLoading/FullPageLoading";
 import { useSetNodesDataMutation } from "@/ui/hooks/useSetNodesDataMutation";
 import { RouteParam } from "../routes";
 import styles from "./Connect.css";
 import { SearchRow } from "./SearchRow";
-import { useAllTranslations } from "@/ui/hooks/useAllTranslations";
 
 type Props = RouteParam<"connect">;
 
 export const Connect = ({ node }: Props) => {
   const { setRoute } = useGlobalActions();
-  const config = useGlobalState((c) => c.config);
+  const branch = useGlobalState((c) => c.config?.branch);
 
   const language = useGlobalState((c) => c.config?.language);
 
@@ -47,52 +46,57 @@ export const Connect = ({ node }: Props) => {
     },
   });
 
+  // Fetches just the picked key (with plural metadata) instead of paginating
+  // through every translation in a namespace.
+  const keyTranslationLoadable = useApiMutation({
+    url: "/v2/projects/translations",
+    method: "get",
+  });
+
   const setNodesDataMutation = useSetNodesDataMutation();
-  const allTranslationsLoadable = useAllTranslations();
 
   const handleGoBack = () => {
     setRoute("index");
   };
 
   const handleConnect = async (
+    keyId: number,
     key: string,
     ns: string | undefined,
     translation: string | undefined,
   ) => {
-    if (
-      !allTranslationsLoadable.isLoading &&
-      allTranslationsLoadable.translationsData == null
-    ) {
-      const translationData = await allTranslationsLoadable.getData({
-        language: config?.language ?? "en",
-        namespaces: [config?.namespace ?? "default"],
+    let resolvedTranslation = translation;
+    let isPlural: boolean | undefined;
+    let pluralParamValue: string | undefined;
+
+    try {
+      const result = await keyTranslationLoadable.mutateAsync({
+        query: {
+          filterKeyId: [keyId],
+          languages: language ? [language] : undefined,
+          size: 1,
+          branch: branch || undefined,
+        },
       });
-      const tolgeeTranslation =
-        translationData?.[config?.namespace ?? "default"]?.[key];
-      if (tolgeeTranslation) {
-        translation = tolgeeTranslation.translation;
-        await setNodesDataMutation.mutateAsync({
-          nodes: [
-            {
-              ...node,
-              translation: tolgeeTranslation.translation || node.characters,
-              isPlural: tolgeeTranslation.keyIsPlural,
-              pluralParamValue: tolgeeTranslation.keyPluralArgName,
-              key,
-              ns: ns || "",
-              connected: true,
-            },
-          ],
-        });
-        setRoute("index");
-        return;
+      const tolgeeKey = result._embedded?.keys?.[0];
+      if (tolgeeKey) {
+        isPlural = tolgeeKey.keyIsPlural;
+        pluralParamValue = tolgeeKey.keyPluralArgName;
+        resolvedTranslation =
+          (language && tolgeeKey.translations?.[language]?.text) ||
+          resolvedTranslation;
       }
+    } catch (e) {
+      console.error("Failed to load key metadata, connecting without it.", e);
     }
+
     await setNodesDataMutation.mutateAsync({
       nodes: [
         {
           ...node,
-          translation: translation || node.characters,
+          translation: resolvedTranslation || node.characters,
+          isPlural: isPlural ?? node.isPlural,
+          pluralParamValue: pluralParamValue ?? node.pluralParamValue,
           key,
           ns: ns || "",
           connected: true,
@@ -116,9 +120,12 @@ export const Connect = ({ node }: Props) => {
     setRoute("index");
   };
 
+  const isConnecting =
+    keyTranslationLoadable.isLoading || setNodesDataMutation.isLoading;
+
   return (
     <Fragment>
-      {translationsLoadable.isFetching && <FullPageLoading />}
+      {(translationsLoadable.isFetching || isConnecting) && <FullPageLoading />}
       <TopBar
         onBack={handleGoBack}
         leftPart={<div className={styles.title}>Connect to existing key</div>}
@@ -152,7 +159,12 @@ export const Connect = ({ node }: Props) => {
               key={key.id}
               data={key}
               onClick={() =>
-                handleConnect(key.name, key.namespace, key.translation)
+                handleConnect(
+                  key.id,
+                  key.name,
+                  key.namespace,
+                  key.translation,
+                )
               }
             />
           ))}
