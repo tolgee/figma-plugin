@@ -159,12 +159,7 @@ export const Connect = ({ node }: Props) => {
               key={key.id}
               data={key}
               onClick={() =>
-                handleConnect(
-                  key.id,
-                  key.name,
-                  key.namespace,
-                  key.translation,
-                )
+                handleConnect(key.id, key.name, key.namespace, key.translation)
               }
             />
           ))}

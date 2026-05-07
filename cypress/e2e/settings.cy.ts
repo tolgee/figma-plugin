@@ -161,9 +161,7 @@ describe("Settings", () => {
     cy.iframe().contains("Unconnected node").should("be.visible");
 
     // The prefilled key has been cleared.
-    cy.iframe()
-      .findDcy("index_unconnected_key_input")
-      .should("have.value", "");
+    cy.iframe().findDcy("index_unconnected_key_input").should("have.value", "");
   });
 
   it("preserves connected node keys when prefill is toggled off", () => {
@@ -206,9 +204,7 @@ describe("Settings", () => {
     cy.iframe().contains("Connected node").should("be.visible");
 
     // Unconnected key cleared, connected key untouched.
-    cy.iframe()
-      .findDcy("index_unconnected_key_input")
-      .should("have.value", "");
+    cy.iframe().findDcy("index_unconnected_key_input").should("have.value", "");
     cy.iframe()
       .findDcy("general_node_list_row_key")
       .contains("connected_key")
