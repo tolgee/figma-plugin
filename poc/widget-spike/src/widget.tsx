@@ -351,17 +351,19 @@ async function convertTextNodes(
 
     const props = readTextProps(textNode);
 
-    const widget = myNode.cloneWidget({
-      keyName,
-      translation,
-      fontSize: props.fontSize,
-      fontFamily: props.fontFamily,
-      fontWeight: props.fontWeight,
-      fill: props.fill,
-      horizontalAlignText: props.horizontalAlignText,
-      verticalAlignText: props.verticalAlignText,
-      widgetWidth: props.widgetWidth,
-    });
+    const widget = myNode.cloneWidget(
+      stripUndefined({
+        keyName,
+        translation,
+        fontSize: props.fontSize,
+        fontFamily: props.fontFamily,
+        fontWeight: props.fontWeight,
+        fill: props.fill,
+        horizontalAlignText: props.horizontalAlignText,
+        verticalAlignText: props.verticalAlignText,
+        widgetWidth: props.widgetWidth,
+      }),
+    );
 
     const parent = textNode.parent;
     if (parent && "children" in parent && "insertChild" in parent) {
@@ -382,6 +384,16 @@ async function convertTextNodes(
   return { converted, scope };
 }
 
+// Figma rejects `undefined` values in syncedState. Strip them so useSyncedState
+// falls back to its declared default (e.g. widgetWidth = undefined → hug-content).
+function stripUndefined<T extends Record<string, unknown>>(obj: T): T {
+  const out = { ...obj };
+  for (const k of Object.keys(out)) {
+    if (out[k] === undefined) delete out[k];
+  }
+  return out;
+}
+
 async function selfUpdate(
   myWidgetNodeId: string,
   patch: Record<string, unknown>,
@@ -390,15 +402,11 @@ async function selfUpdate(
     | WidgetNode
     | null;
   if (!myNode) return;
-  const merged: Record<string, unknown> = {
+  const merged = stripUndefined({
     ...(myNode.widgetSyncedState ?? {}),
     ...patch,
     rev: ((myNode.widgetSyncedState?.rev as number) ?? 0) + 1,
-  };
-  // Figma rejects `undefined` values. Strip them so useSyncedState falls back to its default.
-  for (const k of Object.keys(merged)) {
-    if (merged[k] === undefined) delete merged[k];
-  }
+  });
   myNode.setWidgetSyncedState(merged);
 }
 
