@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.figma-dark, .figma-dark *));
+
+@theme {
+  --color-bg: var(--figma-color-bg);
+  --color-bg-secondary: var(--figma-color-bg-secondary);
+  --color-bg-brand: var(--figma-color-bg-brand);
+  --color-bg-selected: var(--figma-color-bg-selected);
+  --color-text: var(--figma-color-text);
+  --color-text-secondary: var(--figma-color-text-secondary);
+  --color-text-brand: var(--figma-color-text-brand);
+  --color-text-onbrand: var(--figma-color-text-onbrand);
+  --color-border: var(--figma-color-border);
+  --color-border-brand: var(--figma-color-border-brand);
+  --color-icon: var(--figma-color-icon);
+  --color-icon-secondary: var(--figma-color-icon-secondary);
+}
+
+html, body { height: 100%; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; line-height: 1.4; background: var(--color-bg); color: var(--color-text); }

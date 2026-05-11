@@ -1,18 +1,38 @@
 {
-  "extends": "@create-figma-plugin/tsconfig",
   "compilerOptions": {
-    "target": "es2015",
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "noEmit": true,
     "typeRoots": ["node_modules/@figma", "node_modules/@types"],
     "types": ["plugin-typings", "node"],
-    "skipLibCheck": true,
-    "module": "commonjs",
-    "noEmit": true,
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      "react": ["./node_modules/preact/compat"],
-      "react-dom": ["./node_modules/preact/compat"]
+      "$shared/*": ["src-v2/shared/*"],
+      "$main/*": ["src-v2/main/*"],
+      "$ui/*": ["src-v2/ui/*"],
+      "$inspect/*": ["src-v2/ui-inspect/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": [
+    "src-v2/**/*.ts",
+    "src-v2/**/*.svelte",
+    "vite.config.*.ts",
+    "scripts-v2/**/*.mjs"
+  ],
+  "exclude": ["node_modules", "dist", "src"]
 }
