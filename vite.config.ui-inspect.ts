@@ -42,6 +42,22 @@ export default defineConfig({
         }
       },
     },
+    {
+      // Strip `crossorigin` and `type="module"` from inline script tags. See
+      // vite.config.ui.ts for the rationale (Figma's null-origin iframe).
+      name: 'figma-strip-script-attrs',
+      apply: 'build',
+      closeBundle() {
+        const file = path.join(outDir, 'ui-inspect.html');
+        if (!fs.existsSync(file)) return;
+        const html = fs.readFileSync(file, 'utf-8');
+        const patched = html
+          .replace(/<script\s+type="module"\s+crossorigin>/g, '<script>')
+          .replace(/<script\s+type="module">/g, '<script>')
+          .replace(/<script\s+crossorigin>/g, '<script>');
+        fs.writeFileSync(file, patched);
+      },
+    },
   ],
   resolve: {
     alias: {
@@ -54,6 +70,8 @@ export default defineConfig({
     emptyOutDir: false,
     cssCodeSplit: false,
     assetsInlineLimit: 100_000_000,
+    modulePreload: false,
+    target: "es2020",
     rollupOptions: {
       output: {
         inlineDynamicImports: true,

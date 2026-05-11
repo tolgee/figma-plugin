@@ -43,6 +43,24 @@ export default defineConfig({
         }
       },
     },
+    {
+      // Strip `crossorigin` and `type="module"` from inline script tags so the
+      // Figma iframe (which runs at origin "null") can evaluate them. Figma's
+      // own UI loader chokes on `<script type="module" crossorigin>` because
+      // crossorigin requests against a null origin fail outright.
+      name: 'figma-strip-script-attrs',
+      apply: 'build',
+      closeBundle() {
+        const file = path.join(outDir, 'ui.html');
+        if (!fs.existsSync(file)) return;
+        const html = fs.readFileSync(file, 'utf-8');
+        const patched = html
+          .replace(/<script\s+type="module"\s+crossorigin>/g, '<script>')
+          .replace(/<script\s+type="module">/g, '<script>')
+          .replace(/<script\s+crossorigin>/g, '<script>');
+        fs.writeFileSync(file, patched);
+      },
+    },
   ],
   resolve: {
     alias: {
@@ -55,6 +73,12 @@ export default defineConfig({
     emptyOutDir: false,
     cssCodeSplit: false,
     assetsInlineLimit: 100_000_000,
+    // Figma's plugin iframe runs at origin "null"; the modulepreload polyfill
+    // Vite injects tries to resolve preload candidates against that origin and
+    // throws. Disable both the polyfill and the crossorigin attribute Vite
+    // adds to the inline <script type="module">.
+    modulePreload: false,
+    target: "es2020",
     rollupOptions: {
       output: {
         inlineDynamicImports: true,
