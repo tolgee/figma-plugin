@@ -44,20 +44,21 @@ export default defineConfig({
       },
     },
     {
-      // Strip `crossorigin` and `type="module"` from inline script tags so the
-      // Figma iframe (which runs at origin "null") can evaluate them. Figma's
-      // own UI loader chokes on `<script type="module" crossorigin>` because
-      // crossorigin requests against a null origin fail outright.
-      name: 'figma-strip-script-attrs',
+      // The bundle Vite produces is an ES module (uses `import.meta`, top-level
+      // module scope, etc.) so we MUST keep `type="module"`. We only need to
+      // drop the `crossorigin` attribute Vite adds, because the Figma plugin
+      // iframe runs at origin "null" — the crossorigin handshake fails outright
+      // for an inline classic-ish module otherwise.
+      name: 'figma-strip-crossorigin',
       apply: 'build',
       closeBundle() {
         const file = path.join(outDir, 'ui.html');
         if (!fs.existsSync(file)) return;
         const html = fs.readFileSync(file, 'utf-8');
-        const patched = html
-          .replace(/<script\s+type="module"\s+crossorigin>/g, '<script>')
-          .replace(/<script\s+type="module">/g, '<script>')
-          .replace(/<script\s+crossorigin>/g, '<script>');
+        const patched = html.replace(
+          /<script(\s+type="module")?\s+crossorigin\s*>/g,
+          '<script$1>'
+        );
         fs.writeFileSync(file, patched);
       },
     },
