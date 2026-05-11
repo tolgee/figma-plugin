@@ -48,14 +48,20 @@
     <ErrorBanner banner={appState.value.errorBanner} />
   {/if}
   <main class="flex-1 overflow-auto">
-    {#if appState.value.route.name === "index"}
+    {#if appState.value.route.name === "settings"}
+      <!-- Settings is always reachable, even before page is set up. -->
+      <Settings />
+    {:else if !appState.value.config?.pageInfo && appState.value.config?.documentInfo}
+      <!-- PageSetup gate per Phase 4: document is configured but page is not. -->
+      <PageSetup />
+    {:else if appState.value.config?.pageCopy}
+      <CopyView />
+    {:else if appState.value.route.name === "index"}
       <IndexView />
     {:else if appState.value.route.name === "pageSetup"}
       <PageSetup />
     {:else if appState.value.route.name === "copyView"}
       <CopyView />
-    {:else if appState.value.route.name === "settings"}
-      <Settings />
     {:else if appState.value.route.name === "push"}
       <Push />
     {:else if appState.value.route.name === "pull"}
