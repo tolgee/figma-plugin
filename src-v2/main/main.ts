@@ -28,13 +28,48 @@ const uiHtml =
 
 figma.skipInvisibleInstanceChildren = true;
 
-figma.showUI(uiHtml, {
-  width: UI_SIZES.DEFAULT.width,
-  height: UI_SIZES.DEFAULT.height,
-  themeColors: true,
-});
+// Quick-action commands run their side effect and close the plugin without
+// ever showing the UI. Everything else opens the plugin window.
+const isQuickAction =
+  (figma.command === "toggle-annotations" ||
+    figma.command === "refresh-annotations") &&
+  figma.editorType !== "dev";
 
-attachBus();
+if (isQuickAction) {
+  void (async () => {
+    try {
+      if (figma.command === "toggle-annotations") {
+        const enabled = !(await isAnnotationsEnabled());
+        await setAnnotationsEnabled(enabled);
+        if (enabled) {
+          const { updated } = await syncCurrentPage();
+          figma.closePlugin(`Tolgee annotations on (${updated} updated)`);
+        } else {
+          const { updated } = await clearCurrentPage();
+          figma.closePlugin(`Tolgee annotations off (${updated} cleared)`);
+        }
+      } else if (figma.command === "refresh-annotations") {
+        if (await isAnnotationsEnabled()) {
+          const { updated } = await syncCurrentPage();
+          figma.closePlugin(`Tolgee annotations refreshed (${updated} updated)`);
+        } else {
+          figma.closePlugin("Tolgee annotations are off — toggle them on first");
+        }
+      }
+    } catch (err) {
+      figma.closePlugin(
+        `Tolgee error: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  })();
+} else {
+  figma.showUI(uiHtml, {
+    width: UI_SIZES.DEFAULT.width,
+    height: UI_SIZES.DEFAULT.height,
+    themeColors: true,
+  });
+  attachBus();
+}
 
 // Cached annotation-toggle state. The truth lives in clientStorage; this is
 // the in-memory mirror that lets synchronous Figma event handlers
