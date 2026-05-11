@@ -1,5 +1,8 @@
 import type { NodeInfo } from "$shared/types";
-import { getTolgeeFormat } from "@tginternal/editor";
+// Local mini-implementation of `getTolgeeFormat` from `@tginternal/editor`.
+// The upstream package transitively pulls in `@codemirror/{state,view}`
+// (~500 kB raw / ~125 kB gzip) — see `./tolgeeFormat.ts` for the rationale.
+import { getTolgeeFormat } from "./tolgeeFormat";
 
 /**
  * Subset of `KeyWithTranslationsModel` we depend on for diffing. Kept narrow

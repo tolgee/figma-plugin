@@ -35,6 +35,7 @@
     "esbuild": "^0.27.3",
     "happy-dom": "^15.11.7",
     "openapi-typescript": "^7.12.0",
+    "rollup-plugin-visualizer": "^7.0.1",
     "svelte": "^5.51.0",
     "svelte-check": "^4.1.1",
     "tailwindcss": "^4.0.0",
@@ -45,14 +46,11 @@
   },
   "dependencies": {
     "@tanstack/svelte-query": "^6.0.0-0",
-    "@tginternal/editor": "^1.15.2",
     "bits-ui": "^1.0.0",
     "clsx": "^2.1.1",
     "intl-messageformat": "^11.2.4",
     "lucide-svelte": "^0.469.0",
-    "openapi-fetch": "^0.13.4",
-    "tailwind-merge": "^2.6.0",
-    "tailwind-variants": "^0.3.0"
+    "openapi-fetch": "^0.13.4"
   },
   "figma-plugin": {
     "id": "1212381421658754793",

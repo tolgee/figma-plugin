@@ -77,6 +77,13 @@ export type CurrentDocumentSettings = GlobalSettings & {
   namespace: string;
   branch?: string;
   documentInfo: true;
+  /**
+   * Project id resolved from the API key during connection validation.
+   * Persisted at the document scope so the inspect (Dev Mode) UI — which
+   * cannot perform its own API validation — can construct project-aware
+   * deep links into the Tolgee web app.
+   */
+  projectId?: number;
 };
 
 export type CurrentPageSettings = {

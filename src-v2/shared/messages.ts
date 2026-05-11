@@ -74,6 +74,13 @@ export type UiToMain =
   | { type: "notify"; text: string; error?: boolean }
   | { type: "open-external"; url: string }
   | { type: "save-config"; config: Partial<TolgeeConfig> }
+  /**
+   * Persist a project id resolved from the API key during a successful
+   * `Test Connection` in the design-mode UI. The main thread writes this
+   * into the document-scoped config so the inspect (Dev Mode) UI can build
+   * project-aware deep links without performing its own API validation.
+   */
+  | { type: "persist-project-id"; projectId: number }
   | { type: "reset" }
   | { type: "set-language"; language: string }
   | { type: "set-branch"; branch: string }

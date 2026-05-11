@@ -24,6 +24,7 @@ const DOCUMENT_ONLY_KEYS = [
   "namespace",
   "branch",
   "documentInfo",
+  "projectId",
 ] as const satisfies ReadonlyArray<
   Exclude<keyof CurrentDocumentSettings, keyof GlobalSettings>
 >;

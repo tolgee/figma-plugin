@@ -74,6 +74,9 @@
           projectId: result.projectId,
           scopes: result.scopes,
         });
+        // Persist projectId on the document so the dev-mode inspect panel can
+        // build project-aware Tolgee deep-links without re-validating the key.
+        send({ type: "persist-project-id", projectId: result.projectId });
       } else {
         testResult = {
           ok: false,

@@ -177,6 +177,16 @@ on("save-config", async (msg) => {
   }
 });
 
+// API-key validation lives in the design-mode UI (depends on `openapi-fetch`).
+// The UI relays the resolved `projectId` back here so we can persist it at
+// the document scope; the inspect (Dev Mode) UI reads it from config to
+// build project-aware deep links into the Tolgee web app.
+on("persist-project-id", async (msg) => {
+  await writeConfig({ projectId: msg.projectId });
+  const merged = await readMergedConfig();
+  send({ type: "config-changed", config: merged });
+});
+
 on("reset", async () => {
   await resetConfig();
   send({ type: "config-changed", config: {} });

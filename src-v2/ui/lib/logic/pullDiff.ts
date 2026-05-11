@@ -1,6 +1,7 @@
 import type { NodeInfo } from "$shared/types";
 import { formatIcuMessage } from "$shared/icu";
 import type { PulledKey } from "$ui/lib/api/pull";
+import { getTolgeeFormat } from "$ui/lib/logic/tolgeeFormat";
 
 export type PullDiffResult = {
   /** Nodes whose remote translation differs from the local `translation`. */
@@ -104,14 +105,18 @@ export function formatNodeText(
 ): { text: string; error?: Error } {
   const params: Record<string, string> = { ...(node.paramsValues ?? {}) };
 
-  // The plural parameter name varies by key. Without `@tginternal/editor`'s
-  // `getTolgeeFormat` we can't reliably extract it from the ICU source here
-  // (TODO: schema/library wiring), so we fall back to injecting a generic
-  // "count" value AND any params the node already carries. `formatIcuMessage`
-  // will throw if the message references a missing variable; the caller
-  // handles that gracefully.
-  if (node.pluralParamValue != null && !("count" in params)) {
-    params.count = node.pluralParamValue;
+  // The plural parameter name varies by key. Parse the remote ICU once to
+  // discover the actual parameter name and inject `pluralParamValue` under
+  // that name. If parsing fails (e.g. non-plural / malformed), fall back to
+  // the conventional `count` so we still feed *something* sensible into
+  // `formatIcuMessage` — it'll throw on a missing variable and the caller
+  // surfaces the error.
+  if (node.pluralParamValue != null) {
+    const parsed = getTolgeeFormat(remoteText, Boolean(node.isPlural), false);
+    const paramName = parsed.parameter ?? "count";
+    if (!(paramName in params)) {
+      params[paramName] = node.pluralParamValue;
+    }
   }
 
   const formatted = formatIcuMessage(remoteText, params, language || "en");
