@@ -13,14 +13,22 @@ import { getSelectionInfo, setNodesData } from "$main/nodes/selection";
 import { captureScreenshots } from "$main/screenshots/capture";
 import { readMergedConfig, resetConfig, writeConfig } from "$main/settings";
 
-// `__html__` is injected by the Figma plugin sandbox loader (manifest-driven)
-// and is therefore not redeclared here. The same loader picks the correct UI
-// bundle for the active editor — when `figma.editorType === "dev"` Figma loads
-// the inspect UI defined in the manifest, so no branching is required here.
+// When the manifest's `ui` is a string, Figma injects `__html__`. When it's
+// an object (per-editor UIs), Figma injects `__uiFiles__` instead with one
+// entry per editor key. We picked the object form (figma + dev) so we have
+// to read from `__uiFiles__` here. `__html__` is only used as a fallback if
+// neither global is available (shouldn't happen but keeps TypeScript calm).
+declare const __uiFiles__: { figma?: string; dev?: string } | undefined;
+declare const __html__: string | undefined;
+
+const uiHtml =
+  figma.editorType === "dev"
+    ? __uiFiles__?.dev ?? __uiFiles__?.figma ?? __html__ ?? ""
+    : __uiFiles__?.figma ?? __html__ ?? "";
 
 figma.skipInvisibleInstanceChildren = true;
 
-figma.showUI(__html__, {
+figma.showUI(uiHtml, {
   width: UI_SIZES.DEFAULT.width,
   height: UI_SIZES.DEFAULT.height,
   themeColors: true,
