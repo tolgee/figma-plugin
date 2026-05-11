@@ -25,6 +25,12 @@ export type MainToUi =
     }
   | { type: "nodes-set-result"; correlationId: string; ok: boolean }
   | {
+      type: "apply-translations-result";
+      correlationId: string;
+      ok: boolean;
+      errors: string[];
+    }
+  | {
       type: "annotation-sync-result";
       correlationId: string;
       updated: number;
@@ -55,6 +61,19 @@ export type UiToMain =
       type: "set-nodes-data";
       correlationId: string;
       nodes: Array<{ id: string; info: Partial<NodeInfo> }>;
+    }
+  | {
+      type: "apply-translations";
+      correlationId: string;
+      updates: Array<{
+        id: string;
+        /** Final, ICU-formatted text to write into the TextNode. */
+        text: string;
+        /** Raw translation source to persist into plugin data. */
+        translation: string;
+        /** Optional plural flag to update along with the translation. */
+        isPlural?: boolean;
+      }>;
     }
   | {
       type: "request-screenshots";

@@ -3,7 +3,7 @@ import type { NodeInfo } from "$shared/types";
 import { getNodeInfo } from "$main/nodes/getNodeInfo";
 import { scanConnectedNodes as scanConnectedTextNodes } from "$main/nodes/scan";
 
-export { setNodesData } from "$main/nodes/selection";
+export { setNodesData, applyTranslations } from "$main/nodes/selection";
 
 /**
  * Collect every connected text node (i.e. carrying Tolgee plugin data) on the
