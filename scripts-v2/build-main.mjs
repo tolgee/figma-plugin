@@ -10,12 +10,13 @@ const options = {
   entryPoints: ['src-v2/main/main.ts'],
   outfile: 'dist/main.js',
   bundle: true,
-  // `cjs` produces plain top-level statements (no IIFE wrapper) which is what
-  // Figma's plugin runtime expects. The output is wrapped by Figma into a
-  // QuickJS evaluation context, and an IIFE expression at the top level can
-  // confuse the parser depending on the host.
+  // Figma's plugin sandbox is a QuickJS host whose syntactical surface is
+  // ES2017. Features like optional chaining (`?.`), nullish coalescing (`??`),
+  // and logical assignment operators (`??=`, `||=`, `&&=`) are ES2020+ and
+  // surface as "Unexpected token {" in QuickJS. `target: 'es2017'` makes
+  // esbuild down-level them to equivalent ES2017 code.
   format: 'cjs',
-  target: 'es2020',
+  target: 'es2017',
   platform: 'browser',
   minify: isProd,
   sourcemap: watch ? 'inline' : false,
