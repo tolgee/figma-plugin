@@ -36,6 +36,26 @@ export type MainToUi =
       updated: number;
     }
   | {
+      type: "annotations-state";
+      correlationId: string;
+      enabled: boolean;
+      available: boolean;
+    }
+  | {
+      type: "create-copy-progress";
+      correlationId: string;
+      current: number;
+      total: number;
+      phase: string;
+    }
+  | {
+      type: "create-copy-result";
+      correlationId: string;
+      ok: boolean;
+      createdPageIds: string[];
+      error?: string;
+    }
+  | {
       type: "command";
       command:
         | "open"
@@ -81,7 +101,22 @@ export type UiToMain =
       nodeIds: string[];
     }
   | { type: "scroll-to-node"; id: string }
-  | { type: "sync-annotations"; correlationId: string; all?: boolean };
+  | { type: "sync-annotations"; correlationId: string; all?: boolean }
+  | { type: "toggle-annotations"; enabled: boolean }
+  | { type: "get-annotations-state"; correlationId: string }
+  | {
+      type: "create-copy";
+      correlationId: string;
+      mode: "keys" | "languages";
+      /** Required when `mode === "languages"`. List of language tags to copy. */
+      languages?: string[];
+      /**
+       * Required when `mode === "languages"`. Map of language tag -> map of
+       * `${ns}|${key}` -> translation text. The UI builds this from the
+       * Tolgee API so the main thread doesn't need to refetch.
+       */
+      translations?: Record<string, Record<string, string>>;
+    };
 
 /**
  * Helper type to extract the message variant that carries a `correlationId`.
