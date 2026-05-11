@@ -9,6 +9,7 @@ import {
   Bold,
   Inline,
 } from "@create-figma-plugin/ui";
+import { useQueryClient } from "react-query";
 import styles from "./Settings.css";
 import { TargetedEvent } from "preact/compat";
 import { TolgeeConfig } from "@/types";
@@ -19,6 +20,8 @@ import {
   TOLGEE_KEY_FORMAT_PLACEHOLDERS_EXAMPLES,
 } from "@/constants";
 import { InfoTooltip } from "../../components/InfoTooltip/InfoTooltip";
+import { clearPrefilledKeysEndpoint } from "@/main/endpoints/clearPrefilledKeys";
+import { getConnectedNodesEndpoint } from "@/main/endpoints/getConnectedNodes";
 
 function getPreview(
   format: string,
@@ -126,6 +129,7 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
   tolgeeConfig,
   setTolgeeConfig,
 }) => {
+  const queryClient = useQueryClient();
   const [format, setFormat] = useState(tolgeeConfig.keyFormat || "");
   const [prefill, setPrefill] = useState(
     tolgeeConfig.prefillKeyFormat ?? false,
@@ -162,10 +166,20 @@ export const StringsSection: FunctionComponent<StringsSectionProps> = ({
     setTolgeeConfig({ ...tolgeeConfig, keyFormat: val });
   };
 
-  const handlePrefillChange = (e: any) => {
+  const handlePrefillChange = async (e: any) => {
     const checked = e.currentTarget.checked;
     setPrefill(checked);
     setTolgeeConfig({ ...tolgeeConfig, prefillKeyFormat: checked });
+    if (!checked) {
+      // Drop auto-prefilled values that were persisted to node pluginData while
+      // the toggle was on so they don't keep showing up after disabling.
+      try {
+        await clearPrefilledKeysEndpoint.call();
+        queryClient.invalidateQueries([getConnectedNodesEndpoint.name]);
+      } catch (err) {
+        console.error("Failed to clear prefilled keys", err);
+      }
+    }
   };
 
   const handleVariableCasingChange = (value: string) => {

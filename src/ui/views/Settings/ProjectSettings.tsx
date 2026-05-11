@@ -230,10 +230,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
     return ns;
   }, [namespacesLoadable.data, settings?.namespace]);
 
-  const branchNames = useMemo(
-    () => branches.map((b) => b.name),
-    [branches],
-  );
+  const branchNames = useMemo(() => branches.map((b) => b.name), [branches]);
 
   useEffect(() => {
     if (!namespacesLoadable.data || !languagesLoadable.data || settings) {
@@ -253,7 +250,7 @@ export const ProjectSettings: FunctionComponent<Props> = ({
       language:
         initialData?.language || languages?.find((l) => l.base)?.tag || "",
       namespace: initialData?.namespace ?? namespaces?.[0] ?? "",
-      branch: hasBranchingEnabled ? savedBranch ?? defaultBranch : undefined,
+      branch: hasBranchingEnabled ? (savedBranch ?? defaultBranch) : undefined,
     });
   }, [
     branchNames,

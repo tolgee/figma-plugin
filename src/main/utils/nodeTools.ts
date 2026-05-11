@@ -32,30 +32,11 @@ function shouldIncludeNode(
     return false;
   }
   if (
-    settings.ignoreHiddenLayers ||
-    typeof settings.ignoreHiddenLayers === "undefined"
+    (settings.ignoreHiddenLayers ||
+      typeof settings.ignoreHiddenLayers === "undefined") &&
+    !node.visible
   ) {
-    if (!node.visible) {
-      return false;
-    }
-    if (settings.ignoreHiddenLayersIncludingChildren) {
-      let isParentHidden = false;
-      let parent = node.parent;
-      try {
-        while (parent) {
-          if ("visible" in parent && !(parent as SceneNode).visible) {
-            isParentHidden = true;
-            break;
-          }
-          parent = parent.parent;
-        }
-        if (isParentHidden) {
-          return false;
-        }
-      } catch (error) {
-        console.error("Error checking parent visibility:", error);
-      }
-    }
+    return false;
   }
   if (
     settings.ignoreTextLayers &&
@@ -70,20 +51,40 @@ function shouldIncludeNode(
   return true;
 }
 
-export const findTextNodes = (nodes: readonly SceneNode[]): TextNode[] => {
-  const documentSettings = getDocumentData();
+// `settings` and `ancestorHidden` are threaded through recursion so we read
+// document data once and skip hidden subtrees up front, instead of walking
+// each text node's parents via the (expensive) plugin bridge.
+export const findTextNodes = (
+  nodes: readonly SceneNode[],
+  settings: Partial<CurrentDocumentSettings> = getDocumentData(),
+  ancestorHidden = false,
+): TextNode[] => {
+  const respectVisibility =
+    settings.ignoreHiddenLayers ||
+    typeof settings.ignoreHiddenLayers === "undefined";
+  const skipHiddenSubtrees =
+    respectVisibility && !!settings.ignoreHiddenLayersIncludingChildren;
+
   const result: TextNode[] = [];
   for (const node of nodes) {
+    const nodeHidden =
+      respectVisibility && "visible" in node && !(node as SceneNode).visible;
+    const subtreeHidden = ancestorHidden || nodeHidden;
+
+    if (skipHiddenSubtrees && subtreeHidden) {
+      continue;
+    }
+
     if (node.type === "TEXT") {
-      if (shouldIncludeNode(node, documentSettings)) {
+      if (shouldIncludeNode(node, settings)) {
         result.push(node);
       }
     }
     // @ts-ignore
     if (node.children) {
-      // @ts-ignore
-      findTextNodes(node.children as SceneNode[]).forEach((n) =>
-        result.push(n),
+      result.push(
+        // @ts-ignore
+        ...findTextNodes(node.children as SceneNode[], settings, subtreeHidden),
       );
     }
   }

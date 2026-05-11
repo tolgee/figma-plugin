@@ -31,6 +31,7 @@ import { formatTextEndpoint } from "./endpoints/formatText";
 import { editorTypeEndpoint } from "./endpoints/editorType";
 import { notifyEndpoint } from "./endpoints/notify";
 import { preformatKeyEndpoint } from "./endpoints/preformatKey";
+import { clearPrefilledKeysEndpoint } from "./endpoints/clearPrefilledKeys";
 
 const getAllPages = () => {
   const document = figma.root;
@@ -116,6 +117,7 @@ export default async function () {
   editorTypeEndpoint.register();
   notifyEndpoint.register();
   preformatKeyEndpoint.register();
+  clearPrefilledKeysEndpoint.register();
 
   const config = await getPluginData();
 

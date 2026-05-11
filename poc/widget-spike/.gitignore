@@ -1,0 +1,6 @@
+dist/
+node_modules/
+*.tsbuildinfo
+
+# Negate root-level ignores that would hide POC files
+!manifest.json
