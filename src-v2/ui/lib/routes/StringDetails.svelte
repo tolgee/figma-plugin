@@ -4,6 +4,7 @@
   import { Button, Input, Label, Switch } from "$ui/lib/components/ui";
   import IcuPreview from "$ui/lib/components/domain/IcuPreview.svelte";
   import ParamsEditor from "$ui/lib/components/domain/ParamsEditor.svelte";
+  import IcuEditor from "$ui/lib/components/domain/IcuEditor.svelte";
   import type { NodeInfo } from "$shared/types";
 
   const route = $derived(appState.value.route);
@@ -93,12 +94,15 @@
 
       <div>
         <Label for="string-details-translation">Translation ({language})</Label>
-        <textarea
-          id="string-details-translation"
-          bind:value={translation}
-          rows={4}
-          class="w-full mt-1 px-2 py-1 rounded border border-[var(--color-border)] bg-[var(--color-bg)] text-[var(--color-text)] text-xs focus:outline-none focus:border-[var(--color-border-brand)] placeholder:text-[var(--color-text-secondary)] resize-y"
-        ></textarea>
+        <div class="mt-1">
+          <IcuEditor
+            id="string-details-translation"
+            bind:value={translation}
+            nested={isPlural}
+            rows={4}
+            placeholder="Translation…"
+          />
+        </div>
       </div>
 
       <div class="flex items-center gap-2">
