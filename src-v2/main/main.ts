@@ -80,32 +80,13 @@ figma.on("currentpagechange", () => {
   })();
 });
 
-figma.on("documentchange", (event) => {
-  if (!annotationsEnabled) return;
-  if (figma.editorType === "dev") return;
-  const ids: string[] = [];
-  for (const change of event.documentChanges) {
-    if (change.type !== "PROPERTY_CHANGE") continue;
-    const node = change.node;
-    if ("removed" in node && node.removed) continue;
-    if (node.type !== "TEXT") continue;
-    // We only care about node-data edits that may change the Tolgee key.
-    // `pluginData` covers our `tolgee_info` writes; `characters` / `name` may
-    // affect key-format-derived labels in the future.
-    const props = change.properties;
-    if (
-      !props.includes("pluginData") &&
-      !props.includes("characters") &&
-      !props.includes("name")
-    ) {
-      continue;
-    }
-    ids.push(node.id);
-  }
-  if (ids.length > 0) {
-    scheduleReconcile(ids, annotationsEnabled);
-  }
-});
+// In `documentAccess: "dynamic-page"` mode, Figma rejects `documentchange`
+// registration unless we first call `figma.loadAllPagesAsync()`, which is
+// expensive on large files. We deliberately skip it: annotation reconciles
+// already happen on `selectionchange` (covers user-visible drift) and after
+// our own `set-nodes-data` / `apply-translations` writes (covers our edits).
+// Cross-plugin edits to `tolgee_info` would be missed, but that's an edge
+// case and the user can hit "Refresh Annotations" from the menu.
 
 figma.on("close", () => {
   // Reserved for end-of-session persistence.
