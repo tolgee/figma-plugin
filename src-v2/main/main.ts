@@ -31,30 +31,19 @@ figma.skipInvisibleInstanceChildren = true;
 // Quick-action commands run their side effect and close the plugin without
 // ever showing the UI. Everything else opens the plugin window.
 const isQuickAction =
-  (figma.command === "toggle-annotations" ||
-    figma.command === "refresh-annotations") &&
-  figma.editorType !== "dev";
+  figma.command === "toggle-annotations" && figma.editorType !== "dev";
 
 if (isQuickAction) {
   void (async () => {
     try {
-      if (figma.command === "toggle-annotations") {
-        const enabled = !(await isAnnotationsEnabled());
-        await setAnnotationsEnabled(enabled);
-        if (enabled) {
-          const { updated } = await syncCurrentPage();
-          figma.closePlugin(`Tolgee annotations on (${updated} updated)`);
-        } else {
-          const { updated } = await clearCurrentPage();
-          figma.closePlugin(`Tolgee annotations off (${updated} cleared)`);
-        }
-      } else if (figma.command === "refresh-annotations") {
-        if (await isAnnotationsEnabled()) {
-          const { updated } = await syncCurrentPage();
-          figma.closePlugin(`Tolgee annotations refreshed (${updated} updated)`);
-        } else {
-          figma.closePlugin("Tolgee annotations are off — toggle them on first");
-        }
+      const enabled = !(await isAnnotationsEnabled());
+      await setAnnotationsEnabled(enabled);
+      if (enabled) {
+        const { updated } = await syncCurrentPage();
+        figma.closePlugin(`Tolgee annotations on (${updated} updated)`);
+      } else {
+        const { updated } = await clearCurrentPage();
+        figma.closePlugin(`Tolgee annotations off (${updated} cleared)`);
       }
     } catch (err) {
       figma.closePlugin(
@@ -143,31 +132,15 @@ on("ui-ready", async () => {
   });
 
   // Forward the invoked plugin command (if any) so the UI can route to the
-  // matching screen after it has finished bootstrapping.
-  const knownCommands = [
-    "open",
-    "toggle-annotations",
-    "refresh-annotations",
-    "open-on-node",
-  ] as const;
+  // matching screen after it has finished bootstrapping. `toggle-annotations`
+  // is handled as a quick action above and never reaches ui-ready.
+  const knownCommands = ["open", "open-on-node"] as const;
   type KnownCommand = (typeof knownCommands)[number];
   const cmd = figma.command as KnownCommand | "";
 
-  if (cmd === "toggle-annotations" && figma.editorType !== "dev") {
-    annotationsEnabled = !annotationsEnabled;
-    await setAnnotationsEnabled(annotationsEnabled);
-    if (annotationsEnabled) {
-      await syncCurrentPage();
-    } else {
-      await clearCurrentPage();
-    }
-  } else if (cmd === "refresh-annotations" && figma.editorType !== "dev") {
-    if (annotationsEnabled) {
-      await syncCurrentPage();
-    }
-  } else if (annotationsEnabled && figma.editorType !== "dev") {
-    // First-open / regular-open: bring annotations back in sync after any
-    // remote edits made while this plugin instance wasn't running.
+  // On a regular open, bring annotations back in sync after any external
+  // edits made while this plugin instance wasn't running.
+  if (annotationsEnabled && figma.editorType !== "dev") {
     await syncCurrentPage();
   }
 

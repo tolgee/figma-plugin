@@ -30,7 +30,6 @@ const manifest = {
     { name: 'Open Tolgee', command: 'open' },
     { separator: true },
     { name: 'Toggle Canvas Annotations', command: 'toggle-annotations' },
-    { name: 'Refresh Annotations', command: 'refresh-annotations' },
   ],
   relaunchButtons: [
     { command: 'open-on-node', name: 'Edit Tolgee key', multipleSelection: false },

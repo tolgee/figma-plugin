@@ -57,11 +57,7 @@ export type MainToUi =
     }
   | {
       type: "command";
-      command:
-        | "open"
-        | "toggle-annotations"
-        | "refresh-annotations"
-        | "open-on-node";
+      command: "open" | "open-on-node";
     };
 
 /**

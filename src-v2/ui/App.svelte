@@ -69,7 +69,7 @@
       void maybeBootstrapAuth(msg.config);
     });
     const unsubCmd = on("command", (_msg) => {
-      // TODO: route commands (open / toggle-annotations / refresh-annotations / open-on-node)
+      // TODO: route commands (open / open-on-node)
     });
     send({ type: "ui-ready" });
     return () => {
