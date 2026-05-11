@@ -10,7 +10,11 @@ const options = {
   entryPoints: ['src-v2/main/main.ts'],
   outfile: 'dist/main.js',
   bundle: true,
-  format: 'iife',
+  // `cjs` produces plain top-level statements (no IIFE wrapper) which is what
+  // Figma's plugin runtime expects. The output is wrapped by Figma into a
+  // QuickJS evaluation context, and an IIFE expression at the top level can
+  // confuse the parser depending on the host.
+  format: 'cjs',
   target: 'es2020',
   platform: 'browser',
   minify: isProd,
