@@ -1,7 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { appState } from "./lib/stores/app.svelte";
+  import { auth } from "./lib/stores/auth.svelte";
   import { attachBus, on, send } from "./lib/bus";
+  import { validateApiKey } from "./lib/api/auth";
+  import { createTolgeeClient } from "./lib/api/client";
   import IndexView from "./lib/routes/Index.svelte";
   import PageSetup from "./lib/routes/PageSetup.svelte";
   import CopyView from "./lib/routes/CopyView.svelte";
@@ -12,6 +15,39 @@
   import StringDetails from "./lib/routes/StringDetails.svelte";
   import CreateCopy from "./lib/routes/CreateCopy.svelte";
   import ErrorBanner from "./lib/components/domain/ErrorBanner.svelte";
+  import type { TolgeeConfig } from "$shared/types";
+
+  // Validate the stored credentials silently on startup so the rest of the
+  // app reflects "authenticated" state without forcing the user back to
+  // Settings just to click Test Connection.
+  let lastValidated: string | null = null;
+  async function maybeBootstrapAuth(
+    config: Partial<TolgeeConfig> | null,
+  ): Promise<void> {
+    const apiUrl = config?.apiUrl;
+    const apiKey = config?.apiKey;
+    if (!apiUrl || !apiKey) {
+      if (auth.value.authenticated) auth.clear();
+      lastValidated = null;
+      return;
+    }
+    const fingerprint = `${apiUrl}::${apiKey}`;
+    if (fingerprint === lastValidated) return;
+    lastValidated = fingerprint;
+    const result = await validateApiKey(apiUrl, apiKey);
+    if (!result.ok) {
+      if (auth.value.authenticated) auth.clear();
+      return;
+    }
+    auth.setAuth({
+      client: createTolgeeClient(apiUrl, apiKey),
+      projectId: result.projectId,
+      scopes: result.scopes,
+    });
+    if (config?.projectId !== result.projectId) {
+      send({ type: "persist-project-id", projectId: result.projectId });
+    }
+  }
 
   onMount(() => {
     attachBus();
@@ -19,16 +55,19 @@
       appState.setConfig(msg.config);
       appState.setSelection(msg.selectedNodes);
       appState.setEditorType(msg.editorType);
+      void maybeBootstrapAuth(msg.config);
     });
     const unsubSel = on("selection-changed", (msg) =>
       appState.setSelection(msg.nodes),
     );
-    const unsubCfg = on("config-changed", (msg) =>
-      appState.setConfig(msg.config),
-    );
-    const unsubPage = on("page-changed", (msg) =>
-      appState.setConfig(msg.config),
-    );
+    const unsubCfg = on("config-changed", (msg) => {
+      appState.setConfig(msg.config);
+      void maybeBootstrapAuth(msg.config);
+    });
+    const unsubPage = on("page-changed", (msg) => {
+      appState.setConfig(msg.config);
+      void maybeBootstrapAuth(msg.config);
+    });
     const unsubCmd = on("command", (_msg) => {
       // TODO: route commands (open / toggle-annotations / refresh-annotations / open-on-node)
     });
