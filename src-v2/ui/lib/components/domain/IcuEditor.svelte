@@ -58,10 +58,19 @@
         examplePluralNum: 1,
         allowedNewPlaceholders: placeholders === "none" ? [] : undefined,
       }),
+      // TolgeeHighlight maps CodeMirror highlight tags via @lezer/highlight:
+      //   - `function` colors keywords: plural / select / one / other / =0 / # /
+      //     number / date / time / VariantDescriptor.
+      //   - `other` colors variableName: the plural parameter `count`, format
+      //     styles, FormatStyle values.
+      //   - `main` colors plain text content.
+      // CSS variables in inline `color:` work but resolve against the editor
+      // root, which doesn't always inherit our Tailwind tokens cleanly. Using
+      // concrete colors here so highlight is guaranteed visible in both themes.
       TolgeeHighlight({
-        function: "var(--icu-fn, #16a34a)",
-        other: "var(--icu-other, #2563eb)",
-        main: "var(--color-text)",
+        function: "#16a34a",
+        other: "#2563eb",
+        main: "currentColor",
       }),
       EditorView.updateListener.of((v: ViewUpdate) => {
         if (!v.docChanged) return;
@@ -183,24 +192,21 @@
     pointer-events: none;
   }
   .icu-editor :global(.placeholder-variable) {
-    background: color-mix(in srgb, var(--color-bg-brand) 14%, transparent);
-    border-color: var(--color-border-brand);
-    color: var(--color-text-brand);
+    background: color-mix(in srgb, #2563eb 14%, transparent);
+    border-color: #2563eb;
+    color: #1d4ed8;
   }
-  .icu-editor :global(.placeholder-tag) {
+  .icu-editor :global(.placeholder-tagOpen),
+  .icu-editor :global(.placeholder-tagClose),
+  .icu-editor :global(.placeholder-tagSelfClosed) {
     background: color-mix(in srgb, #16a34a 14%, transparent);
     border-color: #16a34a;
     color: #15803d;
   }
-  .icu-editor :global(.placeholder-variant) {
-    background: color-mix(in srgb, #f59e0b 14%, transparent);
-    border-color: #f59e0b;
-    color: #92400e;
-  }
   .icu-editor :global(.placeholder-hash) {
-    background: color-mix(in srgb, #6366f1 14%, transparent);
-    border-color: #6366f1;
-    color: #4f46e5;
+    background: color-mix(in srgb, #16a34a 14%, transparent);
+    border-color: #16a34a;
+    color: #15803d;
   }
   .icu-editor :global(.placeholder-error) {
     background: color-mix(in srgb, var(--figma-color-bg-danger) 18%, transparent);
