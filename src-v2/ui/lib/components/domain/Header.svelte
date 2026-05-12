@@ -34,7 +34,11 @@
 
   function handleLanguageChange(v: string): void {
     if (!v || v === language) return;
-    send({ type: "set-language", language: v });
+    // Picking a language is treated as a preview: navigate to the Pull view
+    // with the new tag in the route. The actual persistence happens only when
+    // the user clicks Apply in Pull — cancelling there leaves the saved
+    // language untouched.
+    appState.navigate({ name: "pull", lang: v });
   }
 
   function handleNamespaceChange(v: string): void {

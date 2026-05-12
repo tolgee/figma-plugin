@@ -136,6 +136,14 @@
   function applyChanges(): void {
     const d = diff;
     if (!d) return;
+    // The Pull view is also the language preview surface: navigating here
+    // from the header Select doesn't persist the picked language yet. We
+    // only commit it now, on Apply, so cancelling preserves the previous
+    // saved language. Skip the round-trip when the language hasn't changed.
+    const savedLanguage = appState.value.config?.language ?? "";
+    if (language && language !== savedLanguage) {
+      send({ type: "set-language", language });
+    }
     if (d.changedNodes.length === 0) {
       goBack();
       return;
