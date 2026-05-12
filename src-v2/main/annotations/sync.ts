@@ -6,12 +6,11 @@ import { getNodeInfo } from "$main/nodes/getNodeInfo";
 import { ensureTolgeeCategory } from "./category";
 
 /**
- * Build the markdown label that gets shown on the canvas. Bolded so it reads
- * as a "tag" rather than a sentence in the annotation popover.
+ * Build the label shown on the canvas. Plain text — the Tolgee category
+ * already differentiates these from other annotations, no need for bold.
  */
 function buildLabel(info: NodeInfo): string {
-  const fullKey = info.ns ? `${info.ns}.${info.key}` : info.key;
-  return `**${fullKey}**`;
+  return info.ns ? `${info.ns}.${info.key}` : info.key;
 }
 
 /**
