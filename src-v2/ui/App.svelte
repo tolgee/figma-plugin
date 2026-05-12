@@ -1,7 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { QueryClientProvider } from "@tanstack/svelte-query";
   import { appState } from "./lib/stores/app.svelte";
   import { auth } from "./lib/stores/auth.svelte";
+  import { queryClient } from "./lib/stores/query.svelte";
   import { attachBus, on, send } from "./lib/bus";
   import { validateApiKey } from "./lib/api/auth";
   import { createTolgeeClient } from "./lib/api/client";
@@ -139,35 +141,37 @@
   });
 </script>
 
-<div class="flex flex-col h-screen text-text">
-  {#if appState.value.errorBanner}
-    <ErrorBanner banner={appState.value.errorBanner} />
-  {/if}
-  <main class="flex-1 overflow-auto">
-    {#if appState.value.route.name === "settings"}
-      <!-- Settings is always reachable, even before page is set up. -->
-      <Settings />
-    {:else if !appState.value.config?.pageInfo && appState.value.config?.documentInfo}
-      <!-- PageSetup gate per Phase 4: document is configured but page is not. -->
-      <PageSetup />
-    {:else if appState.value.config?.pageCopy}
-      <CopyView />
-    {:else if appState.value.route.name === "index"}
-      <IndexView />
-    {:else if appState.value.route.name === "pageSetup"}
-      <PageSetup />
-    {:else if appState.value.route.name === "copyView"}
-      <CopyView />
-    {:else if appState.value.route.name === "push"}
-      <Push />
-    {:else if appState.value.route.name === "pull"}
-      <Pull />
-    {:else if appState.value.route.name === "connect"}
-      <Connect />
-    {:else if appState.value.route.name === "stringDetails"}
-      <StringDetails />
-    {:else if appState.value.route.name === "createCopy"}
-      <CreateCopy />
+<QueryClientProvider client={queryClient}>
+  <div class="flex flex-col h-screen text-text">
+    {#if appState.value.errorBanner}
+      <ErrorBanner banner={appState.value.errorBanner} />
     {/if}
-  </main>
-</div>
+    <main class="flex-1 overflow-auto">
+      {#if appState.value.route.name === "settings"}
+        <!-- Settings is always reachable, even before page is set up. -->
+        <Settings />
+      {:else if !appState.value.config?.pageInfo && appState.value.config?.documentInfo}
+        <!-- PageSetup gate per Phase 4: document is configured but page is not. -->
+        <PageSetup />
+      {:else if appState.value.config?.pageCopy}
+        <CopyView />
+      {:else if appState.value.route.name === "index"}
+        <IndexView />
+      {:else if appState.value.route.name === "pageSetup"}
+        <PageSetup />
+      {:else if appState.value.route.name === "copyView"}
+        <CopyView />
+      {:else if appState.value.route.name === "push"}
+        <Push />
+      {:else if appState.value.route.name === "pull"}
+        <Pull />
+      {:else if appState.value.route.name === "connect"}
+        <Connect />
+      {:else if appState.value.route.name === "stringDetails"}
+        <StringDetails />
+      {:else if appState.value.route.name === "createCopy"}
+        <CreateCopy />
+      {/if}
+    </main>
+  </div>
+</QueryClientProvider>

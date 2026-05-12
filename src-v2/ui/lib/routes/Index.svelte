@@ -8,7 +8,6 @@
   import UploadCloud from "lucide-svelte/icons/upload-cloud";
   import DownloadCloud from "lucide-svelte/icons/download-cloud";
   import Link2 from "lucide-svelte/icons/link-2";
-  import Copy from "lucide-svelte/icons/copy";
 
   const selectedNodes = $derived(appState.value.selectedNodes);
   const hasSelection = $derived(selectedNodes.length > 0);
@@ -60,30 +59,29 @@
       />
     </div>
     <div
-      class="grid grid-cols-2 gap-2 border-t border-[var(--color-border)] p-2"
+      class="flex flex-col gap-2 border-t border-[var(--color-border)] p-2"
     >
-      <Button variant="secondary" onclick={() => go({ name: "push" })}>
-        <UploadCloud size={12} /> Push
-      </Button>
-      <Button
-        variant="secondary"
-        onclick={() =>
-          go({
-            name: "pull",
-            lang: appState.value.config?.language ?? "",
-          })}
-      >
-        <DownloadCloud size={12} /> Pull
-      </Button>
+      <div class="grid grid-cols-2 gap-2">
+        <Button variant="secondary" onclick={() => go({ name: "push" })}>
+          <UploadCloud size={12} /> Push
+        </Button>
+        <Button
+          variant="secondary"
+          onclick={() =>
+            go({
+              name: "pull",
+              lang: appState.value.config?.language ?? "",
+            })}
+        >
+          <DownloadCloud size={12} /> Pull
+        </Button>
+      </div>
       {#if selectedNodes.length === 1 && selectedNodes[0]}
         {@const node = selectedNodes[0]}
         <Button variant="ghost" onclick={() => go({ name: "connect", node })}>
-          <Link2 size={12} /> Connect
+          <Link2 size={12} /> Connect to existing key
         </Button>
       {/if}
-      <Button variant="ghost" onclick={() => go({ name: "createCopy" })}>
-        <Copy size={12} /> Copy
-      </Button>
     </div>
   {/if}
 </div>

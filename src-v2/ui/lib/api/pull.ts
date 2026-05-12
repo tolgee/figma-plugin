@@ -29,6 +29,8 @@ export type FetchAllTranslationsOptions = {
    * `page.totalElements`, and may stay `null` if the server omits the field.
    */
   onProgress?: (loaded: number, total: number | null) => void;
+  /** Forwarded to `fetch`; lets svelte-query cancel in-flight requests. */
+  signal?: AbortSignal;
 };
 
 const DEFAULT_PAGE_SIZE = 1000;
@@ -38,10 +40,9 @@ const DEFAULT_PAGE_SIZE = 1000;
  * `namespaces`, paginating via the cursor returned by
  * `GET /v2/projects/translations`.
  *
- * For each namespace we loop until the server stops returning a cursor or
- * the accumulated keys reach `page.totalElements`. The result is a flat
- * `PulledKey[]` (one entry per remote key, regardless of namespace). Callers
- * are expected to disambiguate via `keyName` + `keyNamespace`.
+ * Namespaces are fetched in parallel — each has its own cursor and the server
+ * returns disjoint key sets. The result is a flat `PulledKey[]`; callers
+ * disambiguate via `keyName` + `keyNamespace`.
  */
 export async function fetchAllTranslations(
   client: TolgeeClient,
@@ -53,25 +54,34 @@ export async function fetchAllTranslations(
     branch,
     pageSize = DEFAULT_PAGE_SIZE,
     onProgress,
+    signal,
   } = options;
 
-  const all: PulledKey[] = [];
-
-  // Running total across all namespaces. `null` means at least one namespace
-  // hasn't reported `page.totalElements` yet, so the UI should show an
-  // indeterminate progress indicator.
-  let combinedTotal: number | null = null;
-  let combinedTotalKnown = true;
-
-  // Empty / unspecified `namespaces` means "every namespace" — we make a
-  // single pass without `filterNamespace`. The synthetic `null` sentinel below
-  // drives that branch through the same paginated loop.
+  // Empty / unspecified `namespaces` means "every namespace" — a single pass
+  // without `filterNamespace`. The synthetic `null` sentinel drives that
+  // branch through the same paginated loop.
   const nsList: Array<string | null> =
     !namespaces || namespaces.length === 0 ? [null] : namespaces;
 
-  for (const ns of nsList) {
+  // Shared progress aggregator: each namespace pushes its loaded count and
+  // total; we sum and emit a combined number so the UI sees one bar.
+  const loadedByNs = new Array<number>(nsList.length).fill(0);
+  const totalByNs = new Array<number | null>(nsList.length).fill(null);
+
+  function emitProgress(): void {
+    const combinedLoaded = loadedByNs.reduce((a, b) => a + b, 0);
+    const combinedTotal = totalByNs.some((t) => t === null)
+      ? null
+      : (totalByNs as number[]).reduce((a, b) => a + b, 0);
+    onProgress?.(combinedLoaded, combinedTotal);
+  }
+
+  async function loadNamespace(
+    ns: string | null,
+    index: number,
+  ): Promise<PulledKey[]> {
+    const out: PulledKey[] = [];
     let cursor: string | undefined;
-    let nsLoaded = 0;
     let nsTotal: number | null = null;
     let firstBatch = true;
 
@@ -86,6 +96,7 @@ export async function fetchAllTranslations(
             branch: branch || undefined,
           },
         },
+        signal,
       });
 
       if (error) {
@@ -104,42 +115,32 @@ export async function fetchAllTranslations(
         for (const [lang, view] of Object.entries(key.translations ?? {})) {
           translations[lang] = { text: view?.text ?? "" };
         }
-        all.push({
+        out.push({
           keyName: key.keyName,
           keyNamespace: key.keyNamespace,
           isPlural: Boolean(key.keyIsPlural),
           translations,
         });
-
-        // Yield to the event loop every 50 items so we don't starve the UI.
-        if (all.length % 50 === 0) {
-          await new Promise<void>((resolve) => setTimeout(resolve, 0));
-        }
       }
 
-      nsLoaded += batch.length;
+      loadedByNs[index] = out.length;
 
       if (firstBatch) {
         nsTotal = data?.page?.totalElements ?? null;
+        totalByNs[index] = nsTotal;
         firstBatch = false;
-        if (nsTotal == null) {
-          combinedTotalKnown = false;
-          combinedTotal = null;
-        } else if (combinedTotalKnown) {
-          combinedTotal = (combinedTotal ?? 0) + nsTotal;
-        }
       }
 
-      onProgress?.(all.length, combinedTotal);
+      emitProgress();
 
       cursor = data?.nextCursor;
-
-      const reachedTotal = nsTotal !== null && nsLoaded >= nsTotal;
+      const reachedTotal = nsTotal !== null && out.length >= nsTotal;
       if (!cursor || batch.length === 0 || reachedTotal) {
-        break;
+        return out;
       }
     }
   }
 
-  return all;
+  const perNs = await Promise.all(nsList.map((ns, i) => loadNamespace(ns, i)));
+  return perNs.flat();
 }

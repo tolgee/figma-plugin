@@ -5,6 +5,7 @@
   import Button from "$ui/lib/components/ui/button.svelte";
   import Select from "$ui/lib/components/ui/select.svelte";
   import SettingsIcon from "lucide-svelte/icons/settings";
+  import CopyIcon from "lucide-svelte/icons/copy-plus";
 
   type LanguageOption = { value: string; label: string };
   type NamespaceOption = { value: string; label: string };
@@ -52,6 +53,10 @@
 
   function openSettings(): void {
     appState.navigate({ name: "settings" });
+  }
+
+  function openCreateCopy(): void {
+    appState.navigate({ name: "createCopy" });
   }
 
   // Build augmented option lists so the currently selected value is always
@@ -126,11 +131,23 @@
     </span>
   {/if}
 
+  {#if auth.value.authenticated}
+    <Button
+      variant="ghost"
+      size="sm"
+      onclick={openCreateCopy}
+      aria-label="Create page copy"
+      title="Create page copy"
+    >
+      <CopyIcon size={14} />
+    </Button>
+  {/if}
   <Button
     variant="ghost"
     size="sm"
     onclick={openSettings}
     aria-label="Open settings"
+    title="Open settings"
   >
     <SettingsIcon size={14} />
   </Button>
