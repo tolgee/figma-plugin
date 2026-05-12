@@ -82,9 +82,14 @@
     progress = { loaded: 0, total: null };
 
     try {
+      // When the document hasn't pinned a namespace, fetch across every
+      // namespace in the project — sending `filterNamespace: [""]` only
+      // returns keys explicitly stored under the empty namespace, which
+      // misses everything that lives under a real namespace.
+      const namespaces = namespace ? [namespace] : undefined;
       const keys = await fetchAllTranslations(client, {
         languages: [lang],
-        namespaces: [namespace],
+        namespaces,
         branch: branch || undefined,
         onProgress: (loaded, total) => {
           progress = { loaded, total };

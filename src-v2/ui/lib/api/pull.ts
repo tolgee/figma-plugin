@@ -15,8 +15,13 @@ export type PulledKey = {
 
 export type FetchAllTranslationsOptions = {
   languages: string[];
-  /** Namespaces to fetch — use `""` for the default namespace. */
-  namespaces: string[];
+  /**
+   * Namespaces to fetch. Pass `[""]` to filter to the default namespace,
+   * or an empty array `[]` (or omit) to fetch every namespace in the project
+   * — no `filterNamespace` is sent in that case, so the server returns keys
+   * across all namespaces.
+   */
+  namespaces?: string[];
   branch?: string;
   pageSize?: number;
   /**
@@ -58,7 +63,13 @@ export async function fetchAllTranslations(
   let combinedTotal: number | null = null;
   let combinedTotalKnown = true;
 
-  for (const ns of namespaces) {
+  // Empty / unspecified `namespaces` means "every namespace" — we make a
+  // single pass without `filterNamespace`. The synthetic `null` sentinel below
+  // drives that branch through the same paginated loop.
+  const nsList: Array<string | null> =
+    !namespaces || namespaces.length === 0 ? [null] : namespaces;
+
+  for (const ns of nsList) {
     let cursor: string | undefined;
     let nsLoaded = 0;
     let nsTotal: number | null = null;
@@ -69,7 +80,7 @@ export async function fetchAllTranslations(
         params: {
           query: {
             languages,
-            filterNamespace: [ns],
+            filterNamespace: ns === null ? undefined : [ns],
             size: pageSize,
             cursor,
             branch: branch || undefined,
