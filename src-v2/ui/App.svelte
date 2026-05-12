@@ -5,6 +5,7 @@
   import { attachBus, on, send } from "./lib/bus";
   import { validateApiKey } from "./lib/api/auth";
   import { createTolgeeClient } from "./lib/api/client";
+  import { getProjectMeta } from "./lib/api/projectMeta";
   import IndexView from "./lib/routes/Index.svelte";
   import PageSetup from "./lib/routes/PageSetup.svelte";
   import CopyView from "./lib/routes/CopyView.svelte";
@@ -41,11 +42,28 @@
     }
     auth.setAuth({
       client: createTolgeeClient(apiUrl, apiKey),
+      apiUrl,
+      apiKey,
       projectId: result.projectId,
       scopes: result.scopes,
     });
     if (config?.projectId !== result.projectId) {
       send({ type: "persist-project-id", projectId: result.projectId });
+    }
+    // Hydrate project-level feature flags (branching, namespaces) so push /
+    // pull can decide whether to send `branch` and how to surface namespaces.
+    try {
+      const meta = await getProjectMeta(apiUrl, apiKey, result.projectId);
+      auth.setProjectFeatures({
+        branchingEnabled: meta.branchingEnabled,
+        namespacesEnabled: meta.namespacesFeaturesEnabled,
+      });
+    } catch {
+      // Non-fatal: assume both off. Branching API calls would 400 otherwise.
+      auth.setProjectFeatures({
+        branchingEnabled: false,
+        namespacesEnabled: false,
+      });
     }
   }
 

@@ -71,6 +71,8 @@
         // Update global auth store so the rest of the app reacts immediately.
         auth.setAuth({
           client: createTolgeeClient(form.apiUrl, form.apiKey),
+          apiUrl: form.apiUrl,
+          apiKey: form.apiKey,
           projectId: result.projectId,
           scopes: result.scopes,
         });

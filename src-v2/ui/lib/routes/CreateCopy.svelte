@@ -26,7 +26,11 @@
   // ---- Derived --------------------------------------------------------------
 
   const cfg = $derived(appState.value.config ?? {});
-  const branch = $derived(cfg.branch);
+  // Only forward `branch` when the project has branching enabled — otherwise
+  // Tolgee 400s the translations endpoint with feature_not_enabled_for_project.
+  const branch = $derived(
+    auth.value.branchingEnabled ? cfg.branch : undefined,
+  );
   // When the document opts in to namespaces, only the configured one is
   // relevant for the copy. Otherwise pull the default namespace (`""`).
   const namespaces = $derived<string[]>(

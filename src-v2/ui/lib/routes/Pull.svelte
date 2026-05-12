@@ -49,7 +49,9 @@
     const lang = language;
     const cfg = appState.value.config;
     const ns = cfg?.namespace ?? "";
-    const branch = cfg?.branch ?? "";
+    // Only forward `branch` when branching is enabled; the API rejects with
+    // feature_not_enabled_for_project otherwise.
+    const branch = auth.value.branchingEnabled ? (cfg?.branch ?? "") : "";
     const key = `${lang}|${ns}|${branch}`;
 
     if (!lang) {

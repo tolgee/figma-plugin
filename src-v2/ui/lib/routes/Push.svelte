@@ -57,7 +57,11 @@
   const cfg = $derived<Partial<TolgeeConfig>>(appState.value.config ?? {});
   const language = $derived(cfg.language ?? "");
   const namespace = $derived(cfg.namespace ?? "");
-  const branch = $derived(cfg.branch);
+  // Only attach `branch` to API calls when the project actually has branching
+  // enabled — otherwise Tolgee rejects with feature_not_enabled_for_project.
+  const branch = $derived(
+    auth.value.branchingEnabled ? cfg.branch : undefined,
+  );
   const hasNamespacesEnabled = $derived(Boolean(cfg.namespace !== undefined));
   const updateScreenshots = $derived(cfg.updateScreenshots ?? true);
   const addTags = $derived(cfg.addTags ?? false);
@@ -334,9 +338,12 @@
         for (let i = 0; i < screenshots.length; i++) {
           const screenshot = screenshots[i];
           if (!screenshot) continue;
-          const uploaded = await uploadScreenshot(client, screenshot.image, {
-            location: `figma-${screenshot.info.id}`,
-          });
+          const uploaded = await uploadScreenshot(
+            auth.value.apiUrl,
+            auth.value.apiKey,
+            screenshot.image,
+            { location: `figma-${screenshot.info.id}` },
+          );
           uploadedById.set(screenshot, uploaded.id);
           progress = {
             current: i + 1,
