@@ -65,17 +65,36 @@ export function pullDiff(
     const remoteText = remoteKey.translations[language]?.text ?? "";
     const remoteIsPlural = remoteKey.isPlural;
 
-    // Treat empty remote translation as "no translation available". It would
-    // be destructive to overwrite a local string with `""` just because the
-    // server hasn't translated it for this language yet.
-    if (remoteText === "") {
-      unchangedNodes.push(node);
+    // Treat an empty remote translation the same way the legacy plugin did:
+    // surface it as "missing" so the user sees they need to translate the
+    // key in Tolgee. Overwriting a local string with `""` would be
+    // destructive, so we don't fall into the changedNodes bucket either.
+    if (!remoteText) {
+      missingKeys.push(node);
       continue;
     }
 
     if (
       remoteText !== node.translation ||
       remoteIsPlural !== Boolean(node.isPlural)
+    ) {
+      changedNodes.push({
+        node,
+        newText: remoteText,
+        isPlural: remoteIsPlural,
+      });
+    } else if (
+      // The cached translation matches the remote, but the rendered canvas
+      // characters have drifted (e.g. someone typed over the layer manually).
+      // For simple, non-plural / non-parametric keys we can safely re-apply
+      // the remote text so the canvas matches the source of truth again.
+      // Skip if `characters` is empty — that's not real drift, it just means
+      // the node hasn't been rendered yet (typical in tests / fresh syncs).
+      node.characters &&
+      node.characters !== remoteText &&
+      !remoteIsPlural &&
+      !Boolean(node.isPlural) &&
+      (!node.paramsValues || Object.keys(node.paramsValues).length === 0)
     ) {
       changedNodes.push({
         node,

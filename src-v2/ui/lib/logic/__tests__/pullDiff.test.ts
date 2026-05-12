@@ -81,7 +81,7 @@ describe("pullDiff", () => {
     expect(diff.missingKeys).toEqual([]);
   });
 
-  it("treats an empty remote translation as unchanged (no destructive overwrite)", () => {
+  it("classifies an empty remote translation as missing (no destructive overwrite)", () => {
     const node = makeNode({
       key: "greeting",
       translation: "Hello",
@@ -93,8 +93,13 @@ describe("pullDiff", () => {
     });
     const diff = pullDiff([node], [remote], "en");
 
-    expect(diff.unchangedNodes).toHaveLength(1);
+    // Matches legacy plugin behaviour: a key without a translation for the
+    // selected language is surfaced under "missing" so the user can see they
+    // still need to translate it. We never overwrite a local string with "".
+    expect(diff.missingKeys).toHaveLength(1);
+    expect(diff.missingKeys[0]).toBe(node);
     expect(diff.changedNodes).toEqual([]);
+    expect(diff.unchangedNodes).toEqual([]);
   });
 
   it("ignores nodes that are not connected", () => {
