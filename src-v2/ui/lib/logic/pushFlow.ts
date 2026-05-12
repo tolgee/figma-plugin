@@ -38,10 +38,7 @@ export function canonicalKey(n: NodeInfo): string {
   return `${n.ns ?? ""}|${n.key}`;
 }
 
-export function resolutionKey(
-  keyName: string,
-  keyNamespace: string | undefined,
-): string {
+export function resolutionKey(keyName: string, keyNamespace: string | undefined): string {
   return `${keyNamespace ?? ""}|${keyName}`;
 }
 
@@ -114,22 +111,11 @@ export type BuildPayloadOptions = {
   nodes: NodeInfo[];
   screenshots: FrameScreenshot[];
   uploadedImageIdByScreenshot: Map<FrameScreenshot, number>;
-  resolutionFor?: (
-    key: string,
-    ns: string | undefined,
-  ) => PushConflictResolution | undefined;
+  resolutionFor?: (key: string, ns: string | undefined) => PushConflictResolution | undefined;
 };
 
-export function buildPayload(
-  opts: BuildPayloadOptions,
-): SingleStepImportResolvableItemRequest[] {
-  const {
-    ctx,
-    nodes,
-    screenshots,
-    uploadedImageIdByScreenshot,
-    resolutionFor,
-  } = opts;
+export function buildPayload(opts: BuildPayloadOptions): SingleStepImportResolvableItemRequest[] {
+  const { ctx, nodes, screenshots, uploadedImageIdByScreenshot, resolutionFor } = opts;
 
   return nodes.map((node) => {
     const resolution = resolutionFor?.(node.key, node.ns);
@@ -190,12 +176,9 @@ export async function uploadScreenshots(
   for (let i = 0; i < screenshots.length; i++) {
     const screenshot = screenshots[i];
     if (!screenshot) continue;
-    const uploaded = await uploadScreenshot(
-      ctx.apiUrl,
-      ctx.apiKey,
-      screenshot.image,
-      { location: `figma-${screenshot.info.id}` },
-    );
+    const uploaded = await uploadScreenshot(ctx.apiUrl, ctx.apiKey, screenshot.image, {
+      location: `figma-${screenshot.info.id}`,
+    });
     uploadedById.set(screenshot, uploaded.id);
     onProgress({
       current: i + 1,
@@ -215,9 +198,7 @@ export type SubmitPushOptions = {
   resolutionFor?: BuildPayloadOptions["resolutionFor"];
 };
 
-export async function submitPush(
-  opts: SubmitPushOptions,
-): Promise<PushKeysResult> {
+export async function submitPush(opts: SubmitPushOptions): Promise<PushKeysResult> {
   const payload = buildPayload({
     ctx: opts.ctx,
     nodes: opts.nodes,
@@ -238,9 +219,7 @@ export type ApplyTagsOptions = {
   nodes: NodeInfo[];
 };
 
-export async function applyConfiguredTags(
-  opts: ApplyTagsOptions,
-): Promise<void> {
+export async function applyConfiguredTags(opts: ApplyTagsOptions): Promise<void> {
   if (opts.tags.length === 0) return;
   await applyTags(
     opts.ctx.client,
@@ -262,9 +241,7 @@ export function defaultResolutions(
 ): Record<string, PushConflictResolution> {
   const next: Record<string, PushConflictResolution> = {};
   for (const c of list) {
-    next[resolutionKey(c.keyName, c.keyNamespace)] = c.isOverridable
-      ? "OVERRIDE"
-      : "KEEP";
+    next[resolutionKey(c.keyName, c.keyNamespace)] = c.isOverridable ? "OVERRIDE" : "KEEP";
   }
   return next;
 }

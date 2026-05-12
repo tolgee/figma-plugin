@@ -35,11 +35,7 @@ export type TolgeeFormat = {
 
 const PLURAL_KEYWORD = "plural";
 
-export function getTolgeeFormat(
-  input: string,
-  plural: boolean,
-  _raw: boolean,
-): TolgeeFormat {
+export function getTolgeeFormat(input: string, plural: boolean, _raw: boolean): TolgeeFormat {
   if (!plural) {
     return { variants: { other: input } };
   }

@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  findOutermostFrame,
-  groupNodesByFrame,
-} from "$main/screenshots/groupByFrame";
+import { findOutermostFrame, groupNodesByFrame } from "$main/screenshots/groupByFrame";
 
 /**
  * Minimal subset of `BaseNode` we need to assemble fake parent chains.
@@ -16,17 +13,11 @@ type FakeBase = {
   parent: FakeBase | null;
 };
 
-function frame(
-  id: string,
-  parent: FakeBase | null = null,
-): FakeBase {
+function frame(id: string, parent: FakeBase | null = null): FakeBase {
   return { id, name: id, type: "FRAME", parent };
 }
 
-function section(
-  id: string,
-  parent: FakeBase | null = null,
-): FakeBase {
+function section(id: string, parent: FakeBase | null = null): FakeBase {
   return { id, name: id, type: "SECTION", parent };
 }
 
@@ -34,10 +25,7 @@ function page(id: string): FakeBase {
   return { id, name: id, type: "PAGE", parent: null };
 }
 
-function textNode(
-  id: string,
-  parent: FakeBase,
-): FakeBase {
+function textNode(id: string, parent: FakeBase): FakeBase {
   return { id, name: id, type: "TEXT", parent };
 }
 
@@ -125,9 +113,7 @@ describe("groupNodesByFrame", () => {
       tA1 as unknown as TextNode,
       tA2 as unknown as TextNode,
     ]);
-    expect(grouped.get(frameB as unknown as FrameNode)).toEqual([
-      tB as unknown as TextNode,
-    ]);
+    expect(grouped.get(frameB as unknown as FrameNode)).toEqual([tB as unknown as TextNode]);
   });
 
   it("drops text nodes that have no frame ancestor", () => {

@@ -1,25 +1,19 @@
 import type { NodeInfo } from "$shared/types";
 
+import { applyRichText } from "$main/text/applyRichText";
 import { getNodeInfo, setNodeInfo } from "./getNodeInfo";
 import { scanConnectedNodes, scanSelectedTextNodes } from "./scan";
 
 /**
- * Replace the rendered text of a `TextNode`. Figma requires every font used
- * in the node's existing text to be loaded before `characters` can be
- * assigned, otherwise the assignment throws. We load every distinct font
- * range in parallel and then write the new string in one go.
+ * Replace the rendered text of a `TextNode`, applying Tolgee's inline
+ * formatting tags (`<b>` / `<i>` / `<u>` / `<br>`) to the corresponding
+ * character ranges. See `$main/text/applyRichText` for the parsing details.
  *
- * Disables `autoRename` so the layer name doesn't follow the new text — the
- * Tolgee key is the source of truth for what the layer represents.
+ * Disables `autoRename` (via `applyRichText`) so the layer name doesn't
+ * follow the new text — the Tolgee key is the source of truth.
  */
-export async function writeTextNode(
-  node: TextNode,
-  newText: string,
-): Promise<void> {
-  node.autoRename = false;
-  const fonts = node.getRangeAllFontNames(0, node.characters.length);
-  await Promise.all(fonts.map((f) => figma.loadFontAsync(f)));
-  node.characters = newText;
+export async function writeTextNode(node: TextNode, newText: string): Promise<void> {
+  await applyRichText(node, newText);
 }
 
 /**
@@ -61,9 +55,7 @@ export type NodeUpdate = {
  * not flip the result to `ok: false` — callers receive `ok: false` only when
  * an unexpected error escapes a single update.
  */
-export const setNodesData = async (
-  updates: NodeUpdate[],
-): Promise<{ ok: boolean }> => {
+export const setNodesData = async (updates: NodeUpdate[]): Promise<{ ok: boolean }> => {
   let ok = true;
   for (const update of updates) {
     try {

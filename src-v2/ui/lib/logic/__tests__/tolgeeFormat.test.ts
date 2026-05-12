@@ -24,11 +24,7 @@ describe("getTolgeeFormat (non-plural)", () => {
 
 describe("getTolgeeFormat (plural)", () => {
   it("parses a basic plural form", () => {
-    const result = getTolgeeFormat(
-      "{count, plural, one {one item} other {# items}}",
-      true,
-      false,
-    );
+    const result = getTolgeeFormat("{count, plural, one {one item} other {# items}}", true, false);
     expect(result.parameter).toBe("count");
     expect(result.variants.one).toBe("one item");
     expect(result.variants.other).toBe("# items");
@@ -97,16 +93,8 @@ describe("getTolgeeFormat (plural)", () => {
   });
 
   it("normalizes equivalent ICU forms to the same shape (whitespace agnostic)", () => {
-    const a = getTolgeeFormat(
-      "{count, plural, one {x} other {y}}",
-      true,
-      false,
-    );
-    const b = getTolgeeFormat(
-      "{ count ,plural,one {x}    other {y} }",
-      true,
-      false,
-    );
+    const a = getTolgeeFormat("{count, plural, one {x} other {y}}", true, false);
+    const b = getTolgeeFormat("{ count ,plural,one {x}    other {y} }", true, false);
     expect(JSON.stringify(a)).toBe(JSON.stringify(b));
   });
 

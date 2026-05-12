@@ -74,10 +74,7 @@ export function pullDiff(
       continue;
     }
 
-    if (
-      remoteText !== node.translation ||
-      remoteIsPlural !== Boolean(node.isPlural)
-    ) {
+    if (remoteText !== node.translation || remoteIsPlural !== Boolean(node.isPlural)) {
       changedNodes.push({
         node,
         newText: remoteText,

@@ -12,6 +12,7 @@ import { applyTranslations } from "$main/handlers/nodes";
 import { getSelectionInfo, setNodesData } from "$main/nodes/selection";
 import { scanConnectedNodes } from "$main/nodes/scan";
 import { getNodeInfo } from "$main/nodes/getNodeInfo";
+import { cleanUpHighlights, highlightNode } from "$main/nodes/highlight";
 import { captureScreenshots } from "$main/screenshots/capture";
 import { readMergedConfig, resetConfig, writeConfig } from "$main/settings";
 
@@ -25,15 +26,14 @@ declare const __html__: string | undefined;
 
 const uiHtml =
   figma.editorType === "dev"
-    ? __uiFiles__?.dev ?? __uiFiles__?.figma ?? __html__ ?? ""
-    : __uiFiles__?.figma ?? __html__ ?? "";
+    ? (__uiFiles__?.dev ?? __uiFiles__?.figma ?? __html__ ?? "")
+    : (__uiFiles__?.figma ?? __html__ ?? "");
 
 figma.skipInvisibleInstanceChildren = true;
 
 // Quick-action commands run their side effect and close the plugin without
 // ever showing the UI. Everything else opens the plugin window.
-const isQuickAction =
-  figma.command === "toggle-annotations" && figma.editorType !== "dev";
+const isQuickAction = figma.command === "toggle-annotations" && figma.editorType !== "dev";
 
 if (isQuickAction) {
   void (async () => {
@@ -48,9 +48,7 @@ if (isQuickAction) {
         figma.closePlugin(`Tolgee annotations off (${updated} cleared)`);
       }
     } catch (err) {
-      figma.closePlugin(
-        `Tolgee error: ${err instanceof Error ? err.message : String(err)}`,
-      );
+      figma.closePlugin(`Tolgee error: ${err instanceof Error ? err.message : String(err)}`);
     }
   })();
 } else {
@@ -119,7 +117,9 @@ figma.on("currentpagechange", () => {
 // case and the user can hit "Refresh Annotations" from the menu.
 
 figma.on("close", () => {
-  // Reserved for end-of-session persistence.
+  // Restore fills on any node still mid-highlight — an unexpected close
+  // would otherwise leave layers stuck in the pink pulse colour.
+  cleanUpHighlights();
 });
 
 // --- UI -> main message handlers --------------------------------------------
@@ -240,9 +240,16 @@ on("request-screenshots", async (msg) => {
 });
 
 on("scroll-to-node", async (msg) => {
-  const node = await figma.getNodeByIdAsync(msg.id);
-  if (node && "x" in node) {
-    figma.viewport.scrollAndZoomIntoView([node]);
+  // `highlightNode` already calls `scrollAndZoomIntoView` and adds the
+  // 500ms pink pulse on top, but it bails on dev-mode editors and on text
+  // nodes with mixed fills. Falling back to a plain scroll keeps the click
+  // useful in those branches.
+  await highlightNode(msg.id);
+  if (figma.editorType === "dev") {
+    const node = await figma.getNodeByIdAsync(msg.id);
+    if (node && "x" in node) {
+      figma.viewport.scrollAndZoomIntoView([node]);
+    }
   }
 });
 

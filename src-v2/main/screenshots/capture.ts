@@ -17,8 +17,7 @@ const EXPORT_SCALE = 1;
  */
 const YIELD_EVERY_N_FRAMES = 5;
 
-const yieldToEventLoop = (): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, 0));
+const yieldToEventLoop = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
 
 /**
  * Walk up from any node until we find the enclosing `PageNode`. Returns
@@ -68,14 +67,10 @@ export async function exportFrame(frame: FrameNode): Promise<Uint8Array> {
  * frame is exported once as a PNG and the contained text nodes contribute
  * positioned `NodeInfo` entries.
  */
-export async function captureScreenshots(
-  nodeIds: string[],
-): Promise<FrameScreenshot[]> {
+export async function captureScreenshots(nodeIds: string[]): Promise<FrameScreenshot[]> {
   // 1. Resolve ids → nodes. Missing nodes are skipped silently; the UI is
   //    free to pass a stale selection without crashing the export.
-  const resolved = await Promise.all(
-    nodeIds.map((id) => figma.getNodeByIdAsync(id)),
-  );
+  const resolved = await Promise.all(nodeIds.map((id) => figma.getNodeByIdAsync(id)));
 
   // 2. Keep only text nodes — screenshots are anchored to translatable text.
   const textNodes: TextNode[] = [];

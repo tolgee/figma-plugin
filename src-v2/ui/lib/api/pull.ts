@@ -60,8 +60,7 @@ export async function fetchAllTranslations(
   // Empty / unspecified `namespaces` means "every namespace" — a single pass
   // without `filterNamespace`. The synthetic `null` sentinel drives that
   // branch through the same paginated loop.
-  const nsList: Array<string | null> =
-    !namespaces || namespaces.length === 0 ? [null] : namespaces;
+  const nsList: Array<string | null> = !namespaces || namespaces.length === 0 ? [null] : namespaces;
 
   // Shared progress aggregator: each namespace pushes its loaded count and
   // total; we sum and emit a combined number so the UI sees one bar.
@@ -76,10 +75,7 @@ export async function fetchAllTranslations(
     onProgress?.(combinedLoaded, combinedTotal);
   }
 
-  async function loadNamespace(
-    ns: string | null,
-    index: number,
-  ): Promise<PulledKey[]> {
+  async function loadNamespace(ns: string | null, index: number): Promise<PulledKey[]> {
     const out: PulledKey[] = [];
     let cursor: string | undefined;
     let nsTotal: number | null = null;
@@ -103,8 +99,7 @@ export async function fetchAllTranslations(
         // Surface the error code verbatim so the caller can branch on common
         // cases (e.g. "invalid_project_api_key").
         const code =
-          (error as { code?: string }).code ??
-          (typeof error === "string" ? error : null);
+          (error as { code?: string }).code ?? (typeof error === "string" ? error : null);
         throw code ?? new Error("Failed to fetch translations");
       }
 

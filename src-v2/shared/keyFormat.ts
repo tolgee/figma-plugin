@@ -24,10 +24,7 @@ export type KeyFormatContext = {
  * TODO(phase-4): port full implementation including separator handling for
  * empty placeholder values (see `src/main/endpoints/preformatKey.ts`).
  */
-export function applyCasing(
-  input: string,
-  casing: GlobalSettings["variableCasing"],
-): string {
+export function applyCasing(input: string, casing: GlobalSettings["variableCasing"]): string {
   const str = input ?? "";
   switch (casing) {
     case "camelCase":
@@ -44,9 +41,7 @@ export function applyCasing(
       return str
         .split(/\s+/)
         .filter(Boolean)
-        .map(
-          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
-        )
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join("");
     case "snake_case":
       return str

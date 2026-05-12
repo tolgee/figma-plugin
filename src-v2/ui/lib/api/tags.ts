@@ -37,8 +37,6 @@ export async function applyTags(
   });
 
   if (error) {
-    throw new Error(
-      `Failed to apply tags (status ${response?.status ?? "?"})`,
-    );
+    throw new Error(`Failed to apply tags (status ${response?.status ?? "?"})`);
   }
 }

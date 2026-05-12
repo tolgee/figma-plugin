@@ -19,9 +19,7 @@ import {
  * dependency on it.
  */
 function isDynamicPageAccess(): boolean {
-  const access = (
-    figma as unknown as { documentAccess?: string }
-  ).documentAccess;
+  const access = (figma as unknown as { documentAccess?: string }).documentAccess;
   return access === "dynamic-page";
 }
 
@@ -50,9 +48,7 @@ export async function readMergedConfig(): Promise<Partial<TolgeeConfig>> {
  * combined result is written back. No notification is emitted from here —
  * the calling handler decides whether/how to notify subscribers.
  */
-export async function writeConfig(
-  partial: Partial<TolgeeConfig>,
-): Promise<void> {
+export async function writeConfig(partial: Partial<TolgeeConfig>): Promise<void> {
   const split = splitConfig(partial);
 
   if (isDynamicPageAccess()) {

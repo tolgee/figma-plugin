@@ -6,9 +6,7 @@ import type { NodeInfo } from "$shared/types";
  * page, independent of the user's selection. Cancels the response listener if
  * the caller aborts (svelte-query passes a signal for in-flight cancellation).
  */
-export function requestPageConnectedNodes(
-  signal?: AbortSignal,
-): Promise<NodeInfo[]> {
+export function requestPageConnectedNodes(signal?: AbortSignal): Promise<NodeInfo[]> {
   return new Promise((resolve, reject) => {
     const correlationId = nextCorrelationId();
     const off = on("page-connected-nodes-result", (msg) => {

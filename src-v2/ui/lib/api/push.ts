@@ -3,8 +3,7 @@ import type { components } from "$ui/lib/api/schema.generated";
 
 export type SingleStepImportResolvableItemRequest =
   components["schemas"]["SingleStepImportResolvableItemRequest"];
-export type SimpleImportConflictResult =
-  components["schemas"]["SimpleImportConflictResult"];
+export type SimpleImportConflictResult = components["schemas"]["SimpleImportConflictResult"];
 
 export type PushOptions = {
   branch?: string;
@@ -53,17 +52,14 @@ export async function pushKeys(
         // `errorOnUnresolvedConflict` defaults to `false` so the first call
         // collects the conflicts instead of failing fast.
         errorOnUnresolvedConflict: options.errorOnUnresolvedConflict ?? false,
-        overrideMode:
-          options.resolutionMode === "FORCE_OVERRIDE" ? "ALL" : "RECOMMENDED",
+        overrideMode: options.resolutionMode === "FORCE_OVERRIDE" ? "ALL" : "RECOMMENDED",
         branch: options.branch || undefined,
       },
     },
   );
 
   if (error || !data) {
-    throw new Error(
-      `Push failed (status ${response?.status ?? "?"})`,
-    );
+    throw new Error(`Push failed (status ${response?.status ?? "?"})`);
   }
 
   // TODO: tighten when schema refined — the response shape varies in the

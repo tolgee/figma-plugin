@@ -1,9 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  REQUIRED_SCOPES,
-  hasRequiredScopes,
-  validateApiKey,
-} from "../auth";
+import { REQUIRED_SCOPES, hasRequiredScopes, validateApiKey } from "../auth";
 
 type FetchMock = ReturnType<typeof vi.fn>;
 
@@ -47,10 +43,7 @@ describe("validateApiKey", () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.projectId).toBe(42);
-      expect(result.scopes).toEqual([
-        "translations.view",
-        "translations.edit",
-      ]);
+      expect(result.scopes).toEqual(["translations.view", "translations.edit"]);
       expect(result.userFullName).toBe("Test User");
     }
   });
@@ -104,8 +97,7 @@ describe("validateApiKey", () => {
 
     await validateApiKey("https://app.tolgee.io/", "tg-key");
     const firstArg = mock.mock.calls[0]?.[0];
-    const calledUrl =
-      firstArg instanceof Request ? firstArg.url : String(firstArg ?? "");
+    const calledUrl = firstArg instanceof Request ? firstArg.url : String(firstArg ?? "");
     expect(calledUrl).toBe("https://app.tolgee.io/v2/api-keys/current");
   });
 });
@@ -121,9 +113,7 @@ describe("hasRequiredScopes", () => {
   });
 
   it("returns false when a required scope is missing", () => {
-    expect(
-      hasRequiredScopes(["translations.view"], [...REQUIRED_SCOPES.push]),
-    ).toBe(false);
+    expect(hasRequiredScopes(["translations.view"], [...REQUIRED_SCOPES.push])).toBe(false);
   });
 
   it("returns true when the required list is empty", () => {

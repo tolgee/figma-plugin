@@ -17,5 +17,16 @@
   --color-icon-secondary: var(--figma-color-icon-secondary);
 }
 
-html, body { height: 100%; margin: 0; padding: 0; }
-body { font-family: 'Inter', system-ui, sans-serif; font-size: 11px; line-height: 1.4; background: var(--color-bg); color: var(--color-text); }
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 11px;
+  line-height: 1.4;
+  background: var(--color-bg);
+  color: var(--color-text);
+}

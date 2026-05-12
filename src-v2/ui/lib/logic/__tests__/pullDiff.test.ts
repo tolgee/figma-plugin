@@ -174,11 +174,7 @@ describe("formatNodeText", () => {
       pluralParamValue: "3",
       isPlural: true,
     });
-    const out = formatNodeText(
-      node,
-      "{count, plural, one {1 item} other {# items}}",
-      "en",
-    );
+    const out = formatNodeText(node, "{count, plural, one {1 item} other {# items}}", "en");
     expect(out.text).toBe("3 items");
     expect(out.error).toBeUndefined();
   });
@@ -201,11 +197,7 @@ describe("formatNodeText", () => {
       paramsValues: { count: "7" },
       isPlural: true,
     });
-    const out = formatNodeText(
-      node,
-      "{count, plural, one {1 item} other {# items}}",
-      "en",
-    );
+    const out = formatNodeText(node, "{count, plural, one {1 item} other {# items}}", "en");
     expect(out.text).toBe("7 items");
     expect(out.error).toBeUndefined();
   });

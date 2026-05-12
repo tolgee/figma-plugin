@@ -1,9 +1,7 @@
 import type { MainToUi, UiToMain } from "$shared/messages";
 
 type Handlers = {
-  [K in MainToUi["type"]]?: (
-    msg: Extract<MainToUi, { type: K }>,
-  ) => void | Promise<void>;
+  [K in MainToUi["type"]]?: (msg: Extract<MainToUi, { type: K }>) => void | Promise<void>;
 };
 
 const handlers: Handlers = {};
@@ -36,9 +34,7 @@ export function attachBus(): void {
   window.addEventListener("message", async (event) => {
     const msg = event.data?.pluginMessage as MainToUi | undefined;
     if (!msg) return;
-    const handler = handlers[msg.type] as
-      | ((m: MainToUi) => void | Promise<void>)
-      | undefined;
+    const handler = handlers[msg.type] as ((m: MainToUi) => void | Promise<void>) | undefined;
     if (handler) await handler(msg);
   });
 }

@@ -43,15 +43,8 @@ export async function uploadScreenshot(
     image.byteOffset,
     image.byteOffset + image.byteLength,
   ) as ArrayBuffer;
-  formData.append(
-    "image",
-    new Blob([imageBuffer], { type: "image/png" }),
-    "screenshot.png",
-  );
-  formData.append(
-    "info",
-    new Blob([JSON.stringify(info)], { type: "application/json" }),
-  );
+  formData.append("image", new Blob([imageBuffer], { type: "image/png" }), "screenshot.png");
+  formData.append("info", new Blob([JSON.stringify(info)], { type: "application/json" }));
 
   const response = await fetch(`${baseUrl}/v2/image-upload`, {
     method: "POST",
@@ -64,9 +57,7 @@ export async function uploadScreenshot(
   });
 
   if (!response.ok) {
-    throw new Error(
-      `Screenshot upload failed (status ${response.status}: ${response.statusText})`,
-    );
+    throw new Error(`Screenshot upload failed (status ${response.status}: ${response.statusText})`);
   }
 
   const body = (await response.json()) as { id?: number };

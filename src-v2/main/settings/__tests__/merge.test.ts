@@ -80,12 +80,8 @@ describe("splitConfig", () => {
     expect(split.doc.branch).toBe("main");
     expect(split.doc.documentInfo).toBe(true);
     // `namespace` is doc-only — verify it doesn't leak onto `global` or `page`.
-    expect(
-      (split.global as Record<string, unknown>).namespace,
-    ).toBeUndefined();
-    expect(
-      (split.page as Record<string, unknown>).namespace,
-    ).toBeUndefined();
+    expect((split.global as Record<string, unknown>).namespace).toBeUndefined();
+    expect((split.page as Record<string, unknown>).namespace).toBeUndefined();
   });
 
   it("writes global keys to both `global` and `doc` (legacy behaviour)", () => {

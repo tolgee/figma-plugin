@@ -69,10 +69,7 @@ export const shouldIgnoreNode = (
     return true;
   }
 
-  if (
-    settings.ignoreHiddenLayersIncludingChildren &&
-    isInHiddenSubtree(node)
-  ) {
+  if (settings.ignoreHiddenLayersIncludingChildren && isInHiddenSubtree(node)) {
     return true;
   }
 

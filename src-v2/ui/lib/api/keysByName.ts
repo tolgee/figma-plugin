@@ -50,7 +50,6 @@ export async function fetchRemoteKeys(
     _embedded?: { keys?: unknown[] };
     pagedModel?: { _embedded?: { keys?: unknown[] } };
   };
-  const keysRaw =
-    raw._embedded?.keys ?? raw.pagedModel?._embedded?.keys ?? [];
+  const keysRaw = raw._embedded?.keys ?? raw.pagedModel?._embedded?.keys ?? [];
   return keysRaw as RemoteKeyRow[];
 }

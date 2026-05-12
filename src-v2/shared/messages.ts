@@ -1,9 +1,4 @@
-import type {
-  FrameScreenshot,
-  NodeInfo,
-  TolgeeConfig,
-  WindowSize,
-} from "./types";
+import type { FrameScreenshot, NodeInfo, TolgeeConfig, WindowSize } from "./types";
 
 /**
  * Messages sent from the main thread (Plugin sandbox) to the UI iframe.
@@ -157,9 +152,7 @@ export type UiToMain =
  * Helper type to extract the message variant that carries a `correlationId`.
  * Useful for building request/response pairing in the message bus.
  */
-export type WithCorrelationId<T> = T extends { correlationId: string }
-  ? T
-  : never;
+export type WithCorrelationId<T> = T extends { correlationId: string } ? T : never;
 
 export type MainToUiResponse = WithCorrelationId<MainToUi>;
 export type UiToMainRequest = WithCorrelationId<UiToMain>;

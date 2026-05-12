@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildRemoteMapFromKeys,
-  pushDiff,
-} from "$ui/lib/logic/pushDiff";
-import type {
-  RemoteTranslationMap,
-} from "$ui/lib/logic/pushDiff";
+import { buildRemoteMapFromKeys, pushDiff } from "$ui/lib/logic/pushDiff";
+import type { RemoteTranslationMap } from "$ui/lib/logic/pushDiff";
 import type { NodeInfo } from "$shared/types";
 
 function makeNode(overrides: Partial<NodeInfo> = {}): NodeInfo {
@@ -229,10 +224,7 @@ describe("buildRemoteMapFromKeys", () => {
   });
 
   it("returns undefined translation when no language entry is present", () => {
-    const map = buildRemoteMapFromKeys(
-      [{ keyName: "k", translations: {} }],
-      "en",
-    );
+    const map = buildRemoteMapFromKeys([{ keyName: "k", translations: {} }], "en");
     expect(map[""]?.k?.translation).toBeUndefined();
   });
 });

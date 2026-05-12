@@ -12,13 +12,9 @@ describe("applyCasing", () => {
   it("produces snake_case_capitalized (capitalises every word, joined by '_')", () => {
     // The implementation uppercases the first char of every word and keeps
     // the rest of the word as-is — it does NOT lowercase the tail.
-    expect(applyCasing("my frame title", "snake_case_capitalized")).toBe(
-      "My_Frame_Title",
-    );
+    expect(applyCasing("my frame title", "snake_case_capitalized")).toBe("My_Frame_Title");
     // Already-mixed casing in the tail is preserved.
-    expect(applyCasing("hello WORLD", "snake_case_capitalized")).toBe(
-      "Hello_WORLD",
-    );
+    expect(applyCasing("hello WORLD", "snake_case_capitalized")).toBe("Hello_WORLD");
   });
 
   it("produces camelCase", () => {
@@ -54,12 +50,8 @@ describe("applyCasing", () => {
   });
 
   it("handles multi-word input with special chars", () => {
-    expect(applyCasing("My/Frame Element-1", "snake_case")).toBe(
-      "my/frame_element-1",
-    );
-    expect(applyCasing("My/Frame Element-1", "camelCase")).toBe(
-      "my/frameElement-1",
-    );
+    expect(applyCasing("My/Frame Element-1", "snake_case")).toBe("my/frame_element-1");
+    expect(applyCasing("My/Frame Element-1", "camelCase")).toBe("my/frameElement-1");
   });
 });
 
@@ -116,13 +108,7 @@ describe("formatKey", () => {
   });
 
   it("returns empty result for empty template", () => {
-    expect(
-      formatKey(
-        "",
-        { frame: "Anything", elementName: "Whatever" },
-        "snake_case",
-      ),
-    ).toBe("");
+    expect(formatKey("", { frame: "Anything", elementName: "Whatever" }, "snake_case")).toBe("");
   });
 
   it("leaves placeholder positions empty when value is missing", () => {
@@ -143,23 +129,13 @@ describe("formatKey", () => {
 
   it("substitutes only the placeholders present in the template", () => {
     expect(
-      formatKey(
-        "{section}.{group}",
-        { section: "Header", group: "Buttons" },
-        "PascalCase",
-      ),
+      formatKey("{section}.{group}", { section: "Header", group: "Buttons" }, "PascalCase"),
     ).toBe("Header.Buttons");
   });
 
   it("leaves unknown placeholders untouched", () => {
     // The implementation only knows the documented placeholders; an unknown
     // `{unknown}` must pass through verbatim.
-    expect(
-      formatKey(
-        "{unknown}_{frame}",
-        { frame: "Hero" },
-        "snake_case",
-      ),
-    ).toBe("{unknown}_hero");
+    expect(formatKey("{unknown}_{frame}", { frame: "Hero" }, "snake_case")).toBe("{unknown}_hero");
   });
 });

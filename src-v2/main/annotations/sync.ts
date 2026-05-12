@@ -44,10 +44,7 @@ function writeAnnotations(node: TextNode, next: ReadonlyArray<Annotation>): bool
  * concurrent co-editors and produce visible "blink" in the canvas. Skipping
  * no-ops keeps the experience quiet for everyone in the file.
  */
-export async function applyAnnotations(
-  nodes: TextNode[],
-  categoryId: string,
-): Promise<number> {
+export async function applyAnnotations(nodes: TextNode[], categoryId: string): Promise<number> {
   let updated = 0;
   for (const node of nodes) {
     const info = getNodeInfo(node);
@@ -64,10 +61,7 @@ export async function applyAnnotations(
         // Nothing changed for our annotation; leave the node alone.
         continue;
       }
-      const ok = writeAnnotations(node, [
-        ...others,
-        { labelMarkdown: label, categoryId },
-      ]);
+      const ok = writeAnnotations(node, [...others, { labelMarkdown: label, categoryId }]);
       if (ok) updated++;
     } else if (others.length !== node.annotations.length) {
       // The node lost its Tolgee key — strip our annotation but keep others.
@@ -82,10 +76,7 @@ export async function applyAnnotations(
  * Remove Tolgee annotations from the given nodes. Annotations of unrelated
  * categories are preserved.
  */
-export async function removeAnnotations(
-  nodes: TextNode[],
-  categoryId: string,
-): Promise<number> {
+export async function removeAnnotations(nodes: TextNode[], categoryId: string): Promise<number> {
   let updated = 0;
   for (const node of nodes) {
     const filtered = node.annotations.filter((a) => a.categoryId !== categoryId);
@@ -128,9 +119,7 @@ export async function clearCurrentPage(): Promise<{ updated: number }> {
   // Narrow to text nodes that actually carry a Tolgee annotation so we don't
   // touch unrelated nodes. (`findAllWithCriteria` doesn't filter on
   // annotations, hence the manual pass.)
-  const affected = all.filter((n) =>
-    n.annotations.some((a) => a.categoryId === categoryId),
-  );
+  const affected = all.filter((n) => n.annotations.some((a) => a.categoryId === categoryId));
   const updated = await removeAnnotations(affected, categoryId);
   return { updated };
 }

@@ -13,5 +13,5 @@ import { type ClassValue, clsx } from "clsx";
  * a conditional instead.
  */
 export function cn(...inputs: ClassValue[]): string {
-	return clsx(inputs);
+  return clsx(inputs);
 }

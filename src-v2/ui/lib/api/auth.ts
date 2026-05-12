@@ -81,10 +81,7 @@ export async function validateApiKey(
  * not implement implicit hierarchy expansion here — callers should pass the
  * exact scope strings they need.
  */
-export function hasRequiredScopes(
-  scopes: string[],
-  required: string[],
-): boolean {
+export function hasRequiredScopes(scopes: string[], required: string[]): boolean {
   if (required.length === 0) return true;
   const set = new Set(scopes);
   for (const r of required) {

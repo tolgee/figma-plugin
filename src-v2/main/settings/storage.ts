@@ -1,9 +1,5 @@
 import { TOLGEE_PLUGIN_CONFIG_NAME } from "$shared/constants";
-import type {
-  CurrentDocumentSettings,
-  CurrentPageSettings,
-  GlobalSettings,
-} from "$shared/types";
+import type { CurrentDocumentSettings, CurrentPageSettings, GlobalSettings } from "$shared/types";
 
 /**
  * Defensive JSON parsing: returns the parsed value if it is a non-null object,
@@ -46,15 +42,11 @@ function isEmptyObject(value: Record<string, unknown>): boolean {
 export async function readGlobalSettings(): Promise<Partial<GlobalSettings>> {
   // clientStorage may have been written by the legacy plugin as a JSON string,
   // or by this code path as a plain object. Handle both transparently.
-  const raw: unknown = await figma.clientStorage.getAsync(
-    TOLGEE_PLUGIN_CONFIG_NAME,
-  );
+  const raw: unknown = await figma.clientStorage.getAsync(TOLGEE_PLUGIN_CONFIG_NAME);
   return safeParseObject<GlobalSettings>(raw);
 }
 
-export async function writeGlobalSettings(
-  settings: Partial<GlobalSettings>,
-): Promise<void> {
+export async function writeGlobalSettings(settings: Partial<GlobalSettings>): Promise<void> {
   if (isEmptyObject(settings as Record<string, unknown>)) {
     await figma.clientStorage.deleteAsync(TOLGEE_PLUGIN_CONFIG_NAME);
     return;
@@ -73,18 +65,13 @@ export function readDocumentSettings(): Partial<CurrentDocumentSettings> {
   return safeParseObject<CurrentDocumentSettings>(raw);
 }
 
-export function writeDocumentSettings(
-  settings: Partial<CurrentDocumentSettings>,
-): void {
+export function writeDocumentSettings(settings: Partial<CurrentDocumentSettings>): void {
   if (isEmptyObject(settings as Record<string, unknown>)) {
     // Figma's documented "delete" pattern for pluginData is to write "".
     figma.root.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, "");
     return;
   }
-  figma.root.setPluginData(
-    TOLGEE_PLUGIN_CONFIG_NAME,
-    JSON.stringify(settings),
-  );
+  figma.root.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, JSON.stringify(settings));
 }
 
 export function deleteDocumentSettings(): void {
@@ -93,17 +80,12 @@ export function deleteDocumentSettings(): void {
 
 // --- Page (PageNode pluginData) ----------------------------------------------
 
-export function readPageSettings(
-  page: PageNode,
-): Partial<CurrentPageSettings> {
+export function readPageSettings(page: PageNode): Partial<CurrentPageSettings> {
   const raw = page.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
   return safeParseObject<CurrentPageSettings>(raw);
 }
 
-export function writePageSettings(
-  page: PageNode,
-  settings: Partial<CurrentPageSettings>,
-): void {
+export function writePageSettings(page: PageNode, settings: Partial<CurrentPageSettings>): void {
   if (isEmptyObject(settings as Record<string, unknown>)) {
     page.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, "");
     return;

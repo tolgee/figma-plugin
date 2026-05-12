@@ -41,9 +41,7 @@ export function buildKeyDeepLink(
  * project" action. Falls back to the project list when no `projectId` is
  * available so the user can still navigate into the right place.
  */
-export function buildProjectDashboardLink(
-  config: Partial<TolgeeConfig> | null,
-): string | null {
+export function buildProjectDashboardLink(config: Partial<TolgeeConfig> | null): string | null {
   if (!config?.apiUrl) return null;
   const base = trimTrailingSlash(config.apiUrl);
   return config.projectId ? `${base}/projects/${config.projectId}` : `${base}/projects`;

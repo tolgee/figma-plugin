@@ -7,10 +7,7 @@ import type { NodeInfo } from "$shared/types";
  * `id`, `name`, `characters` and `visible` come from the live Figma node and
  * must NOT be written into plugin data — they would only ever drift.
  */
-type PersistedNodeInfo = Omit<
-  NodeInfo,
-  "id" | "name" | "characters" | "visible"
->;
+type PersistedNodeInfo = Omit<NodeInfo, "id" | "name" | "characters" | "visible">;
 
 const readPersisted = (node: TextNode): Partial<PersistedNodeInfo> => {
   const raw = node.getPluginData(TOLGEE_NODE_INFO);
@@ -52,10 +49,7 @@ export const getNodeInfo = (node: TextNode): NodeInfo => {
  * resulting `NodeInfo`. Node-derived fields (`id`, `name`, `characters`,
  * `visible`) are never written to plugin data.
  */
-export const setNodeInfo = (
-  node: TextNode,
-  partial: Partial<NodeInfo>,
-): NodeInfo => {
+export const setNodeInfo = (node: TextNode, partial: Partial<NodeInfo>): NodeInfo => {
   const current = readPersisted(node);
 
   const merged: PersistedNodeInfo = {
@@ -64,13 +58,8 @@ export const setNodeInfo = (
     translation: partial.translation ?? current.translation ?? "",
     isPlural: Boolean(partial.isPlural ?? current.isPlural),
     pluralParamValue:
-      "pluralParamValue" in partial
-        ? partial.pluralParamValue
-        : current.pluralParamValue,
-    paramsValues:
-      "paramsValues" in partial
-        ? partial.paramsValues
-        : current.paramsValues,
+      "pluralParamValue" in partial ? partial.pluralParamValue : current.pluralParamValue,
+    paramsValues: "paramsValues" in partial ? partial.paramsValues : current.paramsValues,
     connected: Boolean(partial.connected ?? current.connected),
   };
 

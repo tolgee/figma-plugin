@@ -25,9 +25,7 @@ const DOCUMENT_ONLY_KEYS = [
   "branch",
   "documentInfo",
   "projectId",
-] as const satisfies ReadonlyArray<
-  Exclude<keyof CurrentDocumentSettings, keyof GlobalSettings>
->;
+] as const satisfies ReadonlyArray<Exclude<keyof CurrentDocumentSettings, keyof GlobalSettings>>;
 
 type PageKey = (typeof PAGE_KEYS)[number];
 type DocumentOnlyKey = (typeof DOCUMENT_ONLY_KEYS)[number];

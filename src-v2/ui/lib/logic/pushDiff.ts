@@ -23,10 +23,7 @@ export type RemoteTranslation = {
  * Map of `namespace -> keyName -> remote translation`. The empty string is
  * used as the namespace lookup key for the default namespace.
  */
-export type RemoteTranslationMap = Record<
-  string,
-  Record<string, RemoteTranslation>
->;
+export type RemoteTranslationMap = Record<string, Record<string, RemoteTranslation>>;
 
 export type PushDiffOptions = {
   /** Whether the project has namespaces feature enabled. */
@@ -107,9 +104,7 @@ export function pushDiff(
     // Flag any group whose text differs across duplicates.
     if (group.length > 1) {
       const firstText = textOfNode(first);
-      const hasMismatch = group.some(
-        (n) => textOfNode(n) !== firstText,
-      );
+      const hasMismatch = group.some((n) => textOfNode(n) !== firstText);
       if (hasMismatch) {
         conflictingNodes.push({
           key: first.key,
@@ -182,10 +177,7 @@ function isChanged(
     // same output for every plural case, so a string-level mismatch isn't a
     // real change. Fall back to rendering each case and comparing — only
     // when both sides actually differ in the produced output we flag it.
-    if (
-      (node.isPlural || remote.keyIsPlural) &&
-      pluralRendersAreEqual(text, remoteText)
-    ) {
+    if ((node.isPlural || remote.keyIsPlural) && pluralRendersAreEqual(text, remoteText)) {
       // fall through to other checks (plural-flag, tags) below
     } else {
       return true;

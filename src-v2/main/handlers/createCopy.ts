@@ -51,9 +51,7 @@ const PROGRESS_INTERVAL = 10;
  * Progress is reported via `create-copy-progress` messages keyed by the
  * caller's `correlationId`.
  */
-export async function createCopy(
-  options: CreateCopyOptions,
-): Promise<CreateCopyResult> {
+export async function createCopy(options: CreateCopyOptions): Promise<CreateCopyResult> {
   const sourcePage = figma.currentPage;
   await sourcePage.loadAsync();
 
@@ -124,8 +122,7 @@ export async function createCopy(
           }
           processed++;
           if (processed % PROGRESS_INTERVAL === 0) {
-            const overall =
-              i * 100 + Math.round((processed / Math.max(total, 1)) * 100);
+            const overall = i * 100 + Math.round((processed / Math.max(total, 1)) * 100);
             send({
               type: "create-copy-progress",
               correlationId: options.correlationId,

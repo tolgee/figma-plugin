@@ -25,9 +25,7 @@ export function findOutermostFrame(node: SceneNode): FrameNode | null {
  * parent frame are silently dropped — they cannot be screenshotted in
  * isolation.
  */
-export function groupNodesByFrame(
-  nodes: TextNode[],
-): Map<FrameNode, TextNode[]> {
+export function groupNodesByFrame(nodes: TextNode[]): Map<FrameNode, TextNode[]> {
   const result = new Map<FrameNode, TextNode[]>();
   for (const node of nodes) {
     const frame = findOutermostFrame(node);
