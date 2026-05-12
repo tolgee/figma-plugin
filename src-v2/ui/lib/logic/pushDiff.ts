@@ -3,6 +3,7 @@ import type { NodeInfo } from "$shared/types";
 // The upstream package transitively pulls in `@codemirror/{state,view}`
 // (~500 kB raw / ~125 kB gzip) — see `./tolgeeFormat.ts` for the rationale.
 import { getTolgeeFormat } from "./tolgeeFormat";
+import IntlMessageFormat from "intl-messageformat";
 
 /**
  * Subset of `KeyWithTranslationsModel` we depend on for diffing. Kept narrow
@@ -158,28 +159,37 @@ function isChanged(
   configuredTags: string[] | undefined,
 ): boolean {
   const text = textOfNode(node);
+  const remoteText = remote.translation ?? "";
 
   // Use `getTolgeeFormat` so equivalent ICU representations (e.g. extra
   // whitespace inside an ICU placeholder) don't show up as fake diffs.
   let remoteNormalized: unknown;
   let localNormalized: unknown;
   try {
-    remoteNormalized = getTolgeeFormat(
-      remote.translation ?? "",
-      remote.keyIsPlural,
-      false,
-    );
+    remoteNormalized = getTolgeeFormat(remoteText, remote.keyIsPlural, false);
     localNormalized = getTolgeeFormat(text, node.isPlural, false);
   } catch {
     // If normalization throws (malformed ICU on either side) fall back to
     // a plain string compare — better to report a spurious change than to
     // silently drop a real one.
-    remoteNormalized = remote.translation ?? "";
+    remoteNormalized = remoteText;
     localNormalized = text;
   }
 
   if (JSON.stringify(remoteNormalized) !== JSON.stringify(localNormalized)) {
-    return true;
+    // For plural keys, Tolgee normalises the ICU on its side and may extract
+    // a shared suffix out of the plural variants. Both forms render to the
+    // same output for every plural case, so a string-level mismatch isn't a
+    // real change. Fall back to rendering each case and comparing — only
+    // when both sides actually differ in the produced output we flag it.
+    if (
+      (node.isPlural || remote.keyIsPlural) &&
+      pluralRendersAreEqual(text, remoteText)
+    ) {
+      // fall through to other checks (plural-flag, tags) below
+    } else {
+      return true;
+    }
   }
 
   if (remote.keyIsPlural !== node.isPlural) return true;
@@ -229,4 +239,52 @@ export function buildRemoteMapFromKeys(
     };
   }
   return out;
+}
+
+/**
+ * Render two ICU strings against a fixed set of plural-trigger values and
+ * compare the outputs. Two ICU forms that produce the same rendered output
+ * for every probed value are functionally identical even if their source
+ * strings differ. Used to suppress spurious "changed" diffs when Tolgee
+ * re-emits a plural with a different (but equivalent) ICU shape — most
+ * commonly when Tolgee extracts a shared suffix out of every variant.
+ *
+ * Tries every parameter name the local string declares; if neither side
+ * declares a name we fall back to the conventional `count`.
+ */
+function pluralRendersAreEqual(local: string, remote: string): boolean {
+  if (local === remote) return true;
+  const params = new Set<string>();
+  extractParam(local, params);
+  extractParam(remote, params);
+  if (params.size === 0) params.add("count");
+
+  const probes = [0, 1, 2, 5, 11, 100];
+  try {
+    for (const param of params) {
+      const lhs = new IntlMessageFormat(local, "en");
+      const rhs = new IntlMessageFormat(remote, "en");
+      for (const n of probes) {
+        if (lhs.format({ [param]: n }) !== rhs.format({ [param]: n })) {
+          return false;
+        }
+      }
+    }
+    return true;
+  } catch {
+    // Malformed ICU on either side — let the normal string compare decide.
+    return false;
+  }
+}
+
+/**
+ * Extract the plural parameter name from an ICU source. Looks for the first
+ * `{name, plural, ...}` occurrence at any nesting level.
+ */
+function extractParam(input: string, out: Set<string>): void {
+  const re = /\{\s*([A-Za-z_][\w]*)\s*,\s*plural\s*,/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(input)) !== null) {
+    if (match[1]) out.add(match[1]);
+  }
 }

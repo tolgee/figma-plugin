@@ -3,8 +3,12 @@ import { getNodeInfo } from "$main/nodes/getNodeInfo";
 import { groupNodesByFrame } from "./groupByFrame";
 import { getNodeRelativePosition } from "./position";
 
-/** Export resolution multiplier. 2x keeps marker text crisp on retina UIs. */
-const EXPORT_SCALE = 2;
+// Tolgee renders position overlays against the exported image at 1x. The node
+// x/y/width/height we send come from `absoluteBoundingBox` (in design-space
+// pixels) so the screenshot must match — exporting at 2x while keeping
+// positions at 1x makes the overlay boxes appear half-size and offset. The
+// legacy plugin exported at 1x for the same reason.
+const EXPORT_SCALE = 1;
 
 /**
  * How many frames we may export back-to-back before yielding to the event
