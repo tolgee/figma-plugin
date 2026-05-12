@@ -94,7 +94,7 @@ export const Connect = ({ node }: Props) => {
       nodes: [
         {
           ...node,
-          translation: resolvedTranslation || node.characters,
+          translation: resolvedTranslation ?? node.characters,
           isPlural: isPlural ?? node.isPlural,
           pluralParamValue: pluralParamValue ?? node.pluralParamValue,
           key,
