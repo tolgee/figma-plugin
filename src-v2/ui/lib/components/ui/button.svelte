@@ -15,7 +15,7 @@
 	type Size = "sm" | "md" | "lg";
 
 	const BASE =
-		"inline-flex items-center justify-center rounded font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-border-brand)] disabled:opacity-50 disabled:pointer-events-none";
+		"inline-flex items-center justify-center rounded font-medium transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-border-brand)] disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none";
 
 	const VARIANT_CLASSES: Record<Variant, string> = {
 		default:

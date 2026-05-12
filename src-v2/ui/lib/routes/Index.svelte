@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { createQuery } from "@tanstack/svelte-query";
   import type { Route } from "$shared/types";
   import { appState } from "$ui/lib/stores/app.svelte";
   import { auth } from "$ui/lib/stores/auth.svelte";
+  import { requestPageConnectedNodes } from "$ui/lib/api/pageNodes";
   import Header from "$ui/lib/components/domain/Header.svelte";
   import NodeList from "$ui/lib/components/domain/NodeList.svelte";
   import Button from "$ui/lib/components/ui/button.svelte";
@@ -11,8 +13,21 @@
 
   const selectedNodes = $derived(appState.value.selectedNodes);
   const hasSelection = $derived(selectedNodes.length > 0);
-  // TODO: Phase 4.5 — load all connected page nodes via bus.
-  const nodesToShow = $derived(hasSelection ? selectedNodes : []);
+
+  // Fall back to every connected text node on the page when the user has not
+  // selected anything. Cached so toggling selection in and out of Index
+  // doesn't hit the main thread every time; gets evicted by Pull/Push when
+  // they invalidate the same query key after applying changes.
+  const pageNodesQuery = createQuery(() => ({
+    queryKey: ["page-connected-nodes"],
+    queryFn: () => requestPageConnectedNodes(),
+    enabled: !hasSelection && auth.value.authenticated,
+    staleTime: 5 * 1000,
+  }));
+
+  const nodesToShow = $derived(
+    hasSelection ? selectedNodes : (pageNodesQuery.data ?? []),
+  );
 
   const languageOptions = $derived(
     auth.value.languages.map((l) => ({ value: l.tag, label: l.name })),

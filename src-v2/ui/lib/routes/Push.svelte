@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createQuery, useQueryClient } from "@tanstack/svelte-query";
   import type {
     FrameScreenshot,
     NodeInfo,
@@ -6,39 +7,38 @@
   } from "$shared/types";
   import { appState } from "$ui/lib/stores/app.svelte";
   import { auth } from "$ui/lib/stores/auth.svelte";
-  import { send, on, nextCorrelationId } from "$ui/lib/bus";
+  import { nextCorrelationId, on, send } from "$ui/lib/bus";
   import { Button, Card } from "$ui/lib/components/ui";
   import {
     pushDiff,
     buildRemoteMapFromKeys,
     type PushDiff,
   } from "$ui/lib/logic/pushDiff";
+  import type { SimpleImportConflictResult } from "$ui/lib/api/push";
+  import { fetchRemoteKeys } from "$ui/lib/api/keysByName";
   import {
-    pushKeys,
-    type SingleStepImportResolvableItemRequest,
-    type SimpleImportConflictResult,
-  } from "$ui/lib/api/push";
-  import { uploadScreenshot } from "$ui/lib/api/screenshots";
-  import { applyTags } from "$ui/lib/api/tags";
-  import PushConflictItem, {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  } from "$ui/lib/components/domain/PushConflictItem.svelte";
-  import type { PushConflictResolution } from "$ui/lib/components/domain/PushConflictItem.svelte";
+    applyConfiguredTags,
+    canonicalKey,
+    defaultResolutions,
+    fetchCanonicalAfterPush,
+    resolutionKey,
+    submitPush,
+    uploadScreenshots,
+    type PushContext,
+  } from "$ui/lib/logic/pushFlow";
+  import PushConflictItem from "$ui/lib/components/domain/PushConflictItem.svelte";
+  import type { PushConflictResolution } from "$ui/lib/logic/pushFlow";
   import PushProgress from "$ui/lib/components/domain/PushProgress.svelte";
-  import type { components } from "$ui/lib/api/schema.generated";
   import ArrowLeft from "lucide-svelte/icons/arrow-left";
   import AlertTriangle from "lucide-svelte/icons/alert-triangle";
 
   type Stage =
     | "idle"
-    | "diff"
     | "uploading"
     | "pushing"
     | "conflict"
     | "done"
     | "error";
-
-  type KeyScreenshotDto = components["schemas"]["KeyScreenshotDto"];
 
   // ---- Local state -----------------------------------------------------------
 
@@ -48,7 +48,6 @@
   );
   let conflicts = $state<SimpleImportConflictResult[]>([]);
   let resolutions = $state<Record<string, PushConflictResolution>>({});
-  let diff = $state<PushDiff | null>(null);
   let errorMessage = $state<string | null>(null);
   let pushedKeyCount = $state(0);
 
@@ -56,9 +55,8 @@
 
   const cfg = $derived<Partial<TolgeeConfig>>(appState.value.config ?? {});
   const language = $derived(cfg.language ?? "");
-  const namespace = $derived(cfg.namespace ?? "");
-  // Only attach `branch` to API calls when the project actually has branching
-  // enabled — otherwise Tolgee rejects with feature_not_enabled_for_project.
+  // Only attach `branch` when the project actually has branching enabled —
+  // otherwise Tolgee rejects with feature_not_enabled_for_project.
   const branch = $derived(
     auth.value.branchingEnabled ? cfg.branch : undefined,
   );
@@ -68,187 +66,88 @@
   const configuredTags = $derived(cfg.tags ?? []);
 
   const selectedNodes = $derived<NodeInfo[]>(appState.value.selectedNodes);
-
-  // Only nodes that have a key are pushable; reused across the lifecycle.
   const connectedNodes = $derived(
     selectedNodes.filter((n) => n.key && n.key.trim().length > 0),
   );
 
-  // ---- Helpers ---------------------------------------------------------------
+  // Stable cache-key inputs for the diff query. We feed a sorted, joined
+  // string instead of arrays so reference identity doesn't churn on re-renders
+  // and svelte-query can dedupe correctly.
+  const keyFilterCacheKey = $derived(
+    Array.from(new Set(connectedNodes.map((n) => n.key)))
+      .sort()
+      .join(","),
+  );
+  const nsFilterCacheKey = $derived(
+    hasNamespacesEnabled
+      ? Array.from(new Set(connectedNodes.map((n) => n.ns ?? "")))
+          .sort()
+          .join(",")
+      : "",
+  );
+
+  const qc = useQueryClient();
+
+  /**
+   * Diff query. Cached by (language, branch, key set, namespace set).
+   * Selection-change re-runs hit the cache instantly; switching language
+   * mid-load cancels the previous fetch through the AbortSignal.
+   */
+  const diffQuery = createQuery(() => ({
+    queryKey: [
+      "push-diff",
+      language,
+      branch ?? "",
+      keyFilterCacheKey,
+      nsFilterCacheKey,
+    ],
+    enabled:
+      Boolean(auth.value.client) &&
+      Boolean(language) &&
+      connectedNodes.length > 0,
+    staleTime: 5 * 1000,
+    queryFn: async ({ signal }): Promise<PushDiff> => {
+      const client = auth.value.client;
+      if (!client) throw new Error("Not connected to Tolgee.");
+      const filterKeyName = Array.from(
+        new Set(connectedNodes.map((n) => n.key)),
+      );
+      const filterNamespace = hasNamespacesEnabled
+        ? Array.from(new Set(connectedNodes.map((n) => n.ns ?? "")))
+        : undefined;
+      const remoteKeys = await fetchRemoteKeys(client, {
+        filterKeyName,
+        filterNamespace,
+        language,
+        branch: branch || undefined,
+        signal,
+      });
+      const remoteMap = buildRemoteMapFromKeys(remoteKeys, language);
+      return pushDiff(connectedNodes, remoteMap, {
+        hasNamespacesEnabled,
+        configuredTags,
+      });
+    },
+  }));
+
+  const diff = $derived(diffQuery.data ?? null);
+
+  function buildContext(): PushContext | null {
+    const client = auth.value.client;
+    if (!client) return null;
+    return {
+      client,
+      apiUrl: auth.value.apiUrl,
+      apiKey: auth.value.apiKey,
+      language,
+      branch: branch || undefined,
+      hasNamespacesEnabled,
+    };
+  }
 
   function backToIndex(): void {
     appState.navigate({ name: "index" });
   }
-
-  function resolutionKey(
-    keyName: string,
-    keyNamespace: string | undefined,
-  ): string {
-    return `${keyNamespace ?? ""}|${keyName}`;
-  }
-
-  function setDefaultResolutionsFor(
-    list: SimpleImportConflictResult[],
-  ): void {
-    const next: Record<string, PushConflictResolution> = {};
-    for (const c of list) {
-      const k = resolutionKey(c.keyName, c.keyNamespace);
-      next[k] = c.isOverridable ? "OVERRIDE" : "KEEP";
-    }
-    resolutions = next;
-  }
-
-  // ---- Initial diff ----------------------------------------------------------
-
-  async function loadDiff(): Promise<void> {
-    const client = auth.value.client;
-    if (!client) {
-      errorMessage = "Not connected to Tolgee.";
-      stage = "error";
-      return;
-    }
-    if (!language) {
-      errorMessage = "No language configured.";
-      stage = "error";
-      return;
-    }
-    stage = "diff";
-    errorMessage = null;
-    try {
-      // Pull a single batch of translations covering only the keys we have on
-      // hand. The legacy plugin paginated; we limit by `filterKeyName` so a
-      // single page is usually enough.
-      const filterKeyName = Array.from(
-        new Set(connectedNodes.map((n) => n.key)),
-      );
-
-      // When namespaces are off, omit the filter entirely so the API doesn't
-      // accidentally constrain to "default ns only".
-      const filterNamespace = hasNamespacesEnabled
-        ? Array.from(
-            new Set(connectedNodes.map((n) => n.ns ?? "")),
-          )
-        : undefined;
-
-      const remoteKeys =
-        filterKeyName.length > 0
-          ? await fetchRemoteKeys({
-              filterKeyName,
-              filterNamespace,
-            })
-          : [];
-
-      const remoteMap = buildRemoteMapFromKeys(remoteKeys, language);
-      diff = pushDiff(connectedNodes, remoteMap, {
-        hasNamespacesEnabled,
-        configuredTags,
-      });
-      stage = "idle";
-    } catch (err) {
-      errorMessage = (err as Error)?.message ?? "Failed to compute diff.";
-      stage = "error";
-    }
-  }
-
-  /** Stable lookup key combining namespace and key name. */
-  function canonicalKey(n: NodeInfo): string {
-    return `${n.ns ?? ""}|${n.key}`;
-  }
-
-  type CanonicalKeyState = {
-    translation: string;
-    isPlural: boolean;
-  };
-
-  /**
-   * After a successful push, pull the same keys back from Tolgee in the
-   * project's canonical form (post-suffix-extraction etc.) so we can store
-   * the exact translation Tolgee owns plus the canonical plural flag. The
-   * next diff then has a like-for-like comparison source for BOTH fields —
-   * cases where Tolgee infers `keyIsPlural` from the ICU shape but our local
-   * `isPlural` is still false used to surface as phantom diffs.
-   */
-  async function fetchCanonicalAfterPush(
-    nodes: NodeInfo[],
-  ): Promise<Map<string, CanonicalKeyState>> {
-    const result = new Map<string, CanonicalKeyState>();
-    const keysToFetch = new Set(nodes.map((n) => n.key).filter(Boolean));
-    if (keysToFetch.size === 0) return result;
-
-    const filterNamespace = hasNamespacesEnabled
-      ? Array.from(new Set(nodes.map((n) => n.ns ?? "")))
-      : undefined;
-
-    const fetched = await fetchRemoteKeys({
-      filterKeyName: Array.from(keysToFetch),
-      filterNamespace,
-    });
-    for (const k of fetched) {
-      const text = k.translations?.[language]?.text;
-      if (typeof text !== "string") continue;
-      result.set(`${k.keyNamespace ?? ""}|${k.keyName}`, {
-        translation: text,
-        isPlural: Boolean(k.keyIsPlural),
-      });
-    }
-    return result;
-  }
-
-  async function fetchRemoteKeys(opts: {
-    filterKeyName: string[];
-    filterNamespace?: string[];
-  }): Promise<
-    Array<{
-      keyName: string;
-      keyNamespace?: string;
-      keyIsPlural?: boolean;
-      keyTags?: Array<{ name: string }>;
-      translations?: Record<string, { text?: string } | undefined>;
-    }>
-  > {
-    const client = auth.value.client;
-    if (!client) return [];
-
-    const { data, error } = await client.GET("/v2/projects/translations", {
-      params: {
-        query: {
-          languages: language ? [language] : undefined,
-          filterKeyName: opts.filterKeyName,
-          filterNamespace: opts.filterNamespace,
-          size: 1000,
-          branch: branch || undefined,
-        },
-      },
-    });
-    if (error || !data) return [];
-
-    // Response shape: `_embedded.keys` (newer) or `pagedModel._embedded.keys`.
-    // TODO: tighten when schema refined.
-    const raw = data as {
-      _embedded?: { keys?: unknown[] };
-      pagedModel?: { _embedded?: { keys?: unknown[] } };
-    };
-    const keysRaw =
-      raw._embedded?.keys ?? raw.pagedModel?._embedded?.keys ?? [];
-
-    return keysRaw as Array<{
-      keyName: string;
-      keyNamespace?: string;
-      keyIsPlural?: boolean;
-      keyTags?: Array<{ name: string }>;
-      translations?: Record<string, { text?: string } | undefined>;
-    }>;
-  }
-
-  $effect(() => {
-    // Recompute on mount / when the input shape changes meaningfully. Use a
-    // primitive dependency so Svelte's $effect doesn't loop on array identity.
-    void selectedNodes.length;
-    void language;
-    void namespace;
-    void branch;
-    loadDiff();
-  });
 
   // ---- Screenshot capture (UI -> main via bus) ------------------------------
 
@@ -270,99 +169,35 @@
 
   // ---- Push flow -------------------------------------------------------------
 
-  /**
-   * Build the `screenshots` array of the import payload for one local node.
-   * Each screenshot's `keys` may reference multiple Figma layers; we keep
-   * only those that match the (key, ns) we are pushing and record their
-   * positions.
-   */
-  function mapScreenshotsForNode(
-    node: NodeInfo,
-    screenshots: FrameScreenshot[],
-    uploadedImageIdByScreenshot: Map<FrameScreenshot, number>,
-  ): KeyScreenshotDto[] {
-    const out: KeyScreenshotDto[] = [];
-    for (const screenshot of screenshots) {
-      const positions = screenshot.keys
-        .filter((k) => k.key === node.key && (k.ns ?? "") === (node.ns ?? ""))
-        .map((k) => ({ x: k.x, y: k.y, width: k.width, height: k.height }));
-      if (positions.length === 0) continue;
-      const uploadedImageId = uploadedImageIdByScreenshot.get(screenshot);
-      if (uploadedImageId === undefined) continue;
-      out.push({
-        text: node.translation || node.characters,
-        uploadedImageId,
-        positions,
-      });
-    }
-    return out;
-  }
-
-  function buildPayload(opts: {
-    nodes: NodeInfo[];
-    screenshots: FrameScreenshot[];
-    uploadedImageIdByScreenshot: Map<FrameScreenshot, number>;
-    resolutionFor?: (
-      key: string,
-      ns: string | undefined,
-    ) => PushConflictResolution | undefined;
-  }): SingleStepImportResolvableItemRequest[] {
-    const { nodes, screenshots, uploadedImageIdByScreenshot, resolutionFor } =
-      opts;
-
-    return nodes.map((node) => {
-      const resolution = resolutionFor?.(node.key, node.ns);
-      const text = node.translation || node.characters || "";
-      const screenshotsForNode = mapScreenshotsForNode(
-        node,
-        screenshots,
-        uploadedImageIdByScreenshot,
-      );
-
-      // `KEEP` -> omit translations (only updates screenshots/tags).
-      const translations =
-        resolution === "KEEP"
-          ? {}
-          : {
-              [language]: {
-                text,
-                resolution: "OVERRIDE" as const,
-              },
-            };
-
-      return {
-        name: node.key,
-        namespace: hasNamespacesEnabled ? node.ns || undefined : undefined,
-        screenshots: screenshotsForNode,
-        translations,
-      } satisfies SingleStepImportResolvableItemRequest;
-    });
+  function nodesToPushFrom(d: PushDiff): NodeInfo[] {
+    return [
+      ...d.newKeys,
+      ...d.changedKeys.map((c) => c.node),
+      ...d.unchangedKeys,
+    ];
   }
 
   async function startPush(): Promise<void> {
-    const client = auth.value.client;
-    if (!client) {
+    const ctx = buildContext();
+    if (!ctx) {
       errorMessage = "Not connected to Tolgee.";
       stage = "error";
       return;
     }
     if (!diff) return;
+    if (!language) {
+      errorMessage = "No language configured.";
+      stage = "error";
+      return;
+    }
 
     errorMessage = null;
     pushedKeyCount = 0;
-
-    // The keys we will actually submit: new + changed + unchanged (unchanged
-    // entries carry screenshot updates only).
-    const nodesToPush: NodeInfo[] = [
-      ...diff.newKeys,
-      ...diff.changedKeys.map((c) => c.node),
-      ...diff.unchangedKeys,
-    ];
+    const nodesToPush = nodesToPushFrom(diff);
 
     try {
-      // 1. Screenshot capture
       let screenshots: FrameScreenshot[] = [];
-      const uploadedById = new Map<FrameScreenshot, number>();
+      let uploadedById = new Map<FrameScreenshot, number>();
 
       if (updateScreenshots && nodesToPush.length > 0) {
         stage = "uploading";
@@ -372,32 +207,11 @@
           message: "Capturing screenshots…",
         };
         screenshots = await captureScreenshots(nodesToPush.map((n) => n.id));
-
-        // 2. Upload screenshots
-        progress = {
-          current: 0,
-          total: screenshots.length,
-          message: "Uploading screenshots…",
-        };
-        for (let i = 0; i < screenshots.length; i++) {
-          const screenshot = screenshots[i];
-          if (!screenshot) continue;
-          const uploaded = await uploadScreenshot(
-            auth.value.apiUrl,
-            auth.value.apiKey,
-            screenshot.image,
-            { location: `figma-${screenshot.info.id}` },
-          );
-          uploadedById.set(screenshot, uploaded.id);
-          progress = {
-            current: i + 1,
-            total: screenshots.length,
-            message: "Uploading screenshots…",
-          };
-        }
+        uploadedById = await uploadScreenshots(ctx, screenshots, (e) => {
+          progress = e;
+        });
       }
 
-      // 3. Build and submit the push payload
       stage = "pushing";
       progress = {
         current: 0,
@@ -405,51 +219,37 @@
         message: "Pushing translations…",
       };
 
-      const payload = buildPayload({
+      const result = await submitPush({
+        ctx,
         nodes: nodesToPush,
         screenshots,
         uploadedImageIdByScreenshot: uploadedById,
-      });
-
-      const result = await pushKeys(client, payload, {
-        branch: branch || undefined,
         resolutionMode: "RECOMMENDED",
-        errorOnUnresolvedConflict: false,
       });
 
       if (result.unresolvedConflicts.length > 0) {
         conflicts = result.unresolvedConflicts;
-        setDefaultResolutionsFor(result.unresolvedConflicts);
+        resolutions = defaultResolutions(result.unresolvedConflicts);
         stage = "conflict";
         return;
       }
 
-      await finishPush(nodesToPush);
+      await finishPush(ctx, nodesToPush);
     } catch (err) {
-      errorMessage = (err as Error)?.message ?? "Push failed.";
-      stage = "error";
-      appState.setError({
-        message: errorMessage,
-        severity: "error",
-      });
+      handlePushError(err);
     }
   }
 
   async function applyResolutions(): Promise<void> {
-    const client = auth.value.client;
-    if (!client || !diff) return;
+    const ctx = buildContext();
+    if (!ctx || !diff) return;
     errorMessage = null;
 
     const nodesByKey = new Map<string, NodeInfo>();
-    for (const n of [
-      ...diff.newKeys,
-      ...diff.changedKeys.map((c) => c.node),
-      ...diff.unchangedKeys,
-    ]) {
+    for (const n of nodesToPushFrom(diff)) {
       nodesByKey.set(resolutionKey(n.key, n.ns), n);
     }
 
-    // Only re-submit the conflicting keys, with the user's chosen resolutions.
     const subset: NodeInfo[] = [];
     for (const c of conflicts) {
       const node = nodesByKey.get(resolutionKey(c.keyName, c.keyNamespace));
@@ -464,64 +264,53 @@
         message: "Re-submitting with resolutions…",
       };
 
-      const payload = buildPayload({
+      const result = await submitPush({
+        ctx,
         nodes: subset,
         screenshots: [],
         uploadedImageIdByScreenshot: new Map(),
+        resolutionMode: "FORCE_OVERRIDE",
         resolutionFor: (k, ns) =>
           resolutions[resolutionKey(k, ns)] ?? "KEEP",
       });
 
-      const result = await pushKeys(client, payload, {
-        branch: branch || undefined,
-        resolutionMode: "FORCE_OVERRIDE",
-        errorOnUnresolvedConflict: false,
-      });
-
-      // Any conflicts still unresolved on re-submit are surfaced to the user
-      // verbatim — they are typically server-side permission failures.
       conflicts = result.unresolvedConflicts;
       if (conflicts.length > 0) {
-        setDefaultResolutionsFor(conflicts);
+        resolutions = defaultResolutions(conflicts);
         stage = "conflict";
         return;
       }
 
-      const merged = [
-        ...diff.newKeys,
-        ...diff.changedKeys.map((c) => c.node),
-        ...diff.unchangedKeys,
-      ];
-      await finishPush(merged);
+      await finishPush(ctx, nodesToPushFrom(diff));
     } catch (err) {
-      errorMessage = (err as Error)?.message ?? "Push failed.";
-      stage = "error";
-      appState.setError({
-        message: errorMessage,
-        severity: "error",
-      });
+      handlePushError(err);
     }
   }
 
-  async function finishPush(allNodes: NodeInfo[]): Promise<void> {
-    const client = auth.value.client;
-    if (!client) return;
+  function handlePushError(err: unknown): void {
+    errorMessage = (err as Error)?.message ?? "Push failed.";
+    stage = "error";
+    appState.setError({
+      message: errorMessage,
+      severity: "error",
+    });
+  }
 
+  async function finishPush(
+    ctx: PushContext,
+    allNodes: NodeInfo[],
+  ): Promise<void> {
     pushedKeyCount =
       (diff?.newKeys.length ?? 0) + (diff?.changedKeys.length ?? 0);
 
-    // Apply tags as a best-effort step — failures here don't undo the push.
+    // Best-effort: tag failures must not undo the push.
     if (addTags && configuredTags.length > 0) {
       try {
-        await applyTags(
-          client,
-          configuredTags,
-          allNodes.map((n) => ({
-            name: n.key,
-            namespace: hasNamespacesEnabled ? n.ns || undefined : undefined,
-          })),
-          branch || undefined,
-        );
+        await applyConfiguredTags({
+          ctx,
+          tags: configuredTags,
+          nodes: allNodes,
+        });
       } catch (err) {
         appState.setError({
           message: `Translations were pushed, but tag update failed: ${
@@ -532,13 +321,9 @@
       }
     }
 
-    // Re-fetch the keys we just pushed so we know the exact translation
-    // strings Tolgee stored — those are what the next diff will compare
-    // against. If we cache our outgoing form instead, Tolgee's canonical
-    // rewrites (e.g. extracting a shared suffix out of plural variants) will
-    // show as spurious "changed" diffs forever. Best-effort: on fetch
-    // failure we fall back to the locally-pushed text.
-    const canonical = await fetchCanonicalAfterPush(allNodes).catch(() => null);
+    const canonical = await fetchCanonicalAfterPush(ctx, allNodes).catch(
+      () => null,
+    );
     send({
       type: "set-nodes-data",
       correlationId: nextCorrelationId(),
@@ -559,6 +344,9 @@
       type: "notify",
       text: `Pushed ${pushedKeyCount} key(s) to Tolgee`,
     });
+    // Drop the diff cache so the next visit recomputes against the new
+    // canonical translations.
+    void qc.invalidateQueries({ queryKey: ["push-diff"] });
     stage = "done";
   }
 
@@ -576,11 +364,7 @@
   // Lookup helpers used by the conflict UI to show both sides side-by-side.
   function figmaTextFor(c: SimpleImportConflictResult): string {
     const target = diff
-      ? [
-          ...diff.newKeys,
-          ...diff.changedKeys.map((x) => x.node),
-          ...diff.unchangedKeys,
-        ].find(
+      ? nodesToPushFrom(diff).find(
           (n) =>
             n.key === c.keyName && (n.ns ?? "") === (c.keyNamespace ?? ""),
         )
@@ -596,6 +380,15 @@
     );
     return changed?.remoteText ?? "";
   }
+
+  // Map diff-query error to the user-facing banner.
+  $effect(() => {
+    const err = diffQuery.error;
+    if (err) {
+      errorMessage = (err as Error)?.message ?? "Failed to compute diff.";
+      stage = "error";
+    }
+  });
 </script>
 
 <div class="flex h-full flex-col">
@@ -623,7 +416,7 @@
   </header>
 
   <div class="flex-1 overflow-auto p-3 space-y-3">
-    {#if stage === "diff"}
+    {#if diffQuery.isPending}
       <Card>
         <p class="text-xs text-[var(--color-text-secondary)]">
           Computing changes…

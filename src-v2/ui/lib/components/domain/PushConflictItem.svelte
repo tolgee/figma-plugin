@@ -1,10 +1,8 @@
 <script lang="ts">
   import Select from "$ui/lib/components/ui/select.svelte";
+  import type { PushConflictResolution } from "$ui/lib/logic/pushFlow";
 
-  export type PushConflictResolution =
-    | "OVERRIDE"
-    | "KEEP"
-    | "FORCE_OVERRIDE";
+  export type { PushConflictResolution };
 
   type Props = {
     keyName: string;
