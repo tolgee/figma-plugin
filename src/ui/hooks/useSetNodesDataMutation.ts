@@ -25,9 +25,7 @@ export const useSetNodesDataMutation = () => {
           const patch = new Map(nodes.map((n) => [n.id, n]));
           const updated = old.items
             .map((item) =>
-              patch.has(item.id)
-                ? { ...item, ...patch.get(item.id)! }
-                : item,
+              patch.has(item.id) ? { ...item, ...patch.get(item.id)! } : item,
             )
             .filter((item) => item.key && item.connected !== false);
           // Add newly connected nodes that were not tracked before

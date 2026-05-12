@@ -5,6 +5,8 @@ import { createEndpoint } from "../utils/createEndpoint";
 // one of the most expensive Figma API calls; calling it once per node during
 // a multi-node pull would multiply the cost unnecessarily.
 let availableFontsCache: Font[] | null = null;
+// In-flight promise prevents concurrent callers from each issuing the request.
+let availableFontsPromise: Promise<Font[]> | null = null;
 
 export type FormatTextEndpointArgs = {
   /** The text that is to be displayed in the textNode. Can contain some basic html tags that will be replaced */
@@ -70,9 +72,11 @@ export const formatText = async ({
   };
 
   const getAvailableFonts = async () => {
-    if (!availableFontsCache) {
-      availableFontsCache = await figma.listAvailableFontsAsync();
+    if (availableFontsCache) return availableFontsCache;
+    if (!availableFontsPromise) {
+      availableFontsPromise = figma.listAvailableFontsAsync();
     }
+    availableFontsCache = await availableFontsPromise;
     return availableFontsCache;
   };
 
