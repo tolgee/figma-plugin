@@ -1,5 +1,8 @@
 import type { TolgeeClient } from "$ui/lib/api/client";
 
+type LanguageInfo = { tag: string; name: string };
+type NamespaceInfo = { name: string };
+
 type AuthState = {
   client: TolgeeClient | null;
   apiUrl: string;
@@ -9,6 +12,8 @@ type AuthState = {
   authenticated: boolean;
   branchingEnabled: boolean;
   namespacesEnabled: boolean;
+  languages: LanguageInfo[];
+  namespaces: NamespaceInfo[];
 };
 
 function createAuth() {
@@ -21,6 +26,8 @@ function createAuth() {
     authenticated: false,
     branchingEnabled: false,
     namespacesEnabled: false,
+    languages: [],
+    namespaces: [],
   });
 
   return {
@@ -48,6 +55,12 @@ function createAuth() {
       state.branchingEnabled = features.branchingEnabled;
       state.namespacesEnabled = features.namespacesEnabled;
     },
+    setLanguages(langs: LanguageInfo[]): void {
+      state.languages = langs;
+    },
+    setNamespaces(nss: NamespaceInfo[]): void {
+      state.namespaces = nss;
+    },
     clear() {
       state.client = null;
       state.apiUrl = "";
@@ -57,6 +70,8 @@ function createAuth() {
       state.authenticated = false;
       state.branchingEnabled = false;
       state.namespacesEnabled = false;
+      state.languages = [];
+      state.namespaces = [];
     },
     hasScope(scope: string): boolean {
       return state.scopes.includes(scope);

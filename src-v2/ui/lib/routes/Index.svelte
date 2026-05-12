@@ -15,13 +15,24 @@
   // TODO: Phase 4.5 — load all connected page nodes via bus.
   const nodesToShow = $derived(hasSelection ? selectedNodes : []);
 
+  const languageOptions = $derived(
+    auth.value.languages.map((l) => ({ value: l.tag, label: l.name })),
+  );
+  const namespaceOptions = $derived(
+    auth.value.namespaces.map((n) => ({ value: n.name, label: n.name })),
+  );
+
   function go(route: Route): void {
     appState.navigate(route);
   }
 </script>
 
 <div class="flex h-full flex-col">
-  <Header />
+  <Header
+    languages={languageOptions}
+    namespaces={namespaceOptions}
+    branchingEnabled={auth.value.branchingEnabled}
+  />
 
   {#if !auth.value.authenticated}
     <div
