@@ -223,6 +223,13 @@
     return off;
   });
 
+  // Whether to warn the user that pull is page-wide. Only relevant when the
+  // user actually picked a selection on the canvas — without a selection,
+  // page-wide behaviour matches what they expect.
+  const showPageWideHint = $derived(
+    appState.value.hasUserSelection && pageNodes.length > 0,
+  );
+
   // Cap the visible list to keep the iframe responsive for large diffs.
   const VISIBLE_LIMIT = 50;
   const visibleChanged = $derived(diff?.changedNodes.slice(0, VISIBLE_LIMIT) ?? []);
@@ -277,6 +284,17 @@
       />
     {:else if stage === "diff" || stage === "done"}
       {#if diff}
+        {#if showPageWideHint}
+          <div
+            class="rounded border border-[var(--figma-color-border-brand)] bg-[var(--figma-color-bg-brand-tertiary)] p-2 text-[11px] text-[var(--color-text)]"
+            role="status"
+          >
+            Pull applies to every connected text on this page, not just your
+            selection. All {pageNodes.length} layer{pageNodes.length === 1
+              ? ""
+              : "s"} will be set to <strong>{language}</strong>.
+          </div>
+        {/if}
         <PullSummary
           changedCount={diff.changedNodes.length}
           missingCount={diff.missingKeys.length}

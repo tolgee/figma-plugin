@@ -13,9 +13,21 @@ export type MainToUi =
       type: "init";
       config: Partial<TolgeeConfig> | null;
       selectedNodes: NodeInfo[];
+      /** See `selection-changed.hasUserSelection`. */
+      hasUserSelection: boolean;
       editorType: "figma" | "dev";
     }
-  | { type: "selection-changed"; nodes: NodeInfo[] }
+  | {
+      type: "selection-changed";
+      nodes: NodeInfo[];
+      /**
+       * `true` iff the user has at least one node selected on the current
+       * page. When `false`, `nodes` holds the page-wide connected-node
+       * fallback and a "you have a selection but … will be applied to all"
+       * hint would be misleading.
+       */
+      hasUserSelection: boolean;
+    }
   | { type: "page-changed"; config: Partial<TolgeeConfig> }
   | { type: "config-changed"; config: Partial<TolgeeConfig> }
   | {

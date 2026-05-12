@@ -110,12 +110,12 @@
     attachBus();
     const unsubInit = on("init", (msg) => {
       appState.setConfig(msg.config);
-      appState.setSelection(msg.selectedNodes);
+      appState.setSelection(msg.selectedNodes, msg.hasUserSelection);
       appState.setEditorType(msg.editorType);
       void maybeBootstrapAuth(msg.config);
     });
     const unsubSel = on("selection-changed", (msg) =>
-      appState.setSelection(msg.nodes),
+      appState.setSelection(msg.nodes, msg.hasUserSelection),
     );
     const unsubCfg = on("config-changed", (msg) => {
       appState.setConfig(msg.config);

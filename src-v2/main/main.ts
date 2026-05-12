@@ -73,7 +73,11 @@ async function refreshAnnotationsEnabled(): Promise<void> {
 
 async function emitSelection(): Promise<void> {
   const { nodes } = await getSelectionInfo();
-  send({ type: "selection-changed", nodes });
+  send({
+    type: "selection-changed",
+    nodes,
+    hasUserSelection: figma.currentPage.selection.length > 0,
+  });
 }
 
 async function emitPageChange(): Promise<void> {
@@ -130,6 +134,7 @@ on("ui-ready", async () => {
     type: "init",
     config,
     selectedNodes: nodes,
+    hasUserSelection: figma.currentPage.selection.length > 0,
     editorType: figma.editorType as "figma" | "dev",
   });
 
