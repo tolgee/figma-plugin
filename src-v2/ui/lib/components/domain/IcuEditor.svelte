@@ -165,31 +165,46 @@
       Menlo,
       monospace;
   }
-  /* Placeholder pill styling — Tolgee's PlaceholderPlugin emits widgets with
-     class names that we style here so we don't need @emotion/styled. */
-  .icu-editor :global(.cm-placeholder-widget) {
+  /* Placeholder pill styling. Tolgee's PlaceholderPlugin emits widgets with
+     classes `placeholder-widget` + `placeholder-${type}` (no cm- prefix). */
+  .icu-editor :global(.placeholder-widget) {
     display: inline-block;
     padding: 0 4px;
     margin: 0 1px;
     border-radius: 3px;
-    background: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
     color: var(--color-text);
     font-size: 10px;
+    line-height: 1.4;
+    vertical-align: baseline;
   }
-  .icu-editor :global(.cm-placeholder-variable) {
+  .icu-editor :global(.placeholder-widget > span) {
+    pointer-events: none;
+  }
+  .icu-editor :global(.placeholder-variable) {
     background: color-mix(in srgb, var(--color-bg-brand) 14%, transparent);
     border-color: var(--color-border-brand);
     color: var(--color-text-brand);
   }
-  .icu-editor :global(.cm-placeholder-tag) {
+  .icu-editor :global(.placeholder-tag) {
     background: color-mix(in srgb, #16a34a 14%, transparent);
     border-color: #16a34a;
-    color: #16a34a;
+    color: #15803d;
   }
-  .icu-editor :global(.cm-placeholder-variant) {
+  .icu-editor :global(.placeholder-variant) {
     background: color-mix(in srgb, #f59e0b 14%, transparent);
     border-color: #f59e0b;
     color: #92400e;
+  }
+  .icu-editor :global(.placeholder-hash) {
+    background: color-mix(in srgb, #6366f1 14%, transparent);
+    border-color: #6366f1;
+    color: #4f46e5;
+  }
+  .icu-editor :global(.placeholder-error) {
+    background: color-mix(in srgb, var(--figma-color-bg-danger) 18%, transparent);
+    border-color: var(--figma-color-border-danger, #ef4444);
+    color: var(--figma-color-text-danger, #b91c1c);
   }
 </style>
