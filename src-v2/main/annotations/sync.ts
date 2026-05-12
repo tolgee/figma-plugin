@@ -15,6 +15,42 @@ function buildLabel(info: NodeInfo): string {
 }
 
 /**
+ * Figma rejects the `annotations` setter if any element is missing fields it
+ * expects. Cloning each preserved entry into a fresh plain object guards
+ * against subtle issues where the original read-only `Annotation` object
+ * carries internal markers the setter can't round-trip.
+ */
+function normalizeAnnotation(a: Annotation): Annotation {
+  return {
+    ...(a.label !== undefined ? { label: a.label } : {}),
+    ...(a.labelMarkdown !== undefined ? { labelMarkdown: a.labelMarkdown } : {}),
+    ...(a.properties !== undefined
+      ? { properties: a.properties.map((p) => ({ ...p })) }
+      : {}),
+    ...(a.categoryId !== undefined ? { categoryId: a.categoryId } : {}),
+  };
+}
+
+/**
+ * Write `next` into `node.annotations`, wrapping the call so a single bad
+ * node doesn't abort the entire sync. Figma can throw on the setter for
+ * reasons that are not always documented (e.g. an unrelated annotation that
+ * was created manually and references a category the plugin can't touch).
+ */
+function writeAnnotations(node: TextNode, next: Annotation[]): boolean {
+  try {
+    node.annotations = next.map(normalizeAnnotation);
+    return true;
+  } catch (err) {
+    console.warn(
+      `[tolgee] failed to update annotations on ${node.id}:`,
+      err instanceof Error ? err.message : err,
+    );
+    return false;
+  }
+}
+
+/**
  * Apply Tolgee annotations to the given text nodes. Annotations of unrelated
  * categories are preserved. Returns the number of nodes whose annotation
  * array we actually mutated.
@@ -43,12 +79,15 @@ export async function applyAnnotations(
         // Nothing changed for our annotation; leave the node alone.
         continue;
       }
-      node.annotations = [...others, { labelMarkdown: label, categoryId }];
-      updated++;
+      const ok = writeAnnotations(node, [
+        ...others,
+        { labelMarkdown: label, categoryId },
+      ]);
+      if (ok) updated++;
     } else if (others.length !== node.annotations.length) {
       // The node lost its Tolgee key — strip our annotation but keep others.
-      node.annotations = others;
-      updated++;
+      const ok = writeAnnotations(node, [...others]);
+      if (ok) updated++;
     }
   }
   return updated;
@@ -65,10 +104,9 @@ export async function removeAnnotations(
   let updated = 0;
   for (const node of nodes) {
     const filtered = node.annotations.filter((a) => a.categoryId !== categoryId);
-    if (filtered.length !== node.annotations.length) {
-      node.annotations = filtered;
-      updated++;
-    }
+    if (filtered.length === node.annotations.length) continue;
+    const ok = writeAnnotations(node, [...filtered]);
+    if (ok) updated++;
   }
   return updated;
 }
