@@ -4,6 +4,7 @@
   import { send } from "$ui/lib/bus";
   import Button from "$ui/lib/components/ui/button.svelte";
   import Select from "$ui/lib/components/ui/select.svelte";
+  import * as Tooltip from "$ui/lib/components/ui/tooltip";
   import SettingsIcon from "lucide-svelte/icons/settings";
   import CopyIcon from "lucide-svelte/icons/copy-plus";
 
@@ -131,24 +132,44 @@
     </span>
   {/if}
 
-  {#if auth.value.authenticated}
-    <Button
-      variant="ghost"
-      size="sm"
-      onclick={openCreateCopy}
-      aria-label="Create page copy"
-      title="Create page copy"
-    >
-      <CopyIcon size={14} />
-    </Button>
-  {/if}
-  <Button
-    variant="ghost"
-    size="sm"
-    onclick={openSettings}
-    aria-label="Open settings"
-    title="Open settings"
-  >
-    <SettingsIcon size={14} />
-  </Button>
+  <Tooltip.Provider delayDuration={200}>
+    {#if auth.value.authenticated}
+      <Tooltip.Root>
+        <Tooltip.Trigger>
+          {#snippet child({ props })}
+            <Button
+              {...props}
+              variant="ghost"
+              size="sm"
+              onclick={openCreateCopy}
+              aria-label="Create page copy"
+            >
+              <CopyIcon size={14} />
+            </Button>
+          {/snippet}
+        </Tooltip.Trigger>
+        <Tooltip.Content side="bottom" align="end">
+          Create a duplicate of this page<br />(per language or with raw keys)
+        </Tooltip.Content>
+      </Tooltip.Root>
+    {/if}
+    <Tooltip.Root>
+      <Tooltip.Trigger>
+        {#snippet child({ props })}
+          <Button
+            {...props}
+            variant="ghost"
+            size="sm"
+            onclick={openSettings}
+            aria-label="Open settings"
+          >
+            <SettingsIcon size={14} />
+          </Button>
+        {/snippet}
+      </Tooltip.Trigger>
+      <Tooltip.Content side="bottom" align="end">
+        Open plugin settings
+      </Tooltip.Content>
+    </Tooltip.Root>
+  </Tooltip.Provider>
 </header>

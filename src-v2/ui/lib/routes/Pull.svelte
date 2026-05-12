@@ -1,14 +1,14 @@
 <script lang="ts">
+  import { createQuery, useQueryClient } from "@tanstack/svelte-query";
   import { appState } from "$ui/lib/stores/app.svelte";
   import { auth } from "$ui/lib/stores/auth.svelte";
-  import { send, nextCorrelationId, on } from "$ui/lib/bus";
+  import { nextCorrelationId, on, send } from "$ui/lib/bus";
   import { Button } from "$ui/lib/components/ui";
   import PullSummary from "$ui/lib/components/domain/PullSummary.svelte";
   import PullProgress from "$ui/lib/components/domain/PullProgress.svelte";
-  import { fetchAllTranslations, type PulledKey } from "$ui/lib/api/pull";
+  import { fetchAllTranslations } from "$ui/lib/api/pull";
+  import { requestPageConnectedNodes } from "$ui/lib/api/pageNodes";
   import { pullDiff, formatNodeText } from "$ui/lib/logic/pullDiff";
-
-  type Stage = "loading" | "diff" | "applying" | "done" | "error";
 
   type Diff = ReturnType<typeof pullDiff>;
 
@@ -23,98 +23,97 @@
       : (appState.value.config?.language ?? ""),
   );
 
-  let stage = $state<Stage>("loading");
+  const namespace = $derived(appState.value.config?.namespace ?? "");
+  // Only forward `branch` when branching is enabled; the API rejects with
+  // feature_not_enabled_for_project otherwise.
+  const branch = $derived(
+    auth.value.branchingEnabled ? (appState.value.config?.branch ?? "") : "",
+  );
+
   let progress = $state<{ loaded: number; total: number | null }>({
     loaded: 0,
     total: null,
   });
-  let remoteKeys = $state<PulledKey[]>([]);
-  let pageNodes = $state<import("$shared/types").NodeInfo[]>([]);
-  let diff = $state<Diff | null>(null);
-  let errorMessage = $state<string | null>(null);
+  let applying = $state(false);
+  let applyError = $state<string | null>(null);
   let applyCorrelationId = $state<string | null>(null);
 
-  // Tracks the (language, branch, namespace) tuple we last fetched for so the
-  // bootstrap effect doesn't re-fire on every selection update.
-  let bootstrappedFor = $state<string | null>(null);
+  const qc = useQueryClient();
 
-  // Recompute the diff whenever the underlying node set changes after we have
-  // data (e.g. a connect/disconnect from the index view in another tab).
-  $effect(() => {
-    if (stage !== "diff") return;
-    const lang = language;
-    if (!lang) return;
-    diff = pullDiff(pageNodes, remoteKeys, lang);
-  });
+  // Query 1: page-wide connected text nodes. Re-fetched when the user
+  // navigates back into Pull, but cached across the conflict-resolution
+  // round-trip so we don't bug the main thread for each render.
+  const pageNodesQuery = createQuery(() => ({
+    queryKey: ["page-connected-nodes"],
+    queryFn: () => requestPageConnectedNodes(),
+    enabled: Boolean(language) && auth.value.authenticated,
+    staleTime: 5 * 1000,
+  }));
 
-  $effect(() => {
-    const lang = language;
-    const cfg = appState.value.config;
-    const ns = cfg?.namespace ?? "";
-    // Only forward `branch` when branching is enabled; the API rejects with
-    // feature_not_enabled_for_project otherwise.
-    const branch = auth.value.branchingEnabled ? (cfg?.branch ?? "") : "";
-    const key = `${lang}|${ns}|${branch}`;
-
-    if (!lang) {
-      stage = "error";
-      errorMessage = "No language selected.";
-      return;
-    }
-    if (!auth.value.client) {
-      stage = "error";
-      errorMessage = "Not connected to Tolgee.";
-      return;
-    }
-    if (bootstrappedFor === key) return;
-    bootstrappedFor = key;
-    void loadAndDiff(lang, ns, branch);
-  });
-
-  async function loadAndDiff(
-    lang: string,
-    namespace: string,
-    branch: string,
-  ): Promise<void> {
-    const client = auth.value.client;
-    if (!client) return;
-
-    stage = "loading";
-    errorMessage = null;
-    progress = { loaded: 0, total: null };
-
-    try {
-      // 1) Ask the main thread for every connected text node on the current
-      //    page — not just the user's selection. Pulling a language is a
-      //    page-level operation; otherwise unselected layers would stay
-      //    stuck in the old language and the page would mix languages.
-      const nodes = await requestPageConnectedNodes();
-      pageNodes = nodes;
-
-      // 2) Pull all translations for the requested language. Empty namespace
-      //    config means "every namespace" — see fetchAllTranslations.
-      const namespaces = namespace ? [namespace] : undefined;
-      const keys = await fetchAllTranslations(client, {
-        languages: [lang],
-        namespaces,
+  // Query 2: remote translations. Cached per (language, namespace, branch).
+  // The signal propagates to fetch — switching language mid-load cancels the
+  // in-flight request via openapi-fetch.
+  const translationsQuery = createQuery(() => ({
+    queryKey: ["translations", language, namespace, branch],
+    queryFn: async ({ signal }) => {
+      progress = { loaded: 0, total: null };
+      const client = auth.value.client;
+      if (!client) throw new Error("Not connected to Tolgee.");
+      return fetchAllTranslations(client, {
+        languages: [language],
+        namespaces: namespace ? [namespace] : undefined,
         branch: branch || undefined,
+        signal,
         onProgress: (loaded, total) => {
           progress = { loaded, total };
         },
       });
-      remoteKeys = keys;
-      diff = pullDiff(nodes, keys, lang);
-      stage = "diff";
-    } catch (e) {
-      stage = "error";
-      if (e === "invalid_project_api_key") {
-        errorMessage = "Invalid project API key.";
-      } else if (e instanceof Error) {
-        errorMessage = e.message;
-      } else {
-        errorMessage = `Cannot load translations. ${String(e)}`;
-      }
-    }
+    },
+    enabled: Boolean(language) && auth.value.authenticated,
+    // Translations rarely change during a session and are expensive to fetch;
+    // keep them fresh for 30s so toggling Pull off and back on is instant.
+    staleTime: 30 * 1000,
+  }));
+
+  // Pure derivation: diff is a function of the two queries, so we never have
+  // to imperatively recompute or worry about double-evaluation.
+  const diff = $derived<Diff | null>(
+    pageNodesQuery.data && translationsQuery.data
+      ? pullDiff(pageNodesQuery.data, translationsQuery.data, language)
+      : null,
+  );
+
+  type Stage = "loading" | "diff" | "applying" | "done" | "error";
+
+  const stage = $derived<Stage>(
+    applying
+      ? "applying"
+      : applyError ||
+          (pageNodesQuery.error || translationsQuery.error)
+        ? "error"
+        : !language
+          ? "error"
+          : pageNodesQuery.isPending || translationsQuery.isPending
+            ? "loading"
+            : "diff",
+  );
+
+  const errorMessage = $derived(
+    !language
+      ? "No language selected."
+      : !auth.value.client
+        ? "Not connected to Tolgee."
+        : applyError ??
+          formatQueryError(translationsQuery.error) ??
+          formatQueryError(pageNodesQuery.error) ??
+          null,
+  );
+
+  function formatQueryError(err: unknown): string | null {
+    if (!err) return null;
+    if (err === "invalid_project_api_key") return "Invalid project API key.";
+    if (err instanceof Error) return err.message;
+    return `Cannot load translations. ${String(err)}`;
   }
 
   function goBack(): void {
@@ -135,27 +134,12 @@
   }
 
   function retry(): void {
-    bootstrappedFor = null;
+    applyError = null;
+    void qc.invalidateQueries({ queryKey: ["page-connected-nodes"] });
+    void qc.invalidateQueries({ queryKey: ["translations"] });
   }
 
-  /**
-   * Round-trip to the main thread for every connected text node on the
-   * current page (independent of selection). Resolves the next time the
-   * main thread answers with our correlation id.
-   */
-  function requestPageConnectedNodes(): Promise<
-    import("$shared/types").NodeInfo[]
-  > {
-    return new Promise((resolve) => {
-      const correlationId = nextCorrelationId();
-      const off = on("page-connected-nodes-result", (msg) => {
-        if (msg.correlationId !== correlationId) return;
-        off();
-        resolve(msg.nodes);
-      });
-      send({ type: "request-page-connected-nodes", correlationId });
-    });
-  }
+  const pageNodes = $derived(pageNodesQuery.data ?? []);
 
   // Build the apply payload from the current diff. We format each node's text
   // up-front so the main thread never has to deal with ICU.
@@ -193,7 +177,8 @@
       return;
     }
 
-    stage = "applying";
+    applying = true;
+    applyError = null;
     const correlationId = nextCorrelationId();
     applyCorrelationId = correlationId;
     send({
@@ -207,16 +192,18 @@
   $effect(() => {
     const off = on("apply-translations-result", (msg) => {
       if (msg.correlationId !== applyCorrelationId) return;
+      applying = false;
       if (msg.ok) {
         send({
           type: "notify",
           text: `Pulled ${diff?.changedNodes.length ?? 0} translation(s) for ${language}.`,
         });
-        stage = "done";
+        // Drop cached page nodes so a follow-up Pull starts from the
+        // post-apply state instead of the pre-apply snapshot.
+        void qc.invalidateQueries({ queryKey: ["page-connected-nodes"] });
         goBack();
       } else {
-        stage = "error";
-        errorMessage =
+        applyError =
           msg.errors[0] ?? "Failed to apply translations to one or more nodes.";
       }
     });
@@ -230,11 +217,15 @@
     appState.value.hasUserSelection && pageNodes.length > 0,
   );
 
-  // Cap the visible list to keep the iframe responsive for large diffs.
+  // Cap the visible lists to keep the iframe responsive for large diffs.
   const VISIBLE_LIMIT = 50;
   const visibleChanged = $derived(diff?.changedNodes.slice(0, VISIBLE_LIMIT) ?? []);
   const hiddenChangedCount = $derived(
     Math.max(0, (diff?.changedNodes.length ?? 0) - VISIBLE_LIMIT),
+  );
+  const visibleMissing = $derived(diff?.missingKeys.slice(0, VISIBLE_LIMIT) ?? []);
+  const hiddenMissingCount = $derived(
+    Math.max(0, (diff?.missingKeys.length ?? 0) - VISIBLE_LIMIT),
   );
 
   function formatKeyLabel(ns: string | undefined, key: string): string {
@@ -282,7 +273,7 @@
         total={diff?.changedNodes.length ?? null}
         label="Applying translations"
       />
-    {:else if stage === "diff" || stage === "done"}
+    {:else if stage === "diff"}
       {#if diff}
         {#if showPageWideHint}
           <div
@@ -359,7 +350,7 @@
             <ul
               class="flex flex-col gap-1 max-h-32 overflow-auto rounded border border-[var(--color-border)] p-1"
             >
-              {#each diff.missingKeys as node (node.id)}
+              {#each visibleMissing as node (node.id)}
                 <li
                   class="truncate px-1 py-0.5 text-[11px] text-[var(--color-text-secondary)]"
                   title={formatKeyLabel(node.ns, node.key)}
@@ -368,6 +359,13 @@
                 </li>
               {/each}
             </ul>
+            {#if hiddenMissingCount > 0}
+              <div
+                class="text-[10px] text-[var(--color-text-secondary)] text-center"
+              >
+                + {hiddenMissingCount} more
+              </div>
+            {/if}
           </div>
         {/if}
       {/if}
