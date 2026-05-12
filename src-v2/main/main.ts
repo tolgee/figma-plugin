@@ -10,6 +10,8 @@ import {
 import { createCopy } from "$main/handlers/createCopy";
 import { applyTranslations } from "$main/handlers/nodes";
 import { getSelectionInfo, setNodesData } from "$main/nodes/selection";
+import { scanConnectedNodes } from "$main/nodes/scan";
+import { getNodeInfo } from "$main/nodes/getNodeInfo";
 import { captureScreenshots } from "$main/screenshots/capture";
 import { readMergedConfig, resetConfig, writeConfig } from "$main/settings";
 
@@ -200,6 +202,15 @@ on("set-language", async (msg) => {
 on("set-branch", async (msg) => {
   await writeConfig({ branch: msg.branch });
   send({ type: "config-changed", config: await readMergedConfig() });
+});
+
+on("request-page-connected-nodes", async (msg) => {
+  const nodes = await scanConnectedNodes();
+  send({
+    type: "page-connected-nodes-result",
+    correlationId: msg.correlationId,
+    nodes: nodes.map(getNodeInfo),
+  });
 });
 
 on("set-nodes-data", async (msg) => {

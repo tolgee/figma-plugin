@@ -25,6 +25,11 @@ export type MainToUi =
     }
   | { type: "nodes-set-result"; correlationId: string; ok: boolean }
   | {
+      type: "page-connected-nodes-result";
+      correlationId: string;
+      nodes: NodeInfo[];
+    }
+  | {
       type: "apply-translations-result";
       correlationId: string;
       ok: boolean;
@@ -80,6 +85,12 @@ export type UiToMain =
   | { type: "reset" }
   | { type: "set-language"; language: string }
   | { type: "set-branch"; branch: string }
+  /**
+   * Request every connected text node on the current page, independent of
+   * the user's current selection. Used by Pull when the language changes so
+   * the new translations land on the whole page, not just selected layers.
+   */
+  | { type: "request-page-connected-nodes"; correlationId: string }
   | {
       type: "set-nodes-data";
       correlationId: string;

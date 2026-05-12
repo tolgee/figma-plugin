@@ -29,6 +29,7 @@
     total: null,
   });
   let remoteKeys = $state<PulledKey[]>([]);
+  let pageNodes = $state<import("$shared/types").NodeInfo[]>([]);
   let diff = $state<Diff | null>(null);
   let errorMessage = $state<string | null>(null);
   let applyCorrelationId = $state<string | null>(null);
@@ -37,12 +38,13 @@
   // bootstrap effect doesn't re-fire on every selection update.
   let bootstrappedFor = $state<string | null>(null);
 
-  // Recompute the diff whenever the selected nodes change after we have data.
+  // Recompute the diff whenever the underlying node set changes after we have
+  // data (e.g. a connect/disconnect from the index view in another tab).
   $effect(() => {
     if (stage !== "diff") return;
     const lang = language;
     if (!lang) return;
-    diff = pullDiff(appState.value.selectedNodes, remoteKeys, lang);
+    diff = pullDiff(pageNodes, remoteKeys, lang);
   });
 
   $effect(() => {
@@ -82,10 +84,15 @@
     progress = { loaded: 0, total: null };
 
     try {
-      // When the document hasn't pinned a namespace, fetch across every
-      // namespace in the project — sending `filterNamespace: [""]` only
-      // returns keys explicitly stored under the empty namespace, which
-      // misses everything that lives under a real namespace.
+      // 1) Ask the main thread for every connected text node on the current
+      //    page — not just the user's selection. Pulling a language is a
+      //    page-level operation; otherwise unselected layers would stay
+      //    stuck in the old language and the page would mix languages.
+      const nodes = await requestPageConnectedNodes();
+      pageNodes = nodes;
+
+      // 2) Pull all translations for the requested language. Empty namespace
+      //    config means "every namespace" — see fetchAllTranslations.
       const namespaces = namespace ? [namespace] : undefined;
       const keys = await fetchAllTranslations(client, {
         languages: [lang],
@@ -96,7 +103,7 @@
         },
       });
       remoteKeys = keys;
-      diff = pullDiff(appState.value.selectedNodes, keys, lang);
+      diff = pullDiff(nodes, keys, lang);
       stage = "diff";
     } catch (e) {
       stage = "error";
@@ -114,8 +121,40 @@
     appState.navigate({ name: "index" });
   }
 
+  /**
+   * Confirm the currently selected language even when there are no changes
+   * to apply (e.g. user switched to a language that only has missing keys).
+   * Persists the language exactly like applyChanges() would, then exits.
+   */
+  function confirmLanguageAndExit(): void {
+    const savedLanguage = appState.value.config?.language ?? "";
+    if (language && language !== savedLanguage) {
+      send({ type: "set-language", language });
+    }
+    goBack();
+  }
+
   function retry(): void {
     bootstrappedFor = null;
+  }
+
+  /**
+   * Round-trip to the main thread for every connected text node on the
+   * current page (independent of selection). Resolves the next time the
+   * main thread answers with our correlation id.
+   */
+  function requestPageConnectedNodes(): Promise<
+    import("$shared/types").NodeInfo[]
+  > {
+    return new Promise((resolve) => {
+      const correlationId = nextCorrelationId();
+      const off = on("page-connected-nodes-result", (msg) => {
+        if (msg.correlationId !== correlationId) return;
+        off();
+        resolve(msg.nodes);
+      });
+      send({ type: "request-page-connected-nodes", correlationId });
+    });
   }
 
   // Build the apply payload from the current diff. We format each node's text
@@ -326,7 +365,7 @@
         Apply ({diff.changedNodes.length})
       </Button>
     {:else if stage === "diff" && diff && diff.changedNodes.length === 0}
-      <Button onclick={goBack}>OK</Button>
+      <Button onclick={confirmLanguageAndExit}>OK</Button>
     {:else}
       <Button disabled>Apply</Button>
     {/if}
