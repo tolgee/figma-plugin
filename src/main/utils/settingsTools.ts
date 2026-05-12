@@ -9,18 +9,25 @@ import {
 import { emit } from "@create-figma-plugin/utilities";
 import { setPageData } from "./pages";
 
-const getGlobalSettings = async () => {
+const getGlobalSettings = async (): Promise<Partial<GlobalSettings>> => {
   const pluginData = await figma.clientStorage.getAsync(
     TOLGEE_PLUGIN_CONFIG_NAME,
   );
-  return pluginData ? (JSON.parse(pluginData) as Partial<GlobalSettings>) : {};
+  if (!pluginData) return {};
+  // clientStorage may return an already-parsed object (Figma auto-parses JSON
+  // strings, or old data was stored without JSON.stringify). Handle both.
+  if (typeof pluginData === "string") {
+    try {
+      return JSON.parse(pluginData) as Partial<GlobalSettings>;
+    } catch {
+      return {};
+    }
+  }
+  return pluginData as Partial<GlobalSettings>;
 };
 
 const setGlobalSettings = async (data: Partial<GlobalSettings>) => {
-  await figma.clientStorage.setAsync(
-    TOLGEE_PLUGIN_CONFIG_NAME,
-    JSON.stringify(data),
-  );
+  await figma.clientStorage.setAsync(TOLGEE_PLUGIN_CONFIG_NAME, data);
 };
 
 export const deleteGlobalSettings = async () => {
