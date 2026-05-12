@@ -40,6 +40,9 @@
   function save(): void {
     const n = node;
     if (!n) return;
+    // `paramsValues` is a $state proxy — postMessage's structured-clone
+    // algorithm can't serialize a Svelte 5 reactive proxy and throws
+    // DataCloneError. $state.snapshot() returns a plain deep copy.
     send({
       type: "set-nodes-data",
       correlationId: nextCorrelationId(),
@@ -50,7 +53,7 @@
             translation,
             isPlural,
             pluralParamValue: isPlural ? pluralParamValue : undefined,
-            paramsValues,
+            paramsValues: $state.snapshot(paramsValues),
           },
         },
       ],

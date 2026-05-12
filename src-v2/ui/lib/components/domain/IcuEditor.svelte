@@ -40,7 +40,11 @@
   }: Props = $props();
 
   let host = $state<HTMLDivElement | undefined>();
-  let view: EditorView | null = null;
+  // `view` is reactive so the sync-effect below re-runs once the editor has
+  // actually been constructed — without this, the initial pass sees `view`
+  // as null, returns, and the subsequent value-prop changes never fire the
+  // effect again because no tracked dependency changed.
+  let view = $state<EditorView | null>(null);
   let suppressNextEmit = false;
 
   function buildExtensions() {

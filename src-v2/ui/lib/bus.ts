@@ -8,8 +8,18 @@ type Handlers = {
 
 const handlers: Handlers = {};
 
+/**
+ * UI → Main messages are routed through `parent.postMessage`, whose
+ * structured-clone algorithm rejects Svelte 5 `$state` proxies with a
+ * DataCloneError. Callers tend to pass `$state`-tracked objects directly
+ * (config form snapshots, paramsValues, payloads built from reactive state),
+ * so we strip the proxy layer here once. JSON-roundtrip is safe for our
+ * payloads — we never send `Uint8Array`, `Map`, `Set`, `Date`, or other
+ * non-JSON values from the UI; screenshots travel in the opposite direction.
+ */
 export function send(msg: UiToMain): void {
-  parent.postMessage({ pluginMessage: msg }, "*");
+  const plain = JSON.parse(JSON.stringify(msg)) as UiToMain;
+  parent.postMessage({ pluginMessage: plain }, "*");
 }
 
 export function on<K extends MainToUi["type"]>(
