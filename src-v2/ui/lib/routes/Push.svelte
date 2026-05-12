@@ -488,13 +488,20 @@
       }
     }
 
-    // Mark Figma nodes as connected so the next round-trip sees them.
+    // Persist `connected: true` and the translation we just pushed into
+    // plugin-data so the next diff can compare against the source we own,
+    // not the canonicalised form Tolgee may emit back (which extracts shared
+    // suffixes out of plural variants and would otherwise show as a spurious
+    // change).
     send({
       type: "set-nodes-data",
       correlationId: nextCorrelationId(),
       nodes: allNodes.map((n) => ({
         id: n.id,
-        info: { connected: true },
+        info: {
+          connected: true,
+          translation: n.translation || n.characters,
+        },
       })),
     });
 
