@@ -4,6 +4,7 @@
   import { appState } from "$ui/lib/stores/app.svelte";
   import { auth } from "$ui/lib/stores/auth.svelte";
   import { requestPageConnectedNodes } from "$ui/lib/api/pageNodes";
+  import { fetchBranches } from "$ui/lib/api/branches";
   import Header from "$ui/lib/components/domain/Header.svelte";
   import NodeList from "$ui/lib/components/domain/NodeList.svelte";
   import Button from "$ui/lib/components/ui/button.svelte";
@@ -25,6 +26,13 @@
     staleTime: 5 * 1000,
   }));
 
+  const branchesQuery = createQuery(() => ({
+    queryKey: ["branches"],
+    queryFn: () => fetchBranches(auth.value.client!),
+    enabled: auth.value.authenticated && auth.value.branchingEnabled,
+    staleTime: 30 * 1000,
+  }));
+
   const nodesToShow = $derived(
     hasSelection ? selectedNodes : (pageNodesQuery.data ?? []),
   );
@@ -34,6 +42,9 @@
   );
   const namespaceOptions = $derived(
     auth.value.namespaces.map((n) => ({ value: n.name, label: n.name })),
+  );
+  const branchOptions = $derived(
+    (branchesQuery.data ?? []).map((b) => ({ value: b.name, label: b.name })),
   );
 
   function go(route: Route): void {
@@ -45,6 +56,7 @@
   <Header
     languages={languageOptions}
     namespaces={namespaceOptions}
+    branches={branchOptions}
     branchingEnabled={auth.value.branchingEnabled}
   />
 

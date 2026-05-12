@@ -82,24 +82,26 @@
       />
     </div>
 
-    <div class="space-y-1">
-      <Label for="settings-key-format">Key format</Label>
-      <Input
-        id="settings-key-format"
-        placeholder={"{artboard}.{frame}.{elementName}"}
-        bind:value={form.keyFormat}
-        class="w-full"
-      />
-      <p class="text-[10px] text-[var(--color-text-secondary)]">
-        Placeholders:
-        <code>{"{artboard}"}</code>
-        <code>{"{frame}"}</code>
-        <code>{"{elementName}"}</code>
-        <code>{"{elementText}"}</code>
-        <code>{"{component}"}</code>
-        <code>{"{section}"}</code>
-        <code>{"{group}"}</code>
-      </p>
-    </div>
+    {#if form.prefillKeyFormat}
+      <div class="space-y-1">
+        <Label for="settings-key-format">Key format</Label>
+        <Input
+          id="settings-key-format"
+          placeholder={"{artboard}.{frame}.{elementName}"}
+          bind:value={form.keyFormat}
+          class="w-full"
+        />
+        <p class="text-[10px] text-[var(--color-text-secondary)]">
+          Placeholders:
+          <code>{"{artboard}"}</code>
+          <code>{"{frame}"}</code>
+          <code>{"{elementName}"}</code>
+          <code>{"{elementText}"}</code>
+          <code>{"{component}"}</code>
+          <code>{"{section}"}</code>
+          <code>{"{group}"}</code>
+        </p>
+      </div>
+    {/if}
   </section>
 </div>

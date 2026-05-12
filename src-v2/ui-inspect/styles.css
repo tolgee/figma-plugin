@@ -2,6 +2,23 @@
 
 @custom-variant dark (&:where(.figma-dark, .figma-dark *));
 
+/* Override Figma's default brand (blue) with Tolgee's primary pink so every
+ * `--figma-color-*-brand` token — and the `--color-*-brand` aliases mapped in
+ * `@theme` below — picks up the Tolgee identity automatically. */
+:root {
+  --figma-color-bg-brand: #ec407a;
+  --figma-color-bg-brand-hover: #d63872;
+  --figma-color-bg-brand-pressed: #c0306a;
+  --figma-color-bg-brand-tertiary: rgba(236, 64, 122, 0.12);
+  --figma-color-bg-selected: #ec407a;
+  --figma-color-bg-selected-tertiary: rgba(236, 64, 122, 0.12);
+  --figma-color-text-brand: #ec407a;
+  --figma-color-text-onbrand: #ffffff;
+  --figma-color-border-brand: #ec407a;
+  --figma-color-icon-brand: #ec407a;
+  --figma-color-icon-onbrand: #ffffff;
+}
+
 @theme {
   --color-bg: var(--figma-color-bg);
   --color-bg-secondary: var(--figma-color-bg-secondary);

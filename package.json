@@ -45,12 +45,7 @@
     "vitest": "^2.1.8"
   },
   "dependencies": {
-    "@codemirror/commands": "^6.7.1",
-    "@codemirror/lint": "^6.8.5",
-    "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "^6.36.2",
     "@tanstack/svelte-query": "^6.0.0-0",
-    "@tginternal/editor": "^1.16.1",
     "bits-ui": "^1.0.0",
     "clsx": "^2.1.1",
     "intl-messageformat": "^11.2.4",

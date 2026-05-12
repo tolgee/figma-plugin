@@ -18,6 +18,7 @@
   import StringDetails from "./lib/routes/StringDetails.svelte";
   import CreateCopy from "./lib/routes/CreateCopy.svelte";
   import ErrorBanner from "./lib/components/domain/ErrorBanner.svelte";
+  import ResizeHandle from "./lib/components/domain/ResizeHandle.svelte";
   import type { TolgeeConfig } from "$shared/types";
 
   // Validate the stored credentials silently on startup so the rest of the
@@ -142,7 +143,7 @@
 </script>
 
 <QueryClientProvider client={queryClient}>
-  <div class="flex flex-col h-screen text-text">
+  <div class="relative flex flex-col h-screen text-text">
     {#if appState.value.errorBanner}
       <ErrorBanner banner={appState.value.errorBanner} />
     {/if}
@@ -173,5 +174,6 @@
         <CreateCopy />
       {/if}
     </main>
+    <ResizeHandle />
   </div>
 </QueryClientProvider>
