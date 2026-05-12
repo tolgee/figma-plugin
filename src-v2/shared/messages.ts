@@ -96,6 +96,15 @@ export type UiToMain =
         translation: string;
         /** Optional plural flag to update along with the translation. */
         isPlural?: boolean;
+        /** Optional plural parameter name when isPlural === true. */
+        pluralParamValue?: string;
+        /** Optional sample parameter values for ICU preview. */
+        paramsValues?: Record<string, string>;
+        /** Optional key updates so a single round-trip can both label and
+            re-render the node (used by StringDetails save). */
+        key?: string;
+        ns?: string;
+        connected?: boolean;
       }>;
     }
   | {

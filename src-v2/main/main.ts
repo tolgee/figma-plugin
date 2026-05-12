@@ -238,6 +238,9 @@ on("apply-translations", async (msg) => {
     ok,
     errors,
   });
+  // Re-emit selection so the UI sees the post-write NodeInfo (new characters,
+  // translation, key/ns/plural flags) without an extra round-trip.
+  await emitSelection();
   if (annotationsEnabled && figma.editorType !== "dev") {
     scheduleReconcile(
       msg.updates.map((u) => u.id),

@@ -86,6 +86,11 @@ export type ApplyTranslationUpdate = {
   translation: string;
   /** Optional plural flag; falls back to existing plugin data when omitted. */
   isPlural?: boolean;
+  pluralParamValue?: string;
+  paramsValues?: Record<string, string>;
+  key?: string;
+  ns?: string;
+  connected?: boolean;
 };
 
 /**
@@ -113,9 +118,16 @@ export const applyTranslations = async (
       }
       await writeTextNode(node, update.text);
       const partial: Partial<NodeInfo> = { translation: update.translation };
-      if (update.isPlural !== undefined) {
-        partial.isPlural = update.isPlural;
+      if (update.isPlural !== undefined) partial.isPlural = update.isPlural;
+      if (update.pluralParamValue !== undefined) {
+        partial.pluralParamValue = update.pluralParamValue;
       }
+      if (update.paramsValues !== undefined) {
+        partial.paramsValues = update.paramsValues;
+      }
+      if (update.key !== undefined) partial.key = update.key;
+      if (update.ns !== undefined) partial.ns = update.ns;
+      if (update.connected !== undefined) partial.connected = update.connected;
       setNodeInfo(node, partial);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

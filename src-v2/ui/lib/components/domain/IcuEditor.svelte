@@ -40,11 +40,11 @@
   }: Props = $props();
 
   let host = $state<HTMLDivElement | undefined>();
-  // `view` is reactive so the sync-effect below re-runs once the editor has
-  // actually been constructed — without this, the initial pass sees `view`
-  // as null, returns, and the subsequent value-prop changes never fire the
-  // effect again because no tracked dependency changed.
-  let view = $state<EditorView | null>(null);
+  // `EditorView` is a class instance with private state; wrapping it in a
+  // proxy ($state) breaks CodeMirror's internal invariants. `$state.raw`
+  // keeps the reference reactive (so the sync $effect re-runs when the
+  // editor is constructed) without proxying the object itself.
+  let view = $state.raw<EditorView | null>(null);
   let suppressNextEmit = false;
 
   function buildExtensions() {
@@ -106,14 +106,18 @@
     view = null;
   });
 
-  // Keep editor doc in sync if the prop changes externally (e.g. route load).
+  // Keep the editor doc in sync if the prop changes externally (route load,
+  // prefill effect in the parent). Read both reactive dependencies up-front
+  // so Svelte tracks them regardless of the early-return path below.
   $effect(() => {
-    if (!view) return;
-    const current = view.state.doc.toString();
-    if (current === value) return;
+    const target = value;
+    const currentView = view;
+    if (!currentView) return;
+    const current = currentView.state.doc.toString();
+    if (current === target) return;
     suppressNextEmit = true;
-    view.dispatch({
-      changes: { from: 0, to: current.length, insert: value },
+    currentView.dispatch({
+      changes: { from: 0, to: current.length, insert: target },
     });
   });
 </script>

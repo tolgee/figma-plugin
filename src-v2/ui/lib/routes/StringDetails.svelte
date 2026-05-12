@@ -5,6 +5,7 @@
   import IcuPreview from "$ui/lib/components/domain/IcuPreview.svelte";
   import ParamsEditor from "$ui/lib/components/domain/ParamsEditor.svelte";
   import IcuEditor from "$ui/lib/components/domain/IcuEditor.svelte";
+  import { formatIcuMessage } from "$shared/icu";
   import type { NodeInfo } from "$shared/types";
 
   const route = $derived(appState.value.route);
@@ -40,21 +41,26 @@
   function save(): void {
     const n = node;
     if (!n) return;
-    // `paramsValues` is a $state proxy — postMessage's structured-clone
-    // algorithm can't serialize a Svelte 5 reactive proxy and throws
-    // DataCloneError. $state.snapshot() returns a plain deep copy.
+    // Render the ICU translation with the user-provided sample params so the
+    // text that lands on the Figma canvas matches what a runtime renderer
+    // would show. Falls back to the raw translation on parse errors so we
+    // never write garbage / nothing.
+    const rendered = formatIcuMessage(translation, paramsValues, language);
+    const text = rendered.result || translation || n.characters;
+    // apply-translations writes both `text` (TextNode.characters) and the
+    // full plugin-data payload in one round-trip, then re-emits the selection
+    // so the UI re-reads the fresh NodeInfo without an extra fetch.
     send({
-      type: "set-nodes-data",
+      type: "apply-translations",
       correlationId: nextCorrelationId(),
-      nodes: [
+      updates: [
         {
           id: n.id,
-          info: {
-            translation,
-            isPlural,
-            pluralParamValue: isPlural ? pluralParamValue : undefined,
-            paramsValues: $state.snapshot(paramsValues),
-          },
+          text,
+          translation,
+          isPlural,
+          pluralParamValue: isPlural ? pluralParamValue : undefined,
+          paramsValues,
         },
       ],
     });
