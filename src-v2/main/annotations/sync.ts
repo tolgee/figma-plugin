@@ -15,31 +15,17 @@ function buildLabel(info: NodeInfo): string {
 }
 
 /**
- * Figma rejects the `annotations` setter if any element is missing fields it
- * expects. Cloning each preserved entry into a fresh plain object guards
- * against subtle issues where the original read-only `Annotation` object
- * carries internal markers the setter can't round-trip.
+ * Write `next` into `node.annotations`. We deliberately do NOT normalize or
+ * clone foreign annotations — they're handed back from Figma's reader and
+ * the setter accepts them verbatim. Cloning into plain objects has caused
+ * silent reverts when the foreign annotation carries internal markers our
+ * naive clone drops, so it's safer to round-trip the read-only references.
+ *
+ * Wrapped in try/catch so a single bad node doesn't abort the entire sync.
  */
-function normalizeAnnotation(a: Annotation): Annotation {
-  return {
-    ...(a.label !== undefined ? { label: a.label } : {}),
-    ...(a.labelMarkdown !== undefined ? { labelMarkdown: a.labelMarkdown } : {}),
-    ...(a.properties !== undefined
-      ? { properties: a.properties.map((p) => ({ ...p })) }
-      : {}),
-    ...(a.categoryId !== undefined ? { categoryId: a.categoryId } : {}),
-  };
-}
-
-/**
- * Write `next` into `node.annotations`, wrapping the call so a single bad
- * node doesn't abort the entire sync. Figma can throw on the setter for
- * reasons that are not always documented (e.g. an unrelated annotation that
- * was created manually and references a category the plugin can't touch).
- */
-function writeAnnotations(node: TextNode, next: Annotation[]): boolean {
+function writeAnnotations(node: TextNode, next: ReadonlyArray<Annotation>): boolean {
   try {
-    node.annotations = next.map(normalizeAnnotation);
+    node.annotations = next;
     return true;
   } catch (err) {
     console.warn(
