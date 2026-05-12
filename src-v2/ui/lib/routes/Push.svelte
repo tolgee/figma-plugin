@@ -155,16 +155,23 @@
     return `${n.ns ?? ""}|${n.key}`;
   }
 
+  type CanonicalKeyState = {
+    translation: string;
+    isPlural: boolean;
+  };
+
   /**
    * After a successful push, pull the same keys back from Tolgee in the
    * project's canonical form (post-suffix-extraction etc.) so we can store
-   * the exact translation Tolgee owns. The next diff then has a like-for-like
-   * comparison source.
+   * the exact translation Tolgee owns plus the canonical plural flag. The
+   * next diff then has a like-for-like comparison source for BOTH fields —
+   * cases where Tolgee infers `keyIsPlural` from the ICU shape but our local
+   * `isPlural` is still false used to surface as phantom diffs.
    */
   async function fetchCanonicalAfterPush(
     nodes: NodeInfo[],
-  ): Promise<Map<string, string>> {
-    const result = new Map<string, string>();
+  ): Promise<Map<string, CanonicalKeyState>> {
+    const result = new Map<string, CanonicalKeyState>();
     const keysToFetch = new Set(nodes.map((n) => n.key).filter(Boolean));
     if (keysToFetch.size === 0) return result;
 
@@ -179,7 +186,10 @@
     for (const k of fetched) {
       const text = k.translations?.[language]?.text;
       if (typeof text !== "string") continue;
-      result.set(`${k.keyNamespace ?? ""}|${k.keyName}`, text);
+      result.set(`${k.keyNamespace ?? ""}|${k.keyName}`, {
+        translation: text,
+        isPlural: Boolean(k.keyIsPlural),
+      });
     }
     return result;
   }
@@ -538,7 +548,8 @@
           id: n.id,
           info: {
             connected: true,
-            translation: remote ?? n.translation ?? n.characters,
+            translation: remote?.translation ?? n.translation ?? n.characters,
+            isPlural: remote?.isPlural ?? n.isPlural,
           },
         };
       }),
