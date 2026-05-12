@@ -33,8 +33,15 @@ export const getPushChanges = (
 
   const screenshotsByKey = new Map<string, FrameScreenshot[]>();
   screenshots.forEach((screenshot) => {
+    // A frame screenshot can contain several nodes that share the same
+    // (key, ns). We must list the screenshot at most once per key, otherwise
+    // the push payload ends up with duplicate KeyScreenshotDto entries
+    // (same uploadedImageId, same positions) for that key.
+    const seenKeys = new Set<string>();
     screenshot.keys.forEach((node) => {
       const mapKey = `${node.key}\0${hasNamespacesEnabled ? node.ns || "" : ""}`;
+      if (seenKeys.has(mapKey)) return;
+      seenKeys.add(mapKey);
       let list = screenshotsByKey.get(mapKey);
       if (!list) {
         list = [];

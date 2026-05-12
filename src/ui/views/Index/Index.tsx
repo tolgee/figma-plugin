@@ -1,5 +1,11 @@
 import { Fragment, h } from "preact";
-import { useCallback, useEffect, useState, useMemo } from "preact/hooks";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+} from "preact/hooks";
 import {
   Banner,
   Button,
@@ -34,11 +40,6 @@ export const Index = () => {
   // index page is not removed on certain routes
   // refetch when we go back to it
   const route = useGlobalState((c) => c.route);
-  useEffect(() => {
-    if (route[0] === "index") {
-      selectionLoadable.refetch();
-    }
-  }, [route]);
 
   const [error, setError] = useState<string>();
 
@@ -94,6 +95,23 @@ export const Index = () => {
 
   const { setRoute } = useGlobalActions();
   const allNodes = useConnectedNodes({ ignoreSelection: true });
+  const mountedRef = useRef(false);
+
+  // index page is not removed on certain routes (e.g. Connect dialog).
+  // When returning to it, refetch selection + connected-nodes so changes
+  // made elsewhere are reflected. We deliberately do not refetch on every
+  // node-data write (see useSetNodesDataMutation) to avoid full-page tree
+  // walks while the user is typing a key.
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
+    if (route[0] === "index") {
+      selectionLoadable.refetch();
+      allNodes.refetch();
+    }
+  }, [route]);
 
   // Combine API namespaces + all namespaces from nodes
   const allAvailableNamespaces = useMemo(() => {

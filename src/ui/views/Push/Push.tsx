@@ -236,8 +236,8 @@ export const Push: FunctionalComponent = () => {
     setRoute("index");
   };
 
-  const connectNodes = () => {
-    setNodesDataMutation.mutate({
+  const connectNodes = async () => {
+    await setNodesDataMutation.mutateAsync({
       nodes: nodes.map((n) => ({
         ...n,
         translation:
@@ -249,8 +249,8 @@ export const Push: FunctionalComponent = () => {
     });
   };
 
-  const handleConnectOnly = () => {
-    connectNodes();
+  const handleConnectOnly = async () => {
+    await connectNodes();
     setRoute("index");
   };
 
@@ -431,7 +431,11 @@ export const Push: FunctionalComponent = () => {
       const keysPushed = changes.newKeys.length + changes.changedKeys.length;
       setPushedKeysCount(keysPushed);
 
-      connectNodes();
+      // Await so local Figma node data is updated (and the connected-nodes
+      // query is invalidated) before we leave the view. Otherwise navigating
+      // back to Push quickly can see stale node data within the 30s staleTime
+      // window and re-show the changes that were just pushed.
+      await connectNodes();
 
       // Clear translations cache so newly pushed keys are recognized on next check
       allTranslationsLoadable.clearCache();
