@@ -3,6 +3,7 @@ import {
   setNodesDataEndpoint,
 } from "@/main/endpoints/setNodesData";
 import { getConnectedNodesEndpoint } from "@/main/endpoints/getConnectedNodes";
+import { getSelectedNodesEndpoint } from "@/main/endpoints/getSelectedNodes";
 import { delayed } from "@/main/utils/delayed";
 import { NodeInfo } from "@/types";
 import { useMutation, useQueryClient } from "react-query";
@@ -43,6 +44,13 @@ export const useSetNodesDataMutation = () => {
             items: updated,
           });
         }
+        // Mark selection stale so Index re-fetches node characters after
+        // navigating back from Pull (Index remounts, mountedRef resets to
+        // false, so the route-change effect never fires on that remount).
+        queryClient.invalidateQueries([getSelectedNodesEndpoint.name], {
+          refetchActive: false,
+          refetchInactive: false,
+        });
       },
     },
   );
