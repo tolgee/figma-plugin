@@ -1,6 +1,11 @@
 import { NodeInfo } from "../../types";
 import { createEndpoint } from "../utils/createEndpoint";
 
+// Cached across all formatText calls in a session. listAvailableFontsAsync is
+// one of the most expensive Figma API calls; calling it once per node during
+// a multi-node pull would multiply the cost unnecessarily.
+let availableFontsCache: Font[] | null = null;
+
 export type FormatTextEndpointArgs = {
   /** The text that is to be displayed in the textNode. Can contain some basic html tags that will be replaced */
   formatted: string;
@@ -64,12 +69,11 @@ export const formatText = async ({
     return ranges;
   };
 
-  let cachedAvailableFonts: Font[] | null = null;
   const getAvailableFonts = async () => {
-    if (!cachedAvailableFonts) {
-      cachedAvailableFonts = await figma.listAvailableFontsAsync();
+    if (!availableFontsCache) {
+      availableFontsCache = await figma.listAvailableFontsAsync();
     }
-    return cachedAvailableFonts;
+    return availableFontsCache;
   };
 
   const getFontsOfFamily = async (font: FontName) =>
