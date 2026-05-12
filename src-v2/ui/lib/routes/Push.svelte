@@ -150,6 +150,40 @@
     }
   }
 
+  /** Stable lookup key combining namespace and key name. */
+  function canonicalKey(n: NodeInfo): string {
+    return `${n.ns ?? ""}|${n.key}`;
+  }
+
+  /**
+   * After a successful push, pull the same keys back from Tolgee in the
+   * project's canonical form (post-suffix-extraction etc.) so we can store
+   * the exact translation Tolgee owns. The next diff then has a like-for-like
+   * comparison source.
+   */
+  async function fetchCanonicalAfterPush(
+    nodes: NodeInfo[],
+  ): Promise<Map<string, string>> {
+    const result = new Map<string, string>();
+    const keysToFetch = new Set(nodes.map((n) => n.key).filter(Boolean));
+    if (keysToFetch.size === 0) return result;
+
+    const filterNamespace = hasNamespacesEnabled
+      ? Array.from(new Set(nodes.map((n) => n.ns ?? "")))
+      : undefined;
+
+    const fetched = await fetchRemoteKeys({
+      filterKeyName: Array.from(keysToFetch),
+      filterNamespace,
+    });
+    for (const k of fetched) {
+      const text = k.translations?.[language]?.text;
+      if (typeof text !== "string") continue;
+      result.set(`${k.keyNamespace ?? ""}|${k.keyName}`, text);
+    }
+    return result;
+  }
+
   async function fetchRemoteKeys(opts: {
     filterKeyName: string[];
     filterNamespace?: string[];
@@ -488,21 +522,26 @@
       }
     }
 
-    // Persist `connected: true` and the translation we just pushed into
-    // plugin-data so the next diff can compare against the source we own,
-    // not the canonicalised form Tolgee may emit back (which extracts shared
-    // suffixes out of plural variants and would otherwise show as a spurious
-    // change).
+    // Re-fetch the keys we just pushed so we know the exact translation
+    // strings Tolgee stored — those are what the next diff will compare
+    // against. If we cache our outgoing form instead, Tolgee's canonical
+    // rewrites (e.g. extracting a shared suffix out of plural variants) will
+    // show as spurious "changed" diffs forever. Best-effort: on fetch
+    // failure we fall back to the locally-pushed text.
+    const canonical = await fetchCanonicalAfterPush(allNodes).catch(() => null);
     send({
       type: "set-nodes-data",
       correlationId: nextCorrelationId(),
-      nodes: allNodes.map((n) => ({
-        id: n.id,
-        info: {
-          connected: true,
-          translation: n.translation || n.characters,
-        },
-      })),
+      nodes: allNodes.map((n) => {
+        const remote = canonical?.get(canonicalKey(n));
+        return {
+          id: n.id,
+          info: {
+            connected: true,
+            translation: remote ?? n.translation ?? n.characters,
+          },
+        };
+      }),
     });
 
     send({
