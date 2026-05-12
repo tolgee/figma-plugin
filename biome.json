@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "ignore": ["dist", "node_modules", "src", "**/*.svelte", "**/schema.generated.ts"]
+    "ignore": ["dist", "node_modules", "**/*.svelte", "**/schema.generated.ts"]
   },
   "formatter": {
     "enabled": true,

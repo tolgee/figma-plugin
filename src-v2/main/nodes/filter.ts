@@ -53,7 +53,7 @@ export const shouldIgnoreNode = (
   _parent: BaseNode | null,
   settings: IgnoreSettings,
 ): boolean => {
-  if (settings.ignoreNumbers && NUMERIC_ONLY.test(node.characters)) {
+  if ((settings.ignoreNumbers ?? true) && NUMERIC_ONLY.test(node.characters)) {
     return true;
   }
 
@@ -65,7 +65,7 @@ export const shouldIgnoreNode = (
     return true;
   }
 
-  if (settings.ignoreHiddenLayers && !node.visible) {
+  if ((settings.ignoreHiddenLayers ?? true) && !node.visible) {
     return true;
   }
 

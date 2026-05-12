@@ -1,5 +1,0 @@
-build
-node_modules
-
-src/**/*.css.d.ts
-apiSchema.generated.ts
