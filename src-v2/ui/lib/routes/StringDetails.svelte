@@ -5,6 +5,7 @@
   import IcuPreview from "$ui/lib/components/domain/IcuPreview.svelte";
   import ParamsEditor from "$ui/lib/components/domain/ParamsEditor.svelte";
   import IcuEditor from "$ui/lib/components/domain/IcuEditor.svelte";
+  import PluralEditor from "$ui/lib/components/domain/PluralEditor.svelte";
   import { formatIcuMessage } from "$shared/icu";
   import type { NodeInfo } from "$shared/types";
 
@@ -101,22 +102,12 @@
         </p>
       </div>
 
-      <div>
-        <Label for="string-details-translation">Translation ({language})</Label>
-        <div class="mt-1">
-          <IcuEditor
-            id="string-details-translation"
-            bind:value={translation}
-            nested={isPlural}
-            rows={4}
-            placeholder="Translation…"
-          />
+      <div class="flex items-center justify-between gap-2">
+        <Label>Translation ({language})</Label>
+        <div class="flex items-center gap-2">
+          <Switch bind:checked={isPlural} id="string-details-plural" />
+          <Label for="string-details-plural" class="text-[10px]">Plural</Label>
         </div>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <Switch bind:checked={isPlural} id="string-details-plural" />
-        <Label for="string-details-plural">Plural message</Label>
       </div>
 
       {#if isPlural}
@@ -127,6 +118,23 @@
             bind:value={pluralParamValue}
             placeholder="count"
             class="mt-1 w-full"
+          />
+        </div>
+        <div class="mt-1">
+          <PluralEditor
+            bind:value={translation}
+            locale={language || "en"}
+            parameter={pluralParamValue || "count"}
+            rows={2}
+          />
+        </div>
+      {:else}
+        <div class="mt-1">
+          <IcuEditor
+            id="string-details-translation"
+            bind:value={translation}
+            rows={4}
+            placeholder="Translation…"
           />
         </div>
       {/if}
