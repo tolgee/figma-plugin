@@ -109,7 +109,11 @@ export const Index = () => {
     }
     if (route[0] === "index") {
       selectionLoadable.refetch();
-      allNodes.refetch();
+      // Skip the page-wide rescan when the mutation already patched the cache
+      // (useSetNodesDataMutation.onSuccess + staleTime:30s keeps it fresh).
+      if (allNodes.isStale) {
+        allNodes.refetch();
+      }
     }
   }, [route]);
 
