@@ -87,7 +87,8 @@
         <Input
           id="settings-key-format"
           placeholder={"{artboard}.{frame}.{elementName}"}
-          bind:value={form.keyFormat}
+          value={form.keyFormat}
+          onchange={(e) => (form.keyFormat = e.currentTarget.value)}
           class="w-full"
         />
         <p class="text-[10px] text-text-secondary">
