@@ -10,7 +10,7 @@ import fs from 'node:fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const rootDir = path.resolve(__dirname, 'src-v2/ui');
+const rootDir = path.resolve(__dirname, 'src/ui');
 const outDir = path.resolve(__dirname, 'dist');
 
 // Opt-in bundle analysis: `ANALYZE=1 pnpm run build:ui`. Kept off by default so
@@ -65,8 +65,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      $shared: path.resolve(__dirname, 'src-v2/shared'),
-      $ui: path.resolve(__dirname, 'src-v2/ui'),
+      $shared: path.resolve(__dirname, 'src/shared'),
+      $ui: path.resolve(__dirname, 'src/ui'),
     },
   },
   build: {

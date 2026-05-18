@@ -22,17 +22,17 @@
     "types": ["plugin-typings", "node"],
     "baseUrl": ".",
     "paths": {
-      "$shared/*": ["src-v2/shared/*"],
-      "$main/*": ["src-v2/main/*"],
-      "$ui/*": ["src-v2/ui/*"],
-      "$inspect/*": ["src-v2/ui-inspect/*"]
+      "$shared/*": ["src/shared/*"],
+      "$main/*": ["src/main/*"],
+      "$ui/*": ["src/ui/*"],
+      "$inspect/*": ["src/ui-inspect/*"]
     }
   },
   "include": [
-    "src-v2/**/*.ts",
-    "src-v2/**/*.svelte",
+    "src/**/*.ts",
+    "src/**/*.svelte",
     "vite.config.*.ts",
-    "scripts-v2/**/*.mjs"
+    "scripts/**/*.mjs"
   ],
-  "exclude": ["node_modules", "dist", "src"]
+  "exclude": ["node_modules", "dist"]
 }
