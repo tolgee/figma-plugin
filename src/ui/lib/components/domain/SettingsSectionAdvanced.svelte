@@ -10,6 +10,8 @@
   type Props = { form: Partial<TolgeeConfig> };
   let { form = $bindable() }: Props = $props();
 
+  const prefillKeyFormat = $derived(form.prefillKeyFormat ?? false);
+
   const variableCasingOptions: Array<{ value: VariableCasing; label: string }> =
     [
       { value: "snake_case", label: "snake_case (element_name)" },
@@ -65,6 +67,38 @@
       <p class="text-[10px] text-text-secondary">
         Comma-separated. Each new key pushed from the plugin will receive these
         tags.
+      </p>
+    </div>
+  {/if}
+
+  <div class="flex items-center justify-between gap-2">
+    <Label for="settings-prefill-key">Prefill key name</Label>
+    <Switch
+      id="settings-prefill-key"
+      checked={prefillKeyFormat}
+      onCheckedChange={(v) => (form.prefillKeyFormat = v)}
+    />
+  </div>
+
+  {#if prefillKeyFormat}
+    <div class="space-y-1">
+      <Label for="settings-key-format">Key format</Label>
+      <Input
+        id="settings-key-format"
+        placeholder={"{artboard}.{frame}.{elementName}"}
+        value={form.keyFormat}
+        onchange={(e) => (form.keyFormat = e.currentTarget.value)}
+        class="w-full"
+      />
+      <p class="text-[10px] text-text-secondary">
+        Placeholders:
+        <code>{"{artboard}"}</code>
+        <code>{"{frame}"}</code>
+        <code>{"{elementName}"}</code>
+        <code>{"{elementText}"}</code>
+        <code>{"{component}"}</code>
+        <code>{"{section}"}</code>
+        <code>{"{group}"}</code>
       </p>
     </div>
   {/if}

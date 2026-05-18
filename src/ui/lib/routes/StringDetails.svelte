@@ -32,7 +32,7 @@
     }
     if (prefilledForId === n.id) return;
 
-    translation = n.translation ?? "";
+    translation = n.translation || n.characters;
     isPlural = n.isPlural ?? false;
     pluralParamValue = n.pluralParamValue ?? "count";
     paramsValues = { ...(n.paramsValues ?? {}) };
@@ -62,6 +62,7 @@
           isPlural,
           pluralParamValue: isPlural ? pluralParamValue : undefined,
           paramsValues,
+          ...(!n.connected && { key: n.key, ns: n.ns, connected: true }),
         },
       ],
     });

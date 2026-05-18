@@ -81,6 +81,11 @@
     }
   }
 
+  function openStringDetails(): void {
+    focusNode();
+    appState.navigate({ name: "stringDetails", node });
+  }
+
   function formatConnected(n: NodeInfo): string {
     return n.ns ? `${n.ns}.${n.key}` : n.key || "(no key)";
   }
@@ -92,7 +97,7 @@
       type="button"
       class="truncate text-left text-[11px] text-text-secondary hover:text-text"
       title={node.characters}
-      onclick={focusNode}
+      onclick={openStringDetails}
     >
       {node.characters || "(empty)"}
     </button>

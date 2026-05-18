@@ -8,7 +8,6 @@
   let { form = $bindable() }: Props = $props();
 
   const ignoreHiddenLayers = $derived(form.ignoreHiddenLayers ?? true);
-  const prefillKeyFormat = $derived(form.prefillKeyFormat ?? false);
 </script>
 
 <div class="space-y-4">
@@ -69,39 +68,4 @@
     </div>
   </section>
 
-  <section class="space-y-2">
-    <h2 class="text-xs font-semibold text-text">Key name</h2>
-
-    <div class="flex items-center justify-between gap-2">
-      <Label for="settings-prefill-key">Prefill key name</Label>
-      <Switch
-        id="settings-prefill-key"
-        checked={prefillKeyFormat}
-        onCheckedChange={(v) => (form.prefillKeyFormat = v)}
-      />
-    </div>
-
-    {#if prefillKeyFormat}
-      <div class="space-y-1">
-        <Label for="settings-key-format">Key format</Label>
-        <Input
-          id="settings-key-format"
-          placeholder={"{artboard}.{frame}.{elementName}"}
-          value={form.keyFormat}
-          onchange={(e) => (form.keyFormat = e.currentTarget.value)}
-          class="w-full"
-        />
-        <p class="text-[10px] text-text-secondary">
-          Placeholders:
-          <code>{"{artboard}"}</code>
-          <code>{"{frame}"}</code>
-          <code>{"{elementName}"}</code>
-          <code>{"{elementText}"}</code>
-          <code>{"{component}"}</code>
-          <code>{"{section}"}</code>
-          <code>{"{group}"}</code>
-        </p>
-      </div>
-    {/if}
-  </section>
 </div>
