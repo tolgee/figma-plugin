@@ -2,81 +2,115 @@ name: Test
 
 on:
   push:
-    branches: [main, release]
+    branches: [main, release, rewrite-svelte-v2]
   pull_request:
+
+env:
+  PNPM_VERSION: 10
+  NODE_VERSION: "20.x"
 
 jobs:
   static-check:
     name: Static check 🪲
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: "20.x"
-
-      - name: Cache node modules
-        uses: actions/cache@v3
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
         with:
-          path: ~/.npm
-          key: cache-node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
 
       - name: Install
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      - name: Typescript
-        run: npm run tsc
+      - name: Typecheck
+        run: pnpm run typecheck
 
-      - name: Eslint
-        run: npm run eslint
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Unit tests
+        run: pnpm run test
 
   build:
     name: Build 🏗
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: "20.x"
-
-      - name: Cache node modules
-        uses: actions/cache@v3
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
         with:
-          path: ~/.npm
-          key: cache-node-modules-build-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
 
       - name: Install
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
-  test:
-    name: Cypress
+      - name: Upload dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  e2e:
+    name: E2E (Playwright + Tolgee)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: "20.x"
-
-      - name: Cache node modules
-        uses: actions/cache@v3
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
         with:
-          path: ~/.npm
-          key: cache-node-modules-cypress-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
 
       - name: Install
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      - name: Cypress run
-        run: npm run cy:run
+      # Start Tolgee in the background as early as possible so its slow JVM
+      # warm-up overlaps with the rest of the build steps.
+      - name: Start Tolgee platform
+        run: pnpm run e2e:up
 
-      - uses: actions/upload-artifact@v4
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build plugin
+        run: pnpm run build
+
+      - name: Wait for Tolgee
+        run: pnpm run e2e:wait
+
+      - name: Run Playwright
+        run: pnpm exec playwright test
+
+      - name: Capture Tolgee logs on failure
         if: failure()
+        run: docker compose -f e2e/docker-compose.yml logs --no-color > tolgee.log || true
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: e2e
+          name: playwright-report
           path: |
-            ./cypress/videos/**/*
-            ./cypress/screenshots/**/*
+            e2e/playwright-report/**/*
+            e2e/test-results/**/*
+            tolgee.log
+          retention-days: 7
+
+      - name: Stop Tolgee
+        if: always()
+        run: docker compose -f e2e/docker-compose.yml down -v

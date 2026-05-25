@@ -20,13 +20,19 @@
     "test:watch": "vitest",
     "format": "biome format --write src",
     "lint": "biome lint src",
-    "check": "biome check --write src"
+    "check": "biome check --write src",
+    "e2e:up": "docker compose -f e2e/docker-compose.yml up -d --force-recreate",
+    "e2e:down": "docker compose -f e2e/docker-compose.yml down -v",
+    "e2e:wait": "node e2e/wait-for-tolgee.mjs",
+    "e2e:host": "vite --config e2e/vite.config.host.ts",
+    "e2e": "pnpm run e2e:up && pnpm run e2e:wait && pnpm run build && playwright test"
   },
   "author": "Tolgee",
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@figma/plugin-typings": "^1.125.0",
+    "@playwright/test": "^1.49.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tailwindcss/vite": "^4.0.0",
     "@testing-library/svelte": "^5.2.4",

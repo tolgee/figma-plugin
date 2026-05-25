@@ -9,7 +9,9 @@ build
 code.js
 manifest.json
 
-cypress/videos
-cypress/screenshots
+# Playwright (v2 e2e)
+e2e/test-results/
+e2e/playwright-report/
+playwright/.cache/
 
 .vscode
