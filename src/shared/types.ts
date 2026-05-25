@@ -66,11 +66,11 @@ export type GlobalSettings = {
   ignoreHiddenLayersIncludingChildren?: boolean;
   ignoreTextLayers?: boolean;
   variableCasing?:
-    | "snake_case"
-    | "snake_case_capitalized"
-    | "camelCase"
-    | "PascalCase"
-    | "noSpaces";
+  | "snake_case"
+  | "snake_case_capitalized"
+  | "camelCase"
+  | "PascalCase"
+  | "noSpaces";
 };
 
 export type CurrentDocumentSettings = GlobalSettings & {
@@ -91,6 +91,7 @@ export type CurrentPageSettings = {
   pageInfo: boolean;
   pageCopy: boolean;
   pageStringDetails: boolean;
+  pageSettings: boolean;
   nodeInfo?: NodeInfo;
 };
 

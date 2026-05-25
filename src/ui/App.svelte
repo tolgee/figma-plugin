@@ -111,10 +111,15 @@
 
   onMount(() => {
     attachBus();
+    let initReceived = false;
     const unsubInit = on("init", (msg) => {
+      initReceived = true;
       appState.setConfig(msg.config);
       appState.setSelection(msg.selectedNodes, msg.hasUserSelection);
       appState.setEditorType(msg.editorType);
+      if (msg.initialRoute) {
+        appState.navigate({ name: msg.initialRoute } as import("$shared/types").Route);
+      }
       void maybeBootstrapAuth(msg.config);
     });
     const unsubSel = on("selection-changed", (msg) =>
@@ -131,8 +136,21 @@
     const unsubCmd = on("command", (_msg) => {
       // TODO: route commands (open / open-on-node)
     });
+    // Retry sending ui-ready until the host acknowledges with init.
+    // Guards against the race where the host's listener isn't registered yet.
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    const scheduleRetry = () => {
+      retryTimer = setTimeout(() => {
+        if (!initReceived) {
+          send({ type: "ui-ready" });
+          scheduleRetry();
+        }
+      }, 400);
+    };
     send({ type: "ui-ready" });
+    scheduleRetry();
     return () => {
+      clearTimeout(retryTimer);
       unsubInit();
       unsubSel();
       unsubCfg();
@@ -140,6 +158,7 @@
       unsubCmd();
     };
   });
+
 </script>
 
 <QueryClientProvider client={queryClient}>
@@ -149,13 +168,14 @@
     {/if}
     <main class="flex-1 overflow-auto">
       {#if appState.value.route.name === "settings"}
-        <!-- Settings is always reachable, even before page is set up. -->
+        <!-- Settings is always reachable, even before the page is set up. -->
         <Settings />
-      {:else if !appState.value.config?.pageInfo && appState.value.config?.documentInfo}
-        <!-- PageSetup gate per Phase 4: document is configured but page is not. -->
-        <PageSetup />
       {:else if appState.value.config?.pageCopy}
+        <!-- Copy pages bypass the PageSetup gate — they are always ready. -->
         <CopyView />
+      {:else if !appState.value.config?.pageInfo && appState.value.config?.documentInfo}
+        <!-- PageSetup gate: document is configured but page is not. -->
+        <PageSetup />
       {:else if appState.value.route.name === "index"}
         <IndexView />
       {:else if appState.value.route.name === "pageSetup"}

@@ -25,7 +25,7 @@
     "e2e:down": "docker compose -f e2e/docker-compose.yml down -v",
     "e2e:wait": "node e2e/wait-for-tolgee.mjs",
     "e2e:host": "vite --config e2e/vite.config.host.ts",
-    "e2e": "pnpm run e2e:up && pnpm run e2e:wait && pnpm run build && playwright test"
+    "e2e": "pnpm run e2e:up && pnpm run e2e:wait && pnpm run build && playwright test --ui"
   },
   "author": "Tolgee",
   "license": "MIT",

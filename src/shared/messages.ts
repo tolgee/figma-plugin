@@ -11,6 +11,8 @@ export type MainToUi =
       /** See `selection-changed.hasUserSelection`. */
       hasUserSelection: boolean;
       editorType: "figma" | "dev";
+      /** Optional: navigate to this route immediately after init (used by E2E tests). */
+      initialRoute?: string;
     }
   | {
       type: "selection-changed";

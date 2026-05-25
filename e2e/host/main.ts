@@ -22,6 +22,7 @@ type HostState = {
   hasUserSelection: boolean;
   editorType: "figma" | "dev";
   annotationsEnabled: boolean;
+  route?: string;
 };
 
 function defaultState(): HostState {
@@ -32,6 +33,7 @@ function defaultState(): HostState {
     hasUserSelection: false,
     editorType: "figma",
     annotationsEnabled: false,
+    route: undefined,
   };
 }
 
@@ -80,11 +82,12 @@ window.addEventListener("message", (event) => {
   switch (msg.type) {
     case "ui-ready": {
       send({
-        type: "init",
+        type: "init" as const,
         config: state.config,
         selectedNodes: state.selectedNodes,
         hasUserSelection: state.hasUserSelection,
         editorType: state.editorType,
+        ...(state.route ? { initialRoute: state.route } : {}),
       });
       return;
     }

@@ -75,6 +75,8 @@ export type HostInitState = {
   hasUserSelection?: boolean;
   editorType?: "figma" | "dev";
   annotationsEnabled?: boolean;
+  /** Optional initial route to navigate to immediately after init (used by E2E tests). */
+  route?: string;
 };
 
 /**

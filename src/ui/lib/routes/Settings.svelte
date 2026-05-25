@@ -13,9 +13,18 @@
 
   // Initial snapshot from the global app config. Subsequent external updates
   // are intentionally ignored so the user does not lose in-progress edits.
+  //
+  // Fields bound with bind:value to Input/Select must never be undefined:
+  // Svelte 5 throws props_invalid_value when bind: passes undefined to a
+  // $bindable prop that has a non-undefined default (e.g. $bindable("")).
+  const cfg = appState.value.config ?? {};
   let form = $state<Partial<TolgeeConfig>>({
-    apiUrl: appState.value.config?.apiUrl ?? DEFAULT_API_URL,
-    ...(appState.value.config ?? {}),
+    ...cfg,
+    apiUrl: cfg.apiUrl ?? DEFAULT_API_URL,
+    apiKey: cfg.apiKey ?? "",
+    namespace: cfg.namespace ?? "",
+    language: cfg.language ?? "",
+    ignorePrefix: cfg.ignorePrefix ?? "",
   });
 
   let activeTab = $state("connection");

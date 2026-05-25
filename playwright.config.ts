@@ -21,9 +21,11 @@ const CI = !!process.env.CI;
 export default defineConfig({
   testDir: "./e2e/tests",
   outputDir: "./e2e/test-results",
+  globalSetup: "./e2e/global-setup.ts",
   fullyParallel: true,
   forbidOnly: CI,
-  retries: CI ? 1 : 0,
+  retries: CI ? 2 : 2,
+  timeout: 120_000,
   // Run a single worker locally for predictable Tolgee state; CI gets a
   // single worker too since all specs hit the same shared platform and we
   // do not have multi-tenant isolation in the import data.

@@ -26,7 +26,7 @@ test.describe("StringDetails view", () => {
 
     const ui = page.frameLocator(IFRAME_SELECTOR);
 
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     // The characters button has `title={node.characters}` in NodeListItem.
     await ui.getByTitle("On the road").click();
@@ -72,8 +72,36 @@ test.describe("StringDetails view", () => {
   test("cancel returns to Index", async ({ page }) => {
     const ui = await openStringDetails(page);
 
-    await ui.getByRole("button", { name: "Cancel" }).click();
+    await ui.locator("footer").getByRole("button", { name: "Cancel" }).click();
 
     await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 5_000 });
+  });
+
+  test("plural toggle reveals plural parameter input and plural editor", async ({
+    page,
+  }) => {
+    const ui = await openStringDetails(page);
+
+    // Plural parameter input is hidden before toggling.
+    await expect(ui.locator("#string-details-param")).not.toBeVisible();
+
+    await ui.locator("#string-details-plural").click();
+
+    // After toggle: plural parameter input and plural editor form appear.
+    await expect(ui.locator("#string-details-param")).toBeVisible();
+    await expect(ui.locator(".plural-editor")).toBeVisible();
+  });
+
+  test("shows 'No node selected' when navigated without a node", async ({
+    page,
+  }) => {
+    // Navigate directly to the stringDetails route without a node in state.
+    await page.goto(hostUrl(SIGNED_IN, { route: "stringDetails" }));
+
+    const ui = page.frameLocator(IFRAME_SELECTOR);
+
+    await expect(ui.getByText("No node selected.")).toBeVisible({
+      timeout: 10_000,
+    });
   });
 });

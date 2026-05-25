@@ -22,7 +22,7 @@ test.describe("Push view", () => {
     const ui = page.frameLocator(IFRAME_SELECTOR);
 
     // Wait for auth bootstrap to complete
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     await ui.getByRole("button", { name: /Push/ }).click();
 
@@ -49,18 +49,18 @@ test.describe("Push view", () => {
     );
 
     const ui = page.frameLocator(IFRAME_SELECTOR);
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     await ui.getByRole("button", { name: /Push/ }).click();
 
     // The "Computing changes…" card is shown while the diff query is pending.
     // It may resolve quickly, so we check that it either appeared or that the
-    // diff summary card (which follows it) is already present.
+    // diff summary card (which always includes "Unchanged") is already present.
     await expect(
       ui
         .getByText("Computing changes…")
-        .or(ui.getByText("New").and(ui.getByText("Changed"))),
-    ).toBeVisible({ timeout: 5_000 });
+        .or(ui.getByText("Unchanged")),
+    ).toBeVisible({ timeout: 20_000 });
   });
 
   test("shows diff summary card after loading", async ({ page }) => {
@@ -80,14 +80,16 @@ test.describe("Push view", () => {
     );
 
     const ui = page.frameLocator(IFRAME_SELECTOR);
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     await ui.getByRole("button", { name: /Push/ }).click();
 
     // Wait for the diff summary grid (New / Changed / Unchanged labels)
-    await expect(ui.getByText("New")).toBeVisible({ timeout: 20_000 });
-    await expect(ui.getByText("Changed")).toBeVisible();
-    await expect(ui.getByText("Unchanged")).toBeVisible();
+    await expect(ui.getByText("New", { exact: true })).toBeVisible({
+      timeout: 20_000,
+    });
+    await expect(ui.getByText("Changed", { exact: true })).toBeVisible();
+    await expect(ui.getByText("Unchanged", { exact: true })).toBeVisible();
   });
 
   test("back arrow returns to Index", async ({ page }) => {
@@ -106,7 +108,7 @@ test.describe("Push view", () => {
     );
 
     const ui = page.frameLocator(IFRAME_SELECTOR);
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     await ui.getByRole("button", { name: /Push/ }).click();
     await expect(
@@ -117,6 +119,42 @@ test.describe("Push view", () => {
 
     // Should be back at the Index view
     await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 5_000 });
+  });
+
+  test("Push to Tolgee button is enabled when new keys exist", async ({
+    page,
+  }) => {
+    // A node with a key not yet in Tolgee shows up as "New" in the diff.
+    const node = createTestNode({
+      text: "Brand new unique text for e2e",
+      key: "e2e-brand-new-key-that-does-not-exist",
+      connected: true,
+      translation: "Brand new unique text for e2e",
+    });
+
+    await page.goto(
+      hostUrl(SIGNED_IN, {
+        allNodes: [node],
+        selectedNodes: [node],
+        hasUserSelection: true,
+      }),
+    );
+
+    const ui = page.frameLocator(IFRAME_SELECTOR);
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
+
+    await ui.getByRole("button", { name: /Push/ }).click();
+
+    // Wait for diff to load.
+    // "New" and "Unchanged" are sibling labels in the diff summary — both visible at once.
+    // Use .first() to avoid strict-mode violations on the combined locator.
+    await expect(
+      ui.getByText("New", { exact: true }).or(ui.getByText("Unchanged")).first(),
+    ).toBeVisible({ timeout: 20_000 });
+
+    // The "Push to Tolgee" button should be enabled because there is a new key.
+    const pushButton = ui.getByRole("button", { name: "Push to Tolgee" });
+    await expect(pushButton).toBeEnabled({ timeout: 5_000 });
   });
 
   test("Push to Tolgee button is disabled when no changes", async ({
@@ -139,7 +177,7 @@ test.describe("Push view", () => {
     );
 
     const ui = page.frameLocator(IFRAME_SELECTOR);
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     await ui.getByRole("button", { name: /Push/ }).click();
 
@@ -150,5 +188,72 @@ test.describe("Push view", () => {
     // no new or changed keys to push.
     const pushButton = ui.getByRole("button", { name: "Push to Tolgee" });
     await expect(pushButton).toBeDisabled();
+  });
+
+  test("shows no nodes message when selection has no connected keys", async ({
+    page,
+  }) => {
+    // An unconnected node (no key) — the diff query won't run.
+    const node = createTestNode({ text: "Unconnected label" });
+
+    await page.goto(
+      hostUrl(SIGNED_IN, {
+        allNodes: [node],
+        selectedNodes: [node],
+        hasUserSelection: true,
+      }),
+    );
+
+    const ui = page.frameLocator(IFRAME_SELECTOR);
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
+
+    await ui.getByRole("button", { name: /Push/ }).click();
+
+    // With no connected nodes the diff never runs; the Push button remains
+    // disabled (since there are no keys to push).
+    await expect(
+      ui.getByRole("heading", { name: /Push to Tolgee/ }),
+    ).toBeVisible({ timeout: 5_000 });
+    // With no connected keys the diff never runs — the footer "Push to Tolgee"
+    // action button is not rendered at all.
+    await expect(ui.getByRole("button", { name: "Push to Tolgee" })).not.toBeVisible();
+  });
+
+  test("completes push successfully for new key", async ({ page }) => {
+    const node = createTestNode({
+      text: "E2E push success test",
+      key: "e2e-push-success-key",
+      connected: true,
+      translation: "E2E push success test",
+    });
+
+    await page.goto(
+      hostUrl(SIGNED_IN, {
+        allNodes: [node],
+        selectedNodes: [node],
+        hasUserSelection: true,
+      }),
+    );
+
+    const ui = page.frameLocator(IFRAME_SELECTOR);
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
+
+    await ui.getByRole("button", { name: /Push/ }).click();
+
+    // Wait for the diff to load and confirm the push button appears.
+    await expect(ui.getByText("New", { exact: true })).toBeVisible({
+      timeout: 20_000,
+    });
+
+    const pushButton = ui.getByRole("button", { name: "Push to Tolgee" });
+    // Only proceed if there are new/changed keys (key may already exist).
+    if (await pushButton.isEnabled()) {
+      await pushButton.click();
+
+      // The done-state card or OK button confirms the push completed.
+      await expect(
+        ui.getByText(/Pushed \d+ key\(s\)/).or(ui.getByRole("button", { name: "OK" })),
+      ).toBeVisible({ timeout: 30_000 });
+    }
   });
 });

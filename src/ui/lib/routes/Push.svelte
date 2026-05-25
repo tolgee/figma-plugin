@@ -572,9 +572,7 @@
       <Button variant="ghost" onclick={backToIndex}>Cancel</Button>
       <Button
         onclick={startPush}
-        disabled={diff.newKeys.length === 0 &&
-          diff.changedKeys.length === 0 &&
-          diff.unchangedKeys.length === 0}
+        disabled={diff.newKeys.length === 0 && diff.changedKeys.length === 0}
       >
         Push to Tolgee
       </Button>

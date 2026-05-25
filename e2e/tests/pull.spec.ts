@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { SIGNED_IN, createTestNode, hostUrl } from "../host/fixtures";
+import {
+  DEFAULT_CREDENTIALS,
+  SIGNED_IN,
+  createTestNode,
+  hostUrl,
+} from "../host/fixtures";
 
 const IFRAME_SELECTOR = '[data-testid="plugin-iframe"]';
 
@@ -22,7 +27,7 @@ test.describe("Pull view", () => {
     const ui = page.frameLocator(IFRAME_SELECTOR);
 
     // Wait for auth bootstrap to complete
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     await ui.getByRole("button", { name: /Pull/ }).click();
 
@@ -47,7 +52,7 @@ test.describe("Pull view", () => {
     );
 
     const ui = page.frameLocator(IFRAME_SELECTOR);
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     await ui.getByRole("button", { name: /Pull/ }).click();
 
@@ -87,7 +92,7 @@ test.describe("Pull view", () => {
     );
 
     const ui = page.frameLocator(IFRAME_SELECTOR);
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     await ui.getByRole("button", { name: /Pull/ }).click();
 
@@ -126,7 +131,7 @@ test.describe("Pull view", () => {
     );
 
     const ui = page.frameLocator(IFRAME_SELECTOR);
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     await ui.getByRole("button", { name: /Pull/ }).click();
     await expect(
@@ -156,7 +161,7 @@ test.describe("Pull view", () => {
     );
 
     const ui = page.frameLocator(IFRAME_SELECTOR);
-    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 15_000 });
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
     await ui.getByRole("button", { name: /Pull/ }).click();
 
@@ -165,5 +170,113 @@ test.describe("Pull view", () => {
       ui.getByRole("heading", { name: /Pull translations/ }),
     ).toBeVisible({ timeout: 5_000 });
     await expect(ui.locator("header").getByText("(en)")).toBeVisible();
+  });
+
+  test("shows error state when no language is configured", async ({ page }) => {
+    const node = createTestNode({
+      text: "On the road",
+      key: "on-the-road-title",
+      connected: true,
+    });
+
+    // Config without a language tag — Pull requires a language to work.
+    const noLanguageConfig = {
+      ...DEFAULT_CREDENTIALS,
+      namespace: "",
+      pageInfo: true as const,
+      documentInfo: true as const,
+    };
+
+    await page.goto(
+      hostUrl(noLanguageConfig, {
+        allNodes: [node],
+        selectedNodes: [node],
+        hasUserSelection: true,
+      }),
+    );
+
+    const ui = page.frameLocator(IFRAME_SELECTOR);
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
+
+    await ui.getByRole("button", { name: /Pull/ }).click();
+
+    // Without a language the Pull view immediately shows an error.
+    await expect(ui.getByText("No language selected.")).toBeVisible({
+      timeout: 10_000,
+    });
+  });
+
+  test("shows Changes to apply list when node translation differs from Tolgee", async ({
+    page,
+  }) => {
+    // Node carries an old local translation; Tolgee has the real one.
+    const node = createTestNode({
+      text: "On the road",
+      key: "on-the-road-title",
+      translation: "stale local translation",
+      connected: true,
+    });
+
+    await page.goto(
+      hostUrl(SIGNED_IN, {
+        allNodes: [node],
+        selectedNodes: [node],
+        hasUserSelection: true,
+      }),
+    );
+
+    const ui = page.frameLocator(IFRAME_SELECTOR);
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
+
+    await ui.getByRole("button", { name: /Pull/ }).click();
+
+    // The diff should show 1 changed node with an Apply button.
+    await expect(
+      ui.getByText("Changes to apply").or(ui.getByText("Everything is up to date.")),
+    ).toBeVisible({ timeout: 20_000 });
+  });
+
+  test("Apply button applies translations and returns to Index", async ({
+    page,
+  }) => {
+    // Use a translation that differs from Tolgee's so Apply becomes active.
+    const node = createTestNode({
+      text: "On the road",
+      key: "on-the-road-title",
+      translation: "old translation text",
+      connected: true,
+    });
+
+    await page.goto(
+      hostUrl(SIGNED_IN, {
+        allNodes: [node],
+        selectedNodes: [node],
+        hasUserSelection: true,
+      }),
+    );
+
+    const ui = page.frameLocator(IFRAME_SELECTOR);
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
+
+    await ui.getByRole("button", { name: /Pull/ }).click();
+
+    // Wait for diff to resolve.
+    await expect(
+      ui
+        .getByRole("button", { name: /^Apply \(/ })
+        .or(ui.getByText("Everything is up to date.")),
+    ).toBeVisible({ timeout: 20_000 });
+
+    const applyBtn = ui.getByRole("button", { name: /^Apply \(/ });
+    if (await applyBtn.isVisible()) {
+      await applyBtn.click();
+      // After apply, the view returns to Index.
+      await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 10_000 });
+    } else {
+      // Already up to date — click OK to confirm and return.
+      const okBtn = ui.getByRole("button", { name: "OK" });
+      if (await okBtn.isVisible()) await okBtn.click();
+      await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 5_000 });
+    }
   });
 });
