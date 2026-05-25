@@ -29,7 +29,7 @@ export function buildKeyDeepLink(
   const base = trimTrailingSlash(config.apiUrl);
   const path = config.projectId
     ? `/projects/${config.projectId}/translations`
-    : `/projects/translations`;
+    : "/projects/translations";
   const params = new URLSearchParams();
   params.set("search", node.key);
   if (node.ns) params.set("filterNamespace", node.ns);

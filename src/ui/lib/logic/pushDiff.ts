@@ -1,9 +1,9 @@
 import type { NodeInfo } from "$shared/types";
+import IntlMessageFormat from "intl-messageformat";
 // Local mini-implementation of `getTolgeeFormat` from `@tginternal/editor`.
 // The upstream package transitively pulls in `@codemirror/{state,view}`
 // (~500 kB raw / ~125 kB gzip) — see `./tolgeeFormat.ts` for the rationale.
 import { getTolgeeFormat } from "./tolgeeFormat";
-import IntlMessageFormat from "intl-messageformat";
 
 /**
  * Subset of `KeyWithTranslationsModel` we depend on for diffing. Kept narrow
@@ -223,7 +223,8 @@ export function buildRemoteMapFromKeys(
   if (!keys) return out;
   for (const k of keys) {
     const ns = k.keyNamespace ?? "";
-    const bucket = out[ns] ?? (out[ns] = {});
+    if (!out[ns]) out[ns] = {};
+    const bucket = out[ns];
     bucket[k.keyName] = {
       translation: k.translations?.[language]?.text,
       keyIsPlural: Boolean(k.keyIsPlural),
@@ -275,8 +276,9 @@ function pluralRendersAreEqual(local: string, remote: string): boolean {
  */
 function extractParam(input: string, out: Set<string>): void {
   const re = /\{\s*([A-Za-z_][\w]*)\s*,\s*plural\s*,/g;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(input)) !== null) {
+  let match = re.exec(input);
+  while (match !== null) {
     if (match[1]) out.add(match[1]);
+    match = re.exec(input);
   }
 }

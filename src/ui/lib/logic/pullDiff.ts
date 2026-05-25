@@ -1,5 +1,5 @@
-import type { NodeInfo } from "$shared/types";
 import { formatIcuMessage } from "$shared/icu";
+import type { NodeInfo } from "$shared/types";
 import type { PulledKey } from "$ui/lib/api/pull";
 import { getTolgeeFormat } from "$ui/lib/logic/tolgeeFormat";
 
@@ -90,7 +90,7 @@ export function pullDiff(
       node.characters &&
       node.characters !== remoteText &&
       !remoteIsPlural &&
-      !Boolean(node.isPlural) &&
+      !node.isPlural &&
       (!node.paramsValues || Object.keys(node.paramsValues).length === 0)
     ) {
       changedNodes.push({

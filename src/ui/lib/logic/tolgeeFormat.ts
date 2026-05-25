@@ -221,7 +221,7 @@ export function getPluralVariants(locale: string): string[] {
 export function getVariantExample(locale: string, variant: string): number | undefined {
   if (variant.startsWith("=")) {
     const n = Number(variant.slice(1));
-    return isNaN(n) ? undefined : n;
+    return Number.isNaN(n) ? undefined : n;
   }
   try {
     const rules = new Intl.PluralRules(locale);
@@ -256,13 +256,7 @@ export function tokenize(input: string, nested = false): Token[] {
   return out;
 }
 
-function _scanText(
-  input: string,
-  from: number,
-  to: number,
-  inPlural: boolean,
-  out: Token[],
-): void {
+function _scanText(input: string, from: number, to: number, inPlural: boolean, out: Token[]): void {
   let textStart = from;
   let i = from;
 
@@ -319,10 +313,10 @@ function _scanBlock(input: string, open: number, close: number, out: Token[]): v
   if (m) {
     const variantsFrom = open + 1 + m[0].length;
     out.push({ kind: "text", text: "{" });
-    out.push({ kind: "variable", text: m[1]! });
-    out.push({ kind: "text", text: m[2]! });
-    out.push({ kind: "keyword", text: m[3]! });
-    out.push({ kind: "text", text: m[4]! });
+    out.push({ kind: "variable", text: m[1] ?? "" });
+    out.push({ kind: "text", text: m[2] ?? "" });
+    out.push({ kind: "keyword", text: m[3] ?? "" });
+    out.push({ kind: "text", text: m[4] ?? "" });
     _scanVariants(input, variantsFrom, close, out);
     out.push({ kind: "text", text: "}" });
     return;
