@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createTolgeeClient } from "../client";
 import { fetchBranches } from "../branches";
+import { createTolgeeClient } from "../client";
 
 type FetchMock = ReturnType<typeof vi.fn>;
 
@@ -62,8 +62,8 @@ describe("fetchBranches", () => {
         _embedded: {
           branches: [
             { name: "main", active: true },
-            { active: false },           // name undefined
-            { name: "", active: false },  // name empty string (falsy)
+            { active: false }, // name undefined
+            { name: "", active: false }, // name empty string (falsy)
           ],
         },
       }),
@@ -76,9 +76,7 @@ describe("fetchBranches", () => {
   });
 
   it("returns [] when the branches array is empty", async () => {
-    installFetchMock(async () =>
-      okResponse({ _embedded: { branches: [] } }),
-    );
+    installFetchMock(async () => okResponse({ _embedded: { branches: [] } }));
     const client = createTolgeeClient("https://app.tolgee.io", "test-key");
 
     const result = await fetchBranches(client);

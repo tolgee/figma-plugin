@@ -51,9 +51,7 @@ describe("fetchRemoteKeys", () => {
   });
 
   it("returns keys from _embedded.keys", async () => {
-    installFetchMock(async () =>
-      okResponse({ _embedded: { keys: [SAMPLE_ROW] } }),
-    );
+    installFetchMock(async () => okResponse({ _embedded: { keys: [SAMPLE_ROW] } }));
     const client = createTolgeeClient("https://app.tolgee.io", "test-key");
 
     const result = await fetchRemoteKeys(client, {
@@ -65,9 +63,7 @@ describe("fetchRemoteKeys", () => {
   });
 
   it("falls back to pagedModel._embedded.keys when _embedded is missing", async () => {
-    installFetchMock(async () =>
-      okResponse({ pagedModel: { _embedded: { keys: [SAMPLE_ROW] } } }),
-    );
+    installFetchMock(async () => okResponse({ pagedModel: { _embedded: { keys: [SAMPLE_ROW] } } }));
     const client = createTolgeeClient("https://app.tolgee.io", "test-key");
 
     const result = await fetchRemoteKeys(client, {
@@ -90,9 +86,7 @@ describe("fetchRemoteKeys", () => {
   });
 
   it("passes branch param in query when provided", async () => {
-    const mock = installFetchMock(async () =>
-      okResponse({ _embedded: { keys: [] } }),
-    );
+    const mock = installFetchMock(async () => okResponse({ _embedded: { keys: [] } }));
     const client = createTolgeeClient("https://app.tolgee.io", "test-key");
 
     await fetchRemoteKeys(client, {
@@ -100,9 +94,10 @@ describe("fetchRemoteKeys", () => {
       branch: "feature/my-branch",
     });
 
-    const calledUrl: string = mock.mock.calls[0]?.[0] instanceof Request
-      ? mock.mock.calls[0][0].url
-      : String(mock.mock.calls[0]?.[0] ?? "");
+    const calledUrl: string =
+      mock.mock.calls[0]?.[0] instanceof Request
+        ? mock.mock.calls[0][0].url
+        : String(mock.mock.calls[0]?.[0] ?? "");
 
     expect(calledUrl).toContain("branch=feature%2Fmy-branch");
   });

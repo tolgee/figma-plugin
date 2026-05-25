@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
-import { formatNodeText, pullDiff } from "$ui/lib/logic/pullDiff";
 import type { NodeInfo } from "$shared/types";
 import type { PulledKey } from "$ui/lib/api/pull";
+import { formatNodeText, pullDiff } from "$ui/lib/logic/pullDiff";
+import { describe, expect, it } from "vitest";
 
 function makeNode(overrides: Partial<NodeInfo> = {}): NodeInfo {
   return {

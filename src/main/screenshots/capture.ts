@@ -1,5 +1,5 @@
-import type { FrameInfo, FrameScreenshot, NodeInfo } from "$shared/types";
 import { getNodeInfo } from "$main/nodes/getNodeInfo";
+import type { FrameInfo, FrameScreenshot, NodeInfo } from "$shared/types";
 import { groupNodesByFrame } from "./groupByFrame";
 import { getNodeRelativePosition } from "./position";
 

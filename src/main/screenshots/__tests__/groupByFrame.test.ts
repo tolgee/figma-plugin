@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { findOutermostFrame, groupNodesByFrame } from "$main/screenshots/groupByFrame";
+import { describe, expect, it } from "vitest";
 
 /**
  * Minimal subset of `BaseNode` we need to assemble fake parent chains.

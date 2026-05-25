@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { formatIcuMessage } from "$shared/icu";
+import { describe, expect, it } from "vitest";
 
 describe("formatIcuMessage", () => {
   it("returns plain text unchanged when there are no placeholders and no params", () => {

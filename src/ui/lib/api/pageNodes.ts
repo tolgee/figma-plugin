@@ -1,5 +1,5 @@
-import { nextCorrelationId, on, send } from "$ui/lib/bus";
 import type { NodeInfo } from "$shared/types";
+import { nextCorrelationId, on, send } from "$ui/lib/bus";
 
 /**
  * Round-trip to the main thread for every connected text node on the current

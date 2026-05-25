@@ -100,16 +100,15 @@ describe("searchKeys", () => {
   });
 
   it("passes the correct languageTag as a query param", async () => {
-    const mock = installFetchMock(async () =>
-      okResponse({ _embedded: { keys: [] } }),
-    );
+    const mock = installFetchMock(async () => okResponse({ _embedded: { keys: [] } }));
     const client = createTolgeeClient("https://app.tolgee.io", "test-key");
 
     await searchKeys(client, "search-term", "de", 10);
 
-    const calledUrl: string = mock.mock.calls[0]?.[0] instanceof Request
-      ? mock.mock.calls[0][0].url
-      : String(mock.mock.calls[0]?.[0] ?? "");
+    const calledUrl: string =
+      mock.mock.calls[0]?.[0] instanceof Request
+        ? mock.mock.calls[0][0].url
+        : String(mock.mock.calls[0]?.[0] ?? "");
 
     expect(calledUrl).toContain("languageTag=de");
     expect(calledUrl).toContain("search=search-term");

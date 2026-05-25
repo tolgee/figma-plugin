@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { getTolgeeFormat } from "$ui/lib/logic/tolgeeFormat";
+import { describe, expect, it } from "vitest";
 
 describe("getTolgeeFormat (non-plural)", () => {
   it("wraps plain text as the `other` variant", () => {

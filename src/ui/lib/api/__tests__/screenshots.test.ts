@@ -48,9 +48,9 @@ describe("uploadScreenshot", () => {
 
   it("throws when apiUrl is empty string", async () => {
     // No fetch mock needed — the guard runs before the request.
-    await expect(
-      uploadScreenshot("", "tg-key", makeImage(), DEFAULT_INFO),
-    ).rejects.toThrow("Cannot upload screenshot: API URL is empty");
+    await expect(uploadScreenshot("", "tg-key", makeImage(), DEFAULT_INFO)).rejects.toThrow(
+      "Cannot upload screenshot: API URL is empty",
+    );
   });
 
   it("throws on non-ok HTTP response", async () => {

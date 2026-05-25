@@ -1,9 +1,14 @@
-import { describe, expect, it } from "vitest";
-import { canonicalKey, resolutionKey, defaultResolutions, buildPayload } from "$ui/lib/logic/pushFlow";
-import type { PushContext } from "$ui/lib/logic/pushFlow";
-import type { SimpleImportConflictResult } from "$ui/lib/api/push";
-import type { NodeInfo, FrameScreenshot } from "$shared/types";
+import type { FrameScreenshot, NodeInfo } from "$shared/types";
 import type { TolgeeClient } from "$ui/lib/api/client";
+import type { SimpleImportConflictResult } from "$ui/lib/api/push";
+import {
+  buildPayload,
+  canonicalKey,
+  defaultResolutions,
+  resolutionKey,
+} from "$ui/lib/logic/pushFlow";
+import type { PushContext } from "$ui/lib/logic/pushFlow";
+import { describe, expect, it } from "vitest";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -96,9 +101,7 @@ describe("defaultResolutions", () => {
   });
 
   it("uses resolutionKey format (ns|keyName) for map keys", () => {
-    const conflicts = [
-      makeConflict({ keyName: "btn", keyNamespace: "ui", isOverridable: true }),
-    ];
+    const conflicts = [makeConflict({ keyName: "btn", keyNamespace: "ui", isOverridable: true })];
     const result = defaultResolutions(conflicts);
     expect(Object.keys(result)).toContain("ui|btn");
   });
@@ -250,9 +253,7 @@ describe("buildPayload", () => {
 
     expect(item?.screenshots).toHaveLength(1);
     expect(item?.screenshots?.[0]?.uploadedImageId).toBe(42);
-    expect(item?.screenshots?.[0]?.positions).toEqual([
-      { x: 10, y: 20, width: 100, height: 50 },
-    ]);
+    expect(item?.screenshots?.[0]?.positions).toEqual([{ x: 10, y: 20, width: 100, height: 50 }]);
   });
 
   it("excludes screenshots whose key does not match the node", () => {

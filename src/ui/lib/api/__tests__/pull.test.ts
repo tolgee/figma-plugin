@@ -161,14 +161,13 @@ describe("fetchAllTranslations", () => {
 
   // 4. Calls onProgress after each page with loaded count and total
   it("calls onProgress after each page with loaded count and total", async () => {
-    const page1 = translationsResponse(
-      [{ keyName: "a", translations: { en: { text: "A" } } }],
-      { totalElements: 2, nextCursor: "cur" },
-    );
-    const page2 = translationsResponse(
-      [{ keyName: "b", translations: { en: { text: "B" } } }],
-      { totalElements: 2 },
-    );
+    const page1 = translationsResponse([{ keyName: "a", translations: { en: { text: "A" } } }], {
+      totalElements: 2,
+      nextCursor: "cur",
+    });
+    const page2 = translationsResponse([{ keyName: "b", translations: { en: { text: "B" } } }], {
+      totalElements: 2,
+    });
 
     let callCount = 0;
     installFetchMock(async () => okResponse(callCount++ === 0 ? page1 : page2));
@@ -188,8 +187,14 @@ describe("fetchAllTranslations", () => {
   it("fetches multiple namespaces in parallel with correct filterNamespace per request", async () => {
     // Each namespace gets its own single-page response
     const responses: Record<string, unknown> = {
-      ns1: translationsResponse([{ keyName: "k1", keyNamespace: "ns1", translations: { en: { text: "K1" } } }], { totalElements: 1 }),
-      ns2: translationsResponse([{ keyName: "k2", keyNamespace: "ns2", translations: { en: { text: "K2" } } }], { totalElements: 1 }),
+      ns1: translationsResponse(
+        [{ keyName: "k1", keyNamespace: "ns1", translations: { en: { text: "K1" } } }],
+        { totalElements: 1 },
+      ),
+      ns2: translationsResponse(
+        [{ keyName: "k2", keyNamespace: "ns2", translations: { en: { text: "K2" } } }],
+        { totalElements: 1 },
+      ),
     };
 
     const mock = installFetchMock(async (input) => {
@@ -261,31 +266,31 @@ describe("fetchAllTranslations", () => {
 
   // 8. Throws error code on API error
   it("throws the error code string when the API returns an error object with a code", async () => {
-    installFetchMock(async () =>
-      new Response(JSON.stringify({ code: "invalid_project_api_key" }), {
-        status: 403,
-        headers: { "Content-Type": "application/json" },
-      }),
+    installFetchMock(
+      async () =>
+        new Response(JSON.stringify({ code: "invalid_project_api_key" }), {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        }),
     );
 
     const client = makeClient();
-    await expect(
-      fetchAllTranslations(client, { languages: ["en"] }),
-    ).rejects.toBe("invalid_project_api_key");
+    await expect(fetchAllTranslations(client, { languages: ["en"] })).rejects.toBe(
+      "invalid_project_api_key",
+    );
   });
 
   it("throws an Error when the API error has no code field", async () => {
-    installFetchMock(async () =>
-      new Response(JSON.stringify({ message: "something went wrong" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }),
+    installFetchMock(
+      async () =>
+        new Response(JSON.stringify({ message: "something went wrong" }), {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }),
     );
 
     const client = makeClient();
-    await expect(
-      fetchAllTranslations(client, { languages: ["en"] }),
-    ).rejects.toBeInstanceOf(Error);
+    await expect(fetchAllTranslations(client, { languages: ["en"] })).rejects.toBeInstanceOf(Error);
   });
 
   // 9. Signal is forwarded to the fetch call
@@ -341,10 +346,10 @@ describe("fetchAllTranslations", () => {
     // Two namespaces: ns1 resolves on first call, ns2 resolves on second
     // We can only verify the combined onProgress is correct after both finish.
     // Use a simpler single-namespace variant and verify first call total is correct.
-    const page1 = translationsResponse(
-      [{ keyName: "x", translations: { en: { text: "X" } } }],
-      { totalElements: 3, nextCursor: "c1" },
-    );
+    const page1 = translationsResponse([{ keyName: "x", translations: { en: { text: "X" } } }], {
+      totalElements: 3,
+      nextCursor: "c1",
+    });
     const page2 = translationsResponse(
       [
         { keyName: "y", translations: { en: { text: "Y" } } },

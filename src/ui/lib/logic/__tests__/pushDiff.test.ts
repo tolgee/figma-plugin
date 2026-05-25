@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
+import type { NodeInfo } from "$shared/types";
 import { buildRemoteMapFromKeys, pushDiff } from "$ui/lib/logic/pushDiff";
 import type { RemoteTranslationMap } from "$ui/lib/logic/pushDiff";
-import type { NodeInfo } from "$shared/types";
+import { describe, expect, it } from "vitest";
 
 function makeNode(overrides: Partial<NodeInfo> = {}): NodeInfo {
   return {

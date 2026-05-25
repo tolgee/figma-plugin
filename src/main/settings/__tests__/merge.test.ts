@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { mergeConfig, splitConfig } from "$main/settings/merge";
 import type {
   CurrentDocumentSettings,
@@ -7,6 +6,7 @@ import type {
   NodeInfo,
   TolgeeConfig,
 } from "$shared/types";
+import { describe, expect, it } from "vitest";
 
 describe("mergeConfig", () => {
   it("page wins over doc wins over global (right-wins precedence)", () => {

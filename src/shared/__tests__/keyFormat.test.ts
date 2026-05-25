@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
 import { applyCasing, formatKey } from "$shared/keyFormat";
 import type { GlobalSettings } from "$shared/types";
+import { describe, expect, it } from "vitest";
 
 type Casing = NonNullable<GlobalSettings["variableCasing"]>;
 

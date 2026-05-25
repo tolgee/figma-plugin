@@ -1,4 +1,3 @@
-import { UI_SIZES } from "$shared/constants";
 import { attachBus, on, send } from "$main/bus";
 import {
   clearCurrentPage,
@@ -9,12 +8,13 @@ import {
 } from "$main/handlers/annotations";
 import { createCopy } from "$main/handlers/createCopy";
 import { applyTranslations } from "$main/handlers/nodes";
-import { getSelectionInfo, setNodesData } from "$main/nodes/selection";
-import { scanConnectedNodes } from "$main/nodes/scan";
 import { getNodeInfo } from "$main/nodes/getNodeInfo";
 import { cleanUpHighlights, highlightNode } from "$main/nodes/highlight";
+import { scanConnectedNodes } from "$main/nodes/scan";
+import { getSelectionInfo, setNodesData } from "$main/nodes/selection";
 import { captureScreenshots } from "$main/screenshots/capture";
 import { readMergedConfig, resetConfig, writeConfig } from "$main/settings";
+import { UI_SIZES } from "$shared/constants";
 
 // When the manifest's `ui` is a string, Figma injects `__html__`. When it's
 // an object (per-editor UIs), Figma injects `__uiFiles__` instead with one
