@@ -72,13 +72,9 @@
     send({ type: "scroll-to-node", id: node.id });
   }
 
-  function openDetails(): void {
+  function openConnectView(): void {
     focusNode();
-    if (node.connected) {
-      appState.navigate({ name: "stringDetails", node });
-    } else {
-      appState.navigate({ name: "connect", node });
-    }
+    appState.navigate({ name: "connect", node });
   }
 
   function openStringDetails(): void {
@@ -101,15 +97,15 @@
     >
       {node.characters || "(empty)"}
     </button>
-    {#if node.connected}
-      <span
-        class="flex shrink-0 items-center gap-1 text-[10px] text-text-secondary"
-        title="Connected"
-      >
-        <span class="inline-block h-1.5 w-1.5 rounded-full bg-green-500"></span>
-        connected
-      </span>
-    {/if}
+    <button
+      type="button"
+      class="flex h-5 w-5 shrink-0 items-center justify-center rounded text-text-secondary hover:bg-(--figma-color-bg-hover) hover:text-text"
+      class:opacity-50={!node.connected}
+      title="Connect to existing key"
+      onclick={openConnectView}
+    >
+      <Link2 size={12} />
+    </button>
   </div>
 
   {#if node.connected}
@@ -117,27 +113,17 @@
       type="button"
       class="truncate text-left text-xs font-semibold text-text hover:text-text-brand"
       title={formatConnected(node)}
-      onclick={openDetails}
+      onclick={openStringDetails}
     >
       {formatConnected(node)}
     </button>
   {:else}
-    <div class="flex items-center gap-1.5">
-      <input
-        type="text"
-        class="h-6 min-w-0 flex-1 rounded border border-border bg-bg px-1.5 text-xs text-text focus:border-border-brand focus:outline-none"
-        placeholder="Key name"
-        value={key}
-        oninput={handleKeyInput}
-      />
-      <button
-        type="button"
-        class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-text-secondary hover:bg-(--figma-color-bg-hover) hover:text-text"
-        title="Connect to existing key"
-        onclick={openDetails}
-      >
-        <Link2 size={12} />
-      </button>
-    </div>
+    <input
+      type="text"
+      class="h-6 w-full rounded border border-border bg-bg px-1.5 text-xs text-text focus:border-border-brand focus:outline-none"
+      placeholder="Key name"
+      value={key}
+      oninput={handleKeyInput}
+    />
   {/if}
 </li>

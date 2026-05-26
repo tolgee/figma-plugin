@@ -10,7 +10,6 @@
   import Button from "$ui/lib/components/ui/button.svelte";
   import UploadCloud from "lucide-svelte/icons/upload-cloud";
   import DownloadCloud from "lucide-svelte/icons/download-cloud";
-  import Link2 from "lucide-svelte/icons/link-2";
 
   const selectedNodes = $derived(appState.value.selectedNodes);
   const hasSelection = $derived(selectedNodes.length > 0);
@@ -102,12 +101,6 @@
           <DownloadCloud size={12} /> Pull
         </Button>
       </div>
-      {#if selectedNodes.length === 1 && selectedNodes[0]}
-        {@const node = selectedNodes[0]}
-        <Button variant="ghost" onclick={() => go({ name: "connect", node })}>
-          <Link2 size={12} /> Connect to existing key
-        </Button>
-      {/if}
     </div>
   {/if}
 </div>

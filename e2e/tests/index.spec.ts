@@ -116,10 +116,10 @@ test.describe("Index view", () => {
 
     const ui = page.frameLocator(IFRAME_SELECTOR);
 
-    // Auth bootstrap must complete before the count is meaningful.
-    await expect(
-      ui.getByText("2 on this page").or(ui.getByText("0 on this page")),
-    ).toBeVisible({ timeout: 30_000 });
+    // Auth bootstrap and the page-connected-nodes query must both settle.
+    await expect(ui.getByText("2 on this page")).toBeVisible({
+      timeout: 30_000,
+    });
   });
 
   test("shows empty state when no nodes on page or in selection", async ({

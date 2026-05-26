@@ -125,12 +125,9 @@ test.describe("Settings", () => {
 
     await ui.getByRole("button", { name: "Save" }).click();
 
-    // After Save, the app navigates back to Index. Push/Pull buttons indicate
-    // the Index view is shown.
-    await expect(
-      ui.getByRole("button", { name: /Push/ }).or(
-        ui.getByText("Sign in to connect this document with Tolgee."),
-      ),
-    ).toBeVisible({ timeout: 10_000 });
+    // After Save with valid credentials, the app navigates to Index.
+    await expect(ui.getByRole("button", { name: /Push/ })).toBeVisible({
+      timeout: 30_000,
+    });
   });
 });

@@ -52,6 +52,9 @@ test.describe("Connect view", () => {
 
     // After connecting, the UI navigates back to the Index view.
     await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 5_000 });
+    // The list-item row must show the connected state.
+    await expect(ui.getByText("connected")).toBeVisible();
+    await expect(ui.getByText("my-new-key")).toBeVisible();
   });
 
   test("cancels connect and returns to Index", async ({ page }) => {
@@ -99,10 +102,7 @@ test.describe("Connect view", () => {
 
     await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
-    // For a connected node, click the "Connect to existing key" icon button in
-    // the Index footer — this opens the Connect view for the selected node,
-    // which shows the Remove connection button.
-    await ui.getByRole("button", { name: "Connect to existing key" }).click();
+    await ui.getByTitle("Connect to existing key").click();
 
     await expect(
       ui.getByRole("button", { name: "Remove connection" }),
@@ -187,7 +187,7 @@ test.describe("Connect view", () => {
     const ui = page.frameLocator(IFRAME_SELECTOR);
     await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
 
-    await ui.getByRole("button", { name: "Connect to existing key" }).click();
+    await ui.getByTitle("Connect to existing key").click();
     await expect(
       ui.getByRole("button", { name: "Remove connection" }),
     ).toBeVisible({ timeout: 5_000 });
@@ -196,6 +196,76 @@ test.describe("Connect view", () => {
 
     // After removing, the view returns to Index.
     await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 5_000 });
+    // The node row must show the inline key input, not the connected badge.
+    await expect(ui.locator('input[placeholder="Key name"]')).toBeVisible();
+    await expect(ui.getByText("connected")).not.toBeVisible();
+  });
+
+  test("search shows results and selecting one fills the key field", async ({
+    page,
+  }) => {
+    const node = createTestNode({ text: "On the road" });
+
+    await page.goto(
+      hostUrl(SIGNED_IN, {
+        allNodes: [node],
+        selectedNodes: [node],
+        hasUserSelection: true,
+      }),
+    );
+
+    const ui = page.frameLocator(IFRAME_SELECTOR);
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
+
+    await ui.getByTitle("Connect to existing key").click();
+    await expect(ui.getByText("Connect to Tolgee")).toBeVisible({
+      timeout: 5_000,
+    });
+
+    // Type a partial key name into the search field (300 ms debounce + API call).
+    await ui.getByPlaceholder("Search existing keys…").fill("on-the-road");
+    await expect(ui.getByText("on-the-road-title")).toBeVisible({
+      timeout: 10_000,
+    });
+
+    // Click the result — it should populate the key field.
+    await ui.getByRole("button", { name: /on-the-road-title/ }).click();
+    await expect(ui.locator("#connect-key")).toHaveValue("on-the-road-title");
+  });
+
+  test("search result connect returns connected node to Index", async ({
+    page,
+  }) => {
+    const node = createTestNode({ text: "On the road" });
+
+    await page.goto(
+      hostUrl(SIGNED_IN, {
+        allNodes: [node],
+        selectedNodes: [node],
+        hasUserSelection: true,
+      }),
+    );
+
+    const ui = page.frameLocator(IFRAME_SELECTOR);
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 30_000 });
+
+    await ui.getByTitle("Connect to existing key").click();
+    await expect(ui.getByText("Connect to Tolgee")).toBeVisible({
+      timeout: 5_000,
+    });
+
+    // Search, select a result, then connect.
+    await ui.getByPlaceholder("Search existing keys…").fill("on-the-road");
+    await expect(ui.getByText("on-the-road-title")).toBeVisible({
+      timeout: 10_000,
+    });
+    await ui.getByRole("button", { name: /on-the-road-title/ }).click();
+    await ui.getByRole("button", { name: "Connect" }).click();
+
+    // The node row must now reflect the connected state.
+    await expect(ui.getByText("1 selected")).toBeVisible({ timeout: 5_000 });
+    await expect(ui.getByText("connected")).toBeVisible();
+    await expect(ui.getByText("on-the-road-title")).toBeVisible();
   });
 
   test("shows 'No node selected' when navigated without a node", async ({

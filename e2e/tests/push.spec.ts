@@ -127,7 +127,7 @@ test.describe("Push view", () => {
     // A node with a key not yet in Tolgee shows up as "New" in the diff.
     const node = createTestNode({
       text: "Brand new unique text for e2e",
-      key: "e2e-brand-new-key-that-does-not-exist",
+      key: `e2e-brand-new-key-${Date.now()}`,
       connected: true,
       translation: "Brand new unique text for e2e",
     });
@@ -145,14 +145,12 @@ test.describe("Push view", () => {
 
     await ui.getByRole("button", { name: /Push/ }).click();
 
-    // Wait for diff to load.
-    // "New" and "Unchanged" are sibling labels in the diff summary — both visible at once.
-    // Use .first() to avoid strict-mode violations on the combined locator.
-    await expect(
-      ui.getByText("New", { exact: true }).or(ui.getByText("Unchanged")).first(),
-    ).toBeVisible({ timeout: 20_000 });
+    // Key is new — "New" label must appear in the diff summary.
+    await expect(ui.getByText("New", { exact: true })).toBeVisible({
+      timeout: 20_000,
+    });
 
-    // The "Push to Tolgee" button should be enabled because there is a new key.
+    // The "Push to Tolgee" button must be enabled because there is a new key.
     const pushButton = ui.getByRole("button", { name: "Push to Tolgee" });
     await expect(pushButton).toBeEnabled({ timeout: 5_000 });
   });
@@ -220,9 +218,11 @@ test.describe("Push view", () => {
   });
 
   test("completes push successfully for new key", async ({ page }) => {
+    // Timestamp suffix guarantees this key never exists before the test runs.
+    const uniqueKey = `e2e-push-success-${Date.now()}`;
     const node = createTestNode({
       text: "E2E push success test",
-      key: "e2e-push-success-key",
+      key: uniqueKey,
       connected: true,
       translation: "E2E push success test",
     });
@@ -240,20 +240,18 @@ test.describe("Push view", () => {
 
     await ui.getByRole("button", { name: /Push/ }).click();
 
-    // Wait for the diff to load and confirm the push button appears.
+    // Key is new — "New" label must appear in the diff summary.
     await expect(ui.getByText("New", { exact: true })).toBeVisible({
       timeout: 20_000,
     });
 
     const pushButton = ui.getByRole("button", { name: "Push to Tolgee" });
-    // Only proceed if there are new/changed keys (key may already exist).
-    if (await pushButton.isEnabled()) {
-      await pushButton.click();
+    await expect(pushButton).toBeEnabled({ timeout: 5_000 });
+    await pushButton.click();
 
-      // The done-state card or OK button confirms the push completed.
-      await expect(
-        ui.getByText(/Pushed \d+ key\(s\)/).or(ui.getByRole("button", { name: "OK" })),
-      ).toBeVisible({ timeout: 30_000 });
-    }
+    // The done-state card must show the pushed-key count.
+    await expect(ui.getByText(/Pushed \d+ key\(s\) to Tolgee/)).toBeVisible({
+      timeout: 30_000,
+    });
   });
 });
