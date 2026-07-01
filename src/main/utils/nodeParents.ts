@@ -35,6 +35,17 @@ export function getAllParents(nodeId: string): NodeParents {
       !result.component
     ) {
       result.component = parent;
+    } else if (parent.type === "INSTANCE" && !result.component) {
+      // For an instance, resolve the main component it was created from.
+      // If that component is a variant inside a component set, use the set
+      // so the key gets the recognizable component name (e.g. "Button").
+      const mainComponent = parent.mainComponent;
+      if (mainComponent) {
+        result.component =
+          mainComponent.parent?.type === "COMPONENT_SET"
+            ? (mainComponent.parent as ComponentSetNode)
+            : mainComponent;
+      }
     } else if (parent.type === "SECTION" && !result.section) {
       result.section = parent;
     } else if (parent.type === "GROUP" && !result.group) {
