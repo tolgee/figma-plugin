@@ -64,6 +64,7 @@ export const Router = () => {
   const routeKey = useGlobalState((c) => c.routeKey);
   const globalError = useGlobalState((c) => c.globalError);
   const documentInfo = useGlobalState((c) => c.config?.documentInfo);
+  const apiKey = useGlobalState((c) => c.config?.apiKey);
   const pageInfo = useGlobalState((c) => c.config?.pageInfo);
   const pageCopy = useGlobalState((c) => c.config?.pageCopy);
   const pageStringDetails = useGlobalState((c) => c.config?.pageStringDetails);
@@ -71,7 +72,11 @@ export const Router = () => {
   const { setRoute } = useGlobalActions();
   const editorMode = useEditorMode();
 
-  const forceSettings = !pageCopy && !documentInfo;
+  // The apiKey now lives in per-user clientStorage, not the shared document, so
+  // a collaborator can open a configured file (documentInfo is set) yet have no
+  // key of their own. Force them into Settings to enter one instead of dropping
+  // them on a non-working Index.
+  const forceSettings = !pageCopy && (!documentInfo || !apiKey);
   const errorOnTop = !forceSettings && routeKey !== "settings";
 
   const handleResolveError = () => {

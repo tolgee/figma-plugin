@@ -36,19 +36,33 @@ export const deleteGlobalSettings = async () => {
 
 export const getDocumentData = (): Partial<CurrentDocumentSettings> => {
   const pluginData = figma.root.getPluginData(TOLGEE_PLUGIN_CONFIG_NAME);
-  const result = pluginData
-    ? (JSON.parse(pluginData) as Partial<CurrentDocumentSettings>)
+  // Parse into a loose record first so the self-heal can strip a field the
+  // declared type no longer admits, then narrow on return.
+  const stored = pluginData
+    ? (JSON.parse(pluginData) as Record<string, unknown>)
     : {};
+
+  // Self-heal: older versions persisted the apiKey into the shared document.
+  // Drop it so a leaked key can never override the per-user key from
+  // clientStorage (and so it stops being surfaced to other collaborators).
+  delete stored.apiKey;
 
   return {
     ignorePrefix: "_",
     ignoreNumbers: true,
-    ...result,
+    ...(stored as Partial<CurrentDocumentSettings>),
   };
 };
 
 const setDocumentData = (data: Partial<CurrentDocumentSettings>) => {
-  figma.root.setPluginData(TOLGEE_PLUGIN_CONFIG_NAME, JSON.stringify(data));
+  // Defense in depth: never write the apiKey into the shared document, even if
+  // a caller bypasses the type. The secret belongs in clientStorage only.
+  const documentData = { ...data };
+  delete (documentData as { apiKey?: string }).apiKey;
+  figma.root.setPluginData(
+    TOLGEE_PLUGIN_CONFIG_NAME,
+    JSON.stringify(documentData),
+  );
 };
 
 export const deleteDocumentData = () => {
@@ -93,10 +107,10 @@ export const setPluginData = async (data: Partial<TolgeeConfig>) => {
     updateScreenshots,
     variableCasing,
   } = data;
+  // apiKey -> per-user clientStorage only (never the shared document).
   await setGlobalSettings({ apiKey, apiUrl, ignorePrefix, ignoreNumbers });
   setDocumentData({
     addTags,
-    apiKey,
     apiUrl,
     branch,
     documentInfo: true,

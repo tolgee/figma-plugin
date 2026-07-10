@@ -130,7 +130,12 @@ export type GlobalSettings = {
     | "noSpaces";
 };
 
-export type CurrentDocumentSettings = GlobalSettings & {
+// NOTE: `apiKey` is intentionally omitted. The API key is a secret and must
+// never be persisted in the shared document (figma.root pluginData), which is
+// stored in plaintext in the .fig file, syncs to every collaborator and travels
+// with file copies/exports. The key lives in figma.clientStorage (per-user)
+// only — see settingsTools.ts.
+export type CurrentDocumentSettings = Omit<GlobalSettings, "apiKey"> & {
   namespace: string;
   branch?: string;
   documentInfo: true;
@@ -144,7 +149,11 @@ export type CurrentPageSettings = {
   nodeInfo?: NodeInfo;
 };
 
-export type TolgeeConfig = CurrentDocumentSettings & CurrentPageSettings;
+// The full in-memory config the UI works with. `apiKey` comes from the
+// per-user clientStorage layer, the rest from the document/page layers.
+export type TolgeeConfig = Pick<GlobalSettings, "apiKey"> &
+  CurrentDocumentSettings &
+  CurrentPageSettings;
 
 export type FormattedNode = {
   characters: string;
