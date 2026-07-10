@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font: 12px ui-monospace, Menlo, Monaco, Consolas, monospace;
+        margin: 0;
+        padding: 12px;
+        background: #fafafa;
+      }
+      label {
+        display: block;
+        margin: 8px 0 2px;
+        color: #666;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 6px 8px;
+        font-family: inherit;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-sizing: border-box;
+        resize: vertical;
+      }
+      textarea {
+        min-height: 100px;
+      }
+      .row {
+        margin-top: 12px;
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+      button {
+        padding: 6px 12px;
+        font-family: inherit;
+        background: #fff;
+        border: 1px solid #aaa;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      button#save {
+        background: #1e1e1e;
+        color: #fff;
+        border-color: #1e1e1e;
+      }
+      .hint {
+        margin-top: 4px;
+        font-size: 10px;
+        color: #999;
+      }
+    </style>
+  </head>
+  <body>
+    <label>Key</label>
+    <input id="key" />
+    <label>Translation</label>
+    <textarea id="translation"></textarea>
+    <div class="hint">Markup: &lt;b&gt;…&lt;/b&gt;, &lt;i&gt;…&lt;/i&gt;, &lt;u&gt;…&lt;/u&gt;</div>
+    <div class="row">
+      <button id="cancel">Cancel</button>
+      <button id="save">Save</button>
+    </div>
+    <!--SCRIPT-->
+  </body>
+</html>
