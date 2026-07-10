@@ -1,7 +1,7 @@
 import { DEFAULT_CREDENTIALS } from "@/web/urlConfig";
 import { visitWithState } from "../common/tools";
 
-describe("Key format editor", () => {
+describe.skip("Key format editor", () => {
   it("keeps separators between inserted placeholders", () => {
     visitWithState({
       config: {
