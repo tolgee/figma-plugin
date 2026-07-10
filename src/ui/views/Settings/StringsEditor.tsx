@@ -99,13 +99,7 @@ export const StringsEditor = ({
       label,
       detail,
       type: "keyword" as const,
-      apply(view: EditorView, _: any, from: number, to: number) {
-        const insert = insertText;
-        view.dispatch({
-          changes: { from, to, insert },
-          selection: { anchor: from + insert.length },
-        });
-      },
+      apply: insertText,
     };
   }
 
@@ -174,6 +168,12 @@ export const StringsEditor = ({
           callbacksRef.current?.onChange?.(v.state.doc.toString());
         }
       }),
+      EditorView.domEventHandlers({
+        click(_event, view) {
+          startCompletion(view);
+          return false;
+        },
+      }),
       placeholders.current.of(
         PlaceholderPlugin({
           examplePluralNum: 1,
@@ -227,12 +227,6 @@ export const StringsEditor = ({
   return (
     <div class="editor-wrapper">
       <div
-        onClick={() => {
-          startCompletion(editor.current!);
-        }}
-        onKeyDown={() => {
-          startCompletion(editor.current!);
-        }}
         class="strings-editor"
         data-cy="global-editor"
         ref={ref}
