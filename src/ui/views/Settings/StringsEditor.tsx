@@ -1,7 +1,7 @@
 import { h, RefObject } from "preact";
 import { useEffect, useRef } from "preact/hooks";
 import { minimalSetup } from "codemirror";
-import { Compartment, EditorState } from "@codemirror/state";
+import { Compartment, EditorSelection, EditorState } from "@codemirror/state";
 import {
   ViewUpdate,
   EditorView,
@@ -13,8 +13,10 @@ import { PlaceholderPlugin } from "@tginternal/editor";
 import "!./StringsEditor.css";
 import {
   autocompletion,
+  Completion,
   CompletionContext,
   CompletionResult,
+  pickedCompletion,
   startCompletion,
 } from "@codemirror/autocomplete";
 
@@ -99,7 +101,20 @@ export const StringsEditor = ({
       label,
       detail,
       type: "keyword" as const,
-      apply: insertText,
+      apply(
+        view: EditorView,
+        completion: Completion,
+        from: number,
+        to: number,
+      ) {
+        view.dispatch({
+          changes: { from, to, insert: insertText },
+          selection: EditorSelection.cursor(from + insertText.length, -1),
+          annotations: pickedCompletion.of(completion),
+          scrollIntoView: true,
+          userEvent: "input.complete",
+        });
+      },
     };
   }
 

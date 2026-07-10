@@ -4,7 +4,10 @@
 
 **Goal:** Keep separators and the cursor at the intended position when users combine multiple placeholders in the key-format editor.
 
-**Architecture:** Let CodeMirror own completion insertion, selection mapping, and completion closing. Open completion from a CodeMirror content click handler instead of restarting it from every bubbled click and keydown event.
+**Architecture:** Use CodeMirror's completion lifecycle and content click handler
+instead of restarting completion from bubbled events. The visual-caret follow-up
+customizes only the completion transaction's cursor association so CodeMirror
+draws the caret on the logical side of an atomic placeholder.
 
 **Tech Stack:** TypeScript, Preact, CodeMirror 6, Cypress, Bun
 
@@ -14,6 +17,8 @@
 - Do not change placeholder names, formatting, preview generation, or persistence.
 - Add no dependencies or new abstractions.
 - Use Bun for project commands.
+- Do not add or run Cypress coverage for the visual-caret follow-up; the reporter
+  will verify it manually.
 
 ---
 
@@ -129,4 +134,71 @@ Expected: the Cypress spec passes, TypeScript reports no errors, and the plugin 
 ```bash
 git add cypress/e2e/keyFormatEditor.cy.ts src/ui/views/Settings/StringsEditor.tsx docs/superpowers/plans/2026-07-10-key-format-cursor.md
 git commit -m "fix(settings): preserve key format cursor position"
+```
+
+### Task 2: Render the caret on the logical side of a placeholder
+
+**Files:**
+
+- Modify: `src/ui/views/Settings/StringsEditor.tsx:3,16-21,93-106`
+- Modify: `docs/superpowers/specs/2026-07-10-key-format-cursor-design.md:37-53`
+
+**Interfaces:**
+
+- Consumes: CodeMirror `Completion`, `EditorSelection.cursor`,
+  `pickedCompletion`, and the existing placeholder completion range.
+- Produces: the existing completion option shape with a custom `apply` function
+  that places the cursor at `from + insertText.length` with `assoc: -1`.
+
+- [x] **Step 1: Apply the completion with an explicit cursor association**
+
+Import the selection and completion APIs:
+
+```typescript
+import { Compartment, EditorSelection, EditorState } from "@codemirror/state";
+import {
+  autocompletion,
+  Completion,
+  CompletionContext,
+  CompletionResult,
+  pickedCompletion,
+  startCompletion,
+} from "@codemirror/autocomplete";
+```
+
+Replace the string `apply` value in `createCompletionOption` with a typed
+function that preserves CodeMirror's completion annotation:
+
+```typescript
+apply(view: EditorView, completion: Completion, from: number, to: number) {
+  view.dispatch({
+    changes: { from, to, insert: insertText },
+    selection: EditorSelection.cursor(from + insertText.length, -1),
+    annotations: pickedCompletion.of(completion),
+    scrollIntoView: true,
+    userEvent: "input.complete",
+  });
+},
+```
+
+- [x] **Step 2: Run static verification**
+
+Run:
+
+```bash
+bun run tsc
+bun run build
+```
+
+Expected: TypeScript reports no errors and the plugin build completes
+successfully. Do not run Cypress; the reporter will verify left/right caret
+rendering in Figma.
+
+- [x] **Step 3: Commit the follow-up fix**
+
+```bash
+git add src/ui/views/Settings/StringsEditor.tsx \
+  docs/superpowers/specs/2026-07-10-key-format-cursor-design.md \
+  docs/superpowers/plans/2026-07-10-key-format-cursor.md
+git commit -m "fix(settings): render cursor after placeholder badge"
 ```

@@ -35,7 +35,7 @@ edge of the badge. Preserve CodeMirror's `pickedCompletion` annotation so its
 completion lifecycle and events continue to behave normally.
 
 Arrow-key movement remains owned by CodeMirror. Consider a local cursor overlay
-only if the regression test shows that CodeMirror does not preserve the correct
+only if manual verification shows that CodeMirror does not preserve the correct
 association while crossing the atomic placeholder.
 
 ## Verification
@@ -46,7 +46,8 @@ remains between the two placeholders. Run the focused test first to prove the
 current implementation fails, then run it again after the fix together with the
 TypeScript and build checks.
 
-Also assert the primary caret's position relative to the placeholder badge:
+The reporter will manually verify the primary caret's position relative to the
+placeholder badge; do not add or run Cypress coverage for this follow-up:
 
 - directly after accepting a placeholder, the caret is at the badge's right edge;
 - after moving left across the placeholder, the caret is at its left edge;
