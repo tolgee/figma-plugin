@@ -1,15 +1,21 @@
 import { h, RefObject } from "preact";
 import { useEffect, useRef } from "preact/hooks";
 import { minimalSetup } from "codemirror";
-import { Compartment, EditorSelection, EditorState } from "@codemirror/state";
+import {
+  EditorSelection,
+  EditorState,
+  RangeSetBuilder,
+  StateField,
+} from "@codemirror/state";
 import {
   ViewUpdate,
   EditorView,
   KeyBinding,
   Decoration,
+  DecorationSet,
   WidgetType,
 } from "@codemirror/view";
-import { PlaceholderPlugin } from "@tginternal/editor";
+import { getPlaceholders, Placeholder } from "@tginternal/editor";
 import "!./StringsEditor.css";
 import {
   autocompletion,
@@ -19,6 +25,70 @@ import {
   pickedCompletion,
   startCompletion,
 } from "@codemirror/autocomplete";
+
+class PlaceholderBadgeWidget extends WidgetType {
+  constructor(private value: Placeholder) {
+    super();
+  }
+
+  eq(other: PlaceholderBadgeWidget) {
+    return (
+      other.value.name === this.value.name &&
+      other.value.type === this.value.type &&
+      other.value.error === this.value.error
+    );
+  }
+
+  toDOM() {
+    const outer = document.createElement("span");
+    let classes = `placeholder-widget placeholder-${this.value.type}`;
+    if (this.value.error) {
+      classes += ` placeholder-error placeholder-error-${this.value.error}`;
+    }
+    outer.className = classes;
+    const inner = document.createElement("span");
+    inner.textContent = this.value.name;
+    outer.appendChild(inner);
+    return outer;
+  }
+}
+
+// Renders {placeholder} ranges as badges. Replaces PlaceholderPlugin from
+// @tginternal/editor, whose Decoration.widget({side: 1}) ranges place both
+// boundary cursor positions inside the widget, so the caret is always drawn
+// at the badge's left edge. Non-inclusive Decoration.replace keeps the
+// positions before/after the badge, so the caret renders on the correct side.
+function placeholderBadges() {
+  const build = (state: EditorState) => {
+    const builder = new RangeSetBuilder<Decoration>();
+    let placeholders: Placeholder[] | null = [];
+    try {
+      placeholders = getPlaceholders(state.doc.toString(), true);
+    } catch (e) {
+      placeholders = [];
+    }
+    for (const placeholder of placeholders ?? []) {
+      builder.add(
+        placeholder.position.start,
+        placeholder.position.end,
+        Decoration.replace({
+          widget: new PlaceholderBadgeWidget(placeholder),
+        }),
+      );
+    }
+    return builder.finish();
+  };
+  const field = StateField.define<DecorationSet>({
+    create: build,
+    update: (set, transaction) =>
+      transaction.docChanged ? build(transaction.state) : set,
+    provide: (f) => [
+      EditorView.decorations.from(f),
+      EditorView.atomicRanges.of((view) => view.state.field(f)),
+    ],
+  });
+  return field;
+}
 
 // Custom placeholder widget
 class PlaceholderWidget extends WidgetType {
@@ -85,7 +155,6 @@ export const StringsEditor = ({
 }: EditorProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const editor = useRef<EditorView>();
-  const placeholders = useRef<Compartment>(new Compartment());
   const callbacksRef = useRefGroup({
     onChange,
     onFocus,
@@ -189,13 +258,7 @@ export const StringsEditor = ({
           return false;
         },
       }),
-      placeholders.current.of(
-        PlaceholderPlugin({
-          examplePluralNum: 1,
-          nested: true,
-          tooltips: false,
-        }),
-      ),
+      placeholderBadges(),
       autocompletion({
         override: [completions],
         optionClass: () => {
