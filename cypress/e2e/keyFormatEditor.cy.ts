@@ -16,9 +16,15 @@ describe("Key format editor", () => {
       },
     });
 
-    cy.iframe().findDcy("index_settings_button").click();
-    cy.iframe().findDcy("settings_expandable_strings").click();
-    cy.iframe().findDcy("global-editor").click();
+    cy.iframe()
+      .find('[data-cy="index_settings_button"]')
+      .should("be.visible")
+      .click();
+    cy.iframe()
+      .find('[data-cy="settings_expandable_strings"]')
+      .should("be.visible")
+      .click();
+    cy.iframe().find('[data-cy="global-editor"]').should("be.visible").click();
     cy.iframe().find(".cm-content").as("editorContent");
     cy.iframe().find(".cm-tooltip-autocomplete").should("be.visible");
     cy.wait(150);
