@@ -64,7 +64,7 @@ function placeholderBadges() {
     let placeholders: Placeholder[] | null = [];
     try {
       placeholders = getPlaceholders(state.doc.toString(), true);
-    } catch (e) {
+    } catch {
       placeholders = [];
     }
     for (const placeholder of placeholders ?? []) {
