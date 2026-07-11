@@ -51,6 +51,10 @@ class PlaceholderBadgeWidget extends WidgetType {
     outer.appendChild(inner);
     return outer;
   }
+
+  ignoreEvent() {
+    return false;
+  }
 }
 
 // Renders {placeholder} ranges as badges. Replaces PlaceholderPlugin from
@@ -178,7 +182,9 @@ export const StringsEditor = ({
       ) {
         view.dispatch({
           changes: { from, to, insert: insertText },
-          selection: EditorSelection.cursor(from + insertText.length, -1),
+          selection: EditorSelection.create([
+            EditorSelection.cursor(from + insertText.length, -1),
+          ]),
           annotations: pickedCompletion.of(completion),
           scrollIntoView: true,
           userEvent: "input.complete",
