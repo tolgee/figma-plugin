@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font: 12px ui-monospace, Menlo, Monaco, Consolas, monospace;
+        margin: 0;
+        padding: 12px;
+        background: #fafafa;
+      }
+      h2 {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin: 14px 0 6px;
+        color: #555;
+      }
+      label {
+        display: block;
+        margin: 4px 0 2px;
+        color: #666;
+        font-size: 11px;
+      }
+      input {
+        width: 100%;
+        padding: 4px 6px;
+        font-family: inherit;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-sizing: border-box;
+      }
+      button {
+        display: block;
+        width: 100%;
+        margin: 4px 0;
+        padding: 6px;
+        font-family: inherit;
+        background: #fff;
+        border: 1px solid #aaa;
+        border-radius: 3px;
+        text-align: left;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #f0f0f0;
+      }
+      button.primary {
+        background: #1e1e1e;
+        color: #fff;
+        border-color: #1e1e1e;
+      }
+      button.primary:hover {
+        background: #333;
+      }
+      .twocol {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+      }
+      .twocol button {
+        margin: 0;
+      }
+      pre#out {
+        margin-top: 12px;
+        padding: 8px;
+        background: #1e1e1e;
+        color: #ddd;
+        border-radius: 4px;
+        height: 160px;
+        overflow: auto;
+        white-space: pre-wrap;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Settings</h2>
+    <label>API URL</label>
+    <input id="apiUrl" placeholder="https://app.tolgee.io" />
+    <label>API key</label>
+    <input id="apiKey" type="password" placeholder="tgpak_…" />
+    <label>Language</label>
+    <input id="lang" placeholder="en" />
+    <button id="saveSettings" class="primary">Save settings</button>
+
+    <h2>Sync</h2>
+    <div class="twocol">
+      <button id="pull">Pull ←</button>
+      <button id="push">Push →</button>
+    </div>
+
+    <h2>Migration</h2>
+    <button id="convert">Convert selected TEXT → widgets</button>
+    <button id="convertPage">Convert ALL TEXT on page → widgets</button>
+
+    <h2>Debug</h2>
+    <button id="dump">Dump synced states</button>
+    <button id="bench">Benchmark bump</button>
+    <button id="close" style="background: #eee">close</button>
+
+    <pre id="out"></pre>
+    <!--SCRIPT-->
+  </body>
+</html>

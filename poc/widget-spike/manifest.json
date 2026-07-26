@@ -1,0 +1,15 @@
+{
+  "name": "Tolgee Widget Spike",
+  "id": "tolgee-widget-spike-local",
+  "api": "1.0.0",
+  "widgetApi": "1.0.0",
+  "containsWidget": true,
+  "main": "dist/widget.js",
+  "ui": "dist/ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["*"],
+    "reasoning": "POC: contact any Tolgee instance"
+  }
+}
