@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tolgee Figma Plugin — E2E Host</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        margin: 0;
+        padding: 8px;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        background: #f5f5f5;
+      }
+      .frame {
+        display: inline-block;
+        border: 1px solid #ccc;
+        background: #fff;
+      }
+      iframe {
+        display: block;
+        border: 0;
+        width: 500px;
+        height: 600px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <iframe
+        id="plugin-iframe"
+        data-testid="plugin-iframe"
+        src="./ui.html"
+        title="Tolgee Plugin UI"
+      ></iframe>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

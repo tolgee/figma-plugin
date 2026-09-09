@@ -1,0 +1,13 @@
+/*
+ * Tailwind entry for the gallery.
+ *
+ * Reuses the plugin's real stylesheet (Tailwind import + `@theme` token
+ * mappings + Tolgee brand overrides). But because the gallery's Vite root is
+ * `gallery/`, Tailwind v4 only auto-scans that folder for class names — so
+ * utilities that live exclusively in `src/ui` components (e.g. the Button
+ * variant classes) would never be generated. Register those sources here.
+ */
+@import "../src/ui/styles.css";
+
+@source "../src/ui";
+@source "../gallery";

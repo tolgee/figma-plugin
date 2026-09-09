@@ -1,0 +1,25 @@
+{
+  "api": "1.0.0",
+  "id": "1212381421658754793",
+  "name": "Tolgee",
+  "main": "main.js",
+  "ui": {
+    "figma": "ui.html",
+    "dev": "ui.html"
+  },
+  "editorType": [
+    "figma",
+    "dev"
+  ],
+  "documentAccess": "dynamic-page",
+  "capabilities": [
+    "inspect",
+    "vscode"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "*"
+    ],
+    "reasoning": "Self-hosted Tolgee instances may run on arbitrary domains."
+  }
+}

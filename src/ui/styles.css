@@ -1,84 +1,226 @@
-[class^="_selectableItem_"] {
-  height: auto;
-  padding: var(--space-medium) var(--space-small) var(--space-medium)
-    var(--space-medium);
-  margin-bottom: var(--space-small);
-}
+@import "tailwindcss";
 
-[class^="_selectableItem_"]:not([class^="_disabled_"])
-  [class^="_input_"]:checked
-  ~ [class^="_children_"] {
-  color: var(--figma-color-text-onbrand);
-}
-[class^="_selectableItem_"]:not([class^="_disabled_"])
-  [class^="_input_"]:checked
-  ~ [class^="_box_"] {
-  background-color: #ec407a;
-}
+@custom-variant dark (&:where(.figma-dark, .figma-dark *));
+
+/* Override Figma's default brand (blue) with Tolgee's primary pink so every
+ * `--figma-color-*-brand` token — and the `--color-*-brand` aliases mapped in
+ * `@theme` below — picks up the Tolgee identity automatically. */
 :root {
   --figma-color-bg-brand: #ec407a;
-  --figma-color-text-brand: #ec407a;
-  --figma-color-text-primary: #1f2d40de;
+  --figma-color-bg-brand-hover: #d63872;
+  --figma-color-bg-brand-pressed: #c0306a;
+  --figma-color-bg-brand-tertiary: rgba(236, 64, 122, 0.12);
   --figma-color-bg-selected: #ec407a;
-  --figma-color-bg-brand-contrast: #ffffff;
-  --figma-color-icon-brand: white;
-  --figma-color-teal: rgb(0, 175, 154);
-  --figma-color-teal-bg: rgb(0, 175, 154, 0.08);
-  --figma-color-red: rgb(255, 0, 46);
-  --figma-color-red-bg: rgb(255, 0, 46, 0.08);
-  --figma-color-bg-grey: #e6e6e6;
-  --figma-color-text-grey: #000000;
+  --figma-color-bg-selected-tertiary: rgba(236, 64, 122, 0.12);
+  --figma-color-text-brand: #ec407a;
+  --figma-color-text-onbrand: #ffffff;
+  --figma-color-border-brand: #ec407a;
+  --figma-color-icon-brand: #ec407a;
+  --figma-color-icon-onbrand: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --figma-color-teal: rgb(53, 196, 176);
-    --figma-color-teal-bg: rgb(53, 196, 176, 0.16);
-    --figma-color-red: rgb(255, 46, 83);
-    --figma-color-red-bg: rgb(255, 46, 83, 0.16);
-    --figma-color-text-primary: #ffffff;
-  }
+/* Tolgee semantic palette — light values (dark overrides in `.figma-dark`
+ * below). Surfaced as Tailwind utilities (bg-primary, text-success,
+ * border-error-light, …) through the `@theme` block. Each token has a
+ * main / dark / light shade. */
+:root {
+  --sem-primary: #ec407a;
+  --sem-primary-dark: #a52c55;
+  --sem-primary-light: #ef6694;
+  --sem-secondary: #00af9a;
+  --sem-secondary-dark: #007a6b;
+  --sem-secondary-light: #33bfae;
+  --sem-success: #00b962;
+  --sem-success-dark: #008144;
+  --sem-success-light: #33c781;
+  --sem-error: #d60027;
+  --sem-error-dark: #850018;
+  --sem-error-light: #ff2e53;
+  --sem-info: #0288d1;
+  --sem-info-dark: #01579b;
+  --sem-info-light: #03a9f4;
+  --sem-warning: #f59e0b;
+  --sem-warning-dark: #b45309;
+  --sem-warning-light: #fbbf24;
+
+  /* Foreground (text/icon) for messages: the dark shade in light mode so it
+   * stays readable on the light tint; the dark-mode override below flips it to
+   * the brighter main shade for contrast on dark. */
+  --sem-error-fg: var(--sem-error-dark);
+  --sem-success-fg: var(--sem-success-dark);
+  --sem-info-fg: var(--sem-info-dark);
+  --sem-secondary-fg: var(--sem-secondary-dark);
+  --sem-warning-fg: var(--sem-warning-dark);
+
+  /* Muted icon colour for large decorative / empty-state glyphs. Deliberately
+   * FULLY OPAQUE (not Figma's translucent --figma-color-icon-secondary):
+   * lucide icons have overlapping strokes, and a translucent colour
+   * double-paints the overlaps into visible seams. */
+  --sem-icon-muted: #b3b3b3;
+
+  /* Checked-checkbox fill: a light blue-grey — a touch more alive than plain
+   * grey, still neutral (not the brand pink, which is reserved for actions). */
+  --sem-checkbox: #7c8b9e;
 }
 
-a {
-  color: var(--figma-color-text-brand);
+.figma-dark {
+  /* Render native UI (scrollbars, form controls) dark to match the theme —
+   * otherwise Figma shows a light scrollbar in the dark plugin. */
+  color-scheme: dark;
+  --sem-primary: #f06695;
+  --sem-primary-dark: #a84768;
+  --sem-primary-light: #f384aa;
+  --sem-secondary: #99e5d6;
+  --sem-secondary-dark: #6ba095;
+  --sem-secondary-light: #adeade;
+  --sem-success: #33d589;
+  --sem-success-dark: #23955f;
+  --sem-success-light: #5bdda0;
+  --sem-error: #ff5c79;
+  --sem-error-dark: #ad001f;
+  --sem-error-light: #ff5c79;
+  --sem-info: #29b6f6;
+  --sem-info-dark: #0288d1;
+  --sem-info-light: #4fc3f7;
+  --sem-warning: #fbbf24;
+  --sem-warning-dark: #d97706;
+  --sem-warning-light: #fcd34d;
+
+  /* On dark, the brighter main shade reads better on the dark tint. */
+  --sem-error-fg: var(--sem-error);
+  --sem-success-fg: var(--sem-success);
+  --sem-info-fg: var(--sem-info);
+  --sem-secondary-fg: var(--sem-secondary);
+  --sem-warning-fg: var(--sem-warning);
+
+  /* Opaque muted icon, tuned for the dark surface. */
+  --sem-icon-muted: #808080;
+
+  /* Light blue-grey on dark — a brightened take on the light-mode fill so the
+   * checked box reads as active (plain mid grey looked disabled), still neutral
+   * rather than the brand pink. The dark check reads well on it. */
+  --sem-checkbox: #9aa8bc;
+
+  /* Dedicated end-stop for the header gradient (Header/ViewHeader/Index/
+   * Settings) — deliberately NOT the same token as --color-bg-secondary
+   * below, which is also used elsewhere (e.g. progressBar.svelte's track)
+   * and must stay untouched. Darker than --color-bg (rgb(44,44,44)), not
+   * lighter: an earlier lighter end-stop read like a highlight/glow at the
+   * header's bottom edge in dark mode, which looked out of place next to a
+   * border-b. Darker reads as a natural shadow instead. Plain hand-picked
+   * hex value (not computed), same 6/255 delta as before, just flipped. */
+  --color-header-gradient-end: #262626;
 }
 
-select {
-  border: 1px solid var(--figma-color-border);
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-  border-radius: var(--border-radius-2);
-  cursor: text;
-  background: var(--figma-color-bg);
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  background-repeat: no-repeat;
-  background-image: url('data:image/svg+xml;utf8,<svg width="12" height="10" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.52858 5.52851C3.78892 5.26816 4.21103 5.26816 4.47138 5.52851L7.99998 9.05711L11.5286 5.52851C11.7889 5.26816 12.211 5.26816 12.4714 5.52851C12.7317 5.78886 12.7317 6.21097 12.4714 6.47132L8.47138 10.4713C8.21103 10.7317 7.78892 10.7317 7.52858 10.4713L3.52858 6.47132C3.26823 6.21097 3.26823 5.78886 3.52858 5.52851Z" fill="currentColor"/></svg>');
-  background-position: 100%;
-  background-size: 20px;
-  width: 100%;
-  padding: 6px 8px;
+@theme {
+  --color-bg: var(--figma-color-bg);
+  --color-bg-secondary: var(--figma-color-bg-secondary);
+  /* Light-mode default: identical to --color-bg-secondary so the light
+   * gradient is pixel-unchanged. Overridden in .figma-dark above. */
+  --color-header-gradient-end: var(--figma-color-bg-secondary);
+  --color-bg-brand: var(--figma-color-bg-brand);
+  --color-bg-selected: var(--figma-color-bg-selected);
+  --color-text: var(--figma-color-text);
+  --color-text-secondary: var(--figma-color-text-secondary);
+  --color-text-brand: var(--figma-color-text-brand);
+  --color-text-onbrand: var(--figma-color-text-onbrand);
+  --color-border: var(--figma-color-border);
+  --color-border-brand: var(--figma-color-border-brand);
+  --color-icon: var(--figma-color-icon);
+  --color-icon-secondary: var(--figma-color-icon-secondary);
+  --color-icon-muted: var(--sem-icon-muted);
+  --color-checkbox: var(--sem-checkbox);
+
+  /* Semantic palette (theme-aware via the --sem-* vars above). */
+  --color-primary: var(--sem-primary);
+  --color-primary-dark: var(--sem-primary-dark);
+  --color-primary-light: var(--sem-primary-light);
+  --color-secondary: var(--sem-secondary);
+  --color-secondary-dark: var(--sem-secondary-dark);
+  --color-secondary-light: var(--sem-secondary-light);
+  --color-success: var(--sem-success);
+  --color-success-dark: var(--sem-success-dark);
+  --color-success-light: var(--sem-success-light);
+  --color-error: var(--sem-error);
+  --color-error-dark: var(--sem-error-dark);
+  --color-error-light: var(--sem-error-light);
+  --color-info: var(--sem-info);
+  --color-info-dark: var(--sem-info-dark);
+  --color-info-light: var(--sem-info-light);
+  --color-warning: var(--sem-warning);
+  --color-warning-dark: var(--sem-warning-dark);
+  --color-warning-light: var(--sem-warning-light);
 }
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Theme-aware scrollbar: the OS/browser default renders a light bar in the dark
+ * plugin. Style it explicitly via theme vars (works regardless of whether the
+ * webview honours `color-scheme` for scrollbars). Firefox: `scrollbar-color`. */
+* {
+  scrollbar-color: var(--color-border) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border: 2px solid var(--color-bg);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-icon-muted);
+}
+
+/* Tailwind v4's preflight intentionally leaves buttons at the browser default
+ * cursor (an arrow). For a plugin UI we want interactive controls to feel
+ * clickable, so opt every actionable element back into `pointer`. */
 button,
-button > * {
+[role="button"],
+[role="link"],
+[role="menuitem"],
+[role="tab"],
+[role="checkbox"],
+[role="switch"],
+summary,
+select,
+label[for] {
   cursor: pointer;
 }
 
-@media (prefers-color-scheme: dark) {
-  select {
-    background-image: url('data:image/svg+xml;utf8,<svg width="12" height="10" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.52858 5.52851C3.78892 5.26816 4.21103 5.26816 4.47138 5.52851L7.99998 9.05711L11.5286 5.52851C11.7889 5.26816 12.211 5.26816 12.4714 5.52851C12.7317 5.78886 12.7317 6.21097 12.4714 6.47132L8.47138 10.4713C8.21103 10.7317 7.78892 10.7317 7.52858 10.4713L3.52858 6.47132C3.26823 6.21097 3.26823 5.78886 3.52858 5.52851Z" fill="white"/></svg>');
-  }
+/* Disabled controls should still indicate non-interactivity. */
+button:disabled,
+[role="button"][aria-disabled="true"],
+[aria-disabled="true"] {
+  cursor: not-allowed;
 }
 
-select:disabled {
-  border: 1px solid var(--figma-color-border-disabled-strong);
-}
-.noSelection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
-  height: 100%;
+/* Text inputs / editable surfaces get the I-beam. Tailwind v4 already does
+ * this for native inputs, but CodeMirror's contenteditable layer doesn't pick
+ * it up — make it explicit there too. */
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not(
+    [type="radio"]
+  ):not([type="range"]):not([type="file"]):not([type="color"]),
+textarea,
+[contenteditable="true"],
+[contenteditable="plaintext-only"],
+.cm-editor .cm-content {
+  cursor: text;
 }
