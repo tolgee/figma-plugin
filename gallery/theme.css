@@ -1,0 +1,50 @@
+/*
+ * Figma runtime-token fallbacks for the gallery.
+ *
+ * Inside Figma, the plugin iframe inherits `--figma-color-*` custom properties
+ * that reflect the user's current (light/dark) UI theme. Outside Figma those
+ * don't exist, so we approximate Figma's own light + dark palettes here. The
+ * brand tokens are intentionally NOT redefined — `src/ui/styles.css` already
+ * maps them to Tolgee pink and is imported before this file.
+ *
+ * Dark mode is toggled by adding the `.figma-dark` class to <html>, matching
+ * the `@custom-variant dark` declaration in `styles.css`.
+ */
+
+:root {
+  --figma-color-bg: #ffffff;
+  --figma-color-bg-secondary: #f5f5f5;
+  --figma-color-bg-hover: rgba(0, 0, 0, 0.06);
+  --figma-color-bg-danger: #f24822;
+  --figma-color-bg-danger-tertiary: rgba(242, 72, 34, 0.1);
+  --figma-color-text: rgba(0, 0, 0, 0.9);
+  --figma-color-text-secondary: rgba(0, 0, 0, 0.5);
+  --figma-color-text-danger: #b3261e;
+  --figma-color-text-ondanger: #ffffff;
+  --figma-color-border-danger: rgba(242, 72, 34, 0.5);
+  --figma-color-border: rgba(0, 0, 0, 0.1);
+  --figma-color-icon: rgba(0, 0, 0, 0.9);
+  --figma-color-icon-secondary: rgba(0, 0, 0, 0.3);
+}
+
+.figma-dark {
+  --figma-color-bg: #2c2c2c;
+  --figma-color-bg-secondary: #383838;
+  --figma-color-bg-hover: rgba(255, 255, 255, 0.08);
+  --figma-color-bg-danger: #f24822;
+  --figma-color-bg-danger-tertiary: rgba(242, 72, 34, 0.18);
+  --figma-color-text: rgba(255, 255, 255, 0.9);
+  --figma-color-text-secondary: rgba(255, 255, 255, 0.5);
+  --figma-color-text-danger: #ff9d8f;
+  --figma-color-text-ondanger: #ffffff;
+  --figma-color-border-danger: rgba(242, 72, 34, 0.6);
+  --figma-color-border: rgba(255, 255, 255, 0.1);
+  --figma-color-icon: rgba(255, 255, 255, 0.9);
+  --figma-color-icon-secondary: rgba(255, 255, 255, 0.4);
+}
+
+/* The gallery is a full-page document (the plugin UI is a small panel), so let
+ * it scroll and give it comfortable padding. */
+body {
+  min-height: 100%;
+}
