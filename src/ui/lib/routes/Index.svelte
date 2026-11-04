@@ -20,6 +20,7 @@
     effectiveNs,
   } from "$ui/lib/api/keyExistence";
   import { hasManualChange } from "$ui/lib/logic/manualChange";
+  import { disconnectedInfo } from "$ui/lib/logic/disconnect";
   import { conflictText, textOfNode } from "$ui/lib/logic/pushDiff";
   import { hasRichFormat } from "$ui/lib/logic/icuParams";
   import { collectNamespaceNames } from "$ui/lib/logic/namespaces";
@@ -753,9 +754,9 @@
       correlationId: nextCorrelationId(),
       nodes: connected.map((n) => ({
         id: n.id,
-        // "" (not undefined) to actually CLEAR the namespace — undefined is
-        // dropped by the bus's JSON round-trip, leaving the old ns behind.
-        info: { key: "", ns: "", connected: false },
+        // Unlinks the key AND drops its formatting (ICU, plural, samples) —
+        // see `disconnectedInfo`.
+        info: disconnectedInfo(),
       })),
     });
     clearSelection();

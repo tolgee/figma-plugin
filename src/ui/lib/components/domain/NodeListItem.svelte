@@ -8,6 +8,7 @@
   import { send, nextCorrelationId } from "$ui/lib/bus";
   import { queueNodeSave, cancelNodeSave } from "$ui/lib/logic/saveQueue";
   import { hasRichFormat } from "$ui/lib/logic/icuParams";
+  import { disconnectedInfo } from "$ui/lib/logic/disconnect";
   import * as DropdownMenu from "$ui/lib/components/ui/dropdown-menu";
   import * as Tooltip from "$ui/lib/components/ui/tooltip";
   import Badge from "$ui/lib/components/ui/badge.svelte";
@@ -152,9 +153,9 @@
       type: "set-nodes-data",
       correlationId: nextCorrelationId(),
       nodes: [
-        // "" (not undefined) to actually CLEAR the namespace — undefined is
-        // dropped by the bus's JSON round-trip, leaving the old ns behind.
-        { id: node.id, info: { key: "", ns: "", connected: false } },
+        // Unlinks the key AND drops its formatting (ICU, plural, samples) —
+        // see `disconnectedInfo`.
+        { id: node.id, info: disconnectedInfo() },
       ],
     });
   }

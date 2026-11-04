@@ -15,6 +15,7 @@
   } from "$ui/lib/api/keys";
   import type { NodeInfo } from "$shared/types";
   import { textOfNode } from "$ui/lib/logic/pushDiff";
+  import { disconnectedInfo } from "$ui/lib/logic/disconnect";
   import { cn } from "$ui/lib/utils";
   import KeyRound from "lucide-svelte/icons/key-round";
 
@@ -153,9 +154,9 @@
       correlationId: nextCorrelationId(),
       nodes: targets.map((n) => ({
         id: n.id,
-        // "" (not undefined) to actually CLEAR the namespace — undefined is
-        // dropped by the bus's JSON round-trip, leaving the old ns behind.
-        info: { key: "", ns: "", connected: false },
+        // Unlinks the key AND drops its formatting (ICU, plural, samples) —
+        // see `disconnectedInfo`.
+        info: disconnectedInfo(),
       })),
     });
     appState.navigate({ name: "index" });
