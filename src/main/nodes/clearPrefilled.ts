@@ -1,4 +1,5 @@
 import { TOLGEE_NODE_INFO } from "$shared/constants";
+import { findTaggedTextNodes } from "./scan";
 
 /** Yield to the event loop after this many examined nodes so a heavily
  *  prefilled document can't freeze the canvas mid-clear. The candidate set is
@@ -20,11 +21,13 @@ const YIELD_EVERY = 200;
  * key, and a format change re-generates both together, so it stays correct even
  * across format changes — which a "regenerate and compare" approach could not.
  *
- * Fast by construction: each page uses the engine-side `findAllWithCriteria`
- * pluginData filter (like `scanConnectedNodes`), so only nodes carrying our
- * data are examined — never a full JS walk of every layer. The per-node work is
- * a parse plus a string compare; no regeneration, no ancestor walks. Each page
- * is `loadAsync`-ed first (dynamic-page), mirroring `resetConfig`.
+ * Cheap by construction: each page lists its TEXT nodes engine-side and probes
+ * plugin data per node (`findTaggedTextNodes` — the engine's pluginData
+ * criteria missed data inherited from a main component), so only nodes
+ * carrying our data are parsed — never a full JS walk of every layer. The
+ * per-node work is a parse plus a string compare; no regeneration, no ancestor
+ * walks. Each page is `loadAsync`-ed first (dynamic-page), mirroring
+ * `resetConfig`.
  *
  * Returns the number of nodes cleared.
  */
@@ -34,10 +37,9 @@ export async function clearPrefilledKeys(): Promise<number> {
   for (const page of figma.root.children) {
     if (page.type !== "PAGE") continue;
     await page.loadAsync();
-    const nodes = page.findAllWithCriteria({
-      types: ["TEXT"],
-      pluginData: { keys: [TOLGEE_NODE_INFO] },
-    });
+    // Per-node probe (see `findTaggedTextNodes`): the engine's pluginData
+    // criteria skipped texts that inherit their data from a main component.
+    const nodes = await findTaggedTextNodes(page);
     for (const node of nodes) {
       const raw = node.getPluginData(TOLGEE_NODE_INFO);
       if (!raw) continue;

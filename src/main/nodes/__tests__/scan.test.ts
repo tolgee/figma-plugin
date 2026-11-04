@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { buildConnectedNodesInfo, scanSelectedTextNodes } from "$main/nodes/scan";
+import { TOLGEE_NODE_INFO } from "$shared/constants";
+import { buildConnectedNodesInfo, findTaggedTextNodes, scanSelectedTextNodes } from "$main/nodes/scan";
 
 /** Minimal TEXT-node stand-in — just enough for `getNodeInfo`/`shouldIgnoreNode`
  *  to read. `parent` defaults to a bare PAGE stand-in (no hidden ancestors). */
@@ -145,3 +146,42 @@ describe("scanSelectedTextNodes — hidden ancestors above the selected root", (
     expect(scanned[0]?.ancestorHidden).toBe(false);
   });
 })
+
+describe("findTaggedTextNodes", () => {
+  it("keeps every text whose getPluginData answers — including data INHERITED from a main component — and never asks the engine to filter by pluginData", async () => {
+    // A text inside an instance whose key was connected in the MAIN component:
+    // `getPluginData` returns the inherited record, but the engine's
+    // `pluginData` search criteria does not match it (nothing is stored on the
+    // node itself). The customer's language copy left exactly these strings
+    // untranslated while a Download with them selected worked.
+    const inherited = makeTextNode("I1:2;3:4", {
+      getPluginData: (k: string) =>
+        k === TOLGEE_NODE_INFO ? JSON.stringify({ key: "title", connected: true }) : "",
+    });
+    const own = makeTextNode("5:6", {
+      getPluginData: (k: string) =>
+        k === TOLGEE_NODE_INFO ? JSON.stringify({ key: "body", connected: true }) : "",
+    });
+    const untagged = makeTextNode("7:8");
+    const findAllWithCriteria = vi.fn(() => [inherited, own, untagged]);
+    const page = { findAllWithCriteria } as unknown as PageNode;
+
+    const tagged = await findTaggedTextNodes(page);
+
+    expect(tagged.map((n) => n.id)).toEqual(["I1:2;3:4", "5:6"]);
+    expect(findAllWithCriteria).toHaveBeenCalledWith({ types: ["TEXT"] });
+  });
+
+  it("yields to the event loop on a large page without dropping nodes", async () => {
+    const nodes = Array.from({ length: 450 }, (_, i) =>
+      makeTextNode(`1:${i}`, {
+        getPluginData: (k: string) => (k === TOLGEE_NODE_INFO && i % 2 === 0 ? "{}" : ""),
+      }),
+    );
+    const page = { findAllWithCriteria: () => nodes } as unknown as PageNode;
+
+    const tagged = await findTaggedTextNodes(page);
+
+    expect(tagged).toHaveLength(225);
+  });
+});

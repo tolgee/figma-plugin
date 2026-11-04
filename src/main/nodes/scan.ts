@@ -3,19 +3,50 @@ import type { NodeInfo } from "$shared/types";
 import { type IgnoreSettings, shouldIgnoreNode } from "./filter";
 import { getNodeInfo } from "./getNodeInfo";
 
+/** Yield to the event loop after this many plugin-data probes so a page-wide
+ *  pass over a huge page can't freeze the canvas. */
+const TAGGED_YIELD_EVERY = 200;
+
 /**
- * Return only the text nodes on the current page that carry our plugin data
- * key. The `pluginData.keys` filter is a 2024 addition to the Plugin API and
- * works with `api: 1.0.0` + `documentAccess: "dynamic-page"`, which is what
- * this plugin targets.
+ * Every TEXT node under `root` that carries our plugin data, decided by
+ * READING each node — deliberately NOT via the engine's `pluginData` search
+ * criteria (`findAllWithCriteria({ pluginData: { keys } })`).
+ *
+ * The criteria only matches data STORED on the node itself. A text inside a
+ * component INSTANCE inherits the main component's plugin data — `getPluginData`
+ * returns it, and the selection list (which reads per node) shows such a text
+ * as connected — but the engine search skipped it. Every page-wide operation
+ * built on that search (language/keys copy, "Download all", copy staleness,
+ * prefill clear) therefore silently missed any key that had been connected in
+ * the main component rather than on the instance: a fresh language copy kept
+ * those strings in the source language while a Download with the same strings
+ * SELECTED translated them. The TEXT-type search still runs engine-side; the
+ * per-node probe is one bridge read per text on the page.
+ *
+ * `root` must be loaded (`loadAsync`) by the caller under dynamic-page access.
+ */
+export async function findTaggedTextNodes(root: PageNode): Promise<TextNode[]> {
+  const texts = root.findAllWithCriteria({ types: ["TEXT"] });
+  const tagged: TextNode[] = [];
+  let probed = 0;
+  for (const node of texts) {
+    if (node.getPluginData(TOLGEE_NODE_INFO)) tagged.push(node);
+    probed++;
+    if (probed % TAGGED_YIELD_EVERY === 0) {
+      await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    }
+  }
+  return tagged;
+}
+
+/**
+ * The text nodes on the current page that carry our plugin data key — read per
+ * node (see `findTaggedTextNodes` for why the engine's pluginData criteria is
+ * not enough).
  */
 export const scanConnectedNodes = async (): Promise<TextNode[]> => {
   await figma.currentPage.loadAsync();
-  // TODO: yield periodically for huge documents once measurement exists.
-  return figma.currentPage.findAllWithCriteria({
-    types: ["TEXT"],
-    pluginData: { keys: [TOLGEE_NODE_INFO] },
-  });
+  return findTaggedTextNodes(figma.currentPage);
 };
 
 /** Yield to the event loop after this many nodes' `NodeInfo` has been built —

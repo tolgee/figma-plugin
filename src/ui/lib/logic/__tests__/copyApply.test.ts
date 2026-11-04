@@ -34,7 +34,7 @@ function resolvedText(
   const translations: CopyTranslations = remote
     ? { [nsKeyIndex(node.ns, node.key)]: remote }
     : {};
-  const updates = buildCopyUpdates([node], translations, language);
+  const { updates } = buildCopyUpdates([node], translations, language);
   return updates[0]?.text ?? null;
 }
 
@@ -72,12 +72,17 @@ describe("buildCopyUpdates", () => {
     ).toBe("J'ai 9 pommes");
   });
 
-  it("falls back to the node's persisted translation when there's no remote match", () => {
+  it("never falls back to the node's persisted translation on a remote miss — skips and reports it", () => {
+    // The persisted `translation` on a clone is whatever the SOURCE page last
+    // pulled (usually source-language text); writing it back made the copy
+    // look "untranslated" while masking that the key was simply missed.
     const node = makeNode({ isPlural: true, pluralParamValue: "2", translation: PLURAL });
-    expect(resolvedText(node, undefined, "en")).toBe("2 apples");
+    const { updates, skipped } = buildCopyUpdates([node], {}, "en");
+    expect(updates).toEqual([]);
+    expect(skipped.map((n) => n.id)).toEqual(["n1"]);
   });
 
-  it("skips a node with neither a remote match nor a persisted translation", () => {
+  it("skips a node whose remote translation is empty in that language", () => {
     const node = makeNode({ translation: "" });
     expect(resolvedText(node, undefined, "en")).toBeNull();
   });
@@ -99,7 +104,7 @@ describe("buildCopyUpdates", () => {
     // translation lands in plugin data too, so a Download right after a fresh
     // copy diffs to "No changes found" instead of rewriting every node.
     const node = makeNode({ paramsValues: { name: "Zuzana" } });
-    const updates = buildCopyUpdates(
+    const { updates } = buildCopyUpdates(
       [node],
       { [nsKeyIndex(undefined, "k")]: { text: "¡Hola {name}!", isPlural: false } },
       "es",
@@ -113,7 +118,7 @@ describe("buildCopyUpdates", () => {
     const inNs = makeNode({ id: "a", key: "greet", ns: "web" });
     const noNs = makeNode({ id: "b", key: "greet" });
     const unconnected = makeNode({ id: "c", key: "greet", connected: false });
-    const updates = buildCopyUpdates(
+    const { updates } = buildCopyUpdates(
       [inNs, noNs, unconnected],
       {
         [nsKeyIndex("web", "greet")]: { text: "Hola web", isPlural: false },
@@ -147,7 +152,7 @@ describe("recreate -> immediate Download round trip", () => {
         isPlural: remoteKey.isPlural,
       },
     };
-    const [update] = buildCopyUpdates([node], translations, language);
+    const [update] = buildCopyUpdates([node], translations, language).updates;
     if (!update) throw new Error("expected buildCopyUpdates to produce an update");
 
     // Exactly what applyTranslations (src/main/nodes/selection.ts) persists:

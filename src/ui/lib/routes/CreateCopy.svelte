@@ -8,10 +8,12 @@
   import * as Tooltip from "$ui/lib/components/ui/tooltip";
   import ViewHeader from "$ui/lib/components/domain/ViewHeader.svelte";
   import ViewFooter from "$ui/lib/components/domain/ViewFooter.svelte";
-  import { fetchAllTranslations } from "$ui/lib/api/pull";
-  import { applyCopyPages, type CopyTranslations } from "$ui/lib/logic/copyApply";
+  import {
+    applyCopyPages,
+    copySkippedSuffix,
+    fetchCopyTranslations,
+  } from "$ui/lib/logic/copyApply";
   import type { MainToUi } from "$shared/messages";
-  import { nsKeyIndex } from "$ui/lib/logic/namespaces";
 
   type Mode = "keys" | "languages";
   type CreatedPages = NonNullable<
@@ -82,34 +84,6 @@
       void ensureLanguagesLoaded();
     }
   });
-
-  /**
-   * Build the per-language translations map. Keyed by `nsKeyIndex` so each
-   * cloned node (which has a fresh ID) can be matched back to its Tolgee key +
-   * namespace. Carries `isPlural` alongside the raw text — a per-KEY Tolgee
-   * property, trusted over the copied node's own (possibly stale) flag. The
-   * map stays HERE in the UI: the main thread only clones and returns the
-   * clones' connected nodes; this side renders + applies the text (ICU
-   * rendering needs `Intl`, which the main-thread sandbox doesn't have).
-   */
-  function buildTranslationsMap(
-    keys: Awaited<ReturnType<typeof fetchAllTranslations>>,
-    languages: string[],
-  ): Record<string, CopyTranslations> {
-    const map: Record<string, CopyTranslations> = {};
-    for (const lang of languages) {
-      const perLang: CopyTranslations = {};
-      for (const k of keys) {
-        const idx = nsKeyIndex(k.keyNamespace, k.keyName);
-        const text = k.translations[lang]?.text;
-        if (text) {
-          perLang[idx] = { text, isPlural: k.isPlural };
-        }
-      }
-      map[lang] = perLang;
-    }
-    return map;
-  }
 
   // Idle timeout (not a wall-clock cap): large copies can legitimately take a
   // while, but each progress message resets the timer, so this only fires if
@@ -217,27 +191,6 @@
     }
     if (selectedLangs.length === 0) return;
 
-    stage = "fetching";
-    progress = null;
-
-    let translationsMap: Record<string, Record<string, { text: string; isPlural: boolean }>>;
-    try {
-      // All namespaces: the translations map is keyed by `nsKeyIndex` and the
-      // main thread matches each cloned node by its own ns, so a page mixing
-      // namespaces is copied correctly. (config.namespace is only a new-key
-      // default, not a copy filter.)
-      const keys = await fetchAllTranslations(client, {
-        languages: selectedLangs,
-        namespaces: undefined,
-        branch: branch || undefined,
-      });
-      translationsMap = buildTranslationsMap(keys, selectedLangs);
-    } catch (e) {
-      stage = "error";
-      errorMsg = e instanceof Error ? e.message : String(e);
-      return;
-    }
-
     stage = "creating";
     progress = {
       current: 0,
@@ -245,6 +198,10 @@
       phase: "cloning",
     };
 
+    // Clone FIRST: the clones' connected nodes tell us exactly which keys to
+    // fetch. The translations used to be paginated project-wide before the
+    // clone existed; fetching by the clone's key names (same path as
+    // Download) is both the complete and the cheap option.
     const result = await dispatchCreate({
       correlationId: nextCorrelationId(),
       mode: "languages",
@@ -255,19 +212,34 @@
       errorMsg = result.error ?? "Unknown error";
       return;
     }
+    const pages = result.pages ?? [];
 
-    // The clones exist but hold the SOURCE page's text — render + write the
+    stage = "fetching";
+    progress = null;
+    let translationsMap: Awaited<ReturnType<typeof fetchCopyTranslations>>;
+    try {
+      translationsMap = await fetchCopyTranslations(client, pages, branch || undefined);
+    } catch (e) {
+      // The clones already exist (holding the source text); the user can
+      // "Download" onto them from CopyView once the connection is back.
+      stage = "error";
+      errorMsg = e instanceof Error ? e.message : String(e);
+      return;
+    }
+
+    // The clones hold the SOURCE page's text — render + write the
     // translations from here (the main thread can't: no `Intl` in its
     // sandbox). Same render + apply pipeline as the Download flow.
+    stage = "creating";
     progress = { current: 0, total: 0, phase: "writing" };
-    const applied = await applyCopyPages(result.pages ?? [], translationsMap, (done, total) => {
+    const applied = await applyCopyPages(pages, translationsMap, (done, total) => {
       progress = { current: done, total, phase: "writing" };
     });
     if (applied.ok) {
       stage = "done";
       send({
         type: "notify",
-        text: `Created ${selectedLangs.length} language page(s).`,
+        text: `Created ${selectedLangs.length} language page(s).${copySkippedSuffix(applied.skipped)}`,
       });
       appState.navigate({ name: "index" });
     } else {

@@ -13,11 +13,11 @@
   import { requestPageConnectedNodes } from "$ui/lib/api/pageNodes";
   import { pullDiff, buildApplyUpdates, skippedRenderMessage } from "$ui/lib/logic/pullDiff";
   import {
+    fetchCopyTranslations,
     finishCopyRecreate,
     isCopyRecreateInFlight,
-    type CopyTranslations,
   } from "$ui/lib/logic/copyApply";
-  import { namespacedKeyLabel, nsKeyIndex } from "$ui/lib/logic/namespaces";
+  import { namespacedKeyLabel } from "$ui/lib/logic/namespaces";
   import { hasRichFormat } from "$ui/lib/logic/icuParams";
   import { computeVirtualWindow } from "$ui/lib/logic/virtualWindow";
   import Target from "lucide-svelte/icons/target";
@@ -379,10 +379,12 @@
     // instance-held handler died there, so the fetched language was never
     // applied and the "recreated" page silently kept the source-language text.
     // The callbacks below just drive this instance's UI while it's still alive.
-    const startJob = (translations: Record<string, CopyTranslations> | null): void => {
+    const startJob = (
+      loadTranslations: Parameters<typeof finishCopyRecreate>[0]["loadTranslations"],
+    ): void => {
       finishCopyRecreate({
         correlationId,
-        translations,
+        loadTranslations,
         onProgress: (current, total) => {
           recreateProgress = { current, total };
         },
@@ -420,18 +422,11 @@
         errorMessage = "Not connected to Tolgee.";
         return;
       }
-      const keys = await fetchAllTranslations(client, {
-        languages: [language],
-        namespaces: undefined,
-        branch: branch || undefined,
-      });
-      const translationsForLang: CopyTranslations = {};
-      for (const k of keys) {
-        const idx = nsKeyIndex(k.keyNamespace, k.keyName);
-        const text = k.translations[language]?.text;
-        if (text) translationsForLang[idx] = { text, isPlural: k.isPlural };
-      }
-      startJob({ [language]: translationsForLang });
+      // Fetched AFTER the clone exists, by the clone's own key names — the
+      // same path Download uses (see `fetchCopyTranslations`). `branch` is
+      // captured now; the job outlives this view.
+      const recreateBranch = branch || undefined;
+      startJob((pages) => fetchCopyTranslations(client, pages, recreateBranch));
       send({
         type: "create-copy",
         correlationId,

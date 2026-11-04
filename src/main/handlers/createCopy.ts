@@ -1,10 +1,10 @@
-import { TOLGEE_NODE_INFO, TOLGEE_PLUGIN_CONFIG_NAME } from "$shared/constants";
+import { TOLGEE_PLUGIN_CONFIG_NAME } from "$shared/constants";
 import type { NodeInfo } from "$shared/types";
 
 import { send } from "$main/bus";
 import { type IgnoreSettings, shouldIgnoreNode } from "$main/nodes/filter";
 import { getNodeInfo } from "$main/nodes/getNodeInfo";
-import { computeAncestorHidden } from "$main/nodes/scan";
+import { computeAncestorHidden, findTaggedTextNodes } from "$main/nodes/scan";
 import { applyRichText } from "$main/text/applyRichText";
 import { nsKeyIndex } from "$shared/keyIndex";
 
@@ -150,13 +150,11 @@ export async function createCopy(
       createdPageIds.push(targetPage.id);
 
       await targetPage.loadAsync();
-      // pluginData filter: only Tolgee-tagged nodes come back, so untagged
-      // text (usually most of the page) never pays the 5-bridge-call
+      // Only Tolgee-tagged nodes, probed per node (NOT the engine's pluginData
+      // criteria — it misses keys inherited from a main component, see
+      // `findTaggedTextNodes`), so untagged text never pays the 5-bridge-call
       // `getNodeInfo` just to be skipped.
-      const textNodes = targetPage.findAllWithCriteria({
-        types: ["TEXT"],
-        pluginData: { keys: [TOLGEE_NODE_INFO] },
-      });
+      const textNodes = await findTaggedTextNodes(targetPage);
       const total = textNodes.length;
       let processed = 0;
 
@@ -216,10 +214,11 @@ export async function createCopy(
         createdPageIds.push(targetPage.id);
 
         await targetPage.loadAsync();
-        const textNodes = targetPage.findAllWithCriteria({
-          types: ["TEXT"],
-          pluginData: { keys: [TOLGEE_NODE_INFO] },
-        });
+        // Per-node probe, not the engine's pluginData criteria: a text whose
+        // key lives on the MAIN COMPONENT (instance inherits it) was invisible
+        // to the criteria, so the copy left it untranslated even though the
+        // list — and a Download with it selected — saw it as connected.
+        const textNodes = await findTaggedTextNodes(targetPage);
 
         // No text is written here — see `CreateCopyResult.pages`: the UI
         // renders + applies the translations, this side only collects the
@@ -556,10 +555,10 @@ export async function checkCopyStaleness(copyPage: PageNode): Promise<CopyStalen
  * touch it — the copy is stale all the same.
  */
 async function collectConnectedKeyCounts(page: PageNode): Promise<Map<string, number>> {
-  const textNodes = page.findAllWithCriteria({
-    types: ["TEXT"],
-    pluginData: { keys: [TOLGEE_NODE_INFO] },
-  });
+  // Per-node probe (see `findTaggedTextNodes`): the engine's pluginData
+  // criteria missed keys inherited from a main component, under-counting both
+  // pages and hiding real staleness.
+  const textNodes = await findTaggedTextNodes(page);
   const counts = new Map<string, number>();
   let scanned = 0;
   for (const node of textNodes) {

@@ -67,7 +67,7 @@ describe("finishCopyRecreate — survives the initiating view unmounting", () =>
       cs: { [nsKeyIndex(undefined, "greeting")]: { text: "Ahoj", isPlural: false } },
     };
     const done = vi.fn();
-    finishCopyRecreate({ correlationId: "rc1", translations, onDone: done });
+    finishCopyRecreate({ correlationId: "rc1", loadTranslations: async () => translations, onDone: done });
 
     // The result arrives AFTER CopyView would have unmounted (page switch) —
     // nothing here but the module job is listening.
@@ -92,12 +92,12 @@ describe("finishCopyRecreate — survives the initiating view unmounting", () =>
     emit("apply-translations-result", { correlationId: apply.correlationId, ok: true, errors: [] });
     await flushAsync();
     expect(sent.some((m) => m.type === "notify" && m.text === "Copy recreated.")).toBe(true);
-    expect(done).toHaveBeenCalledWith({ ok: true });
+    expect(done).toHaveBeenCalledWith({ ok: true, skipped: 0 });
   });
 
   it("a keys copy (null translations) skips the apply and still completes", async () => {
     const done = vi.fn();
-    finishCopyRecreate({ correlationId: "rc2", translations: null, onDone: done });
+    finishCopyRecreate({ correlationId: "rc2", loadTranslations: null, onDone: done });
     emit("create-copy-result", {
       correlationId: "rc2",
       ok: true,
@@ -106,12 +106,12 @@ describe("finishCopyRecreate — survives the initiating view unmounting", () =>
     await flushAsync();
     expect(sent.some((m) => m.type === "apply-translations")).toBe(false);
     expect(sent.some((m) => m.type === "notify" && m.text === "Copy recreated.")).toBe(true);
-    expect(done).toHaveBeenCalledWith({ ok: true });
+    expect(done).toHaveBeenCalledWith({ ok: true, skipped: 0 });
   });
 
   it("surfaces a failed clone through onDone", async () => {
     const done = vi.fn();
-    finishCopyRecreate({ correlationId: "rc3", translations: null, onDone: done });
+    finishCopyRecreate({ correlationId: "rc3", loadTranslations: null, onDone: done });
     emit("create-copy-result", { correlationId: "rc3", ok: false, error: "boom" });
     await flushAsync();
     expect(done).toHaveBeenCalledWith({ ok: false, error: "boom" });
@@ -120,14 +120,14 @@ describe("finishCopyRecreate — survives the initiating view unmounting", () =>
 
   it("ignores results for other correlation ids", async () => {
     const done = vi.fn();
-    finishCopyRecreate({ correlationId: "rc4", translations: null, onDone: done });
+    finishCopyRecreate({ correlationId: "rc4", loadTranslations: null, onDone: done });
     emit("create-copy-result", { correlationId: "other", ok: true, pages: [] });
     await flushAsync();
     expect(done).not.toHaveBeenCalled();
     // Complete it properly so the job's watchdog is cleaned up.
     emit("create-copy-result", { correlationId: "rc4", ok: true, pages: [] });
     await flushAsync();
-    expect(done).toHaveBeenCalledWith({ ok: true });
+    expect(done).toHaveBeenCalledWith({ ok: true, skipped: 0 });
   });
 });
 
@@ -138,7 +138,7 @@ describe("recreate re-entrancy", () => {
     // says "idle" — and a second run deletes the page the first is writing.
     expect(isCopyRecreateInFlight()).toBe(false);
 
-    finishCopyRecreate({ correlationId: "r-1", translations: null });
+    finishCopyRecreate({ correlationId: "r-1", loadTranslations: null });
     expect(isCopyRecreateInFlight()).toBe(true);
 
     emit("create-copy-result", { correlationId: "r-1", ok: true, pages: [] });
@@ -146,7 +146,7 @@ describe("recreate re-entrancy", () => {
   });
 
   it("clears the flag when the job fails", () => {
-    finishCopyRecreate({ correlationId: "r-2", translations: null });
+    finishCopyRecreate({ correlationId: "r-2", loadTranslations: null });
 
     emit("create-copy-result", { correlationId: "r-2", ok: false, error: "nope" });
 
@@ -154,8 +154,8 @@ describe("recreate re-entrancy", () => {
   });
 
   it("an older job settling does not clear a newer one's flag", () => {
-    finishCopyRecreate({ correlationId: "r-3", translations: null });
-    finishCopyRecreate({ correlationId: "r-4", translations: null });
+    finishCopyRecreate({ correlationId: "r-3", loadTranslations: null });
+    finishCopyRecreate({ correlationId: "r-4", loadTranslations: null });
 
     // r-3 answers late; r-4 is the current job and must stay marked.
     emit("create-copy-result", { correlationId: "r-3", ok: true, pages: [] });
