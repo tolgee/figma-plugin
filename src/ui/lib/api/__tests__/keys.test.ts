@@ -1,7 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { NodeInfo } from "$shared/types";
 import { createTolgeeClient } from "../client";
-import { connectInfoFromKey, searchKeys, type KeySearchResult } from "../keys";
+import {
+  connectInfoFromKey,
+  searchKeys,
+  searchKeysByPhrase,
+  type KeySearchResult,
+} from "../keys";
 
 type FetchMock = ReturnType<typeof vi.fn>;
 
@@ -167,6 +172,75 @@ describe("searchKeys", () => {
       baseTranslation: undefined,
       plural: undefined,
     });
+  });
+});
+
+describe("searchKeysByPhrase", () => {
+  function page(ids: number[], totalElements: number) {
+    return okResponse({
+      _embedded: {
+        keys: ids.map((id) => ({
+          keyId: id,
+          keyName: `key${id}`,
+          keyNamespace: id % 2 ? "api" : undefined,
+          keyIsPlural: false,
+          translations: { cs: { text: `text ${id}` }, en: { text: `base ${id}` } },
+        })),
+      },
+      page: { totalElements },
+    });
+  }
+
+  it("returns nothing (and makes no request) for an empty query or no language", async () => {
+    const mock = installFetchMock(async () => page([], 0));
+    const client = createTolgeeClient("https://app.tolgee.io", "test-key");
+    expect(await searchKeysByPhrase(client, "  ", { language: "cs" })).toEqual({ results: [], total: 0 });
+    expect(await searchKeysByPhrase(client, "x", { language: undefined })).toEqual({ results: [], total: 0 });
+    expect(mock).not.toHaveBeenCalled();
+  });
+
+  it("uses the contains-search of the translations endpoint and maps keys", async () => {
+    const mock = installFetchMock(async () => page([1, 2], 2));
+    const client = createTolgeeClient("https://app.tolgee.io", "test-key");
+    const out = await searchKeysByPhrase(client, " Fibrilace síní ", {
+      language: "cs",
+      baseLanguage: "en",
+      branch: "main",
+    });
+    expect(mock).toHaveBeenCalledTimes(1);
+    const url = new URL(String((mock.mock.calls[0]?.[0] as Request).url ?? mock.mock.calls[0]?.[0]));
+    expect(url.pathname).toBe("/v2/projects/translations");
+    expect(url.searchParams.get("search")).toBe("Fibrilace síní");
+    expect(url.searchParams.getAll("languages")).toEqual(["cs", "en"]);
+    expect(url.searchParams.get("branch")).toBe("main");
+    expect(out.total).toBe(2);
+    expect(out.results[0]).toMatchObject({
+      id: 1,
+      name: "key1",
+      namespace: "api",
+      translation: "text 1",
+      baseTranslation: "base 1",
+      plural: false,
+    });
+    expect(out.results[1]?.namespace).toBeNull();
+  });
+
+  it("fetches further pages only when needed, capped at maxResults", async () => {
+    const mock = installFetchMock(async (input) => {
+      const p = Number(new URL(String((input as Request).url ?? input)).searchParams.get("page"));
+      return page([p * 100 + 1], 950);
+    });
+    const client = createTolgeeClient("https://app.tolgee.io", "test-key");
+    const out = await searchKeysByPhrase(client, "a", { language: "cs", maxResults: 300 });
+    expect(mock).toHaveBeenCalledTimes(3); // pages 0,1,2 — not all 10
+    expect(out.total).toBe(950);
+    expect(out.results.map((r) => r.id)).toEqual([1, 101, 201]);
+  });
+
+  it("throws on a server error so the caller can fall back to fuzzy results", async () => {
+    installFetchMock(async () => errorResponse(500));
+    const client = createTolgeeClient("https://app.tolgee.io", "test-key");
+    await expect(searchKeysByPhrase(client, "x", { language: "cs" })).rejects.toThrow();
   });
 });
 

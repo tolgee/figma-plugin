@@ -8,7 +8,7 @@
   import { fetchBranches, isConfiguredBranchMissing } from "$ui/lib/api/branches";
   import { hydrateBranches } from "$ui/lib/api/pickers";
   import {
-    searchKeys,
+    searchKeysByPhrase,
     connectInfoFromKey,
     type KeySearchResult,
   } from "$ui/lib/api/keys";
@@ -687,9 +687,21 @@
       if (matchCancelled) return;
       const v = text.toLowerCase();
       let exact: KeySearchResult[] = [];
+      // More keys CONTAIN the text than were checked (a very short, common
+      // string) — "no exact match" would then be a guess, so say so instead.
+      let truncated = false;
       try {
-        const res = await searchKeys(client, text, lang, 20, branch);
-        exact = res.filter(
+        // Phrase search (every key that CONTAINS the text), not the fuzzy
+        // search: the fuzzy one returns only a page of 20 ordered worst-match
+        // first, so in a large project the exact key was often not in it and
+        // the string was reported as "no exact match".
+        const res = await searchKeysByPhrase(client, text, {
+          language: lang,
+          baseLanguage: auth.value.baseLanguage || undefined,
+          branch,
+        });
+        truncated = res.total > res.results.length;
+        exact = res.results.filter(
           (r) =>
             [r.translation, r.baseTranslation, r.name].some(
               (c) => (c ?? "").trim().toLowerCase() === v,
@@ -707,7 +719,9 @@
         notConnected.push({
           text,
           ns,
-          hint: "No exact match in Tolgee — create the key or connect it manually.",
+          hint: truncated
+            ? "Too many keys contain this text to check them all — connect it manually."
+            : "No exact match in Tolgee — create the key or connect it manually.",
         });
       } else {
         notConnected.push({

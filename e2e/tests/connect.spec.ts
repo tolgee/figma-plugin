@@ -121,6 +121,36 @@ test.describe("Connect view", () => {
     });
   });
 
+  test("ranks the exact string first even when Tolgee returns it last", async ({
+    page,
+    request,
+  }) => {
+    // Tolgee's fuzzy search orders namespaced keys least-similar first, so the
+    // exact string — created LAST here, all in one namespace — comes back at the
+    // bottom. The plugin must re-rank it to the top.
+    const tag = `rank${Date.now()}`;
+    const texts = [
+      `${tag} Ve výše uvedeném období <b>byla vyhodnocena fibrilace síní</b> u pacienta`,
+      `${tag} Fibrilace síní zjištěna`,
+      `${tag} Fibrilace síní`,
+    ];
+    for (const [i, text] of texts.entries()) {
+      const res = await request.post("http://localhost:8080/v2/projects/keys/create", {
+        headers: { "X-API-Key": "examples-admin-imported-project-implicit" },
+        data: { name: `${tag}-${i}`, namespace: "rank-test", translations: { en: text } },
+      });
+      expect(res.ok()).toBe(true);
+    }
+
+    const ui = await openConnect(page, createTestNode({ text: "Anything" }));
+    await ui.getByPlaceholder("Search by string (key)…").fill(`${tag} fibrilace sini`);
+
+    await expect(ui.getByText("Exact match")).toBeVisible({ timeout: 20_000 });
+    const rows = ui.locator("li");
+    await expect(rows.first()).toContainText(`${tag}-2`);
+    await expect(rows.nth(1)).toContainText(`${tag}-1`);
+  });
+
   test("shows 'No node selected' when navigated without a node", async ({
     page,
   }) => {

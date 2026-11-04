@@ -67,6 +67,92 @@ export async function searchKeys(
   }));
 }
 
+export type PhraseSearchResult = {
+  results: KeySearchResult[];
+  /** How many keys contain the phrase in total (may exceed `results`). */
+  total: number;
+};
+
+const PHRASE_PAGE_SIZE = 100;
+
+/**
+ * Keys whose key name, namespace, description or text (design language or
+ * base language) CONTAINS
+ * `query` as one piece (case-insensitive, accent-sensitive) — the same search
+ * the Tolgee web app's translation list uses (`GET /v2/projects/translations`
+ * with `search`). Unlike the fuzzy `searchKeys`, every hit really contains the
+ * phrase, so the exact string can be found among them reliably; the caller
+ * ranks them (`rankKeySearch`).
+ *
+ * Fetches the first page, then — only when there are more — the remaining
+ * pages up to `maxResults`, in parallel. `total` reports the full count so the
+ * UI can ask the user to narrow a too-common phrase down.
+ */
+export async function searchKeysByPhrase(
+  client: TolgeeClient,
+  query: string,
+  opts: {
+    /** The design's language — its text is returned as `translation`. */
+    language: string | undefined;
+    /** Project base language — also searched, returned as `baseTranslation`
+     *  (like the fuzzy `searchKeys`). Omit when unknown. */
+    baseLanguage?: string;
+    branch?: string;
+    maxResults?: number;
+  },
+): Promise<PhraseSearchResult> {
+  const trimmed = query.trim();
+  const languageTag = opts.language;
+  if (!trimmed || !languageTag) return { results: [], total: 0 };
+  const { baseLanguage, branch, maxResults = 3 * PHRASE_PAGE_SIZE } = opts;
+  const languages = [...new Set([languageTag, baseLanguage].filter((l): l is string => !!l))];
+
+  const fetchPage = async (page: number) => {
+    const { data, error } = await client.GET("/v2/projects/translations", {
+      params: {
+        query: {
+          search: trimmed,
+          languages,
+          page,
+          size: PHRASE_PAGE_SIZE,
+          // Stable order across pages; relevance is decided client-side.
+          sort: ["keyId"],
+          branch: branch || undefined,
+        },
+      },
+    });
+    if (error || !data) throw new Error("Phrase search failed");
+    const keys = data._embedded?.keys ?? [];
+    return {
+      total: data.page?.totalElements ?? keys.length,
+      results: keys.map(
+        (k): KeySearchResult => ({
+          id: k.keyId,
+          name: k.keyName,
+          namespace: k.keyNamespace ?? null,
+          description: k.keyDescription,
+          translation: k.translations?.[languageTag]?.text,
+          baseTranslation: baseLanguage ? k.translations?.[baseLanguage]?.text : undefined,
+          plural: k.keyIsPlural,
+        }),
+      ),
+    };
+  };
+
+  const first = await fetchPage(0);
+  const pagesWanted = Math.min(
+    Math.ceil(first.total / PHRASE_PAGE_SIZE),
+    Math.ceil(maxResults / PHRASE_PAGE_SIZE),
+  );
+  const rest = await Promise.all(
+    Array.from({ length: Math.max(0, pagesWanted - 1) }, (_, i) => fetchPage(i + 1)),
+  );
+  return {
+    results: [first, ...rest].flatMap((p) => p.results),
+    total: first.total,
+  };
+}
+
 /**
  * Builds the node data to persist when connecting a node to search result `r`.
  *

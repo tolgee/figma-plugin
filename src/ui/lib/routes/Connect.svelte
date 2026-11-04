@@ -3,21 +3,23 @@
   import { auth } from "$ui/lib/stores/auth.svelte";
   import { send, nextCorrelationId } from "$ui/lib/bus";
   import { ICON } from "$shared/iconSizes";
-  import { SearchInput, Button, Badge, EmptyState } from "$ui/lib/components/ui";
-  import { createQuery } from "@tanstack/svelte-query";
+  import { SearchInput, Button, Badge, EmptyState, IconButton } from "$ui/lib/components/ui";
   import ViewHeader from "$ui/lib/components/domain/ViewHeader.svelte";
   import Tolgee from "$ui/lib/components/icons/Tolgee.svelte";
   import {
     searchKeys,
-    fetchProjectKeyCount,
+    searchKeysByPhrase,
     connectInfoFromKey,
     type KeySearchResult,
   } from "$ui/lib/api/keys";
   import type { NodeInfo } from "$shared/types";
   import { textOfNode } from "$ui/lib/logic/pushDiff";
   import { disconnectedInfo } from "$ui/lib/logic/disconnect";
+  import { isExactResult, rankKeySearch } from "$ui/lib/logic/keySearchRank";
   import { cn } from "$ui/lib/utils";
   import KeyRound from "lucide-svelte/icons/key-round";
+  import ChevronLeft from "lucide-svelte/icons/chevron-left";
+  import ChevronRight from "lucide-svelte/icons/chevron-right";
 
   const route = $derived(appState.value.route);
   // Track the LIVE selection instead of the snapshot captured at navigate time:
@@ -43,20 +45,28 @@
   );
   const isBulk = $derived(targets.length > 1);
 
+  const PAGE_SIZE = 20;
+  // How many fuzzy suggestions to pull in next to the phrase matches. Tolgee
+  // orders them worst-first, so this is a sample that gets re-ranked locally.
+  const FUZZY_SIZE = 50;
+
   let query = $state("");
+  /** Phrase + fuzzy results, merged and ranked best-first (`rankKeySearch`). */
   let results = $state<KeySearchResult[]>([]);
+  /** More keys contain the phrase than were fetched — ask to narrow down. */
+  let truncated = $state(false);
+  let page = $state(0);
   let loading = $state(false);
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  // Each search gets a number; a slower, older response must not overwrite
+  // the results of a newer query.
+  let searchSeq = 0;
+  let listEl = $state<HTMLDivElement | null>(null);
 
-  // Total keys in the project, to frame the search count as "N of TOTAL keys
-  // in Tolgee". Cached and best-effort — null when unavailable.
-  const keyCountQuery = createQuery(() => ({
-    queryKey: ["project-key-count"],
-    queryFn: () => fetchProjectKeyCount(auth.value.client!),
-    enabled: auth.value.authenticated,
-    staleTime: 60 * 1000,
-  }));
-  const totalKeys = $derived(keyCountQuery.data ?? null);
+  function goToPage(p: number): void {
+    page = Math.min(Math.max(0, p), pageCount - 1);
+    if (listEl) listEl.scrollTop = 0;
+  }
   // Prefill the search with the layer's own text exactly once per node, so
   // similar keys surface immediately without the user typing anything.
   let prefilledForId = $state<string | null>(null);
@@ -89,40 +99,48 @@
       return;
     }
     loading = true;
+    const seq = ++searchSeq;
     timeoutId = setTimeout(async () => {
-      try {
-        results = await searchKeys(
-          client,
-          q,
-          appState.value.config?.language,
-          20,
-          auth.value.branchingEnabled
-            ? (appState.value.config?.branch ?? "")
-            : "",
-        );
-      } catch {
-        results = [];
-      } finally {
-        loading = false;
-      }
+      const language = appState.value.config?.language;
+      const branch = auth.value.branchingEnabled
+        ? (appState.value.config?.branch ?? "")
+        : "";
+      // Two searches at once: PHRASE (every key that contains the text as one
+      // piece — reliable for the exact string) and FUZZY (other word order,
+      // typos, missing diacritics). Either may fail on its own; whatever
+      // arrives is ranked together.
+      const [phrase, fuzzy] = await Promise.allSettled([
+        searchKeysByPhrase(client, q, {
+          language,
+          baseLanguage: auth.value.baseLanguage || undefined,
+          branch,
+        }),
+        searchKeys(client, q, language, FUZZY_SIZE, branch),
+      ]);
+      if (seq !== searchSeq) return;
+      const phraseResults = phrase.status === "fulfilled" ? phrase.value.results : [];
+      results = rankKeySearch(
+        [phraseResults, fuzzy.status === "fulfilled" ? fuzzy.value : []],
+        q,
+      );
+      truncated =
+        phrase.status === "fulfilled" && phrase.value.total > phraseResults.length;
+      page = 0;
+      loading = false;
     }, 300);
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
   });
 
-  // Split results into an EXACT match (the searched text equals a key's
-  // translation / base text / name) and the rest — exact always shown first,
-  // so "this exact string already exists" is unmissable.
-  const exactValue = $derived(query.trim().toLowerCase());
-  function isExact(r: KeySearchResult): boolean {
-    if (!exactValue) return false;
-    return [r.translation, r.baseTranslation, r.name].some(
-      (c) => (c ?? "").trim().toLowerCase() === exactValue,
-    );
-  }
-  const exactMatches = $derived(results.filter(isExact));
-  const otherMatches = $derived(results.filter((r) => !isExact(r)));
+  // Paging over the ranked list (already in memory — no request per page).
+  const pageCount = $derived(Math.max(1, Math.ceil(results.length / PAGE_SIZE)));
+  const pageResults = $derived(results.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE));
+  // Within the page: EXACT match(es) (the searched text equals a key's
+  // translation / base text / name) under their own header, so "this exact
+  // string already exists" is unmissable. Ranking puts them on page 1.
+  const exactMatches = $derived(pageResults.filter((r) => isExactResult(r, query)));
+  const otherMatches = $derived(pageResults.filter((r) => !isExactResult(r, query)));
 
   function isConnectedKey(r: KeySearchResult): boolean {
     return (
@@ -187,13 +205,14 @@
         />
         {#if query.trim() && !loading}
           <p class="mt-1.5 text-[11px] text-text-secondary">
-            {#if totalKeys !== null}
-              {results.length} of {totalKeys}
-              {totalKeys === 1 ? "key" : "keys"} in Tolgee
-            {:else}
-              {results.length} {results.length === 1 ? "key" : "keys"}
-            {/if}
+            {results.length}{truncated ? "+" : ""}
+            {results.length === 1 && !truncated ? "match" : "matches"}, best first
           </p>
+          {#if truncated}
+            <p class="mt-0.5 text-[11px] text-text-secondary">
+              Many strings contain this text — type more words to narrow it down.
+            </p>
+          {/if}
         {/if}
       </div>
 
@@ -254,7 +273,7 @@
       {#if results.length > 0}
         <!-- Results: exact match(es) first (the searched text already exists),
              then other fuzzy suggestions. Headers only when both groups exist. -->
-        <div class="flex-1 overflow-auto px-3">
+        <div class="flex-1 overflow-auto px-3" bind:this={listEl}>
           {#if exactMatches.length > 0}
             <div
               class="px-0 pt-2 pb-0.5 text-[10px] font-medium uppercase tracking-wide text-text-secondary"
@@ -278,6 +297,32 @@
             </ul>
           {/if}
         </div>
+        {#if pageCount > 1}
+          <div
+            class="flex items-center justify-center gap-2 border-t border-border px-3 py-1.5 text-[11px] text-text-secondary"
+          >
+            <IconButton
+              aria-label="Previous page"
+              disabled={page === 0}
+              class="disabled:pointer-events-none disabled:opacity-40"
+              onclick={() => goToPage(page - 1)}
+            >
+              <ChevronLeft size={ICON.inline} />
+            </IconButton>
+            <span>
+              {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, results.length)}
+              of {results.length}{truncated ? "+" : ""}
+            </span>
+            <IconButton
+              aria-label="Next page"
+              disabled={page >= pageCount - 1}
+              class="disabled:pointer-events-none disabled:opacity-40"
+              onclick={() => goToPage(page + 1)}
+            >
+              <ChevronRight size={ICON.inline} />
+            </IconButton>
+          </div>
+        {/if}
       {:else if loading}
         <EmptyState icon={Tolgee} title="Searching…" />
       {:else if query.trim()}
