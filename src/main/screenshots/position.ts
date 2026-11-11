@@ -3,13 +3,14 @@
  *
  * Both nodes expose `absoluteBoundingBox` in document space; subtracting the
  * frame origin yields coordinates suitable for overlaying the key marker on
- * the exported PNG. If either bounding box is unavailable (rare — e.g. nodes
- * that have just been detached) we fall back to a zero-position so callers
- * never have to special-case null.
+ * the exported PNG; `scale` is the scale the PNG was exported at. If either
+ * bounding box is unavailable (rare — e.g. nodes that have just been detached)
+ * we fall back to a zero-position so callers never have to special-case null.
  */
 export function getNodeRelativePosition(
   node: SceneNode,
   frame: FrameNode,
+  scale = 1,
 ): { x: number; y: number; width: number; height: number } {
   const nodeBox = node.absoluteBoundingBox;
   const frameBox = frame.absoluteBoundingBox;
@@ -17,9 +18,9 @@ export function getNodeRelativePosition(
     return { x: 0, y: 0, width: 0, height: 0 };
   }
   return {
-    x: nodeBox.x - frameBox.x,
-    y: nodeBox.y - frameBox.y,
-    width: nodeBox.width,
-    height: nodeBox.height,
+    x: Math.round((nodeBox.x - frameBox.x) * scale),
+    y: Math.round((nodeBox.y - frameBox.y) * scale),
+    width: Math.round(nodeBox.width * scale),
+    height: Math.round(nodeBox.height * scale),
   };
 }

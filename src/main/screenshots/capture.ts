@@ -3,12 +3,16 @@ import type { FrameInfo, FrameScreenshot, NodeInfo } from "$shared/types";
 import { groupNodesByFrame } from "./groupByFrame";
 import { getNodeRelativePosition } from "./position";
 
-// Tolgee renders position overlays against the exported image at 1x. The node
-// x/y/width/height we send come from `absoluteBoundingBox` (in design-space
-// pixels) so the screenshot must match — exporting at 2x while keeping
-// positions at 1x makes the overlay boxes appear half-size and offset. The
-// legacy plugin exported at 1x for the same reason.
-const EXPORT_SCALE = 1;
+// Tolgee stores screenshots at no more than this many pixels
+// (`ImageProcessor.MAX_STORED_PIXELS` on the server). Key positions must be
+// scaled by the same factor as the export: Tolgee overlays them on the image
+// it received.
+const MAX_EXPORT_PIXELS = 3_000_000;
+
+function exportScale(box: Rect | null): number {
+  if (!box) return 1;
+  return Math.min(1, Math.sqrt(MAX_EXPORT_PIXELS / (box.width * box.height)));
+}
 
 /**
  * How many frames we may export back-to-back before yielding to the event
@@ -56,15 +60,15 @@ async function ensurePageLoaded(node: BaseNode): Promise<void> {
 }
 
 /**
- * Export a single frame to a PNG byte buffer at `EXPORT_SCALE`. The caller is
+ * Export a single frame to a PNG byte buffer at `scale`. The caller is
  * responsible for guaranteeing the frame's page has been loaded — we still
  * defensively load it here so the helper is safe to use in isolation.
  */
-export async function exportFrame(frame: FrameNode): Promise<Uint8Array> {
+export async function exportFrame(frame: FrameNode, scale = 1): Promise<Uint8Array> {
   await ensurePageLoaded(frame);
   return frame.exportAsync({
     format: "PNG",
-    constraint: { type: "SCALE", value: EXPORT_SCALE },
+    constraint: { type: "SCALE", value: scale },
   });
 }
 
@@ -133,17 +137,18 @@ export async function captureScreenshots(
       await ensurePageLoaded(frame);
 
       const frameBox = frame.absoluteBoundingBox;
-      const image = await exportFrame(frame);
+      const scale = exportScale(frameBox);
+      const image = await exportFrame(frame, scale);
 
       const info: FrameInfo = {
         id: frame.id,
         name: frame.name,
-        width: frameBox?.width ?? 0,
-        height: frameBox?.height ?? 0,
+        width: Math.round((frameBox?.width ?? 0) * scale),
+        height: Math.round((frameBox?.height ?? 0) * scale),
       };
 
       const keys: FrameScreenshot["keys"] = nodes.map((node) => {
-        const position = getNodeRelativePosition(node, frame);
+        const position = getNodeRelativePosition(node, frame, scale);
         const nodeInfo: NodeInfo = getNodeInfo(node);
         return {
           ...nodeInfo,
