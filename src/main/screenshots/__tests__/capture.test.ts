@@ -150,3 +150,57 @@ describe("captureScreenshots — failed frames", () => {
     expect(result).toEqual({ delivered: 1, failed: 0 });
   });
 });
+
+describe("captureScreenshots — export scale", () => {
+  function setup(frameWidth: number, frameHeight: number) {
+    const page = makePage("page-1");
+    const frame = makeFrame("f-1", page);
+    frame.absoluteBoundingBox = { x: 0, y: 0, width: frameWidth, height: frameHeight };
+    const text = makeTextNode("t-1", frame);
+    text.absoluteBoundingBox = { x: 6000, y: 3000, width: 1200, height: 600 };
+    installFigma(async (id) => (id === "t-1" ? text : null));
+    return frame;
+  }
+
+  it("exports frames up to 3 million pixels at 100% with positions untouched", async () => {
+    const frame = setup(1500, 2000);
+
+    const delivered: FrameScreenshot[] = [];
+    await captureScreenshots(["t-1"], (s) => delivered.push(s));
+
+    expect(frame.exportAsync).toHaveBeenCalledWith({
+      format: "PNG",
+      constraint: { type: "SCALE", value: 1 },
+    });
+    expect(delivered[0]?.keys[0]).toMatchObject({ x: 6000, y: 3000, width: 1200, height: 600 });
+  });
+
+  it("shrinks bigger frames to 3 million pixels and scales key positions to match", async () => {
+    const frame = setup(12000, 12000);
+
+    const delivered: FrameScreenshot[] = [];
+    await captureScreenshots(["t-1"], (s) => delivered.push(s));
+
+    const scale = Math.sqrt(3_000_000 / 144_000_000);
+    expect(frame.exportAsync).toHaveBeenCalledWith({
+      format: "PNG",
+      constraint: { type: "SCALE", value: expect.closeTo(scale, 6) },
+    });
+    expect(delivered[0]?.info).toMatchObject({ width: 1732, height: 1732 });
+    expect(delivered[0]?.keys[0]).toMatchObject({ x: 866, y: 433, width: 173, height: 87 });
+  });
+
+  it("exports at 100% when the frame has no bounding box or no area", async () => {
+    for (const box of [null, { x: 0, y: 0, width: 0, height: 0 }]) {
+      const frame = setup(1, 1);
+      frame.absoluteBoundingBox = box as never;
+
+      await captureScreenshots(["t-1"], () => {});
+
+      expect(frame.exportAsync).toHaveBeenCalledWith({
+        format: "PNG",
+        constraint: { type: "SCALE", value: 1 },
+      });
+    }
+  });
+});
