@@ -23,6 +23,21 @@ const pending = new Map<string, Partial<NodeInfo>>();
 let timer: ReturnType<typeof setTimeout> | null = null;
 let firstQueuedAt: number | null = null;
 
+type FlushListener = (entries: Array<{ id: string; info: Partial<NodeInfo> }>) => void;
+let flushListener: FlushListener | null = null;
+
+/**
+ * Called with every batch the moment it is SENT, before the main thread
+ * confirms it. The app store applies it optimistically to the raw selection,
+ * so a key the user just typed counts as the node's key immediately: Push
+ * opened right after an inline edit (its `navigate()` flushes this queue)
+ * must not see the still-unconfirmed node as key-less and write the prefill
+ * suggestion over the typed key.
+ */
+export function onNodeSavesFlushed(listener: FlushListener | null): void {
+  flushListener = listener;
+}
+
 export function queueNodeSave(id: string, info: Partial<NodeInfo>): void {
   const existing = pending.get(id);
   pending.set(id, existing ? { ...existing, ...info } : info);
@@ -65,5 +80,6 @@ export function flushNodeSaves(): void {
   if (pending.size === 0) return;
   const nodes = [...pending.entries()].map(([id, info]) => ({ id, info }));
   pending.clear();
+  flushListener?.(nodes);
   send({ type: "set-nodes-data", correlationId: nextCorrelationId(), nodes });
 }

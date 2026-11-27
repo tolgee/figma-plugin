@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { NodeInfo, TolgeeConfig } from "$shared/types";
-import { pendingPrefills, resetPrefillSettled } from "$ui/lib/logic/prefillKey";
+import { followsSuggestion, suggestedKeyFor, withSuggestedKeys } from "$ui/lib/logic/prefillKey";
 
 function makeNode(overrides: Partial<NodeInfo> = {}): NodeInfo {
   return {
@@ -23,133 +23,102 @@ const CONFIG: Partial<TolgeeConfig> = {
   namespace: "",
 };
 
-beforeEach(() => {
-  resetPrefillSettled();
+describe("withSuggestedKeys — the prefill is a suggestion, never a write", () => {
+  it("shows the suggestion on an empty-key unconnected node and lists it as pending", () => {
+    const { nodes, pending } = withSuggestedKeys([makeNode()], { ...CONFIG, namespace: "web" });
+    expect(nodes[0]).toMatchObject({ key: "Sign in", ns: "web", prefilledKey: "Sign in" });
+    expect([...pending]).toEqual([["1:1", { key: "Sign in", ns: "web" }]]);
+  });
+
+  it("never touches a manual key — typed by the user, or persisted without our marker", () => {
+    const typed = makeNode({ id: "a", key: "my.key", prefilledKey: "Sign in" });
+    const fromOldPlugin = makeNode({ id: "b", key: "legacy" });
+    const { nodes, pending } = withSuggestedKeys([typed, fromOldPlugin], CONFIG);
+    expect(nodes[0]).toBe(typed);
+    expect(nodes[1]).toBe(fromOldPlugin);
+    expect(pending.size).toBe(0);
+  });
+
+  it("an UNTOUCHED auto key follows the layer and the format (the rename complaint)", () => {
+    // Persisted earlier as "Sign in" (key === marker); the layer text changed since.
+    const renamed = makeNode({ key: "Sign in", prefilledKey: "Sign in", characters: "Log in" });
+    const { nodes, pending } = withSuggestedKeys([renamed], CONFIG);
+    expect(nodes[0]?.key).toBe("Log in");
+    expect(pending.get("1:1")?.key).toBe("Log in");
+
+    const restyled = withSuggestedKeys(
+      [makeNode({ key: "Sign in", prefilledKey: "Sign in" })],
+      { ...CONFIG, keyFormat: "{elementName}" },
+    );
+    expect(restyled.nodes[0]?.key).toBe("Layer");
+  });
+
+  it("a stored auto key that already equals the suggestion is left as is and is NOT pending", () => {
+    const stored = makeNode({ key: "Sign in", prefilledKey: "Sign in" });
+    const { nodes, pending } = withSuggestedKeys([stored], CONFIG);
+    expect(nodes[0]).toBe(stored);
+    expect(pending.size).toBe(0);
+  });
+
+  it("connected nodes are untouched", () => {
+    const connected = makeNode({ key: "k", connected: true });
+    expect(withSuggestedKeys([connected], CONFIG).nodes[0]).toBe(connected);
+  });
+
+  it("with prefill off (or no format) returns the input array itself", () => {
+    const input = [makeNode()];
+    expect(withSuggestedKeys(input, { ...CONFIG, prefillKeyFormat: false }).nodes).toBe(input);
+    expect(withSuggestedKeys(input, { prefillKeyFormat: true }).nodes).toBe(input);
+    expect(withSuggestedKeys(input, null).nodes).toBe(input);
+  });
+
+  it("a cleared key shows the suggestion again (clearing = 'give me a fresh auto value')", () => {
+    const cleared = makeNode({ key: "", prefilledKey: "Sign in" });
+    expect(withSuggestedKeys([cleared], CONFIG).nodes[0]?.key).toBe("Sign in");
+  });
+
+  it("a parent-based format waits for the parent names, then suggests", () => {
+    const parentConfig = { ...CONFIG, keyFormat: "{frame}.{elementText}" };
+    const bare = makeNode();
+    expect(withSuggestedKeys([bare], parentConfig).nodes[0]).toBe(bare);
+    const withParents = makeNode({ frame: "Login" });
+    expect(withSuggestedKeys([withParents], parentConfig).nodes[0]?.key).toBe("Login.Sign in");
+  });
+
+  it("formats each raw node once per config: the same snapshot in a later batch reuses the same overlay object", () => {
+    // Streamed selection: batch 1 → [a], batch 2 → [a, b]. `a` must not be
+    // re-formatted (nor get a new object) just because the array was rebuilt.
+    const a = makeNode({ id: "a" });
+    const b = makeNode({ id: "b", characters: "Cancel" });
+    const first = withSuggestedKeys([a], CONFIG).nodes[0];
+    const second = withSuggestedKeys([a, b], CONFIG);
+    expect(second.nodes[0]).toBe(first);
+    expect(second.nodes[1]?.key).toBe("Cancel");
+    // A new config object is a new decision.
+    expect(withSuggestedKeys([a], { ...CONFIG }).nodes[0]).not.toBe(first);
+  });
+
+  it("keeps the identity of untouched nodes and of the array when nothing changes", () => {
+    const manual = makeNode({ id: "m", key: "manual" });
+    const fresh = makeNode({ id: "f" });
+    const { nodes } = withSuggestedKeys([manual, fresh], CONFIG);
+    expect(nodes[0]).toBe(manual);
+    expect(nodes[1]).not.toBe(fresh);
+    const onlyManual = [manual];
+    expect(withSuggestedKeys(onlyManual, CONFIG).nodes).toBe(onlyManual);
+  });
 });
 
-describe("pendingPrefills", () => {
-  it("fills empty-key unconnected nodes once, then settles", () => {
-    const nodes = [makeNode({ id: "1:1" }), makeNode({ id: "1:2", characters: "Log out" })];
-    const first = pendingPrefills(nodes, CONFIG);
-    expect(first.map((p) => p.id)).toEqual(["1:1", "1:2"]);
-    expect(first[0]?.key).toBe("Sign in");
-    // Once the caller has persisted the generated keys, a re-scan is a no-op
-    // (the keys are now non-empty, so nothing regenerates).
-    const persisted = [
-      makeNode({ id: "1:1", key: "Sign in" }),
-      makeNode({ id: "1:2", key: "Log out", characters: "Log out" }),
-    ];
-    expect(pendingPrefills(persisted, CONFIG)).toEqual([]);
+describe("followsSuggestion / suggestedKeyFor", () => {
+  it("empty key and untouched auto key follow; manual and connected don't", () => {
+    expect(followsSuggestion(makeNode())).toBe(true);
+    expect(followsSuggestion(makeNode({ key: "a", prefilledKey: "a" }))).toBe(true);
+    expect(followsSuggestion(makeNode({ key: "a", prefilledKey: "b" }))).toBe(false);
+    expect(followsSuggestion(makeNode({ key: "a" }))).toBe(false);
+    expect(followsSuggestion(makeNode({ key: "", connected: true }))).toBe(false);
   });
 
-  it("plugin open never rewrites keys persisted earlier (boot is not a format change)", () => {
-    // Fresh session memory = reopen. Keyed nodes stay untouched, empty fill.
-    const nodes = [
-      makeNode({ id: "1:1", key: "my.manual.key" }),
-      makeNode({ id: "1:2", characters: "Log out" }),
-      makeNode({ id: "1:3", key: "linked", connected: true }),
-    ];
-    expect(pendingPrefills(nodes, CONFIG)).toEqual([
-      { id: "1:2", key: "Log out", ns: "" },
-    ]);
-  });
-
-  it("a cleared key REGENERATES on the same format (clearing = 'give me a fresh auto value')", () => {
-    const node = makeNode({ id: "1:1" });
-    pendingPrefills([node], CONFIG); // prefill applied → settled
-    const cleared = makeNode({ id: "1:1", key: "" }); // user deleted the key
-    // Matches upstream (fills any keyless unconnected node); a clear no longer
-    // "sticks" — the empty key is refilled with the current-format value.
-    expect(pendingPrefills([cleared], CONFIG)).toEqual([{ id: "1:1", key: "Sign in", ns: "" }]);
-  });
-
-  it("a manual (non-empty) key is NOT overwritten on re-scan under the same format", () => {
-    const node = makeNode({ id: "1:1" });
-    pendingPrefills([node], CONFIG); // generated "Sign in", settled
-    const edited = makeNode({ id: "1:1", key: "my.custom" }); // user edited it
-    // The non-empty edit is protected: regeneration only touches empty keys.
-    expect(pendingPrefills([edited], CONFIG)).toEqual([]);
-  });
-
-  it("on a format change, regenerates UNTOUCHED auto keys but preserves manual edits", () => {
-    const nodes = [
-      // Auto key: still equals the marker we generated → follows the new format.
-      makeNode({ id: "1:1", key: "Sign in", prefilledKey: "Sign in" }),
-      // Manual edit: key differs from the marker → left alone.
-      makeNode({ id: "1:2", key: "manual.key", prefilledKey: "Log out", characters: "Log out" }),
-      makeNode({ id: "1:3", key: "linked", connected: true }),
-    ];
-    pendingPrefills(nodes, CONFIG); // decisions made under {elementText}
-    const regenerated = pendingPrefills(nodes, { ...CONFIG, keyFormat: "{elementName}" });
-    // Only the untouched auto key reflows; the manual edit and the connected
-    // node are never rewritten.
-    expect(regenerated).toEqual([{ id: "1:1", key: "Layer", ns: "" }]);
-  });
-
-  it("a format change also refills keys the user had cleared", () => {
-    const node = makeNode({ id: "1:1" });
-    pendingPrefills([node], CONFIG);
-    const cleared = makeNode({ id: "1:1", key: "" });
-    pendingPrefills([cleared], CONFIG); // still cleared under the same format
-    expect(pendingPrefills([cleared], { ...CONFIG, keyFormat: "{elementName}" })).toEqual([
-      { id: "1:1", key: "Layer", ns: "" },
-    ]);
-  });
-
-  it("regenerates an untouched auto key when variable casing changes", () => {
-    const node = makeNode({ id: "1:1" });
-    pendingPrefills([node], CONFIG);
-    // Auto key (equals the marker) reflows on a casing change too.
-    const keyed = makeNode({ id: "1:1", key: "Sign in", prefilledKey: "Sign in" });
-    const regenerated = pendingPrefills([keyed], { ...CONFIG, variableCasing: "camelCase" });
-    expect(regenerated).toEqual([{ id: "1:1", key: "signIn", ns: "" }]);
-  });
-
-  it("preserves a manual edit when the style changes (the reported bug)", () => {
-    const node = makeNode({ id: "1:1" });
-    const [applied] = pendingPrefills([node], CONFIG); // auto-generated "Sign in", marker set
-    // User hand-edits the key; the marker still holds the old auto value.
-    const edited = makeNode({ id: "1:1", key: "my.custom", prefilledKey: applied?.key });
-    // Changing the format must NOT overwrite the manual edit…
-    expect(pendingPrefills([edited], { ...CONFIG, keyFormat: "{elementName}" })).toEqual([]);
-    // …nor a casing change.
-    expect(pendingPrefills([edited], { ...CONFIG, variableCasing: "camelCase" })).toEqual([]);
-  });
-
-  it("toggling prefill off is inert; re-enabling with a NEW format regenerates", () => {
-    const node = makeNode({ id: "1:1" });
-    const [applied] = pendingPrefills([node], CONFIG);
-    // Auto key: key still equals the marker we generated.
-    const keyed = makeNode({ id: "1:1", key: applied?.key, prefilledKey: applied?.key });
-    expect(pendingPrefills([keyed], { prefillKeyFormat: false })).toEqual([]);
-    expect(pendingPrefills([keyed], { ...CONFIG, keyFormat: "{elementName}" })).toEqual([
-      { id: "1:1", key: "Layer", ns: "" },
-    ]);
-  });
-
-  it("finding 65 round-trip: prefill-off clears the key (main), re-enabling regenerates it", () => {
-    // While on, the key is generated + persisted. Turning prefill off clears
-    // the persisted key on the main thread (clearPrefilledKeys). Re-enabling
-    // with the same format regenerates it — no session-memory reset needed,
-    // because an empty key always regenerates.
-    const node = makeNode({ id: "1:1" });
-    expect(pendingPrefills([node], CONFIG)[0]?.key).toBe("Sign in"); // generated + settled
-    const cleared = makeNode({ id: "1:1", key: "" }); // main thread cleared it on prefill-off
-    expect(pendingPrefills([cleared], CONFIG)).toEqual([{ id: "1:1", key: "Sign in", ns: "" }]);
-  });
-
-  it("waits for parent names before regenerating an auto key from a parent-based format", () => {
-    // Auto key (equals the marker) so a format change is allowed to reflow it.
-    const node = makeNode({ id: "1:1", key: "old", prefilledKey: "old" });
-    pendingPrefills([node], CONFIG); // decided under {elementText}
-    const parentConfig = { ...CONFIG, keyFormat: "{frame}.{elementName}" };
-    // Stale snapshot (scan under the old format resolved no ancestors) —
-    // generating now would persist a partial key. Stay undecided instead.
-    expect(pendingPrefills([node], parentConfig)).toEqual([]);
-    // Re-scan delivered the frame → full key generated.
-    const withParents = makeNode({ id: "1:1", key: "old", prefilledKey: "old", frame: "Login" });
-    expect(pendingPrefills([withParents], parentConfig)).toEqual([
-      { id: "1:1", key: "Login.Layer", ns: "" },
-    ]);
+  it("applies the configured casing", () => {
+    expect(suggestedKeyFor(makeNode(), { ...CONFIG, variableCasing: "camelCase" })).toBe("signIn");
   });
 });

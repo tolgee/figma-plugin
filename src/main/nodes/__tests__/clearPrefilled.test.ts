@@ -126,6 +126,36 @@ describe("clearPrefilledKeys", () => {
     expect(connectedP2._data()?.key).toBe("d"); // connected → kept
   });
 
+  it("asks the engine for DIRECTLY stored data only — never probes/overrides instance sublayers that merely inherit it", async () => {
+    // `setPluginData` on a sublayer that only INHERITS its record from the
+    // main component would CREATE an override there, permanently detaching it
+    // from the main component's data. The prefill only ever writes directly
+    // onto nodes, so the engine-side direct-data filter is both complete and
+    // the thing that guarantees no inheriting sublayer is ever touched.
+    const node = makeTextNode("1:1", { key: "a", prefilledKey: "a", connected: false });
+    const criteriaSeen: unknown[] = [];
+    (globalThis as unknown as { figma: unknown }).figma = {
+      root: {
+        children: [
+          {
+            type: "PAGE" as const,
+            loadAsync: async () => {},
+            findAllWithCriteria: (criteria: unknown) => {
+              criteriaSeen.push(criteria);
+              return [node];
+            },
+          },
+        ],
+      },
+    };
+
+    await clearPrefilledKeys();
+
+    expect(criteriaSeen).toEqual([
+      { types: ["TEXT"], pluginData: { keys: [TOLGEE_NODE_INFO] } },
+    ]);
+  });
+
   it("ignores nodes whose pluginData is unparseable, without throwing", async () => {
     const bad = makeTextNode("1:1", null);
     bad.setPluginData(TOLGEE_NODE_INFO, "{not json");
