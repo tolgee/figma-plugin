@@ -2,15 +2,18 @@
  * Release info shown as the quiet version tag in the Settings action bar
  * (bottom-left, next to Cancel/Save).
  *
- * Policy: bump when we ship NEW functionality — not for pure bug-fix builds.
- * Kept as plain constants (not the build date) so a rebuild without a version
- * change stays byte-identical, which the delivery sync relies on. Keep
- * `package.json`'s `version` in step for tooling.
+ * Policy: the number Figma Community shows for the release ("Version 41"),
+ * so the footer matches the plugin page users compare it with. Figma assigns
+ * it on publish (one up from the last one), so set it to the NEXT Community
+ * version before publishing. `package.json`'s semver (2.1.0 for v41) is for
+ * tooling only.
+ * No release date on purpose (Zuzka, 2026-11-27): the tag links to the
+ * Community page, which shows the real publish date — a hard-coded one went
+ * stale whenever publishing slipped a day.
+ * Kept as a plain constant (not the build date) so a rebuild without a version
+ * change stays byte-identical, which the delivery sync relies on.
  */
-export const APP_VERSION = "2.0.0";
-
-/** ISO date of this release. */
-export const APP_RELEASED = "2026-07-24";
+export const APP_VERSION = "41";
 
 /**
  * The plugin's Figma Community page. Derived from the manifest plugin id
