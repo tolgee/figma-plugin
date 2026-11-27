@@ -1,5 +1,6 @@
 import type { NodeInfo, Route, TolgeeConfig } from "$shared/types";
-import { flushNodeSaves } from "$ui/lib/logic/saveQueue";
+import { type SuggestedKey, withSuggestedKeys } from "$ui/lib/logic/prefillKey";
+import { flushNodeSaves, onNodeSavesFlushed } from "$ui/lib/logic/saveQueue";
 
 /**
  * Which editor types may open each route — the navigation-side half of the
@@ -109,6 +110,28 @@ function createAppState() {
   // proxying hundreds of them — every field read of every row going through a
   // proxy trap — is pure overhead. Reactivity comes from reassignment.
   let selectedNodes = $state.raw<NodeInfo[]>([]);
+  // What the UI sees: the raw snapshots with the key-prefill SUGGESTION
+  // overlaid (see `withSuggestedKeys`) — a pure function of the raw nodes and
+  // the config, so nothing is written to the document on selection. Recomputes
+  // only when the raw array or the config is replaced; untouched nodes keep
+  // their identity.
+  const suggested = $derived.by(() => withSuggestedKeys(selectedNodes, state.config));
+
+  // Optimistic: a flushed inline edit becomes the raw node's state the moment
+  // it is sent (the confirmed snapshot replaces it on `nodes-set-result`), so
+  // the overlay above never shows — or Push never persists — a suggestion
+  // over a key the user just typed. See `onNodeSavesFlushed`.
+  onNodeSavesFlushed((entries) => {
+    const byId = new Map(entries.map((e) => [e.id, e.info]));
+    let changed = false;
+    const next = selectedNodes.map((n) => {
+      const info = byId.get(n.id);
+      if (!info) return n;
+      changed = true;
+      return { ...n, ...info };
+    });
+    if (changed) selectedNodes = next;
+  });
 
   // Delayed scan spinner: most scans finish in well under this, and flashing
   // the loading overlay for every canvas click reads as jank. Arm a timer on
@@ -131,7 +154,16 @@ function createAppState() {
       return state.config;
     },
     get selectedNodes() {
+      return suggested.nodes;
+    },
+    /** The nodes exactly as the document holds them — no suggestion overlay. */
+    get rawSelectedNodes() {
       return selectedNodes;
+    },
+    /** Selected nodes whose SHOWN key is a suggestion the document doesn't
+     *  hold (yet) — node id → key/ns to write (`persistSuggestedKeys`). */
+    get pendingSuggestions(): ReadonlyMap<string, SuggestedKey> {
+      return suggested.pending;
     },
     get hasUserSelection() {
       return state.hasUserSelection;

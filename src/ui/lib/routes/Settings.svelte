@@ -4,7 +4,7 @@
   import { auth } from "$ui/lib/stores/auth.svelte";
   import { send } from "$ui/lib/bus";
   import { ICON } from "$shared/iconSizes";
-  import { APP_VERSION, APP_RELEASED, FIGMA_PLUGIN_URL } from "$shared/version";
+  import { APP_VERSION, FIGMA_PLUGIN_URL } from "$shared/version";
   import * as Tabs from "$ui/lib/components/ui/tabs";
   import * as Tooltip from "$ui/lib/components/ui/tooltip";
   import ExternalLinkIcon from "lucide-svelte/icons/external-link";
@@ -121,7 +121,7 @@
             {/snippet}
           </Tooltip.Trigger>
           <Tooltip.Content side="top" align="start">
-            Tolgee for Figma · updated {APP_RELEASED} · open on Figma
+            Tolgee for Figma · open on Figma
           </Tooltip.Content>
         </Tooltip.Root>
       </Tooltip.Provider>

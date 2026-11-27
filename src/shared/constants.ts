@@ -1,6 +1,10 @@
 export const TOLGEE_PLUGIN_CONFIG_NAME = "tolgee_config";
 
 export const TOLGEE_NODE_INFO = "tolgee_info";
+/** On a top-level layer of a plugin-made copy page: the id of the source
+ *  page's layer it was cloned from. Lets "Update changed frames" pair the
+ *  copy's frames with the original's without re-cloning the whole page. */
+export const TOLGEE_COPY_SOURCE = "tolgee_copy_source";
 
 export const TOLGEE_KEY_FORMAT_PLACEHOLDERS = {
   elementName: "{elementName}",

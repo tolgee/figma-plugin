@@ -1,4 +1,5 @@
 import { formatIcuMessage } from "$shared/icu";
+import { plainCanvasText } from "$shared/richText";
 import type { NodeInfo } from "$shared/types";
 import { findArgumentNames, findPluralParameters } from "$shared/tolgeeFormat";
 
@@ -131,7 +132,11 @@ export function translationDiffersFromNode(node: RenderNode, language: string): 
   // If the ICU can't be rendered we can't tell whether it diverged — don't
   // claim a manual change (avoids a false warning on a broken translation).
   if (out.error) return false;
-  const rendered = out.text.replace(/<[^>]*>/g, "");
+  // Same transform `applyRichText` uses to write the canvas: `<br>` (any
+  // spelling) becomes a NEWLINE. Stripping it like the other tags glued the
+  // lines together, so every connected string with a `<br>` looked "edited in
+  // Figma" (the original plugin had the same bug).
+  const rendered = plainCanvasText(out.text);
   const canvas = (node.characters ?? "").replace(/<[^>]*>/g, "");
   return rendered.trim() !== canvas.trim();
 }
@@ -185,7 +190,7 @@ export function inferPluralCount(
   if (!target) return undefined;
   for (const n of [0, 1, 2, 3, 4, 5, 6, 10, 11, 21, 100]) {
     const { result, error } = formatIcuMessage(icu, { [name]: String(n) }, language || "en");
-    if (!error && result.replace(/<[^>]*>/g, "").trim() === target) return String(n);
+    if (!error && plainCanvasText(result).trim() === target) return String(n);
   }
   return undefined;
 }

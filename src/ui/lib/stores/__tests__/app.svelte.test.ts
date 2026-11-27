@@ -1,6 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { NodeInfo } from "$shared/types";
+
+// The store only reaches the bus through the save queue's flush; stub it so a
+// flushed edit in a test never tries to postMessage anywhere.
+vi.mock("$ui/lib/bus", () => ({
+  send: () => {},
+  on: () => () => {},
+  nextCorrelationId: () => "test-correlation",
+}));
+
 import { appState } from "$ui/lib/stores/app.svelte";
+import { flushNodeSaves, queueNodeSave } from "$ui/lib/logic/saveQueue";
 
 /**
  * `appState` is a module-level singleton (mirrors how the real app imports
@@ -11,6 +21,57 @@ beforeEach(() => {
   appState.clearWriteProgress();
   appState.setEditorType("figma");
   appState.navigate({ name: "index" });
+});
+
+describe("appState selection — key-prefill suggestions are overlaid, not written", () => {
+  const raw: NodeInfo = {
+    id: "s:1",
+    name: "Layer",
+    characters: "Sign in",
+    key: "",
+    ns: undefined,
+    translation: "",
+    isPlural: false,
+    connected: false,
+  };
+
+  it("shows the suggested key with prefill on, keeps the raw node untouched, and lists it as pending", () => {
+    appState.setConfig({ prefillKeyFormat: true, keyFormat: "{elementText}", namespace: "web" });
+    appState.setSelection([raw], true);
+    expect(appState.value.selectedNodes[0]).toMatchObject({ key: "Sign in", ns: "web" });
+    expect(appState.value.rawSelectedNodes[0]).toBe(raw);
+    expect(appState.value.pendingSuggestions.get("s:1")).toEqual({ key: "Sign in", ns: "web" });
+  });
+
+  it("once the suggestion is persisted (patched back from the main thread) it is no longer pending", () => {
+    appState.setConfig({ prefillKeyFormat: true, keyFormat: "{elementText}" });
+    appState.setSelection([raw], true);
+    appState.patchNodes([{ ...raw, key: "Sign in", prefilledKey: "Sign in" }]);
+    expect(appState.value.selectedNodes[0]?.key).toBe("Sign in");
+    expect(appState.value.pendingSuggestions.size).toBe(0);
+  });
+
+  it("a flushed inline edit counts immediately: the typed key replaces the suggestion and is NOT pending", () => {
+    // Push opened right after typing: `navigate()` flushes the queue, but the
+    // main thread hasn't confirmed yet. Without the optimistic patch the raw
+    // node still had key "" and Push would persist the SUGGESTION over the
+    // typed key (and mark it auto).
+    appState.setConfig({ prefillKeyFormat: true, keyFormat: "{elementText}" });
+    appState.setSelection([raw], true);
+    expect(appState.value.pendingSuggestions.has("s:1")).toBe(true);
+    queueNodeSave("s:1", { key: "checkout.title", ns: "", connected: false });
+    flushNodeSaves();
+    expect(appState.value.rawSelectedNodes[0]?.key).toBe("checkout.title");
+    expect(appState.value.selectedNodes[0]?.key).toBe("checkout.title");
+    expect(appState.value.pendingSuggestions.size).toBe(0);
+  });
+
+  it("with prefill off the selection is exactly the raw snapshots", () => {
+    appState.setConfig({ prefillKeyFormat: false, keyFormat: "{elementText}" });
+    appState.setSelection([raw], true);
+    expect(appState.value.selectedNodes[0]).toBe(raw);
+    expect(appState.value.pendingSuggestions.size).toBe(0);
+  });
 });
 
 describe("appState write progress (nodes-set-progress / nodes-set-result glue)", () => {

@@ -30,6 +30,7 @@ export function requestPageConnectedNodes(
     const cleanup = (): void => {
       offResult();
       offProgress();
+      offError();
       watchdog.clear();
       signal?.removeEventListener("abort", onAbort);
     };
@@ -41,6 +42,13 @@ export function requestPageConnectedNodes(
       if (msg.correlationId !== correlationId) return;
       cleanup();
       resolve(msg.nodes);
+    });
+    // A handler that THROWS never answers — the bus reports it instead; settle
+    // now rather than sitting out the whole idle timeout.
+    const offError = on("handler-error", (msg) => {
+      if (!isErrorFor(msg, "request-page-connected-nodes", correlationId)) return;
+      cleanup();
+      reject(new Error(SCAN_FAILED_MESSAGE));
     });
     const offProgress = on("page-connected-nodes-progress", (msg) => {
       if (msg.correlationId !== correlationId) return;
@@ -54,4 +62,59 @@ export function requestPageConnectedNodes(
     signal?.addEventListener("abort", onAbort, { once: true });
     send({ type: "request-page-connected-nodes", correlationId });
   });
+}
+
+/** How long to wait for `request-page-connected-keys`. Same cap as the full
+ *  scan: this one is far lighter, but it sends no progress pings, and a false
+ *  timeout on a huge page would abort the whole copy. */
+const KEYS_TIMEOUT_MS = TIMEOUT_MS;
+
+/**
+ * Round-trip for just the (namespace, key) pairs the current page's connected
+ * nodes use — the cheap stand-in for `requestPageConnectedNodes` when a
+ * caller only needs to know what to pre-fetch from Tolgee (Recreate copy,
+ * BEFORE anything is deleted), not full node info. See
+ * `collectConnectedKeyRefs` on the main-thread side for why this is so much
+ * lighter than a full connected-nodes scan.
+ */
+export function requestPageConnectedKeys(): Promise<
+  Array<{ key: string; ns?: string; paramsValues?: Record<string, string>; pluralParamValue?: string }>
+> {
+  return new Promise((resolve, reject) => {
+    const correlationId = nextCorrelationId();
+    const cleanup = (): void => {
+      offResult();
+      offError();
+      watchdog.clear();
+    };
+    const watchdog = createIdleTimeout(KEYS_TIMEOUT_MS, () => {
+      cleanup();
+      reject(new Error("Timed out waiting for the page's connected keys."));
+    });
+    const offResult = on("page-connected-keys-result", (msg) => {
+      if (msg.correlationId !== correlationId) return;
+      cleanup();
+      resolve(msg.keys);
+    });
+    const offError = on("handler-error", (msg) => {
+      if (!isErrorFor(msg, "request-page-connected-keys", correlationId)) return;
+      cleanup();
+      reject(new Error(SCAN_FAILED_MESSAGE));
+    });
+    send({ type: "request-page-connected-keys", correlationId });
+  });
+}
+
+const SCAN_FAILED_MESSAGE = "Scanning the page failed in Figma. Please try again.";
+
+/** Is this `handler-error` about OUR request? The main bus echoes the failed
+ *  request's correlation id when it had one; an uncorrelated report for the
+ *  same message type still counts (older builds, or a throw before the id
+ *  was read). */
+function isErrorFor(
+  msg: { forType: string; correlationId?: string },
+  forType: string,
+  correlationId: string,
+): boolean {
+  return msg.forType === forType && (msg.correlationId === undefined || msg.correlationId === correlationId);
 }

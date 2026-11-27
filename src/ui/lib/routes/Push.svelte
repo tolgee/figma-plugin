@@ -1,5 +1,7 @@
 <script lang="ts">
   import { createQuery, useQueryClient } from "@tanstack/svelte-query";
+  import { noteKeysPushed } from "$ui/lib/api/keyIndex";
+  import { effectiveNs } from "$ui/lib/api/keyExistence";
   import type { FrameScreenshot, NodeInfo, TolgeeConfig } from "$shared/types";
   import { ICON } from "$shared/iconSizes";
   import { appState } from "$ui/lib/stores/app.svelte";
@@ -31,6 +33,7 @@
     type PushContext,
   } from "$ui/lib/logic/pushFlow";
   import { settleQuery, type QueryOutcome } from "$ui/lib/logic/queryResult";
+  import { persistSuggestedKeys } from "$ui/lib/logic/persistSuggestions";
   import PushConflictItem from "$ui/lib/components/domain/PushConflictItem.svelte";
   import type { PushConflictResolution } from "$ui/lib/logic/pushFlow";
   import ViewHeader from "$ui/lib/components/domain/ViewHeader.svelte";
@@ -121,8 +124,37 @@
   const tagsCacheKey = $derived(configuredTags.join(","));
 
   const selectedNodes = $derived<NodeInfo[]>(appState.value.selectedNodes);
+  // ---- Suggested keys → document --------------------------------------------
+  // The key-prefill suggestion lives only in the UI overlay; the screenshot
+  // capture and the post-push connect-back read keys from pluginData. So the
+  // suggested keys of the selected strings are written first (ONE batched
+  // write), and until that settles those strings stay out of `connectedNodes`
+  // — the diff must never describe keys the document doesn't hold.
+  const pendingSuggestions = $derived(appState.value.pendingSuggestions);
+  let persistingKeys = $state(false);
+  let persistError = $state<string | null>(null);
+  // Written once per node per visit — a failed write must not retry in a loop.
+  const persistAttempted = new Set<string>();
+  $effect(() => {
+    const pending = pendingSuggestions;
+    const ids = selectedNodes
+      .filter((n) => pending.has(n.id) && !persistAttempted.has(n.id))
+      .map((n) => n.id);
+    if (ids.length === 0 || persistingKeys) return;
+    for (const id of ids) persistAttempted.add(id);
+    persistingKeys = true;
+    void persistSuggestedKeys(pending, ids).then((r) => {
+      persistingKeys = false;
+      if (!r.ok) {
+        persistError =
+          "Couldn't save the suggested key names to the file. Go back and open Upload again.";
+      }
+    });
+  });
   const connectedNodes = $derived(
-    selectedNodes.filter((n) => n.key && n.key.trim().length > 0),
+    selectedNodes.filter(
+      (n) => n.key && n.key.trim().length > 0 && !pendingSuggestions.has(n.id),
+    ),
   );
 
   // Stable cache-key inputs for the diff query. We feed a sorted, joined
@@ -160,7 +192,8 @@
     enabled:
       Boolean(auth.value.client) &&
       Boolean(language) &&
-      connectedNodes.length > 0,
+      connectedNodes.length > 0 &&
+      !persistingKeys,
     staleTime: 5 * 1000,
     // Resolves with an outcome instead of rejecting — see `settleQuery`: the
     // svelte-query runes adapter doesn't reliably surface a query's terminal
@@ -572,6 +605,18 @@
     ]) {
       void qc.invalidateQueries({ queryKey });
     }
+    // The key index (Connect / auto-connect): patch in the texts this push
+    // changed and let the next Connect top the NEW keys up with one request —
+    // not a full reload per push, which ate the shared rate-limit budget.
+    noteKeysPushed(
+      qc,
+      snapshot.connectedNodes.map((n) => ({
+        name: n.key,
+        namespace: effectiveNs(n.ns, hasNamespacesEnabled) ?? null,
+        text: textOfNode(n),
+      })),
+      language || undefined,
+    );
     // Re-pull the project's namespaces: this push may have created a brand-new
     // one server-side, and the namespace picker (Index rows / bulk "Set
     // namespace") must offer it even when no selected node carries it.
@@ -633,13 +678,27 @@
   />
 
   <div class="flex-1 overflow-auto p-3 space-y-3">
-    {#if connectedNodes.length === 0}
+    {#if persistError}
+      <Message variant="error">{persistError}</Message>
+    {:else if persistingKeys}
+      <!-- Suggested key names are being written into the file first (see the
+           effect above) — the strings they belong to join `connectedNodes`
+           only once the write is confirmed. -->
+      <Card>
+        <ProgressBar loaded={0} total={null} label="Saving suggested key names…" />
+      </Card>
+    {:else if connectedNodes.length === 0}
       <!-- Nothing to upload: the selection has no strings connected to a Tolgee
            key (empty frame, all-ignored, or unconnected texts). The diff query
            is gated OFF in that case, and a disabled query reports `isPending`,
            so without this branch the "Computing changes…" card below would spin
            forever. Must stay FIRST so it wins over that pending state. -->
       <Message variant="info">No connected strings to upload.</Message>
+    {:else if stage === "done"}
+      <!-- Before the diff states: a finished upload invalidates the diff query,
+           and a failed or aborted refetch must not replace the success summary
+           with "Failed to fetch remote keys" — the upload itself went through. -->
+      <Message variant="success">{doneSummary}</Message>
     {:else if diffQuery.isPending}
       <Card>
         <ProgressBar
@@ -652,8 +711,6 @@
       <Message variant="error">{diffLoadError}</Message>
     {:else if stage === "error"}
       <Message variant="error">{errorMessage ?? "An error occurred."}</Message>
-    {:else if stage === "done"}
-      <Message variant="success">{doneSummary}</Message>
     {:else if stage === "uploading" || stage === "pushing"}
       <div class="flex flex-col gap-2 rounded-md border border-border p-3">
         <ProgressBar

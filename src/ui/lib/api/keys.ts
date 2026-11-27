@@ -101,14 +101,3 @@ export function connectInfoFromKey(
     connected: true,
   };
 }
-
-/**
- * Total number of keys in the project (`ProjectStatsModel.keyCount`). Used to
- * give the Connect search empty state context — "0 of N keys in Tolgee".
- * Returns `null` on any failure so callers can simply omit the count.
- */
-export async function fetchProjectKeyCount(client: TolgeeClient): Promise<number | null> {
-  const { data, error } = await client.GET("/v2/projects/stats");
-  if (error || !data) return null;
-  return data.keyCount ?? null;
-}

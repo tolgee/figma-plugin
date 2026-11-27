@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { createQuery } from "@tanstack/svelte-query";
+  import { createQuery, useQueryClient } from "@tanstack/svelte-query";
+  import { fetchKeyIndexWithNewest } from "$ui/lib/api/keyIndex";
   import type { NodeInfo, Route } from "$shared/types";
   import { send, nextCorrelationId } from "$ui/lib/bus";
   import { ICON } from "$shared/iconSizes";
@@ -20,13 +21,24 @@
     effectiveNs,
   } from "$ui/lib/api/keyExistence";
   import { hasManualChange } from "$ui/lib/logic/manualChange";
+  import {
+    buildExactTextIndex,
+    canonicalFormatted,
+    sameFormattedText,
+  } from "$ui/lib/logic/keySearchRank";
+
+  const qc = useQueryClient();
+  // Fallback auto-connect search size (index unavailable): one fuzzy page.
+  const AUTO_CONNECT_FUZZY_SIZE = 50;
+  import { disconnectedInfo } from "$ui/lib/logic/disconnect";
   import { conflictText, textOfNode } from "$ui/lib/logic/pushDiff";
   import { hasRichFormat } from "$ui/lib/logic/icuParams";
   import { collectNamespaceNames } from "$ui/lib/logic/namespaces";
   import { formatKey, keyFormatUsesParents } from "$shared/keyFormat";
-  import { keyContextForNode, pendingPrefills } from "$ui/lib/logic/prefillKey";
-  import { cancelNodeSave, queueNodeSave } from "$ui/lib/logic/saveQueue";
+  import { keyContextForNode } from "$ui/lib/logic/prefillKey";
+  import { cancelNodeSave } from "$ui/lib/logic/saveQueue";
   import { runWithConcurrency } from "$ui/lib/logic/asyncPool";
+  import { autoConnectSkipHint } from "$ui/lib/logic/autoConnectHint";
 
   // Every bulk write below is the user's NEWER intent for its target rows —
   // drop any still-queued debounced inline edits for them so a later flush
@@ -109,20 +121,12 @@
   const preparing = $derived(appState.value.scanning);
 
   // ---- Key prefill -----------------------------------------------------------
-  // Apply-and-persist the format-generated key for fresh, key-less unconnected
-  // strings — decided HERE, once per node per session (see `pendingPrefills`),
-  // not in the rows: the virtualized list re-mounts rows on scroll, so a
-  // row-level decision re-applied prefills the user had explicitly cleared.
-  // The whole selection lands in the shared save queue as ONE batched write.
-  $effect(() => {
-    const prefills = pendingPrefills(appState.value.selectedNodes, appState.value.config);
-    for (const p of prefills) {
-      // `prefilledKey` marks this as an auto value so turning prefill off later
-      // clears only untouched auto keys (see `clearPrefilledKeys`); it always
-      // equals `key` at write time and re-syncs on every format regeneration.
-      queueNodeSave(p.id, { key: p.key, ns: p.ns, connected: false, prefilledKey: p.key });
-    }
-  });
+  // NOT persisted on selection any more. The suggestion is overlaid onto
+  // `appState.value.selectedNodes` by the store (`withSuggestedKeys`) and only
+  // reaches the document through a user action — inline edit, Connect,
+  // "Generate key names", or Push (which writes the suggested keys of the
+  // strings it sends first). Writing every suggestion on every selection was
+  // the plugin's own share of the canvas stutter on large files.
 
   // ---- Search & filter -----------------------------------------------------
   let query = $state("");
@@ -679,40 +683,72 @@
     // `notConnected` are plain arrays, not `$state`, and JS is single-
     // threaded, so concurrent pushes from different workers never race.
     const AUTO_CONNECT_CONCURRENCY = 5;
+    // Match against the project's key index — the shared cached copy plus one
+    // UNTHROTTLED newest-keys request (`fetchKeyIndexWithNewest`): a key a
+    // colleague created seconds ago is still found, without reloading the
+    // whole index per run (which cost one request per 1000 keys out of
+    // Tolgee's 100-per-5-min translations budget every time). Per-string
+    // phrase searches are out for the same budget reason. When the index is
+    // unavailable (project too large, load failed) fall back to one fuzzy
+    // search per string, which is outside that limit.
+    let exactIndex: Map<string, KeySearchResult[]> | null = null;
+    try {
+      const keys = await fetchKeyIndexWithNewest(qc, client, {
+        apiUrl: auth.value.apiUrl,
+        projectId: auth.value.projectId ?? null,
+        language: lang,
+        baseLanguage: auth.value.baseLanguage || undefined,
+        branch,
+      });
+      if (keys) exactIndex = buildExactTextIndex(keys);
+    } catch {
+      // fall back to per-string fuzzy search below
+    }
+    if (matchCancelled) {
+      matching = false;
+      return;
+    }
     await runWithConcurrency(groupList, AUTO_CONNECT_CONCURRENCY, async ({ text, ns, nodes }) => {
       // Cancelled mid-run (taking too long, or user backed out) → don't
       // start new searches. In-flight ones (up to the concurrency limit)
       // still finish, but everything gets discarded below regardless.
       if (matchCancelled) return;
-      const v = text.toLowerCase();
       let exact: KeySearchResult[] = [];
-      try {
-        const res = await searchKeys(client, text, lang, 20, branch);
-        exact = res.filter(
-          (r) =>
-            [r.translation, r.baseTranslation, r.name].some(
-              (c) => (c ?? "").trim().toLowerCase() === v,
-            ) &&
-            // "namespace" scope → only keys in this string's own namespace.
-            (scope === "all" || (r.namespace ?? "") === ns),
-        );
-      } catch {
-        // network/search error → treat as no match
+      // Fallback only: the fuzzy page was full, so other keys may have the
+      // text too — "no exact match" would then be a guess, so say so instead.
+      let truncated = false;
+      // Same text, tolerant of <br> spellings, spacing around breaks and
+      // tag-name case (`sameFormattedText`); formatting itself and diacritics
+      // still have to match.
+      let candidates: KeySearchResult[] = [];
+      if (exactIndex) {
+        candidates = exactIndex.get(canonicalFormatted(text)) ?? [];
+      } else {
+        try {
+          const res = await searchKeys(client, text, lang, AUTO_CONNECT_FUZZY_SIZE, branch);
+          truncated = res.length >= AUTO_CONNECT_FUZZY_SIZE;
+          candidates = res.filter((r) =>
+            [r.translation, r.baseTranslation, r.name].some((c) => sameFormattedText(c, text)),
+          );
+        } catch {
+          // network/search error → treat as no match
+        }
       }
+      // "namespace" scope → only keys in this string's own namespace.
+      exact = candidates.filter((r) => scope === "all" || (r.namespace ?? "") === ns);
       const only = exact.length === 1 ? exact[0] : undefined;
       if (only) {
         for (const n of nodes) matches.push({ node: n, r: only });
-      } else if (exact.length === 0) {
-        notConnected.push({
-          text,
-          ns,
-          hint: "No exact match in Tolgee — create the key or connect it manually.",
-        });
       } else {
         notConnected.push({
           text,
           ns,
-          hint: "Several keys match this text exactly — open Connect to pick one.",
+          hint:
+            autoConnectSkipHint({
+              candidateNamespaces: candidates.map((r) => r.namespace),
+              matchCount: exact.length,
+              truncated,
+            }) ?? "",
         });
       }
       matchProgress = { done: matchProgress.done + 1, total: groupList.length };
@@ -724,10 +760,55 @@
       return;
     }
 
+    // The index can be minutes old — a key deleted in Tolgee since would still
+    // be offered as an exact match and get connected. Confirm the matched keys
+    // still exist with ONE request (the same `keys/info` check the list runs
+    // for connected keys) before anything is written.
+    let confirmed = matches;
+    if (exactIndex && matches.length > 0) {
+      const nsEnabled = auth.value.namespacesEnabled;
+      const sigOf = (r: KeySearchResult): string =>
+        connectedKeySig(effectiveNs(r.namespace ?? undefined, nsEnabled), r.name);
+      const distinct = new Map<string, ConnectedKey>();
+      for (const m of matches) {
+        distinct.set(sigOf(m.r), { name: m.r.name, ns: m.r.namespace ?? undefined });
+      }
+      const missing = await fetchMissingKeys(
+        client,
+        [...distinct.values()],
+        branch || "",
+        lang,
+        nsEnabled,
+      );
+      if (matchCancelled) {
+        matching = false;
+        return;
+      }
+      if (missing.size > 0) {
+        confirmed = [];
+        const reported = new Set<string>();
+        for (const m of matches) {
+          if (!missing.has(sigOf(m.r))) {
+            confirmed.push(m);
+            continue;
+          }
+          const text = textOfNode(m.node).trim();
+          const ns = m.node.ns ?? "";
+          if (reported.has(`${ns}\0${text}`)) continue;
+          reported.add(`${ns}\0${text}`);
+          notConnected.push({
+            text,
+            ns,
+            hint: "This key was deleted in Tolgee — create it again or connect it manually.",
+          });
+        }
+      }
+    }
+
     // Show the preview; nothing is applied until the user confirms.
-    pendingMatches = matches;
+    pendingMatches = confirmed;
     matching = false;
-    matchResult = { willConnect: matches.length, notConnected };
+    matchResult = { willConnect: confirmed.length, notConnected };
   }
 
   // Connect only the UNCONNECTED selected strings to the chosen key — already
@@ -753,9 +834,9 @@
       correlationId: nextCorrelationId(),
       nodes: connected.map((n) => ({
         id: n.id,
-        // "" (not undefined) to actually CLEAR the namespace — undefined is
-        // dropped by the bus's JSON round-trip, leaving the old ns behind.
-        info: { key: "", ns: "", connected: false },
+        // Unlinks the key AND drops its formatting (ICU, plural, samples) —
+        // see `disconnectedInfo`.
+        info: disconnectedInfo(),
       })),
     });
     clearSelection();

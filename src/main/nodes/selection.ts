@@ -3,6 +3,7 @@ import type { NodeInfo } from "$shared/types";
 
 import { readMergedConfig } from "$main/settings";
 import { applyRichText } from "$main/text/applyRichText";
+import { type Yielder, createYielder } from "$main/nodes/yield";
 import { shouldIgnoreNode } from "./filter";
 import { getNodeInfo, setNodeInfo } from "./getNodeInfo";
 import { type MainComponentNameCache, resolveParentNames } from "./nodeParents";
@@ -226,11 +227,20 @@ export type ApplyTranslationUpdate = {
 export const applyTranslations = async (
   updates: ApplyTranslationUpdate[],
   onProgress?: (done: number, total: number) => void,
+  // Time-sliced (see `yield.ts`): every update is a real canvas mutation, so
+  // the loop breathes by TIME, not every N nodes. Writing a freshly cloned
+  // copy passes the post-clone budget — Figma kept the thread ~0.2–0.5 s per
+  // yield while digesting the clone, and the old every-10-nodes cadence made
+  // 130 such yields of a 1 300-text copy (31 s of "write texts").
+  yieldBudgetMs?: number,
+  yielder: Yielder = createYielder(yieldBudgetMs),
 ): Promise<{ ok: boolean; errors: string[]; nodes: NodeInfo[] }> => {
   const errors: string[] = [];
   const nodes: NodeInfo[] = [];
   const total = updates.length;
+  const reportProgress = total > 100;
   let processed = 0;
+  let reported = 0;
 
   for (const update of updates) {
     try {
@@ -258,16 +268,12 @@ export const applyTranslations = async (
     }
 
     processed++;
-    // Each update is a real canvas mutation (font loads + `characters`
-    // relayout), so breathe every few nodes — 50 unbroken text rewrites was
-    // hundreds of ms of canvas-thread blocking on real frames.
-    if (processed % 10 === 0) {
-      if (total > 100) {
-        onProgress?.(processed, total);
-      }
-      await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    if ((await yielder.maybeYield()) && reportProgress) {
+      onProgress?.(processed, total);
+      reported = processed;
     }
   }
+  if (reportProgress && reported !== total) onProgress?.(total, total);
 
   return { ok: errors.length === 0, errors, nodes };
 };

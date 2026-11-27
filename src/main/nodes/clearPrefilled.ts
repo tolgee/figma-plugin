@@ -20,11 +20,16 @@ const YIELD_EVERY = 200;
  * key, and a format change re-generates both together, so it stays correct even
  * across format changes — which a "regenerate and compare" approach could not.
  *
- * Fast by construction: each page uses the engine-side `findAllWithCriteria`
- * pluginData filter (like `scanConnectedNodes`), so only nodes carrying our
- * data are examined — never a full JS walk of every layer. The per-node work is
- * a parse plus a string compare; no regeneration, no ancestor walks. Each page
- * is `loadAsync`-ed first (dynamic-page), mirroring `resetConfig`.
+ * Cheap by construction: each page is filtered engine-side to the TEXT nodes
+ * with our plugin data STORED ON THEM, so only those are parsed — never a full
+ * JS walk of every layer. Deliberately NOT `findTaggedTextNodes` (which also
+ * returns instance sublayers that merely INHERIT data from a main component):
+ * the prefill only ever writes onto nodes directly, so direct data is the
+ * complete candidate set — and `setPluginData` on an inheriting sublayer
+ * would CREATE an override there, permanently detaching it from the main
+ * component's data instead of clearing anything. The per-node work is a parse
+ * plus a string compare; no regeneration, no ancestor walks. Each page is
+ * `loadAsync`-ed first (dynamic-page), mirroring `resetConfig`.
  *
  * Returns the number of nodes cleared.
  */
@@ -34,6 +39,9 @@ export async function clearPrefilledKeys(): Promise<number> {
   for (const page of figma.root.children) {
     if (page.type !== "PAGE") continue;
     await page.loadAsync();
+    // Direct data only (see the doc above): a node that merely inherits its
+    // data from a main component carries no prefill of its own, and writing
+    // to it would create an unwanted override.
     const nodes = page.findAllWithCriteria({
       types: ["TEXT"],
       pluginData: { keys: [TOLGEE_NODE_INFO] },

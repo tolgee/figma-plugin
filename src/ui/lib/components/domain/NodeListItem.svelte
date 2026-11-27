@@ -8,6 +8,7 @@
   import { send, nextCorrelationId } from "$ui/lib/bus";
   import { queueNodeSave, cancelNodeSave } from "$ui/lib/logic/saveQueue";
   import { hasRichFormat } from "$ui/lib/logic/icuParams";
+  import { disconnectedInfo } from "$ui/lib/logic/disconnect";
   import * as DropdownMenu from "$ui/lib/components/ui/dropdown-menu";
   import * as Tooltip from "$ui/lib/components/ui/tooltip";
   import Badge from "$ui/lib/components/ui/badge.svelte";
@@ -93,11 +94,11 @@
     ns = n.ns ?? appState.value.config?.namespace ?? "";
   });
 
-  // NOTE: the key PREFILL is no longer decided here. Rows are re-mounted by
-  // the virtualized list on scroll, so a per-row decision would re-apply
-  // prefills the user explicitly cleared. Index decides once per node per
-  // session (see `pendingPrefills`) and the persisted key arrives back through
-  // the normal hydration effect above.
+  // NOTE: the key PREFILL is neither decided nor persisted here. The store
+  // overlays the suggestion onto `node.key` (see `withSuggestedKeys`), so the
+  // hydration above shows it like any other key; it reaches the document only
+  // when the user edits it here (manual → `scheduleSave`), connects, generates,
+  // or pushes.
 
   // Auto-save for inline edits on unconnected nodes. Saves go through the
   // shared queue, which coalesces the whole selection's edits (150 prefills,
@@ -152,9 +153,9 @@
       type: "set-nodes-data",
       correlationId: nextCorrelationId(),
       nodes: [
-        // "" (not undefined) to actually CLEAR the namespace — undefined is
-        // dropped by the bus's JSON round-trip, leaving the old ns behind.
-        { id: node.id, info: { key: "", ns: "", connected: false } },
+        // Unlinks the key AND drops its formatting (ICU, plural, samples) —
+        // see `disconnectedInfo`.
+        { id: node.id, info: disconnectedInfo() },
       ],
     });
   }

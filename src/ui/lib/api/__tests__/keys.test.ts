@@ -1,7 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { NodeInfo } from "$shared/types";
 import { createTolgeeClient } from "../client";
-import { connectInfoFromKey, searchKeys, type KeySearchResult } from "../keys";
+import {
+  connectInfoFromKey,
+  searchKeys,
+  type KeySearchResult,
+} from "../keys";
 
 type FetchMock = ReturnType<typeof vi.fn>;
 

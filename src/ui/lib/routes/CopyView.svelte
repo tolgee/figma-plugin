@@ -1,23 +1,40 @@
 <script lang="ts">
   import { ICON } from "$shared/iconSizes";
+  import { createPhaseTimer } from "$shared/perf";
   import type { NodeInfo } from "$shared/types";
   import { appState } from "$ui/lib/stores/app.svelte";
   import { auth } from "$ui/lib/stores/auth.svelte";
   import { nextCorrelationId, on, send } from "$ui/lib/bus";
   import { createIdleTimeout, type RequestWatchdog } from "$ui/lib/busRequest";
-  import { Badge, Button, EmptyState, Message, ProgressBar, Select } from "$ui/lib/components/ui";
+  import { Badge, Button, Card, EmptyState, Message, ProgressBar, Select } from "$ui/lib/components/ui";
   import * as Tooltip from "$ui/lib/components/ui/tooltip";
+  import * as Dialog from "$ui/lib/components/ui/dialog";
+  import { requestCopyPreflight } from "$ui/lib/api/copyPreflight";
+  import { copyMemoryWarning } from "$ui/lib/logic/copyGuard";
+  import {
+    RECREATE_TOOLTIP,
+    type StalenessFrames,
+    UPDATE_FRAMES_TOOLTIP,
+    canUpdateFrames,
+    stalenessSummary,
+  } from "$ui/lib/logic/copyStaleness";
   import TooltipIconButton from "$ui/lib/components/ui/tooltipIconButton.svelte";
   import { fetchAllTranslations } from "$ui/lib/api/pull";
   import { resolveCopyLanguage } from "$ui/lib/logic/copyLanguage";
-  import { requestPageConnectedNodes } from "$ui/lib/api/pageNodes";
+  import { requestPageConnectedKeys, requestPageConnectedNodes } from "$ui/lib/api/pageNodes";
   import { pullDiff, buildApplyUpdates, skippedRenderMessage } from "$ui/lib/logic/pullDiff";
   import {
+    COPY_FETCH_TIMEOUT_MS,
+    fetchCopyTranslations,
+    sampleValuesByKey,
     finishCopyRecreate,
     isCopyRecreateInFlight,
-    type CopyTranslations,
+    topUpCopyTranslations,
+    withTimeout,
   } from "$ui/lib/logic/copyApply";
-  import { namespacedKeyLabel, nsKeyIndex } from "$ui/lib/logic/namespaces";
+  import { copyJob } from "$ui/lib/stores/copyJob.svelte";
+  import { fade } from "svelte/transition";
+  import { namespacedKeyLabel } from "$ui/lib/logic/namespaces";
   import { hasRichFormat } from "$ui/lib/logic/icuParams";
   import { computeVirtualWindow } from "$ui/lib/logic/virtualWindow";
   import Target from "lucide-svelte/icons/target";
@@ -25,6 +42,8 @@
   import Group from "lucide-svelte/icons/group";
   import KeyRound from "lucide-svelte/icons/key-round";
   import Info from "lucide-svelte/icons/info";
+  import LoaderCircle from "lucide-svelte/icons/loader-circle";
+  import CopySampleValues from "$ui/lib/components/domain/CopySampleValues.svelte";
 
   /**
    * Read-only view for a page the plugin itself generated as a copy (via
@@ -69,7 +88,7 @@
   let stage = $state<Stage>("idle");
   let errorMessage = $state<string | null>(null);
   // Which action landed in "error" — so "Try again" retries the right one.
-  let lastFailedAction = $state<"download" | "recreate">("download");
+  let lastFailedAction = $state<"download" | "recreate" | "update">("download");
   let fetchProgress = $state<{ loaded: number; total: number | null }>({
     loaded: 0,
     total: null,
@@ -91,13 +110,23 @@
   // main-thread side (same two full-page scans either way), so this is a
   // pure UI-side simplification, not a performance change.
   let staleness = $state(false);
+  // Per-frame breakdown of the last check (only sent when stale).
+  let stalenessFrames = $state<StalenessFrames | null>(null);
+  const stalenessDetail = $derived(stalenessSummary(stalenessFrames));
+  const updateFramesAvailable = $derived(canUpdateFrames(stalenessFrames));
+
+  // True from the request until its answer — the check scans two full pages
+  // (2–6 s on a big file) and showing NOTHING meanwhile read as "all good".
+  let stalenessChecking = $state(false);
   let stalenessCorrelationId: string | null = null;
 
   // Progress of an in-flight recreate. The completion itself (result handling,
   // watchdog, apply) lives OUTSIDE this component in `finishCopyRecreate` —
   // recreating deletes this very page, so this component unmounts mid-flight
   // and anything registered here would die with it (see copyApply.ts).
-  let recreateProgress = $state<{ current: number; total: number } | null>(null);
+  // Progress lives in the route-independent `copyJob` store (rendered by
+  // App.svelte): a Recreate deletes this very page and this view unmounts
+  // mid-run, so a bar held here vanished after "Removing the old copy…".
 
   /** "Download all" with nothing selected, "Download" over the current
    *  selection — mirrors production's Pull/Pull all split, just renamed to
@@ -328,15 +357,22 @@
   // copy page the user opened.
   $effect(() => {
     void appState.value.pageName;
+    // A recreate in flight switches pages twice (away from the doomed copy,
+    // then onto the fresh one) — don't scan two huge pages for a copy that's
+    // being deleted; the fresh one answers from main's cache afterwards.
+    if (isCopyRecreateInFlight()) return;
     const correlationId = nextCorrelationId();
     stalenessCorrelationId = correlationId;
     staleness = false;
+    stalenessFrames = null;
+    stalenessChecking = true;
     send({ type: "request-copy-staleness", correlationId });
   });
 
   $effect(() => {
     const off = on("copy-staleness-result", (msg) => {
       if (msg.correlationId !== stalenessCorrelationId) return;
+      stalenessChecking = false;
       if (!msg.ok && msg.error) {
         // A skipped check is expected for copies made before sourcePageId
         // tracking existed, but it must never be INVISIBLE — diagnosing
@@ -346,6 +382,7 @@
       const added = msg.missingCount ?? 0;
       const removed = msg.removedCount ?? 0;
       staleness = msg.ok && added + removed > 0;
+      stalenessFrames = staleness ? (msg.frames ?? null) : null;
     });
     return off;
   });
@@ -357,6 +394,88 @@
    * alone can never discover those, it only refreshes text for keys the copy
    * already tracks.
    */
+  // ---- Memory guard (see `copyGuard.ts`) ------------------------------------
+  let memoryWarning = $state<string | null>(null);
+  let warningAccepted = false;
+
+  async function passesMemoryGuard(sourcePageId: string): Promise<boolean> {
+    if (warningAccepted) return true;
+    try {
+      const size = await requestCopyPreflight(sourcePageId);
+      const warning = copyMemoryWarning({
+        ...size,
+        recreate: true,
+        currentPageName: appState.value.pageName,
+      });
+      if (!warning) return true;
+      memoryWarning = warning;
+      return false;
+    } catch (e) {
+      console.warn("[tolgee] copy preflight skipped:", e);
+      return true;
+    }
+  }
+
+  function continuePastWarning(): void {
+    memoryWarning = null;
+    warningAccepted = true;
+    void recreateCopy();
+  }
+
+  /**
+   * "Update changed frames" — the incremental alternative to Recreate: main
+   * clones only the new/changed top-level frames into THIS page and removes
+   * the ones the original lost (see copyFrames.ts). Nothing is deleted
+   * up-front, so there is no pre-fetch: a failed translations fetch leaves
+   * the fresh frames in the source language, which Download then fixes.
+   * Reuses the Recreate continuation (same progress/result messages).
+   */
+  async function updateFrames(): Promise<void> {
+    const sourcePageId = appState.value.config?.sourcePageId;
+    if (!sourcePageId) return;
+    if (isCopyRecreateInFlight()) return;
+
+    lastFailedAction = "update";
+    stage = "recreating";
+    errorMessage = null;
+    copyJob.start("update", "updating");
+    const correlationId = nextCorrelationId();
+    const perf = createPhaseTimer();
+    const client = auth.value.client;
+    const updateBranch = branch || undefined;
+    finishCopyRecreate({
+      correlationId,
+      perf,
+      summaryLabel: "update frames",
+      doneText: "Copy updated.",
+      loadTranslations:
+        language && client
+          ? (pages) => fetchCopyTranslations(client, pages, updateBranch).then((f) => f.translations)
+          : null,
+      onProgress: (current, total, phase) => {
+        copyJob.progress(current, total, phase);
+      },
+      onDone: (result) => {
+        copyJob.clear();
+        if (!result.ok) {
+          stage = "error";
+          errorMessage = result.error ?? "Failed to update the copy.";
+          return;
+        }
+        stage = "idle";
+        staleness = false;
+        stalenessFrames = null;
+      },
+    });
+    send({
+      type: "update-copy-frames",
+      correlationId,
+      sourcePageId,
+      language: language || undefined,
+      namespacesEnabled: auth.value.namespacesEnabled,
+    });
+  }
+
   async function recreateCopy(): Promise<void> {
     const sourcePageId = appState.value.config?.sourcePageId;
     if (!sourcePageId) return;
@@ -365,12 +484,17 @@
     // `stage` says "idle". Starting a second run would delete the page the
     // first one is still writing into.
     if (isCopyRecreateInFlight()) return;
+    if (!(await passesMemoryGuard(sourcePageId))) return;
+    warningAccepted = false;
 
     lastFailedAction = "recreate";
     stage = "recreating";
     errorMessage = null;
-    recreateProgress = null;
+    // The key scan + translations fetch below run BEFORE main hears anything,
+    // so name that phase too instead of a bare bar.
+    copyJob.start("recreate", "fetching");
     const correlationId = nextCorrelationId();
+    const perf = createPhaseTimer();
 
     // Registers the MODULE-scoped continuation (result wait + watchdog + apply)
     // BEFORE the create-copy message goes out. It must not live in this
@@ -379,15 +503,20 @@
     // instance-held handler died there, so the fetched language was never
     // applied and the "recreated" page silently kept the source-language text.
     // The callbacks below just drive this instance's UI while it's still alive.
-    const startJob = (translations: Record<string, CopyTranslations> | null): void => {
+    let recreateSamples: ReturnType<typeof sampleValuesByKey> | undefined;
+    const startJob = (
+      loadTranslations: Parameters<typeof finishCopyRecreate>[0]["loadTranslations"],
+    ): void => {
       finishCopyRecreate({
         correlationId,
-        translations,
-        onProgress: (current, total) => {
-          recreateProgress = { current, total };
+        loadTranslations,
+        perf,
+        samples: recreateSamples,
+        onProgress: (current, total, phase) => {
+          copyJob.progress(current, total, phase);
         },
         onDone: (result) => {
-          recreateProgress = null;
+          copyJob.clear();
           if (!result.ok) {
             stage = "error";
             errorMessage = result.error ?? "Failed to recreate the copy.";
@@ -395,6 +524,7 @@
           }
           stage = "idle";
           staleness = false;
+          stalenessFrames = null;
           // The main thread switched `figma.currentPage` to the fresh
           // replacement — App.svelte's `currentpagechange` listener re-syncs
           // config/selection for it automatically.
@@ -420,18 +550,40 @@
         errorMessage = "Not connected to Tolgee.";
         return;
       }
-      const keys = await fetchAllTranslations(client, {
-        languages: [language],
-        namespaces: undefined,
-        branch: branch || undefined,
-      });
-      const translationsForLang: CopyTranslations = {};
-      for (const k of keys) {
-        const idx = nsKeyIndex(k.keyNamespace, k.keyName);
-        const text = k.translations[language]?.text;
-        if (text) translationsForLang[idx] = { text, isPlural: k.isPlural };
-      }
-      startJob({ [language]: translationsForLang });
+      // Fetch BEFORE the main thread deletes this copy and clones: a failed
+      // fetch (network down, Tolgee's translations rate limit) after the
+      // deletion lost the translated page for good. The current page IS the
+      // copy being recreated, so its connected key names cover the fresh
+      // clone's, except keys connected on the source since this copy was made
+      // — `topUpCopyTranslations` fetches those best-effort once the clone
+      // reports them (a miss there only counts as "skipped"; nothing is lost).
+      // `branch`/`language` are captured now; the job outlives this view.
+      //
+      // Only the KEY NAMES are needed here, not full node info — on a large
+      // page `requestPageConnectedNodes` cost a full scan (characters,
+      // ignore-filter, ~5 bridge reads/node) just to throw away everything but
+      // the key, doubling the scan work this flow already does when the fresh
+      // clone is built (the main thread scans it again regardless). The
+      // lighter `requestPageConnectedKeys` reads only what pre-fetching needs.
+      const recreateBranch = branch || undefined;
+      const copyKeys = await requestPageConnectedKeys();
+      perf.mark("page keys", `${copyKeys.length} connected`);
+      // The same scan carries the sample values set on THIS copy — handed to
+      // the job so the fresh clone keeps them instead of the source's.
+      recreateSamples = sampleValuesByKey(copyKeys);
+      const prefetched = await withTimeout(
+        fetchCopyTranslations(
+          client,
+          [{ language, nodes: copyKeys }],
+          recreateBranch,
+        ),
+        COPY_FETCH_TIMEOUT_MS,
+        "Timed out loading translations from Tolgee. The copy was left unchanged.",
+      );
+      perf.mark("fetch translations");
+      startJob((pages) =>
+        topUpCopyTranslations(client, pages, prefetched, recreateBranch).then((f) => f.translations),
+      );
       send({
         type: "create-copy",
         correlationId,
@@ -440,6 +592,9 @@
         sourcePageId,
       });
     } catch (err) {
+      // Failed before main heard anything (key scan / pre-fetch): the job
+      // never started, so nothing else will clear the App-level bar.
+      copyJob.clear();
       stage = "error";
       errorMessage = err instanceof Error ? err.message : String(err);
     }
@@ -451,7 +606,11 @@
   // manual selection doesn't have to share scroll math with everything above
   // it — same split Index/NodeList already uses, not just a perf tweak.
   const chromeVisible = $derived(
-    stage !== "idle" || Boolean(staleness) || lastResult !== null || selectedNodes.length > 0,
+    stage !== "idle" ||
+      Boolean(staleness) ||
+      stalenessChecking ||
+      lastResult !== null ||
+      selectedNodes.length > 0,
   );
 
   // Same threshold/overscan as NodeList.svelte, for consistency — this list's
@@ -538,16 +697,29 @@
         </Tooltip.Root>
       {/if}
       {#if language && !isDev}
-        <Button
-          size="sm"
-          disabled={stage === "pulling" ||
-            stage === "applying" ||
-            stage === "recreating" ||
-            appState.value.scanning}
-          onclick={pull}
-        >
-          {downloadButtonLabel}
-        </Button>
+        <Tooltip.Root>
+          <Tooltip.Trigger>
+            {#snippet child({ props })}
+              <span {...props}>
+                <Button
+                  size="sm"
+                  disabled={stage === "pulling" ||
+                    stage === "applying" ||
+                    stage === "recreating" ||
+                    appState.value.scanning}
+                  onclick={pull}
+                >
+                  {downloadButtonLabel}
+                </Button>
+              </span>
+            {/snippet}
+          </Tooltip.Trigger>
+          <Tooltip.Content side="bottom" align="end" class="max-w-[14rem] leading-snug">
+            {hasUserSelection
+              ? "Downloads translations from Tolgee for the selected strings."
+              : "Downloads all translations from Tolgee into this copy."}
+          </Tooltip.Content>
+        </Tooltip.Root>
       {:else if !language && !isDev && canRecreate}
         <!-- KEYS copy: there's nothing to "download" (the key labels come from
              the clone's own frozen pluginData, not Tolgee), so the header
@@ -557,13 +729,20 @@
              see (e.g. copies without full history) still deserve a manual
              refresh. Hidden without a recorded sourcePageId (pre-tracking
              copies can't recreate) and in Dev Mode (canvas write). -->
-        <Button
-          size="sm"
-          disabled={stage === "recreating"}
-          onclick={recreateCopy}
-        >
-          Recreate copy
-        </Button>
+        <Tooltip.Root>
+          <Tooltip.Trigger>
+            {#snippet child({ props })}
+              <span {...props}>
+                <Button size="sm" disabled={stage === "recreating"} onclick={recreateCopy}>
+                  Recreate copy
+                </Button>
+              </span>
+            {/snippet}
+          </Tooltip.Trigger>
+          <Tooltip.Content side="bottom" align="end" class="max-w-[14rem] leading-snug">
+            {RECREATE_TOOLTIP}
+          </Tooltip.Content>
+        </Tooltip.Root>
       {/if}
     </header>
 
@@ -573,6 +752,15 @@
              banner or count row shouldn't scroll out of view just because
              the selection below it is long. -->
         <div class="flex shrink-0 flex-col gap-3 p-3">
+          {#if stalenessChecking && stage === "idle"}
+            <div transition:fade={{ duration: 150 }}>
+              <Card class="flex items-center gap-1.5 text-[10px] text-text-secondary">
+                <LoaderCircle size={ICON.inline} class="animate-spin" />
+                <span>Checking whether this copy is up to date…</span>
+              </Card>
+            </div>
+          {/if}
+
           {#if staleness && stage !== "recreating"}
             <!-- The source page gained connections since this copy was made —
                  Download can't discover those on its own (it only refreshes text
@@ -581,22 +769,61 @@
                  outdated), but the Recreate button — a canvas write blocked in
                  Dev — is hidden: Dev shows the copy read-only, no action it
                  can't perform. -->
+            <div transition:fade={{ duration: 150 }}>
             <Message variant="info" class="items-start">
               <div class="space-y-1.5">
-                <p>The original page changed since this copy was made.</p>
+                <p>
+                  The original page changed since this copy was made{stalenessDetail
+                    ? `: ${stalenessDetail}.`
+                    : "."}
+                </p>
                 {#if !isDev}
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    class="bg-bg!"
-                    disabled={stage === "pulling" || stage === "applying"}
-                    onclick={recreateCopy}
-                  >
-                    Recreate copy
-                  </Button>
+                  <div class="flex flex-wrap gap-1.5">
+                    {#if updateFramesAvailable}
+                      <Tooltip.Root>
+                        <Tooltip.Trigger>
+                          {#snippet child({ props })}
+                            <span {...props}>
+                              <Button
+                                size="sm"
+                                disabled={stage === "pulling" || stage === "applying"}
+                                onclick={updateFrames}
+                              >
+                                Update changed
+                              </Button>
+                            </span>
+                          {/snippet}
+                        </Tooltip.Trigger>
+                        <Tooltip.Content side="bottom" align="start" class="max-w-[14rem] leading-snug">
+                          {UPDATE_FRAMES_TOOLTIP}
+                        </Tooltip.Content>
+                      </Tooltip.Root>
+                    {/if}
+                    <Tooltip.Root>
+                      <Tooltip.Trigger>
+                        {#snippet child({ props })}
+                          <span {...props}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              class="bg-bg!"
+                              disabled={stage === "pulling" || stage === "applying"}
+                              onclick={recreateCopy}
+                            >
+                              Recreate copy
+                            </Button>
+                          </span>
+                        {/snippet}
+                      </Tooltip.Trigger>
+                      <Tooltip.Content side="bottom" align="start" class="max-w-[14rem] leading-snug">
+                        {RECREATE_TOOLTIP}
+                      </Tooltip.Content>
+                    </Tooltip.Root>
+                  </div>
                 {/if}
               </div>
             </Message>
+            </div>
           {/if}
 
           {#if stage === "pulling"}
@@ -626,22 +853,24 @@
               label="Applying translations"
             />
           {:else if stage === "recreating"}
-            <ProgressBar
-              loaded={recreateProgress?.current ?? 0}
-              total={recreateProgress?.total ?? null}
-              label="Recreating copy…"
-            />
+            <!-- The bar is App-level (CopyJobBar) — this view may unmount mid-run. -->
           {:else if stage === "error"}
             <Message variant="error">{errorMessage ?? "Something went wrong."}</Message>
             <Button
               variant="secondary"
               disabled={lastFailedAction === "download" && appState.value.scanning}
-              onclick={lastFailedAction === "recreate" ? recreateCopy : pull}
+              onclick={lastFailedAction === "recreate"
+                ? recreateCopy
+                : lastFailedAction === "update"
+                  ? updateFrames
+                  : pull}
             >
               Try again
             </Button>
           {:else if lastResult}
-            <Message variant="success" onDismiss={() => (lastResult = null)}>{lastResultText}</Message>
+            <div in:fade={{ duration: 150 }}>
+              <Message variant="success" onDismiss={() => (lastResult = null)}>{lastResultText}</Message>
+            </div>
           {/if}
 
           {#if (stage === "idle" || stage === "error") && selectedNodes.length > 0}
@@ -717,6 +946,11 @@
                         <span class="text-xs italic text-text-secondary">Not connected</span>
                       {/if}
                     </div>
+                    <!-- Per-language sample values (only rows with params /
+                         plural; hidden in Dev Mode — it writes the canvas). -->
+                    {#if language && !isDev}
+                      <CopySampleValues {node} {language} />
+                    {/if}
                   </div>
                   <TooltipIconButton label="Move to string" onclick={() => showOnCanvas(node.id)}>
                     <Target size={ICON.inline} />
@@ -733,3 +967,23 @@
     </div>
   </Tooltip.Provider>
 </div>
+
+<!-- Memory guard (see `copyGuard.ts`): a very large page that already has
+     copies in this file may push Figma over its per-file memory budget —
+     which once put the test file into recovery mode mid-copy. Asked BEFORE
+     anything is cloned; "Continue anyway" re-runs the action unguarded. -->
+<Dialog.Root
+  open={memoryWarning !== null}
+  onOpenChange={(open) => {
+    if (!open) memoryWarning = null;
+  }}
+>
+  <Dialog.Content class="max-w-sm">
+    <Dialog.Title class="text-sm font-semibold text-text">Large file</Dialog.Title>
+    <p class="mt-2 whitespace-pre-line text-xs text-text-secondary">{memoryWarning}</p>
+    <div class="mt-4 flex justify-end gap-2">
+      <Button variant="outline" size="sm" onclick={() => (memoryWarning = null)}>Cancel</Button>
+      <Button size="sm" onclick={continuePastWarning}>Recreate copy</Button>
+    </div>
+  </Dialog.Content>
+</Dialog.Root>

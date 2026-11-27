@@ -1,12 +1,19 @@
-import { TOLGEE_NODE_INFO, TOLGEE_PLUGIN_CONFIG_NAME } from "$shared/constants";
+import { TOLGEE_PLUGIN_CONFIG_NAME } from "$shared/constants";
 import type { NodeInfo } from "$shared/types";
 
 import { send } from "$main/bus";
-import { type IgnoreSettings, shouldIgnoreNode } from "$main/nodes/filter";
-import { getNodeInfo } from "$main/nodes/getNodeInfo";
-import { computeAncestorHidden } from "$main/nodes/scan";
+import type { IgnoreSettings } from "$main/nodes/filter";
+import {
+  type SearchRoot,
+  collectConnectedKeyRefs,
+  findTaggedTextNodes,
+  readConnectedNodeInfo,
+} from "$main/nodes/scan";
+import { diffCopyFrames, mapCopyChildren } from "$main/handlers/copyFrames";
+import { POST_CLONE_YIELD_BUDGET_MS, createYielder, yieldStats } from "$main/nodes/yield";
 import { applyRichText } from "$main/text/applyRichText";
 import { nsKeyIndex } from "$shared/keyIndex";
+import { createPhaseTimer } from "$shared/perf";
 
 /**
  * Options for the `createCopy` handler. The two modes have different payloads
@@ -65,12 +72,10 @@ export type CreateCopyResult = {
   error?: string;
 };
 
-/**
- * How often to emit a progress message + yield to the event loop while
- * iterating large text-node lists. Keeps the plugin sandbox responsive
- * during long-running operations on big pages.
- */
-const PROGRESS_INTERVAL = 10;
+// Progress + yields in the per-node loops below are TIME-sliced (see
+// `nodes/yield.ts`): right after cloning a huge page every yield handed Figma
+// the thread for ~120 ms, so a fixed every-N-nodes cadence (340 yields on a
+// 17k-node page) cost 41 s for ~1 s of actual reads.
 
 /**
  * Clone the current page and rewrite every connected text node:
@@ -120,6 +125,22 @@ export async function createCopy(
   );
 
   const createdPageIds: string[] = [];
+  // Phases with nothing to count (deleting the old copy, Figma's synchronous
+  // clone) still get announced, then the thread is yielded once so the
+  // message actually reaches the UI BEFORE the long blocking step — otherwise
+  // the bar sat on a bare "Recreating copy…" for ~15 s on a big page with no
+  // sign of life. `current`/`total` carry the per-language scale the
+  // scanning phase uses so the bar doesn't jump back to indeterminate.
+  const announce = async (phase: string, current: number, total: number): Promise<void> => {
+    send({
+      type: "create-copy-progress",
+      correlationId: options.correlationId,
+      current,
+      total,
+      phase,
+    });
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+  };
   // Layer names a missing font kept us from writing — surfaced in the result
   // rather than dropped, so "Copy created" doesn't overstate what happened.
   const skippedMissingFont: string[] = [];
@@ -132,6 +153,7 @@ export async function createCopy(
 
   try {
     if (options.mode === "keys") {
+      const perf = createPhaseTimer();
       // Matches production's naming exactly (`${name} - keys`, hyphen +
       // lowercase) — `removeExistingCopyPages` below replaces a previous copy
       // by EXACT name match, so a mismatched format (e.g. an em dash or
@@ -142,44 +164,53 @@ export async function createCopy(
         await removeExistingCopyPages(
           { name: targetName, sourcePageId: sourcePage.id },
           sourcePage,
+          () => announce("removing", 0, 0),
         )
       ).switchedAwayFromCurrent;
+      perf.mark("remove old copy");
+      await announce("cloning", 0, 0);
       const targetPage = sourcePage.clone();
       targetPage.name = targetName;
       figma.root.appendChild(targetPage);
       createdPageIds.push(targetPage.id);
+      // Marked IMMEDIATELY: a run that dies here (Figma out of memory →
+      // recovery mode, a crash, the plugin closed) must leave a page the next
+      // Create/Recreate recognises and replaces — unmarked, it was taken for
+      // the user's own same-named page and lived on as a duplicate.
+      markPageAsCopy(targetPage, sourcePage.id);
+      perf.mark("clone (Figma)");
 
       await targetPage.loadAsync();
-      // pluginData filter: only Tolgee-tagged nodes come back, so untagged
-      // text (usually most of the page) never pays the 5-bridge-call
+      mapCopyChildren(sourcePage, targetPage);
+      perf.mark("load clone");
+      await announce("scanning-keys", 0, 0);
+      // Only Tolgee-tagged nodes (engine criteria + instance probe, see
+      // `findTaggedTextNodes`), so untagged text never pays the 5-bridge-call
       // `getNodeInfo` just to be skipped.
-      const textNodes = targetPage.findAllWithCriteria({
-        types: ["TEXT"],
-        pluginData: { keys: [TOLGEE_NODE_INFO] },
-      });
+      const textNodes = await findTaggedTextNodes(targetPage, POST_CLONE_YIELD_BUDGET_MS);
+      perf.mark("find tagged", `${textNodes.length} tagged`);
       const total = textNodes.length;
       let processed = 0;
+      const yielder = createYielder(POST_CLONE_YIELD_BUDGET_MS);
 
       for (const node of textNodes) {
-        const characters = node.characters;
-        const ancestorHidden = needsAncestorHidden ? computeAncestorHidden(node) : false;
-        if (!shouldIgnoreNode(node, ancestorHidden, settings, characters)) {
-          const info = getNodeInfo(node, characters);
-          if (info.connected && info.key) {
-            // Matches `namespacedKeyLabel`'s gate (Pull/CopyView/StringDetails):
-            // a node can carry a real `ns` even when namespaces are toggled
-            // off in Settings (e.g. legacy data, or the project disabled the
-            // feature after some keys were already namespaced) — without this
-            // check the copy would show "ns.key" while every other screen
-            // shows plain "key" for that exact node.
-            const label =
-              info.ns && options.namespacesEnabled ? `${info.ns}.${info.key}` : info.key;
-            const written = await writeTextSafely(node, label, { plainOnly: true });
-            if (!written) skippedMissingFont.push(node.name);
-          }
+        // pluginData-first (see `readConnectedNodeInfo`): the unconnected
+        // majority of a big page's tagged nodes is dropped after ONE read.
+        const info = readConnectedNodeInfo(node, settings, needsAncestorHidden);
+        if (info) {
+          // Matches `namespacedKeyLabel`'s gate (Pull/CopyView/StringDetails):
+          // a node can carry a real `ns` even when namespaces are toggled
+          // off in Settings (e.g. legacy data, or the project disabled the
+          // feature after some keys were already namespaced) — without this
+          // check the copy would show "ns.key" while every other screen
+          // shows plain "key" for that exact node.
+          const label =
+            info.ns && options.namespacesEnabled ? `${info.ns}.${info.key}` : info.key;
+          const written = await writeTextSafely(node, label, { plainOnly: true });
+          if (!written) skippedMissingFont.push(node.name);
         }
         processed++;
-        if (processed % PROGRESS_INTERVAL === 0) {
+        if (await yielder.maybeYield()) {
           send({
             type: "create-copy-progress",
             correlationId: options.correlationId,
@@ -187,12 +218,12 @@ export async function createCopy(
             total,
             phase: "writing-keys",
           });
-          await yieldToEventLoop();
         }
       }
 
-      markPageAsCopy(targetPage, sourcePage.id);
+      perf.mark("write key labels", `${skippedMissingFont.length} skipped, ${yieldStats(yielder)}`);
       if (switchedAwayFromCurrent) await figma.setCurrentPageAsync(targetPage);
+      console.log(perf.summary("create-copy keys"));
     } else {
       // mode === "languages"
       const totalPages = options.languages.length;
@@ -202,24 +233,35 @@ export async function createCopy(
         const lang = options.languages[i];
         if (!lang) continue;
 
+        const perf = createPhaseTimer();
         // Matches production's naming exactly — see the "keys" branch above.
         const targetName = `${sourcePage.name} - ${lang}`;
         switchedAwayFromCurrent ||= (
           await removeExistingCopyPages(
             { name: targetName, sourcePageId: sourcePage.id, language: lang },
             sourcePage,
+            () => announce("removing", i * 100, totalPages * 100),
           )
         ).switchedAwayFromCurrent;
+        perf.mark("remove old copy");
+        await announce("cloning", i * 100, totalPages * 100);
         const targetPage = sourcePage.clone();
         targetPage.name = targetName;
         figma.root.appendChild(targetPage);
         createdPageIds.push(targetPage.id);
+        // Marked IMMEDIATELY — see the keys branch above.
+        markPageAsCopy(targetPage, sourcePage.id, lang);
+        perf.mark("clone (Figma)");
 
         await targetPage.loadAsync();
-        const textNodes = targetPage.findAllWithCriteria({
-          types: ["TEXT"],
-          pluginData: { keys: [TOLGEE_NODE_INFO] },
-        });
+        mapCopyChildren(sourcePage, targetPage);
+        perf.mark("load clone");
+        await announce(`scanning-${lang}`, i * 100, totalPages * 100);
+        // Engine criteria + instance probe (see `findTaggedTextNodes`): a text
+        // whose key lives on the MAIN COMPONENT (instance inherits it) was
+        // invisible to the bare criteria, so the copy left it untranslated.
+        const textNodes = await findTaggedTextNodes(targetPage, POST_CLONE_YIELD_BUDGET_MS);
+        perf.mark("find tagged", `${textNodes.length} tagged`);
 
         // No text is written here — see `CreateCopyResult.pages`: the UI
         // renders + applies the translations, this side only collects the
@@ -227,18 +269,17 @@ export async function createCopy(
         const nodes: NodeInfo[] = [];
         const total = textNodes.length;
         let processed = 0;
+        const yielder = createYielder(POST_CLONE_YIELD_BUDGET_MS);
 
         for (const node of textNodes) {
-          const characters = node.characters;
-          const ancestorHidden = needsAncestorHidden ? computeAncestorHidden(node) : false;
-          if (!shouldIgnoreNode(node, ancestorHidden, settings, characters)) {
-            const info = getNodeInfo(node, characters);
-            if (info.connected && info.key) {
-              nodes.push(info);
-            }
-          }
+          // pluginData-first (see `readConnectedNodeInfo`): on the measured
+          // 17k-tagged / 1.3k-connected page this phase was 55 s of a 76 s
+          // Recreate — every stale prefill leftover paid a full `characters`
+          // copy just to be thrown away.
+          const info = readConnectedNodeInfo(node, settings, needsAncestorHidden);
+          if (info) nodes.push(info);
           processed++;
-          if (processed % PROGRESS_INTERVAL === 0) {
+          if (await yielder.maybeYield()) {
             const overall = i * 100 + Math.round((processed / Math.max(total, 1)) * 100);
             send({
               type: "create-copy-progress",
@@ -247,13 +288,13 @@ export async function createCopy(
               total: totalPages * 100,
               phase: `scanning-${lang}`,
             });
-            await yieldToEventLoop();
           }
         }
+        perf.mark("collect node info", `${nodes.length} connected, ${yieldStats(yielder)}`);
 
-        markPageAsCopy(targetPage, sourcePage.id, lang);
         pages.push({ pageId: targetPage.id, language: lang, nodes });
         if (switchedAwayFromCurrent) await figma.setCurrentPageAsync(targetPage);
+        console.log(perf.summary(`create-copy ${lang}`));
       }
 
       return { ok: true, createdPageIds, pages, skippedMissingFont };
@@ -304,7 +345,84 @@ async function removeCreatedPages(ids: string[], fallback: PageNode): Promise<st
 /** `sourcePageId` set (the "Recreate copy" flow) resolves that specific page;
  *  otherwise defaults to `figma.currentPage` — the normal Index-invoked flow,
  *  unchanged from before this existed. */
-async function resolveSourcePage(sourcePageId?: string): Promise<PageNode | null> {
+export type CopyPreflight = {
+  textCount: number;
+  /** Every scene layer on the page — Figma's own memory proxy. */
+  layerCount: number;
+  existingCopies: number;
+  copyNames: string[];
+};
+
+/** Every SceneNode type `findAllWithCriteria` can match — one engine-side
+ *  search that returns the page's full layer count (what Figma's "Manage
+ *  memory" counts), without a JS-side walk. */
+const ALL_LAYER_TYPES: NodeType[] = [
+  "BOOLEAN_OPERATION",
+  "CODE_BLOCK",
+  "COMPONENT",
+  "COMPONENT_SET",
+  "CONNECTOR",
+  "ELLIPSE",
+  "EMBED",
+  "FRAME",
+  "GROUP",
+  "HIGHLIGHT",
+  "INSTANCE",
+  "LINE",
+  "LINK_UNFURL",
+  "MEDIA",
+  "POLYGON",
+  "RECTANGLE",
+  "SECTION",
+  "SHAPE_WITH_TEXT",
+  "SLICE",
+  "STAMP",
+  "STAR",
+  "STICKY",
+  "TABLE",
+  "TEXT",
+  "VECTOR",
+  "WASHI_TAPE",
+  "WIDGET",
+];
+
+/**
+ * Size up a copy BEFORE it is made: the source page's TEXT count (one
+ * engine-side search, no per-node reads) and how many plugin-made copies of
+ * it the file already holds. The UI turns that into a memory warning — the
+ * plugin can't read Figma's per-file memory, but "a huge page that already
+ * has copies in this file" is exactly what pushed the customer-sized test
+ * file into recovery mode. Only same-named candidates (`<source> - …`) are
+ * loaded to read their marker, so a file with many pages stays cheap.
+ */
+export async function copyPreflight(sourcePageId?: string): Promise<CopyPreflight> {
+  const sourcePage = await resolveSourcePage(sourcePageId);
+  if (!sourcePage) return { textCount: 0, layerCount: 0, existingCopies: 0, copyNames: [] };
+  const perf = createPhaseTimer();
+  await sourcePage.loadAsync();
+  const textCount = sourcePage.findAllWithCriteria({ types: ["TEXT"] }).length;
+  perf.mark("count texts", `${textCount}`);
+  const layerCount = sourcePage.findAllWithCriteria({ types: ALL_LAYER_TYPES }).length;
+  perf.mark("count layers", `${layerCount}`);
+  const copyNames: string[] = [];
+  const prefix = `${sourcePage.name} - `;
+  for (const page of figma.root.children) {
+    if (page.type !== "PAGE" || page === sourcePage) continue;
+    if (!page.name.startsWith(prefix)) continue;
+    // No `loadAsync`: a page's own pluginData is readable while the page is
+    // unloaded (dynamic-page only gates children/find*/export/insert). Loading
+    // each copy cost 11–13 s on a 113k-layer file and pinned it in memory.
+    const marker = readCopyMarker(page);
+    if (marker && (marker.sourcePageId === undefined || marker.sourcePageId === sourcePage.id)) {
+      copyNames.push(page.name);
+    }
+  }
+  perf.mark("find copies", `${copyNames.length}`);
+  console.log(perf.summary("copy preflight"));
+  return { textCount, layerCount, existingCopies: copyNames.length, copyNames };
+}
+
+export async function resolveSourcePage(sourcePageId?: string): Promise<PageNode | null> {
   if (!sourcePageId) return figma.currentPage;
   const node = await figma.getNodeByIdAsync(sourcePageId);
   return node?.type === "PAGE" ? node : null;
@@ -381,11 +499,19 @@ export type CopyTarget = {
 export async function removeExistingCopyPages(
   target: CopyTarget,
   preferredFallback?: PageNode,
+  /** Called once, right before the FIRST page is removed — never when there
+   *  is nothing to remove (a first-time copy), so the UI doesn't announce a
+   *  "Removing the old copy…" phase that isn't happening. */
+  onBeforeRemove?: () => Promise<void>,
 ): Promise<{ switchedAwayFromCurrent: boolean }> {
   let switchedAwayFromCurrent = false;
   let removedAny = false;
 
   const removePage = async (page: PageNode): Promise<void> => {
+    if (!removedAny) await onBeforeRemove?.();
+    // Only the page actually being removed is loaded — removal behaves exactly
+    // as before. The marker checks below read pluginData, which needs no load.
+    await page.loadAsync();
     if (page === figma.currentPage) {
       const fallback =
         preferredFallback ?? figma.root.children.find((p) => p !== page && p.type === "PAGE");
@@ -412,7 +538,6 @@ export async function removeExistingCopyPages(
       others.push(page);
       continue;
     }
-    await page.loadAsync();
     if (readCopyMarker(page) === null) continue; // a user's own same-named page
     await removePage(page);
   }
@@ -421,11 +546,10 @@ export async function removeExistingCopyPages(
   // Pass 2 — by identity `(source page, language)`, for a copy whose NAME no
   // longer matches: this PR aligned the naming with production, so a copy made
   // by an earlier v2 build would otherwise go unfound and Recreate would append
-  // a duplicate beside it. Reading the marker requires loading each page, which
-  // is why this runs only when pass 1 came up empty — the usual case never pays
-  // for it.
+  // a duplicate beside it. Reading the marker needs no page load (pluginData
+  // on a PageNode is available unloaded under dynamic-page), so this pass no
+  // longer pulls every other page of the file into memory.
   for (const page of others) {
-    await page.loadAsync();
     if (!matchesCopyIdentity(page, target)) continue;
     await removePage(page);
   }
@@ -464,7 +588,7 @@ function markPageAsCopy(page: PageNode, sourcePageId: string, language?: string)
  * mixed fonts, which are very rare on connected nodes and would otherwise
  * abort the whole copy.
  */
-async function writeTextSafely(
+export async function writeTextSafely(
   node: TextNode,
   text: string,
   options?: { plainOnly?: boolean },
@@ -484,9 +608,14 @@ async function writeTextSafely(
   return true;
 }
 
-function yieldToEventLoop(): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, 0));
-}
+export type CopyStalenessFrames = {
+  added: number;
+  removed: number;
+  changed: number;
+  /** The copy carries the frame↔source mapping "Update changed frames"
+   *  needs (false for copies made by the original plugin / older builds). */
+  mappable: boolean;
+};
 
 export type CopyStalenessResult = {
   ok: boolean;
@@ -495,6 +624,9 @@ export type CopyStalenessResult = {
   /** Connected strings the source page LOST since the copy was made (the
       copy still shows them). */
   removedCount?: number;
+  /** Per-frame breakdown, computed only when the page-level check says the
+   *  copy is stale (it costs a second pass over both pages). */
+  frames?: CopyStalenessFrames;
   error?: string;
 };
 
@@ -525,8 +657,10 @@ export async function checkCopyStaleness(copyPage: PageNode): Promise<CopyStalen
   if (!sourcePage || sourcePage.type !== "PAGE") {
     return { ok: false, error: "The original page no longer exists." };
   }
+  const perf = createPhaseTimer();
   await sourcePage.loadAsync();
   await copyPage.loadAsync();
+  perf.mark("load pages");
 
   // Both directions from the same two scans — deletions cost nothing extra.
   // `missing` = connected strings the source gained since the copy was made;
@@ -534,7 +668,9 @@ export async function checkCopyStaleness(copyPage: PageNode): Promise<CopyStalen
   // them). Per-key maxes, so a surplus on one key never cancels a genuine
   // gap on another.
   const sourceCounts = await collectConnectedKeyCounts(sourcePage);
+  perf.mark("scan source", `${sourceCounts.size} keys`);
   const copyCounts = await collectConnectedKeyCounts(copyPage);
+  perf.mark("scan copy", `${copyCounts.size} keys`);
   let missingCount = 0;
   for (const [key, srcCount] of sourceCounts) {
     missingCount += Math.max(0, srcCount - (copyCounts.get(key) ?? 0));
@@ -543,7 +679,23 @@ export async function checkCopyStaleness(copyPage: PageNode): Promise<CopyStalen
   for (const [key, copyCount] of copyCounts) {
     removedCount += Math.max(0, copyCount - (sourceCounts.get(key) ?? 0));
   }
-  return { ok: true, missingCount, removedCount };
+  perf.mark("compare", `${missingCount} missing, ${removedCount} removed`);
+  let frames: CopyStalenessFrames | undefined;
+  if (missingCount + removedCount > 0) {
+    const diff = await diffCopyFrames(sourcePage, copyPage);
+    frames = {
+      added: diff.added.length,
+      removed: diff.removed.length,
+      changed: diff.changed.length,
+      mappable: diff.mappable,
+    };
+    perf.mark(
+      "frames",
+      `${frames.added} added, ${frames.changed} changed, ${frames.removed} removed${frames.mappable ? "" : ", not mappable"}`,
+    );
+  }
+  console.log(perf.summary("copy staleness"));
+  return { ok: true, missingCount, removedCount, frames };
 }
 
 /**
@@ -555,26 +707,18 @@ export async function checkCopyStaleness(copyPage: PageNode): Promise<CopyStalen
  * copy's clone of that node predates the connection, so Download will never
  * touch it — the copy is stale all the same.
  */
-async function collectConnectedKeyCounts(page: PageNode): Promise<Map<string, number>> {
-  const textNodes = page.findAllWithCriteria({
-    types: ["TEXT"],
-    pluginData: { keys: [TOLGEE_NODE_INFO] },
-  });
+export async function collectConnectedKeyCounts(page: SearchRoot): Promise<Map<string, number>> {
+  // Key identity only (`collectConnectedKeyRefs`: one pluginData read per
+  // tagged node, incl. keys inherited from a main component). This check
+  // runs TWO scans back-to-back on every CopyView open / page switch — and
+  // right after a Recreate lands — so it used to be the hidden tail of every
+  // copy on a large page: `getNodeInfo` per node copied `characters`, `name`
+  // and `visible` across the bridge just to throw them away.
+  const refs = await collectConnectedKeyRefs(page);
   const counts = new Map<string, number>();
-  let scanned = 0;
-  for (const node of textNodes) {
-    const info = getNodeInfo(node);
-    if (info.connected && info.key) {
-      const key = nsKeyIndex(info.ns, info.key);
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-    }
-    // The staleness check runs TWO of these scans back-to-back on every
-    // CopyView open/page switch — unbroken, that's a visible canvas freeze
-    // on a large page (`getNodeInfo` is ~5 bridge reads per node).
-    scanned++;
-    if (scanned % 100 === 0) {
-      await yieldToEventLoop();
-    }
+  for (const ref of refs) {
+    const key = nsKeyIndex(ref.ns, ref.key);
+    counts.set(key, (counts.get(key) ?? 0) + 1);
   }
   return counts;
 }

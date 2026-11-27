@@ -22,6 +22,7 @@
   import StringDetails from "./lib/routes/StringDetails.svelte";
   import CreateCopy from "./lib/routes/CreateCopy.svelte";
   import ErrorBanner from "./lib/components/domain/ErrorBanner.svelte";
+  import CopyJobBar from "./lib/components/domain/CopyJobBar.svelte";
   import ResizeHandle from "./lib/components/domain/ResizeHandle.svelte";
   import type { TolgeeConfig } from "$shared/types";
 
@@ -198,6 +199,8 @@
     {#if appState.value.errorBanner}
       <ErrorBanner banner={appState.value.errorBanner} />
     {/if}
+    <!-- Survives the page switch a Recreate causes (see copyJob store). -->
+    <CopyJobBar />
     <main class="flex-1 overflow-auto">
       {#if appState.value.route.name === "settings"}
         <!-- Settings is always reachable, even before the page is set up. -->
