@@ -51,6 +51,20 @@ test.describe("Connect view", () => {
     );
   });
 
+  test("a multi-line string prefills the search without gluing words", async ({
+    page,
+  }) => {
+    // A one-line input drops line breaks; "2026.⏎S pozdravem" must not become
+    // "2026.S pozdravem".
+    const ui = await openConnect(
+      page,
+      createTestNode({ text: "Dobrý den, \n\nje nám ctí dne 2026.\nS pozdravem" }),
+    );
+    await expect(ui.getByPlaceholder("Search by string (key)…")).toHaveValue(
+      "Dobrý den, je nám ctí dne 2026. S pozdravem",
+    );
+  });
+
   test("the back arrow returns to Index", async ({ page }) => {
     const ui = await openConnect(page, createTestNode({ text: "Anything" }));
 
@@ -149,6 +163,38 @@ test.describe("Connect view", () => {
     const rows = ui.locator("li");
     await expect(rows.first()).toContainText(`${tag}-2`);
     await expect(rows.nth(1)).toContainText(`${tag}-1`);
+  });
+
+  test("the namespace filter narrows results to one namespace", async ({
+    page,
+    request,
+  }) => {
+    const tag = `nsf${Date.now()}`;
+    for (const ns of ["", `${tag}-a`, `${tag}-b`]) {
+      const res = await request.post("http://localhost:8080/v2/projects/keys/create", {
+        headers: { "X-API-Key": "examples-admin-imported-project-implicit" },
+        data: {
+          name: `${tag}-key-${ns || "none"}`,
+          ...(ns ? { namespace: ns } : {}),
+          translations: { en: `${tag} Same text` },
+        },
+      });
+      expect(res.ok()).toBe(true);
+    }
+
+    // The project's namespace list is loaded at startup — open AFTER creating.
+    const ui = await openConnect(page, createTestNode({ text: `${tag} Same text` }));
+    // Only this run's keys — partial matches from earlier runs share words.
+    const rows = ui.locator("li", { hasText: tag });
+    await expect(rows).toHaveCount(3, { timeout: 20_000 });
+
+    await ui.getByRole("combobox", { name: "Namespace" }).selectOption(`${tag}-a`);
+    await expect(rows).toHaveCount(1, { timeout: 20_000 });
+    await expect(rows.first()).toContainText(`${tag}-key-${tag}-a`);
+
+    await ui.getByRole("combobox", { name: "Namespace" }).selectOption({ label: "<none> (this string)" });
+    await expect(rows).toHaveCount(1, { timeout: 20_000 });
+    await expect(rows.first()).toContainText(`${tag}-key-none`);
   });
 
   test("shows 'No node selected' when navigated without a node", async ({

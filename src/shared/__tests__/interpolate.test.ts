@@ -120,12 +120,37 @@ describe("translationDiffersFromNode (manual change)", () => {
     const node = makeNode({ translation: "<b>Hi</b>", characters: "Hi" });
     expect(translationDiffersFromNode(node, "en")).toBe(false);
   });
+
+  it("does NOT flag an untouched string with <br> (the canvas holds a newline)", () => {
+    // Regression: <br> was stripped instead of turned into "\n", so every
+    // connected string with a line break looked "edited in Figma".
+    for (const br of ["<br>", "<br/>", "<br />", "<br></br>"]) {
+      const node = makeNode({
+        translation: `Dobrý den, ${br}${br}je nám <b>potěšením</b> {name}.`,
+        paramsValues: { name: "Jana" },
+        characters: "Dobrý den, \n\nje nám potěšením Jana.",
+      });
+      expect(translationDiffersFromNode(node, "en")).toBe(false);
+    }
+  });
+
+  it("still flags a <br> string whose canvas text was really edited", () => {
+    const node = makeNode({
+      translation: "Line one<br/>Line two",
+      characters: "Line one\nLine two (edited)",
+    });
+    expect(translationDiffersFromNode(node, "en")).toBe(true);
+  });
 });
 
 describe("inferPluralCount", () => {
   it("finds the count that renders the canvas form", () => {
     expect(inferPluralCount(PLURAL, "5 items", "en")).toBe("5");
     expect(inferPluralCount(PLURAL, "1 item", "en")).toBe("1");
+  });
+  it("matches a plural form that contains a <br> line break", () => {
+    const icu = "{count, plural, one {# item<br/>left} other {# items<br/>left}}";
+    expect(inferPluralCount(icu, "3 items\nleft", "en")).toBe("3");
   });
   it("returns undefined when nothing matches or it isn't a plural", () => {
     expect(inferPluralCount(PLURAL, "totally different", "en")).toBeUndefined();
