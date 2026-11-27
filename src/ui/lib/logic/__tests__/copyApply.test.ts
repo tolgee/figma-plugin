@@ -1,10 +1,28 @@
 import type { NodeInfo } from "$shared/types";
 import { plainCanvasText } from "$shared/richText";
-import { buildCopyUpdates, type CopyTranslations } from "$ui/lib/logic/copyApply";
+import {
+  buildCopyUpdates,
+  sampleValuesByKey,
+  withCarriedSamples,
+  type CopyFetch,
+  type CopyPage,
+  type CopyTranslations,
+  topUpCopyTranslations,
+  withTimeout,
+} from "$ui/lib/logic/copyApply";
 import { pullDiff } from "$ui/lib/logic/pullDiff";
-import type { PulledKey } from "$ui/lib/api/pull";
-import { describe, expect, it } from "vitest";
+import { fetchAllTranslations, type PulledKey } from "$ui/lib/api/pull";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { nsKeyIndex } from "$ui/lib/logic/namespaces";
+import type { TolgeeClient } from "$ui/lib/api/client";
+
+// `topUpCopyTranslations` fetches through `fetchAllTranslations`; everything
+// else in this file is pure. The mock keeps `PulledKey` (a type) intact.
+vi.mock("$ui/lib/api/pull", () => ({ fetchAllTranslations: vi.fn() }));
+const fetchAllTranslationsMock = vi.mocked(fetchAllTranslations);
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 // Ported from the former main-thread `resolveCopyNodeText` tests — the render
 // moved here (the UI) because Figma's main-thread sandbox has no `Intl`, so
@@ -110,7 +128,13 @@ describe("buildCopyUpdates", () => {
       "es",
     );
     expect(updates).toEqual([
-      { id: "n1", text: "¡Hola Zuzana!", translation: "¡Hola {name}!", isPlural: false },
+      {
+        id: "n1",
+        text: "¡Hola Zuzana!",
+        translation: "¡Hola {name}!",
+        isPlural: false,
+        paramsValues: { name: "Zuzana" },
+      },
     ]);
   });
 
@@ -130,6 +154,94 @@ describe("buildCopyUpdates", () => {
       ["a", "Hola web"],
       ["b", "Hola"],
     ]);
+  });
+});
+
+describe("topUpCopyTranslations", () => {
+  const client = {} as TolgeeClient;
+  const page = (nodes: NodeInfo[]): CopyPage => ({ pageId: "p1", language: "cs", nodes });
+  const fetchedWith = (names: string[], cs: CopyTranslations = {}): CopyFetch => ({
+    translations: { cs },
+    fetchedKeyNames: new Set(names),
+  });
+
+  it("returns the fetch untouched (and requests nothing) when the pre-fetch already asked for every clone key", async () => {
+    const fetched = fetchedWith(["k"], { [nsKeyIndex(undefined, "k")]: { text: "Ahoj", isPlural: false } });
+    const result = await topUpCopyTranslations(client, [page([makeNode()])], fetched, undefined);
+    expect(result).toBe(fetched);
+    expect(fetchAllTranslationsMock).not.toHaveBeenCalled();
+  });
+
+  it("a fetched key that simply has NO translation yet is not asked for again", async () => {
+    // It is absent from `translations` (empty texts are dropped) but was
+    // covered by the fetch — re-requesting it on every copy could never add
+    // anything and spent the rate-limited endpoint for nothing.
+    const fetched = fetchedWith(["untranslated"]);
+    const result = await topUpCopyTranslations(
+      client,
+      [page([makeNode({ key: "untranslated" })])],
+      fetched,
+      undefined,
+    );
+    expect(result).toBe(fetched);
+    expect(fetchAllTranslationsMock).not.toHaveBeenCalled();
+  });
+
+  it("fetches ONLY the clone keys the pre-fetch didn't ask for and merges them in", async () => {
+    // Recreate pre-fetches by the OLD copy's keys; a key connected on the
+    // source since the copy was made shows up only on the fresh clone.
+    const covered = makeNode({ id: "a", key: "k" });
+    const newKey = makeNode({ id: "b", key: "fresh" });
+    const fetched = fetchedWith(["k"], { [nsKeyIndex(undefined, "k")]: { text: "Ahoj", isPlural: false } });
+    fetchAllTranslationsMock.mockResolvedValue([
+      { keyName: "fresh", isPlural: false, translations: { cs: { text: "Nové" } } },
+    ]);
+
+    const result = await topUpCopyTranslations(client, [page([covered, newKey])], fetched, "dev");
+
+    expect(fetchAllTranslationsMock).toHaveBeenCalledWith(client, {
+      languages: ["cs"],
+      branch: "dev",
+      keyNames: ["fresh"],
+    });
+    expect(result.translations.cs).toEqual({
+      [nsKeyIndex(undefined, "k")]: { text: "Ahoj", isPlural: false },
+      [nsKeyIndex(undefined, "fresh")]: { text: "Nové", isPlural: false },
+    });
+    expect([...result.fetchedKeyNames]).toEqual(["k", "fresh"]);
+  });
+
+  it("returns the fetch unchanged when the top-up request fails — the canvas work already happened, a miss is only 'skipped'", async () => {
+    const fetched = fetchedWith([]);
+    fetchAllTranslationsMock.mockRejectedValue(new Error("rate limited"));
+    const result = await topUpCopyTranslations(
+      client,
+      [page([makeNode({ key: "fresh" })])],
+      fetched,
+      undefined,
+    );
+    expect(result).toBe(fetched);
+  });
+});
+
+describe("withTimeout", () => {
+  it("passes a settlement through", async () => {
+    await expect(withTimeout(Promise.resolve("ok"), 1000, "late")).resolves.toBe("ok");
+    await expect(withTimeout(Promise.reject(new Error("boom")), 1000, "late")).rejects.toThrow(
+      "boom",
+    );
+  });
+
+  it("rejects with the given message when nothing settles in time", async () => {
+    vi.useFakeTimers();
+    try {
+      const hung = withTimeout(new Promise<never>(() => {}), 5000, "Timed out loading.");
+      const assertion = expect(hung).rejects.toThrow("Timed out loading.");
+      await vi.advanceTimersByTimeAsync(5001);
+      await assertion;
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 
@@ -158,8 +270,8 @@ describe("recreate -> immediate Download round trip", () => {
     // Exactly what applyTranslations (src/main/nodes/selection.ts) persists:
     // translation + isPlural from the update, characters via the SAME
     // plainCanvasText transform applyRichText uses. pluralParamValue/
-    // paramsValues are untouched (buildCopyUpdates never sends them), so the
-    // clone keeps whatever it inherited from the source at clone time.
+    // paramsValues are the node's own (buildCopyUpdates re-sends the values
+    // it rendered with), so they match what the node already holds here.
     const postWrite: NodeInfo = {
       ...node,
       translation: update.translation,
@@ -224,5 +336,46 @@ describe("recreate -> immediate Download round trip", () => {
 
     expect(diff.changedNodes).toEqual([]);
     expect(diff.unchangedNodes).toHaveLength(1);
+  });
+});
+
+describe("sample values carried over a Recreate", () => {
+  it("collects per-key values from the old copy, first occurrence wins, keys without values left out", () => {
+    const samples = sampleValuesByKey([
+      { key: "hello", paramsValues: { name: "John" } },
+      { key: "hello", paramsValues: { name: "Ignored" } },
+      { key: "dogs", ns: "app", pluralParamValue: "3" },
+      { key: "plain" },
+      { key: "empty", paramsValues: {} },
+    ]);
+    expect(samples.get(nsKeyIndex(undefined, "hello"))).toEqual({ paramsValues: { name: "John" } });
+    expect(samples.get(nsKeyIndex("app", "dogs"))).toEqual({ pluralParamValue: "3" });
+    expect(samples.has(nsKeyIndex(undefined, "plain"))).toBe(false);
+    expect(samples.has(nsKeyIndex(undefined, "empty"))).toBe(false);
+  });
+
+  it("renders the fresh clone with the copy's values instead of the source's, and persists them", () => {
+    // The clone inherited the SOURCE page's sample ("Zuzko"); the old copy had "John".
+    const cloneNode = makeNode({ key: "hello", paramsValues: { name: "Zuzko" } });
+    const samples = sampleValuesByKey([{ key: "hello", paramsValues: { name: "John" } }]);
+    const [page] = withCarriedSamples([{ pageId: "p", language: "en", nodes: [cloneNode] }], samples);
+    if (!page) throw new Error("expected a page");
+
+    const { updates } = buildCopyUpdates(
+      page.nodes,
+      { [nsKeyIndex(undefined, "hello")]: { text: "Hello, {name}", isPlural: false } },
+      "en",
+    );
+    expect(updates[0]?.text).toBe("Hello, John");
+    expect(updates[0]?.paramsValues).toEqual({ name: "John" });
+  });
+
+  it("leaves nodes whose key the old copy didn't have on the source's values", () => {
+    const fresh = makeNode({ key: "new", paramsValues: { name: "Zuzko" } });
+    const [page] = withCarriedSamples(
+      [{ pageId: "p", language: "en", nodes: [fresh] }],
+      sampleValuesByKey([{ key: "hello", paramsValues: { name: "John" } }]),
+    );
+    expect(page?.nodes[0]?.paramsValues).toEqual({ name: "Zuzko" });
   });
 });

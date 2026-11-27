@@ -1,13 +1,17 @@
 import { attachBus, on, send } from "$main/bus";
+import { createCopyStalenessCache } from "$main/copyStalenessCache";
+import { updateCopyFrames } from "$main/handlers/copyFrames";
+import { POST_CLONE_YIELD_BUDGET_MS } from "$main/nodes/yield";
 import {
   checkCopyStaleness,
   type CopyStalenessResult,
+  copyPreflight,
   createCopy,
 } from "$main/handlers/createCopy";
 import { applyTranslations } from "$main/nodes/selection";
 import { cleanUpHighlights, highlightNode } from "$main/nodes/highlight";
 import { clearPrefilledKeys } from "$main/nodes/clearPrefilled";
-import { buildConnectedNodesInfo, scanConnectedNodes } from "$main/nodes/scan";
+import { buildConnectedNodesInfo, collectConnectedKeyRefs, scanConnectedNodes } from "$main/nodes/scan";
 import { type MainComponentNameCache, resolveParentNames } from "$main/nodes/nodeParents";
 import { type KeyParentNames, keyFormatUsesParents } from "$shared/keyFormat";
 import { getSelectionInfo, setNodesData } from "$main/nodes/selection";
@@ -19,6 +23,7 @@ import {
   writeConfig,
 } from "$main/settings";
 import { UI_SIZES } from "$shared/constants";
+import { createPhaseTimer } from "$shared/perf";
 
 // When the manifest's `ui` is a string, Figma injects `__html__`. When it's
 // an object (per-editor UIs), Figma injects `__uiFiles__` instead with one
@@ -56,6 +61,8 @@ let initHandled = false;
 
 async function emitSelection(sendPending = true): Promise<void> {
   const generation = ++scanGeneration;
+  const perf = createPhaseTimer();
+  const startedAt = Date.now();
   const isStale = () => generation !== scanGeneration;
   // Tell the UI a scan is starting so it can show a loader during the
   // (potentially slow) getSelectionInfo() below, not just after it resolves.
@@ -90,6 +97,10 @@ async function emitSelection(sendPending = true): Promise<void> {
     hasUserSelection: figma.currentPage.selection.length > 0,
     total,
   });
+  // One console line per sizeable scan — the "0 writes" is the point: a
+  // selection scan reads only, the prefill suggestion no longer writes.
+  perf.mark("scan", `${total} texts, 0 writes`);
+  if (total >= 100 || Date.now() - startedAt >= 250) console.log(perf.summary("selection"));
 }
 
 // Selection events come in two shapes: a single deliberate click, and rapid
@@ -317,6 +328,16 @@ on("request-page-connected-nodes", async (msg) => {
   });
 });
 
+on("request-page-connected-keys", async (msg) => {
+  await figma.currentPage.loadAsync();
+  const keys = await collectConnectedKeyRefs(figma.currentPage);
+  send({ type: "page-connected-keys-result", correlationId: msg.correlationId, keys });
+});
+
+// See `copyStalenessCache.ts`: one-shot "fresh" answers for pages a copy run
+// just built — nothing else is remembered.
+const stalenessCache = createCopyStalenessCache();
+
 on("set-nodes-data", async (msg) => {
   const result = await setNodesData(msg.nodes, (done, total) => {
     send({
@@ -398,14 +419,18 @@ on("scroll-to-node", async (msg) => {
 });
 
 on("apply-translations", async (msg) => {
-  const { ok, errors, nodes } = await applyTranslations(msg.updates, (done, total) => {
-    send({
-      type: "apply-translations-progress",
-      correlationId: msg.correlationId,
-      done,
-      total,
-    });
-  });
+  const { ok, errors, nodes } = await applyTranslations(
+    msg.updates,
+    (done, total) => {
+      send({
+        type: "apply-translations-progress",
+        correlationId: msg.correlationId,
+        done,
+        total,
+      });
+    },
+    msg.postClone ? POST_CLONE_YIELD_BUDGET_MS : undefined,
+  );
   // Fresh post-write snapshots ride along for in-place patching — see the
   // matching comment in the `set-nodes-data` handler.
   send({
@@ -423,6 +448,7 @@ on("create-copy", async (msg) => {
   // asked to ignore shouldn't have its text overwritten just because it's
   // being copied instead of downloaded to.
   const settings = await readMergedConfig();
+  stalenessCache.clear();
   const result =
     msg.mode === "keys"
       ? await createCopy(
@@ -443,6 +469,9 @@ on("create-copy", async (msg) => {
           },
           settings,
         );
+  // The pages this run just built match their source by construction — the
+  // first staleness check on them must not cost a scan of two huge pages.
+  if (result.ok) stalenessCache.seedFresh(result.createdPageIds);
   send({
     type: "create-copy-result",
     correlationId: msg.correlationId,
@@ -454,15 +483,47 @@ on("create-copy", async (msg) => {
   });
 });
 
+on("update-copy-frames", async (msg) => {
+  const settings = await readMergedConfig();
+  stalenessCache.clear();
+  const result = await updateCopyFrames(
+    {
+      correlationId: msg.correlationId,
+      sourcePageId: msg.sourcePageId,
+      language: msg.language,
+      namespacesEnabled: msg.namespacesEnabled,
+    },
+    settings,
+  );
+  // The page now matches its source by construction (per the frame diff).
+  if (result.ok) stalenessCache.seedFresh([figma.currentPage.id]);
+  send({
+    type: "create-copy-result",
+    correlationId: msg.correlationId,
+    ok: result.ok,
+    createdPageIds: result.createdPageIds,
+    pages: result.pages,
+    error: result.error,
+    skippedMissingFont: result.skippedMissingFont,
+  });
+});
+
+on("request-copy-preflight", async (msg) => {
+  const result = await copyPreflight(msg.sourcePageId);
+  send({ type: "copy-preflight-result", correlationId: msg.correlationId, ...result });
+});
+
 on("request-copy-staleness", async (msg) => {
   // A throw here would otherwise vanish (the main bus doesn't wrap handlers)
   // and the UI would wait forever with no banner and no trace — the check
   // must ALWAYS answer, even if only with the failure reason.
-  let result: CopyStalenessResult;
-  try {
-    result = await checkCopyStaleness(figma.currentPage);
-  } catch (err) {
-    result = { ok: false, error: err instanceof Error ? err.message : String(err) };
+  let result: CopyStalenessResult | null = stalenessCache.take(figma.currentPage.id);
+  if (!result) {
+    try {
+      result = await checkCopyStaleness(figma.currentPage);
+    } catch (err) {
+      result = { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
   }
   send({
     type: "copy-staleness-result",
@@ -470,6 +531,7 @@ on("request-copy-staleness", async (msg) => {
     ok: result.ok,
     missingCount: result.missingCount,
     removedCount: result.removedCount,
+    frames: result.frames,
     error: result.error,
   });
 });

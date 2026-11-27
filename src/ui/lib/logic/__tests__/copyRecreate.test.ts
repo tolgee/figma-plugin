@@ -29,9 +29,11 @@ vi.mock("$ui/lib/bus", () => ({
 
 import { nsKeyIndex } from "$ui/lib/logic/namespaces";
 import {
+  COPY_FETCH_TIMEOUT_MS,
   type CopyTranslations,
   finishCopyRecreate,
   isCopyRecreateInFlight,
+  sampleValuesByKey,
 } from "$ui/lib/logic/copyApply";
 
 function emit(type: string, msg: Record<string, unknown>): void {
@@ -95,6 +97,37 @@ describe("finishCopyRecreate — survives the initiating view unmounting", () =>
     expect(done).toHaveBeenCalledWith({ ok: true, skipped: 0 });
   });
 
+  it("keeps the sample values the OLD copy had (not the source's) on the recreated page", async () => {
+    const translations: Record<string, CopyTranslations> = {
+      en: { [nsKeyIndex(undefined, "hello")]: { text: "Hello, {name}", isPlural: false } },
+    };
+    finishCopyRecreate({
+      correlationId: "rc-samples",
+      loadTranslations: async () => translations,
+      samples: sampleValuesByKey([{ key: "hello", paramsValues: { name: "John" } }]),
+    });
+    emit("create-copy-result", {
+      correlationId: "rc-samples",
+      ok: true,
+      pages: [
+        {
+          pageId: "p2",
+          language: "en",
+          // The clone carries the SOURCE page's value.
+          nodes: [{ ...makeNode({ key: "hello" }), paramsValues: { name: "Zuzko" } }],
+        },
+      ],
+    });
+    await flushAsync();
+
+    const apply = sent.find((m) => m.type === "apply-translations") as Extract<
+      UiToMain,
+      { type: "apply-translations" }
+    >;
+    expect(apply.updates[0]?.text).toBe("Hello, John");
+    expect(apply.updates[0]?.paramsValues).toEqual({ name: "John" });
+  });
+
   it("a keys copy (null translations) skips the apply and still completes", async () => {
     const done = vi.fn();
     finishCopyRecreate({ correlationId: "rc2", loadTranslations: null, onDone: done });
@@ -132,7 +165,7 @@ describe("finishCopyRecreate — survives the initiating view unmounting", () =>
 });
 
 describe("recreate re-entrancy", () => {
-  it("reports itself in flight until the job settles", () => {
+  it("reports itself in flight until the job SETTLES, not merely until the clone result arrives", async () => {
     // The guard has to live here, not in the view: recreating unmounts
     // CopyView, so a second click lands on a fresh instance whose own state
     // says "idle" — and a second run deletes the page the first is writing.
@@ -142,27 +175,83 @@ describe("recreate re-entrancy", () => {
     expect(isCopyRecreateInFlight()).toBe(true);
 
     emit("create-copy-result", { correlationId: "r-1", ok: true, pages: [] });
+    await flushAsync();
     expect(isCopyRecreateInFlight()).toBe(false);
   });
 
-  it("clears the flag when the job fails", () => {
+  it("stays in flight while the fresh clone is still being written — un-marking early let a second Recreate delete it mid-write", async () => {
+    const translations: Record<string, CopyTranslations> = {
+      cs: { [nsKeyIndex(undefined, "greeting")]: { text: "Ahoj", isPlural: false } },
+    };
+    finishCopyRecreate({ correlationId: "r-write", loadTranslations: async () => translations });
+    emit("create-copy-result", {
+      correlationId: "r-write",
+      ok: true,
+      pages: [{ pageId: "p2", language: "cs", nodes: [makeNode()] }],
+    });
+    await flushAsync();
+
+    // The clone result arrived, the apply batch is out — but not confirmed yet.
+    const apply = sent.find((m) => m.type === "apply-translations") as Extract<
+      UiToMain,
+      { type: "apply-translations" }
+    >;
+    expect(apply).toBeDefined();
+    expect(isCopyRecreateInFlight()).toBe(true);
+
+    emit("apply-translations-result", { correlationId: apply.correlationId, ok: true, errors: [] });
+    await flushAsync();
+    expect(isCopyRecreateInFlight()).toBe(false);
+  });
+
+  it("clears the flag when the job fails", async () => {
     finishCopyRecreate({ correlationId: "r-2", loadTranslations: null });
 
     emit("create-copy-result", { correlationId: "r-2", ok: false, error: "nope" });
+    await flushAsync();
 
     expect(isCopyRecreateInFlight()).toBe(false);
   });
 
-  it("an older job settling does not clear a newer one's flag", () => {
+  it("an older job settling does not clear a newer one's flag", async () => {
     finishCopyRecreate({ correlationId: "r-3", loadTranslations: null });
     finishCopyRecreate({ correlationId: "r-4", loadTranslations: null });
 
     // r-3 answers late; r-4 is the current job and must stay marked.
     emit("create-copy-result", { correlationId: "r-3", ok: true, pages: [] });
+    await flushAsync();
 
     expect(isCopyRecreateInFlight()).toBe(true);
 
     emit("create-copy-result", { correlationId: "r-4", ok: true, pages: [] });
+    await flushAsync();
     expect(isCopyRecreateInFlight()).toBe(false);
+  });
+
+  it("a silently hung translations load settles the job as a timeout instead of blocking recreate forever", async () => {
+    vi.useFakeTimers();
+    try {
+      const done = vi.fn();
+      finishCopyRecreate({
+        correlationId: "r-hang",
+        // Never settles — e.g. a dropped connection with no error event.
+        loadTranslations: () => new Promise(() => {}),
+        onDone: done,
+      });
+      emit("create-copy-result", {
+        correlationId: "r-hang",
+        ok: true,
+        pages: [{ pageId: "p2", language: "cs", nodes: [makeNode()] }],
+      });
+      await vi.advanceTimersByTimeAsync(COPY_FETCH_TIMEOUT_MS + 1);
+
+      expect(done).toHaveBeenCalledWith({
+        ok: false,
+        error: expect.stringContaining("Timed out loading translations"),
+      });
+      expect(isCopyRecreateInFlight()).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

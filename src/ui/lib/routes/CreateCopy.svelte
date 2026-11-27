@@ -4,16 +4,27 @@
   import { auth } from "$ui/lib/stores/auth.svelte";
   import { send, on, nextCorrelationId } from "$ui/lib/bus";
   import { createIdleTimeout } from "$ui/lib/busRequest";
-  import { Card, CheckboxField, Label, Message, ProgressBar, Select } from "$ui/lib/components/ui";
+  import { Button, Card, CheckboxField, Label, Message, ProgressBar, Select } from "$ui/lib/components/ui";
+  import * as Dialog from "$ui/lib/components/ui/dialog";
+  import { requestCopyPreflight } from "$ui/lib/api/copyPreflight";
+  import { copyMemoryWarning } from "$ui/lib/logic/copyGuard";
   import * as Tooltip from "$ui/lib/components/ui/tooltip";
   import ViewHeader from "$ui/lib/components/domain/ViewHeader.svelte";
   import ViewFooter from "$ui/lib/components/domain/ViewFooter.svelte";
   import {
     applyCopyPages,
+    COPY_FETCH_TIMEOUT_MS,
+    type CopyFetch,
     copySkippedSuffix,
     fetchCopyTranslations,
+    topUpCopyTranslations,
+    withTimeout,
   } from "$ui/lib/logic/copyApply";
+  import { copyPhaseBar, copyPhaseLabel } from "$ui/lib/logic/copyPhase";
+  import { fade } from "svelte/transition";
+  import { requestPageConnectedKeys } from "$ui/lib/api/pageNodes";
   import type { MainToUi } from "$shared/messages";
+  import { createPhaseTimer } from "$shared/perf";
 
   type Mode = "keys" | "languages";
   type CreatedPages = NonNullable<
@@ -32,6 +43,14 @@
     total: number;
     phase: string;
   } | null>(null);
+  // Per-phase bar (see `copyPhaseBar`): each phase restarts its own bar.
+  const setProgress = (p: { current: number; total: number; phase: string }): void => {
+    progress = p;
+  };
+  const resetRun = (): void => {
+    progress = null;
+  };
+  const bar = $derived(copyPhaseBar(progress));
   let errorMsg = $state<string | null>(null);
   let availableLanguages = $state<LanguageModel[]>([]);
   let languagesLoaded = $state(false);
@@ -127,7 +146,7 @@
       const offProgress = on("create-copy-progress", (m) => {
         if (m.correlationId !== payload.correlationId) return;
         watchdog.touch();
-        progress = { current: m.current, total: m.total, phase: m.phase };
+        setProgress({ current: m.current, total: m.total, phase: m.phase });
       });
       const offResult = on("create-copy-result", (m) => {
         if (m.correlationId !== payload.correlationId) return;
@@ -151,12 +170,43 @@
     });
   }
 
+  // ---- Memory guard ---------------------------------------------------------
+  let memoryWarning = $state<string | null>(null);
+  let warningAccepted = false;
+
+  /** `true` = go ahead; `false` = the warning dialog is up (or sizing failed
+   *  closed — then it proceeds, the guard must never block a copy by itself). */
+  async function passesMemoryGuard(): Promise<boolean> {
+    if (warningAccepted) return true;
+    try {
+      const size = await requestCopyPreflight();
+      const warning = copyMemoryWarning({ ...size, recreate: false });
+      if (!warning) return true;
+      memoryWarning = warning;
+      return false;
+    } catch (e) {
+      console.warn("[tolgee] copy preflight skipped:", e);
+      return true;
+    }
+  }
+
+  function continuePastWarning(): void {
+    memoryWarning = null;
+    warningAccepted = true;
+    void start();
+  }
+
   async function start(): Promise<void> {
     errorMsg = null;
+    if (!(await passesMemoryGuard())) return;
+    warningAccepted = false;
 
     if (mode === "keys") {
       stage = "creating";
-      progress = { current: 0, total: 1, phase: "writing-keys" };
+      resetRun();
+      // Neutral until main says what it is doing — "removing" is announced by
+      // main ONLY when an old copy actually exists.
+      setProgress({ current: 0, total: 0, phase: "preparing" });
       const result = await dispatchCreate({
         correlationId: nextCorrelationId(),
         mode: "keys",
@@ -191,17 +241,47 @@
     }
     if (selectedLangs.length === 0) return;
 
-    stage = "creating";
-    progress = {
-      current: 0,
-      total: selectedLangs.length * 100,
-      phase: "cloning",
-    };
+    // Fetch FIRST, clone after: a failed fetch (network down, Tolgee's
+    // translations rate limit) used to strand orphan source-language pages the
+    // user had to hunt down by hand. The current page IS the page about to be
+    // cloned, so its connected key names (same scan Download all runs) are
+    // exactly the clone's — fetched by key names, same cheap path as Download,
+    // never a project-wide pagination. Fails here → nothing was created yet.
+    //
+    // Only the key names are needed for this pre-fetch, not full node info —
+    // `requestPageConnectedKeys` skips the per-node characters/ignore-filter
+    // work `requestPageConnectedNodes` does, which on a large page doubled the
+    // scan cost (the fresh clone gets scanned again regardless, once it
+    // exists).
+    const perf = createPhaseTimer();
+    stage = "fetching";
+    resetRun();
+    setProgress({ current: 0, total: 0, phase: "fetching" });
+    let fetched: CopyFetch;
+    try {
+      const pageKeys = await requestPageConnectedKeys();
+      perf.mark("page keys", `${pageKeys.length} connected`);
+      fetched = await withTimeout(
+        fetchCopyTranslations(
+          client,
+          selectedLangs.map((lang) => ({ language: lang, nodes: pageKeys })),
+          branch || undefined,
+        ),
+        COPY_FETCH_TIMEOUT_MS,
+        "Timed out loading translations from Tolgee.",
+      );
+    } catch (e) {
+      stage = "error";
+      errorMsg = e instanceof Error ? e.message : String(e);
+      return;
+    }
 
-    // Clone FIRST: the clones' connected nodes tell us exactly which keys to
-    // fetch. The translations used to be paginated project-wide before the
-    // clone existed; fetching by the clone's key names (same path as
-    // Download) is both the complete and the cheap option.
+    perf.mark("fetch translations");
+
+    stage = "creating";
+    // Neutral until main says what it is doing — "removing" is announced by
+      // main ONLY when an old copy actually exists.
+      setProgress({ current: 0, total: 0, phase: "preparing" });
     const result = await dispatchCreate({
       correlationId: nextCorrelationId(),
       mode: "languages",
@@ -213,29 +293,23 @@
       return;
     }
     const pages = result.pages ?? [];
-
-    stage = "fetching";
-    progress = null;
-    let translationsMap: Awaited<ReturnType<typeof fetchCopyTranslations>>;
-    try {
-      translationsMap = await fetchCopyTranslations(client, pages, branch || undefined);
-    } catch (e) {
-      // The clones already exist (holding the source text); the user can
-      // "Download" onto them from CopyView once the connection is back.
-      stage = "error";
-      errorMsg = e instanceof Error ? e.message : String(e);
-      return;
-    }
+    perf.mark("clone + scan (main thread)");
+    // Keys connected while the clone ran (rare) aren't in the pre-fetched map —
+    // top them up best-effort; a miss just counts as "skipped" below.
+    fetched = await topUpCopyTranslations(client, pages, fetched, branch || undefined);
+    perf.mark("top-up fetch");
 
     // The clones hold the SOURCE page's text — render + write the
     // translations from here (the main thread can't: no `Intl` in its
     // sandbox). Same render + apply pipeline as the Download flow.
     stage = "creating";
-    progress = { current: 0, total: 0, phase: "writing" };
-    const applied = await applyCopyPages(pages, translationsMap, (done, total) => {
-      progress = { current: done, total, phase: "writing" };
+    setProgress({ current: 0, total: 0, phase: "writing" });
+    const applied = await applyCopyPages(pages, fetched.translations, (done, total) => {
+      setProgress({ current: done, total, phase: "writing" });
     });
     if (applied.ok) {
+      perf.mark("write texts", `${applied.skipped} skipped`);
+      console.log(perf.summary(`create copy (${selectedLangs.length} language(s))`));
       stage = "done";
       send({
         type: "notify",
@@ -316,6 +390,14 @@
         </div>
       </Card>
 
+      <!-- The plugin can't measure Figma's per-file memory, but a copy is a
+           full duplicate of the page — on a very large file a few copies hit
+           Figma's memory limit (seen on the customer-sized test file: the
+           third copy pushed it to "out of memory"). Say so up front. -->
+      <p class="text-[11px] leading-snug text-text-secondary">
+        A copy duplicates the whole page. Keep only the copies you need.
+      </p>
+
       {#if mode === "languages"}
         <Card>
           <Label>Languages</Label>
@@ -340,18 +422,17 @@
           {/if}
         </Card>
       {/if}
-    {:else if stage === "fetching"}
-      <Card>
-        <ProgressBar loaded={0} total={null} label="Loading translations from Tolgee…" />
-      </Card>
-    {:else if stage === "creating"}
-      <Card>
-        <ProgressBar
-          loaded={progress?.current ?? 0}
-          total={progress && progress.total > 0 ? progress.total : null}
-          label="Creating copy…"
-        />
-      </Card>
+    {:else if stage === "fetching" || stage === "creating"}
+      <div in:fade={{ duration: 150 }}>
+        <Card>
+          <ProgressBar
+            loaded={bar.loaded}
+            total={bar.total}
+            label={copyPhaseLabel(progress?.phase, "Creating copy…")}
+            detail={bar.detail}
+          />
+        </Card>
+      </div>
     {:else if stage === "error"}
       <Message variant="error">{errorMsg ?? "Something went wrong."}</Message>
     {/if}
@@ -364,3 +445,23 @@
     confirmDisabled={!canSubmit}
   />
 </div>
+
+<!-- Memory guard (see `copyGuard.ts`): a very large page that already has
+     copies in this file may push Figma over its per-file memory budget —
+     which once put the test file into recovery mode mid-copy. Asked BEFORE
+     anything is cloned; "Continue anyway" re-runs the action unguarded. -->
+<Dialog.Root
+  open={memoryWarning !== null}
+  onOpenChange={(open) => {
+    if (!open) memoryWarning = null;
+  }}
+>
+  <Dialog.Content class="max-w-sm">
+    <Dialog.Title class="text-sm font-semibold text-text">Large file</Dialog.Title>
+    <p class="mt-2 whitespace-pre-line text-xs text-text-secondary">{memoryWarning}</p>
+    <div class="mt-4 flex justify-end gap-2">
+      <Button variant="outline" size="sm" onclick={() => (memoryWarning = null)}>Cancel</Button>
+      <Button size="sm" onclick={continuePastWarning}>Create copy</Button>
+    </div>
+  </Dialog.Content>
+</Dialog.Root>

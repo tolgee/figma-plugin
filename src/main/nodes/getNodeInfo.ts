@@ -9,7 +9,7 @@ import type { NodeInfo } from "$shared/types";
  * node/tree and must NOT be written into plugin data — they would only ever
  * drift.
  */
-type PersistedNodeInfo = Omit<
+export type PersistedNodeInfo = Omit<
   NodeInfo,
   | "id"
   | "name"
@@ -22,7 +22,16 @@ type PersistedNodeInfo = Omit<
   | "group"
 >;
 
-const readPersisted = (node: TextNode): Partial<PersistedNodeInfo> => {
+/**
+ * The persisted part of a node's `NodeInfo` only — ONE bridge read
+ * (`getPluginData`), no `characters`/`name`/`visible`. Page-wide scans use it
+ * to decide "is this node connected with a key?" BEFORE paying for the full
+ * `getNodeInfo` (~5 bridge reads incl. a whole `characters` copy): on a large
+ * document most tagged nodes are stale prefill leftovers that aren't
+ * connected, so reading them in full was pure waste (55 s of a 76 s Recreate
+ * on a 17k-tagged / 1.3k-connected page).
+ */
+export const readPersistedNodeInfo = (node: TextNode): Partial<PersistedNodeInfo> => {
   const raw = node.getPluginData(TOLGEE_NODE_INFO);
   if (!raw) {
     return {};
@@ -40,8 +49,14 @@ const readPersisted = (node: TextNode): Partial<PersistedNodeInfo> => {
  * persisted field is normalised to its safe default so the UI can rely on
  * shape-stable records.
  */
-export const getNodeInfo = (node: TextNode, characters?: string): NodeInfo => {
-  const pluginData = readPersisted(node);
+export const getNodeInfo = (
+  node: TextNode,
+  characters?: string,
+  // Optional passthrough of an already-read `readPersistedNodeInfo` result —
+  // same reason as `characters`: don't cross the bridge twice.
+  persisted?: Partial<PersistedNodeInfo>,
+): NodeInfo => {
+  const pluginData = persisted ?? readPersistedNodeInfo(node);
   return {
     id: node.id,
     name: node.name,
@@ -66,7 +81,7 @@ export const getNodeInfo = (node: TextNode, characters?: string): NodeInfo => {
  * `visible`) are never written to plugin data.
  */
 export const setNodeInfo = (node: TextNode, partial: Partial<NodeInfo>): NodeInfo => {
-  const current = readPersisted(node);
+  const current = readPersistedNodeInfo(node);
 
   const merged: PersistedNodeInfo = {
     key: partial.key ?? current.key ?? "",

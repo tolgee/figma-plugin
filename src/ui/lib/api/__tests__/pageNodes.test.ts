@@ -29,7 +29,7 @@ vi.mock("$ui/lib/bus", () => ({
   },
 }));
 
-import { requestPageConnectedNodes } from "$ui/lib/api/pageNodes";
+import { requestPageConnectedKeys, requestPageConnectedNodes } from "$ui/lib/api/pageNodes";
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -128,5 +128,52 @@ describe("requestPageConnectedNodes", () => {
       nodes: [],
     });
     await expect(promise).resolves.toEqual([]);
+  });
+});
+
+describe("page scans — a main-thread handler that throws", () => {
+  it("rejects requestPageConnectedNodes right away on a matching handler-error instead of idling out", async () => {
+    const promise = requestPageConnectedNodes();
+    const rejection = expect(promise).rejects.toThrow("Scanning the page failed in Figma.");
+    emit({ type: "handler-error", forType: "request-page-connected-nodes", correlationId: "test-correlation" });
+    await rejection;
+  });
+
+  it("rejects requestPageConnectedKeys the same way, ignoring errors of other requests", async () => {
+    const promise = requestPageConnectedKeys();
+    emit({ type: "handler-error", forType: "set-nodes-data", correlationId: "test-correlation" });
+    emit({ type: "handler-error", forType: "request-page-connected-keys", correlationId: "other" });
+    const rejection = expect(promise).rejects.toThrow("Scanning the page failed in Figma.");
+    emit({ type: "handler-error", forType: "request-page-connected-keys", correlationId: "test-correlation" });
+    await rejection;
+  });
+});
+
+describe("requestPageConnectedKeys", () => {
+  it("resolves with the keys from a matching page-connected-keys-result", async () => {
+    const promise = requestPageConnectedKeys();
+    emit({
+      type: "page-connected-keys-result",
+      correlationId: "test-correlation",
+      keys: [{ key: "greet", ns: "web" }],
+    });
+
+    await expect(promise).resolves.toEqual([{ key: "greet", ns: "web" }]);
+  });
+
+  it("ignores a result for a different correlationId", async () => {
+    const promise = requestPageConnectedKeys();
+    emit({ type: "page-connected-keys-result", correlationId: "other-correlation", keys: [] });
+    emit({ type: "page-connected-keys-result", correlationId: "test-correlation", keys: [] });
+    await expect(promise).resolves.toEqual([]);
+  });
+
+  it("times out after 5 minutes of silence — not sooner, a huge page must not fail falsely", async () => {
+    const promise = requestPageConnectedKeys();
+    const rejection = expect(promise).rejects.toThrow(
+      "Timed out waiting for the page's connected keys.",
+    );
+    await vi.advanceTimersByTimeAsync(5 * 60_000);
+    await rejection;
   });
 });

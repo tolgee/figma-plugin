@@ -48,10 +48,13 @@ export const MESSAGE_IMPACT: Record<UiToMain["type"], MessageImpact> = {
 
   // read — document reads (scans, screenshots' exportAsync) + viewport moves.
   "request-page-connected-nodes": "read",
+  "request-page-connected-keys": "read",
   "resolve-parent-names": "read",
   "request-screenshots": "read",
   "scroll-to-node": "read",
   "request-copy-staleness": "read",
+  "request-copy-preflight": "read",
+  "update-copy-frames": "canvas",
 
   // ui — iframe housekeeping.
   "ui-ready": "ui",

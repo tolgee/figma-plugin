@@ -144,6 +144,30 @@ export type MainToUi =
       nodes: NodeInfo[];
     }
   | {
+      type: "copy-preflight-result";
+      correlationId: string;
+      /** TEXT nodes on the source page (engine count, no per-node reads). */
+      textCount: number;
+      /** All scene layers on the source page — what Figma's memory counts. */
+      layerCount: number;
+      /** Pages carrying the plugin's copy marker for that source. */
+      existingCopies: number;
+      /** Their names, so the warning can say which ones to delete. */
+      copyNames: string[];
+    }
+  | {
+      /** Answer to `request-page-connected-keys` — just the (ns, key) pairs
+          of the current page's connected nodes, see that request's doc. */
+      type: "page-connected-keys-result";
+      correlationId: string;
+      keys: Array<{
+        key: string;
+        ns?: string;
+        paramsValues?: Record<string, string>;
+        pluralParamValue?: string;
+      }>;
+    }
+  | {
       /** Progress for an in-flight `apply-translations` write. Same `total >
           100` guard and idle-timeout role as `page-connected-nodes-progress`
           — see `applyTranslations` in `selection.ts`. */
@@ -198,6 +222,8 @@ export type MainToUi =
       missingCount?: number;
       /** Connected strings the source page lost since the copy was made. */
       removedCount?: number;
+      /** Per-frame breakdown (only when stale) — drives "Update changed frames". */
+      frames?: { added: number; removed: number; changed: number; mappable: boolean };
       error?: string;
     };
 
@@ -227,6 +253,14 @@ export type UiToMain =
    * the new translations land on the whole page, not just selected layers.
    */
   | { type: "request-page-connected-nodes"; correlationId: string }
+  /**
+   * Which Tolgee keys the current page's connected nodes use — nothing else
+   * (no `characters`/`visible`/ignore-filter). Cheap stand-in for
+   * `request-page-connected-nodes` when a caller only needs to know what to
+   * pre-fetch from Tolgee (Recreate copy, before anything is deleted), not
+   * the nodes themselves — see `collectConnectedKeyRefs`.
+   */
+  | { type: "request-page-connected-keys"; correlationId: string }
   | {
       type: "set-nodes-data";
       correlationId: string;
@@ -260,6 +294,10 @@ export type UiToMain =
         ns?: string;
         connected?: boolean;
       }>;
+      /** The targets are on a page the plugin cloned moments ago (copy
+          flows): the write loop then uses the longer post-clone yield budget
+          — see `nodes/yield.ts`. */
+      postClone?: boolean;
     }
   | {
       type: "request-screenshots";
@@ -293,4 +331,27 @@ export type UiToMain =
        */
       namespacesEnabled?: boolean;
     }
-  | { type: "request-copy-staleness"; correlationId: string };
+  | { type: "request-copy-staleness"; correlationId: string }
+  | {
+      /** "Update changed frames" on the CURRENT page (a copy): clone only the
+          source frames that are new or whose connected keys changed, remove
+          the ones the source lost, keep the rest. Answers with the same
+          `create-copy-progress` / `create-copy-result` messages as
+          `create-copy` (createdPageIds empty), so the UI reuses that flow. */
+      type: "update-copy-frames";
+      correlationId: string;
+      sourcePageId: string;
+      /** The copy's language; omitted for a keys copy. */
+      language?: string;
+      namespacesEnabled?: boolean;
+    }
+  | {
+      /** Pre-flight for Create copy / Recreate: how big is the source page and
+          how many plugin-made copies of it the file already holds — the UI
+          warns before cloning when that looks like it could exceed Figma's
+          per-file memory (which put the file into recovery mode once). */
+      type: "request-copy-preflight";
+      correlationId: string;
+      /** The copy's recorded source page (Recreate); omitted = current page. */
+      sourcePageId?: string;
+    };

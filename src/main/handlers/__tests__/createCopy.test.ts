@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { TOLGEE_NODE_INFO, TOLGEE_PLUGIN_CONFIG_NAME } from "$shared/constants";
-import { checkCopyStaleness, createCopy, removeExistingCopyPages } from "../createCopy";
+import {
+  checkCopyStaleness,
+  copyPreflight,
+  createCopy,
+  removeExistingCopyPages,
+} from "../createCopy";
 
 type FakeTextNode = {
   type: "TEXT";
@@ -32,6 +37,7 @@ function textNode(info: { key?: string; ns?: string; connected?: boolean } = {})
 
 type FakePage = {
   type: "PAGE";
+  children: unknown[];
   id: string;
   name: string;
   loadAsync: () => Promise<void>;
@@ -50,6 +56,7 @@ function page(
   const textNodes = opts.textNodes ?? [];
   return {
     type: "PAGE",
+    children: [],
     id: opts.id ?? name,
     name,
     loadAsync: vi.fn(async () => {}),
@@ -73,6 +80,7 @@ function setPages(pages: FakePage[], currentPage?: FakePage) {
       figma.currentPage = page;
     },
     mixed: Symbol("mixed"),
+    ui: { postMessage: vi.fn() },
   };
   (globalThis as unknown as { figma: unknown }).figma = figma;
 }
@@ -159,7 +167,7 @@ describe("checkCopyStaleness", () => {
     );
     setPages([source, copyPage], copyPage);
 
-    await expect(checkCopyStaleness(copyPage as never)).resolves.toEqual({
+    await expect(checkCopyStaleness(copyPage as never)).resolves.toMatchObject({
       ok: true,
       missingCount: 0,
       removedCount: 0,
@@ -178,7 +186,7 @@ describe("checkCopyStaleness", () => {
     );
     setPages([source, copyPage], copyPage);
 
-    await expect(checkCopyStaleness(copyPage as never)).resolves.toEqual({
+    await expect(checkCopyStaleness(copyPage as never)).resolves.toMatchObject({
       ok: true,
       missingCount: 2,
       removedCount: 0,
@@ -197,7 +205,7 @@ describe("checkCopyStaleness", () => {
     );
     setPages([source, copyPage], copyPage);
 
-    await expect(checkCopyStaleness(copyPage as never)).resolves.toEqual({
+    await expect(checkCopyStaleness(copyPage as never)).resolves.toMatchObject({
       ok: true,
       missingCount: 0,
       removedCount: 0,
@@ -221,7 +229,7 @@ describe("checkCopyStaleness", () => {
     );
     setPages([source, copyPage], copyPage);
 
-    await expect(checkCopyStaleness(copyPage as never)).resolves.toEqual({
+    await expect(checkCopyStaleness(copyPage as never)).resolves.toMatchObject({
       ok: true,
       missingCount: 1,
       removedCount: 0,
@@ -246,7 +254,7 @@ describe("checkCopyStaleness", () => {
     );
     setPages([source, copyPage], copyPage);
 
-    await expect(checkCopyStaleness(copyPage as never)).resolves.toEqual({
+    await expect(checkCopyStaleness(copyPage as never)).resolves.toMatchObject({
       ok: true,
       missingCount: 0,
       removedCount: 1,
@@ -267,7 +275,7 @@ describe("checkCopyStaleness", () => {
     );
     setPages([source, copyPage], copyPage);
 
-    await expect(checkCopyStaleness(copyPage as never)).resolves.toEqual({
+    await expect(checkCopyStaleness(copyPage as never)).resolves.toMatchObject({
       ok: true,
       missingCount: 1,
       removedCount: 1,
@@ -336,6 +344,7 @@ describe("createCopy — ignore settings", () => {
   function cloneableSourcePage(name: string, textNodes: WritableTextNode[]) {
     const clone = {
       type: "PAGE" as const,
+      children: [],
       id: `${name}-clone`,
       name,
       loadAsync: vi.fn(async () => {}),
@@ -345,6 +354,7 @@ describe("createCopy — ignore settings", () => {
     };
     return {
       type: "PAGE" as const,
+      children: [],
       id: name,
       name,
       loadAsync: vi.fn(async () => {}),
@@ -363,6 +373,7 @@ describe("createCopy — ignore settings", () => {
       setCurrentPageAsync: async () => {},
       loadFontAsync: async () => {},
       mixed: Symbol("mixed"),
+      ui: { postMessage: vi.fn() },
     };
   }
 
@@ -384,6 +395,58 @@ describe("createCopy — ignore settings", () => {
     expect(visible.characters).toBe("greeting");
     expect(hidden.characters).toBe("Hidden");
     expect(numeric.characters).toBe("42");
+  });
+
+  const announcedPhases = (): (string | undefined)[] =>
+    (globalThis as unknown as { figma: { ui: { postMessage: ReturnType<typeof vi.fn> } } })
+      .figma.ui.postMessage.mock.calls.map((c) => c[0] as { type: string; phase?: string })
+      .filter((m) => m.type === "create-copy-progress")
+      .map((m) => m.phase);
+
+  it("announces the silent phases (cloning, scanning) to the UI before each step — no 'removing' on a first copy", async () => {
+    const node = writableTextNode({ id: "n1", characters: "Hello", key: "greeting" });
+    const src = cloneableSourcePage("Home", [node]);
+    installFigmaForCreateCopy(src);
+
+    await createCopy({ mode: "keys", correlationId: "c-phases" }, {});
+
+    expect(announcedPhases().slice(0, 2)).toEqual(["cloning", "scanning-keys"]);
+  });
+
+  it("marks the clone as a copy BEFORE scanning it, so an interrupted run leaves no unmarked duplicate", async () => {
+    const node = writableTextNode({ id: "n1", characters: "Hello", key: "greeting" });
+    const src = cloneableSourcePage("Home", [node]);
+    installFigmaForCreateCopy(src);
+    const clone = src.clone();
+    const log: string[] = [];
+    clone.setPluginData = vi.fn((k: string, v: string) => {
+      if (k === TOLGEE_PLUGIN_CONFIG_NAME && v.includes('"pageCopy":true')) log.push("marked");
+    });
+    const figma = (globalThis as unknown as { figma: { ui: { postMessage: (m: unknown) => void } } }).figma;
+    figma.ui.postMessage = (m: unknown) => {
+      const msg = m as { type: string; phase?: string };
+      if (msg.type === "create-copy-progress") log.push(msg.phase ?? "");
+    };
+
+    await createCopy({ mode: "keys", correlationId: "c-mark" }, {});
+
+    expect(log.indexOf("marked")).toBeGreaterThanOrEqual(0);
+    expect(log.indexOf("marked")).toBeLessThan(log.indexOf("scanning-keys"));
+  });
+
+  it("announces 'removing' first when an old copy is actually being replaced", async () => {
+    const node = writableTextNode({ id: "n1", characters: "Hello", key: "greeting" });
+    const src = cloneableSourcePage("Home", [node]);
+    const oldCopy = page("Home - keys", { pageCopy: true, sourcePageId: "Home" }, { id: "old" });
+    installFigmaForCreateCopy(src);
+    (globalThis as unknown as { figma: { root: { children: unknown[] } } }).figma.root.children.push(
+      oldCopy,
+    );
+
+    await createCopy({ mode: "keys", correlationId: "c-phases-2" }, {});
+
+    expect(oldCopy.remove).toHaveBeenCalled();
+    expect(announcedPhases().slice(0, 3)).toEqual(["removing", "cloning", "scanning-keys"]);
   });
 
   it("writes hidden nodes too once ignoreHiddenLayers is turned off", async () => {
@@ -555,9 +618,8 @@ describe("removeExistingCopyPages — identity fallback", () => {
   });
 
   it("stops after the name match, so the usual path never loads other pages", async () => {
-    // Performance guard: reading a copy marker requires loading the page, and
-    // a document can have many. The identity pass exists for the migration
-    // case only and must not make every ordinary recreate load the document.
+    // Performance guard: loading a page pulls all its layers into Figma's
+    // memory, and a document can have many. Only the removed page is loaded.
     const namedCopy = page("Home - en", { pageCopy: true, sourcePageId: "src" }, { id: "c" });
     const unrelated = page("Sketches", undefined, { id: "u" });
     setPages([page("Home", undefined, { id: "src" }), namedCopy, unrelated]);
@@ -566,6 +628,21 @@ describe("removeExistingCopyPages — identity fallback", () => {
 
     expect(namedCopy.remove).toHaveBeenCalledTimes(1);
     expect(unrelated.loadAsync).not.toHaveBeenCalled();
+  });
+
+  it("a first-time copy loads no other page while looking for one to replace", async () => {
+    // Pass 2 reads markers on every other page; pluginData needs no load, so
+    // a new language copy must not pull the file's other copies into memory.
+    const keysCopy = page("Home - keys", { pageCopy: true, sourcePageId: "src" }, { id: "k" });
+    const frCopy = page("Home - fr", { pageCopy: true, sourcePageId: "src", copyLanguage: "fr" }, { id: "f" });
+    setPages([page("Home", undefined, { id: "src" }), keysCopy, frCopy]);
+
+    await removeExistingCopyPages({ name: "Home - pl", sourcePageId: "src", language: "pl" });
+
+    expect(keysCopy.remove).not.toHaveBeenCalled();
+    expect(frCopy.remove).not.toHaveBeenCalled();
+    expect(keysCopy.loadAsync).not.toHaveBeenCalled();
+    expect(frCopy.loadAsync).not.toHaveBeenCalled();
   });
 });
 
@@ -585,6 +662,7 @@ describe("createCopy — rollback of a failed run", () => {
     };
     const clone = {
       type: "PAGE" as const,
+      children: [],
       id: "clone-id",
       name: "Home - keys",
       loadAsync: vi.fn(async () => {}),
@@ -595,6 +673,7 @@ describe("createCopy — rollback of a failed run", () => {
     };
     const source = {
       type: "PAGE" as const,
+      children: [],
       id: "src",
       name: "Home",
       loadAsync: vi.fn(async () => {}),
@@ -613,6 +692,7 @@ describe("createCopy — rollback of a failed run", () => {
       }),
       loadFontAsync: async () => {},
       mixed: Symbol("mixed"),
+      ui: { postMessage: vi.fn() },
     };
     (globalThis as unknown as { figma: unknown }).figma = figma;
     return { clone, source, figma };
@@ -659,6 +739,7 @@ describe("createCopy — rollback of a failed run", () => {
     };
     const makeClone = (id: string, nodes: unknown[]) => ({
       type: "PAGE" as const,
+      children: [],
       id,
       name: id,
       loadAsync: vi.fn(async () => {}),
@@ -674,6 +755,7 @@ describe("createCopy — rollback of a failed run", () => {
 
     const source = {
       type: "PAGE" as const,
+      children: [],
       id: "src",
       name: "Home",
       loadAsync: vi.fn(async () => {}),
@@ -698,6 +780,7 @@ describe("createCopy — rollback of a failed run", () => {
       }),
       loadFontAsync: async () => {},
       mixed: Symbol("mixed"),
+      ui: { postMessage: vi.fn() },
     };
     (globalThis as unknown as { figma: unknown }).figma = figma;
 
@@ -740,6 +823,7 @@ describe("createCopy — layers a missing font blocked", () => {
 
     const clone = {
       type: "PAGE" as const,
+      children: [],
       id: "clone",
       name: "Home - keys",
       loadAsync: vi.fn(async () => {}),
@@ -749,6 +833,7 @@ describe("createCopy — layers a missing font blocked", () => {
     };
     const source = {
       type: "PAGE" as const,
+      children: [],
       id: "src",
       name: "Home",
       loadAsync: vi.fn(async () => {}),
@@ -764,6 +849,7 @@ describe("createCopy — layers a missing font blocked", () => {
       setCurrentPageAsync: async () => {},
       loadFontAsync: async () => {},
       mixed: Symbol("mixed"),
+      ui: { postMessage: vi.fn() },
     };
 
     const result = await createCopy({ mode: "keys", correlationId: "c-font" }, {});
@@ -821,5 +907,25 @@ describe("copy staleness counts key a `|` cannot collide in", () => {
 
     expect(result.missingCount).toBe(0);
     expect(result.removedCount).toBe(0);
+  });
+});
+
+describe("copyPreflight", () => {
+  it("counts existing copies without loading them into memory", async () => {
+    // Loading a 113k-layer copy took 11–13 s and kept it in Figma's memory;
+    // the copy marker is page pluginData, readable on an unloaded page.
+    const source = page("Home", undefined, { id: "src" });
+    const keysCopy = page("Home - keys", { pageCopy: true, sourcePageId: "src" }, { id: "k" });
+    const frCopy = page("Home - fr", { pageCopy: true, sourcePageId: "src", copyLanguage: "fr" }, { id: "f" });
+    const userPage = page("Home - notes", undefined, { id: "n" });
+    const otherSource = page("About - fr", { pageCopy: true, sourcePageId: "about" }, { id: "a" });
+    setPages([source, keysCopy, frCopy, userPage, otherSource]);
+
+    const result = await copyPreflight();
+
+    expect(result.existingCopies).toBe(2);
+    for (const p of [keysCopy, frCopy, userPage, otherSource]) {
+      expect(p.loadAsync).not.toHaveBeenCalled();
+    }
   });
 });

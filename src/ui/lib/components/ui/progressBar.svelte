@@ -23,16 +23,22 @@
         bulk action bar below already communicates what's happening. */
     label?: string;
     class?: string;
+    /** Replaces the computed `3 / 10` counter: a string to show, or `null`
+        to show none. Used when `loaded`/`total` are a composite percentage
+        (a whole copy run) whose raw numbers would mislead. */
+    detail?: string | null;
   };
 
-  let { loaded, total, label, class: className }: Props = $props();
+  let { loaded, total, label, class: className, detail }: Props = $props();
 
   // `null` when the total is unknown (or zero) — the bar then renders the
   // indeterminate sliding animation instead of a fixed-width fill.
   const pct = $derived<number | null>(computeProgressPercent(loaded, total));
   // `null` while the total is unknown — the counter is omitted rather than
   // rendered as a meaningless "0 / …".
-  const count = $derived<string | null>(formatProgressCount(loaded, total));
+  const count = $derived<string | null>(
+    detail !== undefined ? detail : formatProgressCount(loaded, total),
+  );
 </script>
 
 <div class={cn("flex flex-col gap-1", className)}>
@@ -53,7 +59,7 @@
   >
     {#if pct !== null}
       <div
-        class="h-full bg-bg-brand transition-[width] duration-200 ease-out"
+        class="h-full bg-bg-brand transition-[width] duration-500 ease-out"
         style="width: {pct}%"
       ></div>
     {:else}
@@ -64,22 +70,30 @@
 
 <style>
   /*
-   * Indeterminate animation: a 40%-wide bar slides across when the total is
-   * unknown. Pure CSS so it doesn't depend on the tailwind plugin config.
-   * This is the single shared definition — previously duplicated almost
-   * identically between `PullProgress` and `PushProgress`.
+   * Indeterminate animation: a 40%-wide bar glides side to side when the
+   * total is unknown. Pure CSS so it doesn't depend on the tailwind plugin
+   * config. This is the single shared definition — previously duplicated
+   * almost identically between `PullProgress` and `PushProgress`.
+   *
+   * It animates `transform` (not `margin-left`): a transform animation runs
+   * on the compositor thread, so it KEEPS MOVING while the page's main
+   * thread is blocked — which is exactly what happens for ~10 s when Figma
+   * clones a huge page for a copy (the plugin UI's JS and layout freeze with
+   * it, and the old margin-based slide stood still, reading as "hung").
    */
   .progress-bar-indeterminate {
     width: 40%;
-    animation: progress-bar-slide 1.4s ease-in-out infinite;
+    will-change: transform;
+    animation: progress-bar-glide 1.6s ease-in-out infinite alternate;
   }
 
-  @keyframes progress-bar-slide {
+  @keyframes progress-bar-glide {
     0% {
-      margin-left: -40%;
+      transform: translateX(0%);
     }
     100% {
-      margin-left: 100%;
+      /* 150 % of its own 40 % width = the far edge of the track. */
+      transform: translateX(150%);
     }
   }
 </style>

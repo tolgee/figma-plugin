@@ -8,16 +8,17 @@ import { DEV_ALLOWED_IMPACTS, MESSAGE_IMPACT } from "../messagePolicy";
  * widens what Dev Mode may process) must fail here, visibly.
  */
 describe("MESSAGE_IMPACT", () => {
-  it("classifies exactly the two canvas-writing messages as canvas", () => {
+  it("classifies exactly the three canvas-writing messages as canvas", () => {
     const canvas = Object.entries(MESSAGE_IMPACT)
       .filter(([, impact]) => impact === "canvas")
       .map(([type]) => type)
       .sort();
-    expect(canvas).toEqual(["apply-translations", "create-copy"]);
+    expect(canvas).toEqual(["apply-translations", "create-copy", "update-copy-frames"]);
   });
 
   it("classifies the staleness check (added after the original 17 types) as read", () => {
     expect(MESSAGE_IMPACT["request-copy-staleness"]).toBe("read");
+    expect(MESSAGE_IMPACT["request-copy-preflight"]).toBe("read");
   });
 
   it("allows everything except canvas in Dev Mode", () => {

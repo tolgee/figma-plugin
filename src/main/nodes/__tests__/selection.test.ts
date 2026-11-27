@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createYielder } from "$main/nodes/yield";
 
 import { TOLGEE_NODE_INFO } from "$shared/constants";
 import { applyTranslations, setNodesData } from "$main/nodes/selection";
@@ -138,19 +139,37 @@ describe("applyTranslations", () => {
     expect(result.nodes.map((n) => n.id)).toEqual(["1:1"]);
   });
 
-  it("reports progress every 10 updates when total > 100, ending at done === total", async () => {
+  /** Fake clock: 1 ms per `now()` → with a 10 ms budget the loop yields
+   *  (and reports) every 10 updates, so the cadence below is deterministic. */
+  const tickingYielder = () => {
+    let t = 0;
+    return createYielder(10, () => ++t);
+  };
+
+  it("reports progress at each (time-sliced) yield when total > 100, ending at done === total", async () => {
     const nodes = Array.from({ length: 250 }, (_, i) => makeTextNode(`1:${i}`, `old ${i}`));
     installFigma(nodes);
     const onProgress = vi.fn();
 
     const updates = nodes.map((n) => ({ id: n.id, text: "new", translation: "new" }));
-    const result = await applyTranslations(updates, onProgress);
+    const result = await applyTranslations(updates, onProgress, undefined, tickingYielder());
 
     expect(result.ok).toBe(true);
     expect(onProgress).toHaveBeenCalledTimes(25);
     expect(onProgress.mock.calls[0]).toEqual([10, 250]);
     const last = onProgress.mock.calls.at(-1);
     expect(last).toEqual([250, 250]);
+  });
+
+  it("always ends with done === total even when the last slice didn't yield", async () => {
+    const nodes = Array.from({ length: 105 }, (_, i) => makeTextNode(`1:${i}`, `old ${i}`));
+    installFigma(nodes);
+    const onProgress = vi.fn();
+
+    const updates = nodes.map((n) => ({ id: n.id, text: "new", translation: "new" }));
+    await applyTranslations(updates, onProgress, undefined, tickingYielder());
+
+    expect(onProgress.mock.calls.at(-1)).toEqual([105, 105]);
   });
 
   it("sends no progress messages when total <= 100", async () => {
